@@ -1,0 +1,101 @@
+import { IngredientCategory } from "@/types";
+
+/**
+ * Specific ingredient-name → emoji overrides, checked before the category
+ * fallback so common items (garlic, eggs, olive oil…) get a precise icon.
+ */
+const NAME_KEYWORDS: Array<[string, string]> = [
+  ["egg", "🥚"],
+  ["milk", "🥛"],
+  ["cottage cheese", "🥣"],
+  ["cheddar", "🧀"],
+  ["cheese", "🧀"],
+  ["yogurt", "🥣"],
+  ["peanut butter", "🥜"],
+  ["butter", "🧈"],
+  ["garlic", "🧄"],
+  ["onion", "🧅"],
+  ["tomato", "🍅"],
+  ["potato", "🥔"],
+  ["carrot", "🥕"],
+  ["broccoli", "🥦"],
+  ["spinach", "🥬"],
+  ["lettuce", "🥬"],
+  ["black pepper", "🌶️"],
+  ["peppercorn", "🌶️"],
+  ["bell pepper", "🫑"],
+  ["pepper", "🫑"],
+  ["mushroom", "🍄"],
+  ["corn", "🌽"],
+  ["avocado", "🥑"],
+  ["lemon", "🍋"],
+  ["lime", "🍋"],
+  ["cucumber", "🥒"],
+  ["apple", "🍎"],
+  ["banana", "🍌"],
+  ["grape", "🍇"],
+  ["orange", "🍊"],
+  ["strawberry", "🍓"],
+  ["pineapple", "🍍"],
+  ["watermelon", "🍉"],
+  ["mango", "🥭"],
+  ["pear", "🍐"],
+  ["peach", "🍑"],
+  ["blueberry", "🫐"],
+  ["cherry", "🍒"],
+  ["kiwi", "🥝"],
+  ["coconut", "🥥"],
+  ["chicken", "🍗"],
+  ["turkey", "🦃"],
+  ["beef", "🥩"],
+  ["steak", "🥩"],
+  ["pork", "🥓"],
+  ["bacon", "🥓"],
+  ["fish", "🐟"],
+  ["salmon", "🐟"],
+  ["shrimp", "🍤"],
+  ["tofu", "🧈"],
+  ["rice", "🍚"],
+  ["pasta", "🍝"],
+  ["noodle", "🍜"],
+  ["bread", "🍞"],
+  ["flour", "🌾"],
+  ["oil", "🫒"],
+  ["vinegar", "🍶"],
+  ["soy sauce", "🍶"],
+  ["honey", "🍯"],
+  ["jam", "🍯"],
+  ["chickpea", "🫘"],
+  ["bean", "🫘"],
+  ["lentil", "🫘"],
+  ["canned", "🥫"],
+  ["can of", "🥫"],
+  ["jar", "🫙"],
+  ["cumin", "🌿"],
+  ["paprika", "🌶️"],
+  ["oregano", "🌿"],
+  ["basil", "🌿"],
+  ["thyme", "🌿"],
+  ["cinnamon", "🌿"],
+  ["salt", "🧂"],
+  ["sugar", "🧂"],
+  ["spice", "🧂"],
+];
+
+const CATEGORY_FALLBACK: Record<IngredientCategory, string> = {
+  produce: "🥬",
+  dairy: "🥛",
+  protein: "🍗",
+  grain: "🌾",
+  condiment: "🫙",
+  spice: "🌶️",
+  other: "🍽️",
+};
+
+export function getIngredientEmoji(name: string, category: IngredientCategory): string {
+  const lower = name.toLowerCase();
+  for (const [keyword, emoji] of NAME_KEYWORDS) {
+    if (lower.includes(keyword)) return emoji;
+  }
+  return CATEGORY_FALLBACK[category];
+}
