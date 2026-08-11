@@ -21,7 +21,11 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -44,6 +48,17 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a4c30bb4-bc43-4a3e-a8cf-b46261331404"
+      }
+    },
+    "owner": "tomekacc",
+    "runtimeVersion": "exposdk:54.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/a4c30bb4-bc43-4a3e-a8cf-b46261331404"
     }
   }
 }
