@@ -32,22 +32,30 @@ export function RecipeCard({ recipe, onPress }: RecipeCardProps) {
         >
           <Text style={{ fontSize: 36 }}>{emoji}</Text>
         </View>
-        <View className="flex-1 ml-3 justify-center">
+        <View className="flex-1 min-w-0 ml-3 justify-center">
           <Text className="text-slate-900 text-base font-extrabold mb-0.5" numberOfLines={1}>
             {recipe.title}
           </Text>
           <Text className="text-slate-500 text-xs mb-1.5" numberOfLines={1}>
             {recipe.description}
           </Text>
-          <View className="flex-row items-center">
-            <Clock size={11} color={colors.textMuted} />
-            <Text className="text-slate-400 text-xs ml-1 mr-2">{recipe.cookTimeMinutes} min</Text>
-            <Text className="text-slate-400 text-xs mr-2">Serves {recipe.servings}</Text>
+          <View className="flex-row flex-wrap items-center gap-x-2 gap-y-1">
+            <View className="flex-row items-center shrink-0">
+              <Clock size={11} color={colors.textMuted} />
+              <Text className="text-slate-400 text-xs ml-1" numberOfLines={1}>
+                {recipe.cookTimeMinutes} min
+              </Text>
+            </View>
+            <Text className="text-slate-400 text-xs shrink-0" numberOfLines={1}>
+              Serves {recipe.servings}
+            </Text>
             <View
-              className="px-2 py-0.5 rounded-full border border-slate-950/10"
+              className="px-2 py-0.5 rounded-full border border-slate-950/10 shrink-0"
               style={{ backgroundColor: recipe.accentColor }}
             >
-              <Text className="text-slate-900 text-xs font-bold">{recipe.difficulty}</Text>
+              <Text className="text-slate-900 text-xs font-bold" numberOfLines={1}>
+                {recipe.difficulty}
+              </Text>
             </View>
           </View>
         </View>
