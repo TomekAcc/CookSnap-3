@@ -33,19 +33,24 @@ export function RecipeCard({ recipe, onPress }: RecipeCardProps) {
           <Text style={{ fontSize: 36 }}>{emoji}</Text>
         </View>
         <View className="flex-1 min-w-0 ml-3 justify-center">
-          <Text className="text-slate-900 text-base font-extrabold mb-0.5" numberOfLines={1}>
-            {recipe.title}
-          </Text>
+          <View className="flex-row items-start gap-2">
+            <Text
+              className="flex-1 min-w-0 text-slate-900 text-base font-extrabold mb-0.5"
+              numberOfLines={1}
+            >
+              {recipe.title}
+            </Text>
+            <View className="flex-row items-center gap-0.5 shrink-0 mt-0.5">
+              <Clock size={11} color={colors.textMuted} />
+              <Text className="text-slate-400 text-xs" numberOfLines={1}>
+                {recipe.cookTimeMinutes} min
+              </Text>
+            </View>
+          </View>
           <Text className="text-slate-500 text-xs mb-1.5" numberOfLines={1}>
             {recipe.description}
           </Text>
           <View className="flex-row flex-wrap items-center gap-x-2 gap-y-1">
-            <View className="flex-row items-center shrink-0">
-              <Clock size={11} color={colors.textMuted} />
-              <Text className="text-slate-400 text-xs ml-1" numberOfLines={1}>
-                {recipe.cookTimeMinutes} min
-              </Text>
-            </View>
             <Text className="text-slate-400 text-xs shrink-0" numberOfLines={1}>
               Serves {recipe.servings}
             </Text>
