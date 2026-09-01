@@ -509,16 +509,20 @@ export default function FridgeScannerHero() {
                 <Camera size={26} color="#34D399" />
               </View>
             ) : (
-              <LinearGradient
-                colors={["#D1FAE5", "#A7F3D0"]}
-                start={{ x: 0.15, y: 0 }}
-                end={{ x: 0.85, y: 1 }}
+              // Split into two views on purpose: LinearGradient needs
+              // overflow:"hidden" to clip its fill to the rounded corners,
+              // but a shadow on that same view gets clipped away by that
+              // same overflow:"hidden" — it's drawn outside the view's
+              // bounds, which is exactly what overflow:hidden cuts off.
+              // Confirmed real failure on-device: the gradient showed, the
+              // shadow silently didn't. The shadow now lives on this outer
+              // plain View (no overflow set, so nothing clips it); the
+              // LinearGradient inside only owns the fill + clipping.
+              <View
                 style={{
                   width: 64,
                   height: 64,
                   borderRadius: 20,
-                  alignItems: "center",
-                  justifyContent: "center",
                   marginBottom: 14,
                   shadowColor: "#059669",
                   shadowOffset: { width: 0, height: 5 },
@@ -527,8 +531,22 @@ export default function FridgeScannerHero() {
                   elevation: 5,
                 }}
               >
-                <Camera size={26} color="#059669" />
-              </LinearGradient>
+                <LinearGradient
+                  colors={["#D1FAE5", "#A7F3D0"]}
+                  start={{ x: 0.15, y: 0 }}
+                  end={{ x: 0.85, y: 1 }}
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 20,
+                    overflow: "hidden",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Camera size={26} color="#059669" />
+                </LinearGradient>
+              </View>
             )}
             <Text
               style={{
