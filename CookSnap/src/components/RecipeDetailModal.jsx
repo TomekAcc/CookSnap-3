@@ -18,6 +18,7 @@ import {
   Snowflake,
   Lock,
   Crown,
+  ShoppingCart,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
@@ -104,6 +105,7 @@ export default function RecipeDetailModal() {
     ensureRecipeLanguage,
     recipeLanguageId,
     showToast,
+    addToShoppingList,
     t,
   } = useCookAI();
   const { selectedRecipe, setSelectedRecipe, setProModalOpen } =
@@ -247,6 +249,15 @@ export default function RecipeDetailModal() {
   };
 
   const checkedCount = Object.values(checkedIngredients).filter(Boolean).length;
+
+  const handleAddUpgradeIngredient = () => {
+    if (!recipe?.upgradeIngredient) return;
+    addToShoppingList?.([recipe.upgradeIngredient]);
+    showToast?.(
+      t("recipeDetail.upgradeTipAdded", { ingredient: recipe.upgradeIngredient }),
+      "success"
+    );
+  };
 
   const isNoCook =
     !recipe?.cookTime ||
@@ -747,6 +758,57 @@ export default function RecipeDetailModal() {
               );
             })}
           </View>
+
+          {/* Optional, rare — only rendered when the model set both
+              upgradeIngredient/upgradeNote (see geminiRecipes.js). This
+              recipe's own ingredientsList/steps NEVER include anything the
+              user doesn't actually have; this is a clearly separate,
+              purely informational aside about what a next-level version
+              would need, with a one-tap way to add just that one item to
+              the Shopping List for next time. */}
+          {recipe?.upgradeIngredient ? (
+            <View
+              style={[
+                styles.upgradeTipCard,
+                {
+                  backgroundColor: isDark ? "rgba(16,185,129,0.10)" : "#ECFDF5",
+                  borderColor: isDark ? "rgba(16,185,129,0.28)" : "#D1FAE5",
+                },
+              ]}
+            >
+              <View style={styles.upgradeTipHeaderRow}>
+                <Sparkles size={16} color={isDark ? "#34D399" : "#059669"} />
+                <Text
+                  style={[
+                    styles.upgradeTipLabel,
+                    { color: isDark ? "#34D399" : "#047857" },
+                  ]}
+                >
+                  {t("recipeDetail.upgradeTipLabel", {
+                    ingredient: recipe.upgradeIngredient,
+                  })}
+                </Text>
+              </View>
+              <Text
+                style={[styles.upgradeTipNote, { color: colors.textSecondary }]}
+              >
+                {recipe.upgradeNote}
+              </Text>
+              <TouchableOpacity
+                onPress={handleAddUpgradeIngredient}
+                activeOpacity={0.8}
+                style={[
+                  styles.upgradeTipButton,
+                  { backgroundColor: isDark ? "#065F46" : "#059669" },
+                ]}
+              >
+                <ShoppingCart size={14} color="#FFFFFF" />
+                <Text style={styles.upgradeTipButtonText}>
+                  {t("recipeDetail.upgradeTipAdd")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
         </View>
 
         <View style={[styles.sectionContainer, styles.instructionsSection]}>
@@ -1054,6 +1116,42 @@ const styles = StyleSheet.create({
     ...DS.typography.hint,
   },
   listStack: { gap: 12 },
+  upgradeTipCard: {
+    marginTop: 14,
+    borderRadius: DS.borderRadius.md,
+    borderWidth: 1,
+    padding: 14,
+    gap: 8,
+  },
+  upgradeTipHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  upgradeTipLabel: {
+    fontSize: 13,
+    fontWeight: "800",
+    flexShrink: 1,
+  },
+  upgradeTipNote: {
+    fontSize: 12.5,
+    lineHeight: 18,
+  },
+  upgradeTipButton: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    marginTop: 2,
+  },
+  upgradeTipButtonText: {
+    color: "#FFFFFF",
+    fontSize: 12.5,
+    fontWeight: "700",
+  },
   ingredientRow: {
     borderRadius: DS.borderRadius.md,
     paddingVertical: 12,

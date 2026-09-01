@@ -698,6 +698,12 @@ AROMATICS & SAUCE-BUILDING TECHNIQUE (MANDATORY — confirmed real failure, not 
 1. COOK AROMATICS BEFORE ADDING DAIRY OR LIQUID: onion, garlic, shallot, leek, and other aromatics MUST always be sautéed in fat (butter or oil) until softened/translucent BEFORE being combined with cream, milk, cheese, stock, wine, or any other liquid or dairy component. Never write a step that adds a raw, uncooked aromatic directly into cream, milk, or a simmering liquid — that leaves it harsh and undercooked instead of building a real flavor base. The correct order is always: sauté the aromatics first → then add the liquid/dairy → then simmer/reduce to combine.
 2. BUILD SAUCES AND FILLINGS IN REAL SEQUENCE: for any pan sauce, cream sauce, or filling that combines aromatics with dairy or stock, the steps must follow how it's actually cooked — soften aromatics, then deglaze or add the liquid, then reduce or simmer to the right consistency — never combine every sauce component in one step regardless of what each one actually needs before it's ready to be mixed in.
 
+OPTIONAL "UPGRADE TIP" — "upgradeIngredient" AND "upgradeNote" FIELDS (RARE, NOT A REQUIRED FIELD — leave both null on most recipes):
+The recipe itself must ALWAYS stay strictly limited to the fridge + pantry inventory — see rule 10 above, this never changes. Separately from that, and ONLY when it's genuinely true, you may name ONE real ingredient the user does not have that would make a *meaningfully* better version of this exact dish — never inside "ingredientsList" or "steps", only in these two dedicated fields, purely as an informational aside the app shows separately.
+- Set BOTH "upgradeIngredient" (short name, e.g. "Fresh Basil", "Dry White Wine", "Parmesan") AND "upgradeNote" (one short sentence on what it would actually add, e.g. "adds real herbal brightness the dried version can't" or "deglazing with this builds a deeper pan sauce") — or leave BOTH as JSON null. Never fill in one and not the other.
+- This is genuinely rare — leave both null on most recipes, especially anything already well-rounded with what's available (a real caprese salad, a good stir-fry with aromatics + protein + sauce already covered). Only set it when a specific, well-known ingredient would make a clear, non-generic difference — never a vague "this would be better with more seasoning" or something that could apply to almost any dish (that's the sign it doesn't belong here).
+- NEVER suggest something already effectively present under a different name, and never suggest a base pantry item already assumed available (salt, pepper, cooking oil, basic spices — see PANTRY STAPLES above).
+
 TITLE DISH-TYPE WORD (MANDATORY — confirmed real failure, and this is a hard blocker, not a style preference: given chicken, broccoli, rice, and garlic, a past batch titled the stir-fry "Warm Plate with Broccoli" and a rice-based dish "Rice Toast". Neither is a real dish anyone would recognize, search for, or want to cook — "Plate" names nothing at all, and pairing "Rice" with "Toast" describes no dish that exists. This is the single most common quality failure in this system — check it first, before any other title rule):
 - The LAST word of every title (its dish-type word) MUST be a real, specific, recognizable format: Bowl, Skillet, Stir-Fry, Salad, Soup, Curry, Hash, Fritters, Casserole, Sandwich, Wrap, Pasta, Noodles, Rice, Omelet, Frittata, Pancakes, Crepes, Parfait, Pudding, Cake, Toast (ONLY when the dish is genuinely a slice of bread with a topping — never pair it with rice, meat, or anything that isn't a bread-based topping), or similar — never a vague container word that could describe any food: BANNED dish-type words are "Plate", "Dish", "Meal", "Medley", "Delight", "Creation", "Mix", "Bowl of [X]" used generically.
 - The dish-type word must genuinely match what's cooked. Before finalizing every title, silently ask: "would a real person recognize this exact combination as a dish that exists?" — if the lead ingredient and the dish-type word together describe nothing real (like "Rice Toast"), rewrite the title entirely using a dish-type word that actually fits what the recipe is (a chicken/broccoli/rice stir-fry is a "Bowl", a "Skillet", or "Fried Rice" — never a "Plate" or "Toast").
@@ -748,6 +754,7 @@ REQUIRED FIELDS PER RECIPE OBJECT:
 - "servings": "Serves X people"
 - "ingredientsList": array of "Quantity Ingredient Emoji" strings (never 📦) — units must match the single selected system per TEMPERATURE & UNIT ACCURACY above, never both.
 - "steps": 3 to 5 imperative English strings per the DYNAMIC STEP COUNT rule, each ending with a period. Any recipe using an oven/broiler/grill MUST have its own preheat step with an explicit temperature in the selected system — never assume the oven is already hot. Any step naming a baking dish/cake pan/loaf pan/casserole dish/muffin tin/pie dish MUST state that dish's size right there — never just "pour into a baking dish."
+- "upgradeIngredient" / "upgradeNote": optional, JSON null on most recipes — see OPTIONAL "UPGRADE TIP" above.
 `;
 
 /** Local Soft UI stamp — emoji + vectorType via stampRecipeEmojis. */
@@ -1182,6 +1189,8 @@ Return ONLY a raw JSON array of exactly ${recipeCount} objects with these exact 
 - "servings": string, written entirely in ${language} — translate both the number-word phrasing AND "Serves"/"people" (or whatever ${language}'s natural equivalent phrase is), not just the surrounding words. ${isEnglish ? `E.g. "Serves ${servings} people".` : `Do NOT leave this field in English — e.g. for Polish this would be "Dla ${servings} osób", for Spanish "Sirve a ${servings} personas"; produce the real ${language} equivalent, not a transliteration.`}
 - "ingredientsList": array of Quantity + Ingredient + Emoji strings ONLY (inventory only, scaled for ${servings}, ingredient names in ${language}) — every entry must be a real food item, NEVER an instruction. Confirmed real failure: a past batch put "Preheat the oven to 350°F. 🫙" as an ingredientsList entry — that is a step, not an ingredient, and must never appear here even for oven recipes (the preheat instruction goes in "steps" only). Quantities MUST use ONLY the ${isMetric ? "METRIC (grams/ml)" : "US CUSTOMARY"} system per UNIT SYSTEM above${isMetric ? ` — e.g. "120g Mąka 🌾" (ingredient translated, "g"/"ml" written as-is)` : isEnglish ? ` — e.g. "1 cup Flour 🌾"` : ` — e.g. for Polish "1 szklanka Mąka 🌾" NOT "1 cup Mąka 🌾" (the unit WORD translates too — see UNIT SYSTEM above)`}.
 - "steps": array of 3 to 5 imperative strings in ${language} per the DYNAMIC STEP COUNT rule above, each ending with a period. If the recipe uses an oven/broiler/grill, one step MUST be an explicit preheat instruction with a real ${isMetric ? "°C" : "°F"} temperature. Any step finishing meat/poultry/seafood must pair its time with a real doneness cue (temperature or a visual/textural check), never a time estimate alone — see MEAT/POULTRY/SEAFOOD DONENESS & TECHNIQUE above, which also governs matching the cook time/technique to the actual cut.
+- "upgradeIngredient": JSON null on most recipes, or a short ${language} ingredient name (e.g. ${isEnglish ? `"Fresh Basil"` : `the real ${language} name, not a transliteration`}) — see OPTIONAL "UPGRADE TIP" above. This is rare; only set it when genuinely true, never fill it in "to be thorough."
+- "upgradeNote": JSON null whenever "upgradeIngredient" is null, otherwise one short sentence in ${language} explaining what it would actually add. Both fields are null together or filled together, never just one.
 
 Do NOT include an "image" field — Cook AI stamps emoji badges client-side.
 
@@ -1209,7 +1218,9 @@ Example JSON Output:
       "Saute the pepper for 2 minutes until soft.",
       "Crack in the eggs, fold in the hummus, and stir gently until just set.",
       "Season with salt and pepper, then serve immediately."
-    ]
+    ],
+    "upgradeIngredient": "Feta Cheese",
+    "upgradeNote": "Crumbled on top, it adds a salty, tangy edge that plain hummus-and-egg doesn't have on its own."
   },
   {
     "id": 2,
@@ -1231,11 +1242,13 @@ Example JSON Output:
       "Spoon the yogurt into a bowl.",
       "Swirl the jam through the top in a spiral.",
       "Serve immediately, chilled."
-    ]
+    ],
+    "upgradeIngredient": null,
+    "upgradeNote": null
   }
 ]
 
-Note: the second example above is intentionally a quick/cold dish with only 3 steps — a real sparse-inventory case (just yogurt + jam) elevated into a classic comforting bowl, NOT padded to 5 steps and NOT forced into an odd combination. Match this pattern whenever the available ingredients are simple.
+Note: the second example above is intentionally a quick/cold dish with only 3 steps — a real sparse-inventory case (just yogurt + jam) elevated into a classic comforting bowl, NOT padded to 5 steps and NOT forced into an odd combination. Match this pattern whenever the available ingredients are simple. It also shows "upgradeIngredient"/"upgradeNote" as null, null — this should be the outcome for MOST recipes; the first example's feta suggestion is the rare exception, not the default.
 
 Note: whenever a recipe requires the oven, its steps MUST include its own preheat instruction with a real temperature in the ${isMetric ? "METRIC" : "US CUSTOMARY"} system only, e.g. ${isMetric ? '"Preheat the oven to 200°C."' : '"Preheat the oven to 400°F."'} — never a bake step with no temperature ever stated, and never mix in the other unit system. Format ingredient quantities in that same single system throughout, e.g. ${
   isMetric
@@ -1799,6 +1812,25 @@ function normalizeRecipe(recipe, idx, mealType, servings = 2, language = "Englis
           { count: servingsCount }
         );
 
+  // Optional "upgrade tip" — code-level safety net backing up the prompt's
+  // own "this is rare, leave both null" instruction. Both fields must be
+  // present and non-empty together, and the suggested ingredient must
+  // genuinely be absent from this exact recipe's own ingredientsList —
+  // guards against the model echoing an inventory item back here instead
+  // of actually leaving it null, which would otherwise render as "this
+  // would be better with X" for an X already in the dish.
+  const rawUpgradeIngredient =
+    typeof safe.upgradeIngredient === "string" ? safe.upgradeIngredient.trim() : "";
+  const rawUpgradeNote = typeof safe.upgradeNote === "string" ? safe.upgradeNote.trim() : "";
+  const ingredientsListLower = ingredientsList.join(" ").toLowerCase();
+  const upgradeIngredient =
+    rawUpgradeIngredient &&
+    rawUpgradeNote &&
+    !ingredientsListLower.includes(rawUpgradeIngredient.toLowerCase())
+      ? rawUpgradeIngredient
+      : null;
+  const upgradeNote = upgradeIngredient ? rawUpgradeNote : null;
+
   return {
     id,
     title,
@@ -1820,6 +1852,8 @@ function normalizeRecipe(recipe, idx, mealType, servings = 2, language = "Englis
     baseServings: servingsCount,
     ingredientsList: formatIngredientsList(ingredientsList),
     steps: enforceGoldilocksSteps(safe.steps, language),
+    upgradeIngredient,
+    upgradeNote,
     isAiGenerated: true,
     isSmartFallback: !!safe.isSmartFallback,
     isPro: false,
