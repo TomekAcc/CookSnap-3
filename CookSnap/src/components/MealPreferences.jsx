@@ -508,7 +508,13 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.tile,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
+    // Confirmed real failure, not a hypothetical: the contents used to add
+    // up to ~104px inside this 96px cap — emoji 59 (emojiLine(42)) + 6
+    // margin + ~15 label + 20 padding + 4 border — so `overflow: "hidden"`
+    // below silently sliced the bottom off every hunger label. Sizes here
+    // and on hungerEmoji/hungerLabel are now chosen to total 90, leaving
+    // real headroom under the cap.
+    paddingVertical: 8,
     paddingHorizontal: 6,
     // Same "text can bleed past its own box on web" issue fixed in
     // BottomNav — a translated hunger-level word longer than the tile is
@@ -518,14 +524,18 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   hungerEmoji: {
-    fontSize: 42,
-    lineHeight: emojiLine(42),
-    marginBottom: 6,
+    fontSize: 36,
+    lineHeight: emojiLine(36),
+    marginBottom: 4,
   },
   hungerLabel: {
     fontSize: 12,
     fontWeight: "600",
     letterSpacing: -0.1,
+    // Explicit, not the platform default — the default differs across
+    // iOS/Android/web, so leaving it unset is what made the overflow above
+    // depend on which platform you happened to look at.
+    lineHeight: 15,
     width: "100%",
     minWidth: 0,
     textAlign: "center",

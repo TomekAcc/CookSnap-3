@@ -866,8 +866,15 @@ export default function RecipeDetailModal() {
                     isActive
                       ? {
                           ...styles.stepCardActive,
-                          backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
-                          borderColor: isDark ? colors.textSecondary : "#CBD5E1",
+                          // Amber, matching the amber badge beside it — a
+                          // previous dark-mode pass overrode BOTH themes
+                          // with slate here, so the card said "grey" while
+                          // its own badge said "amber" and the selected
+                          // step read as barely selected at all.
+                          backgroundColor: isDark
+                            ? "rgba(120, 53, 15, 0.32)"
+                            : "#FFFBEB",
+                          borderColor: isDark ? "#B45309" : "#FBBF24",
                         }
                       : {
                           ...styles.stepCardInactive,
@@ -879,10 +886,23 @@ export default function RecipeDetailModal() {
                   <View
                     style={[
                       styles.stepBadge,
-                      isActive ? styles.stepBadgeActive : styles.stepBadgeInactive,
+                      isActive
+                        ? styles.stepBadgeActive
+                        : {
+                            backgroundColor: isDark ? colors.inputBg : "#F1F5F9",
+                            borderWidth: 1,
+                            borderColor: colors.cardBorder,
+                          },
                     ]}
                   >
-                    <Text style={styles.stepBadgeText}>{idx + 1}</Text>
+                    <Text
+                      style={[
+                        styles.stepBadgeText,
+                        !isActive && { color: colors.textSecondary },
+                      ]}
+                    >
+                      {idx + 1}
+                    </Text>
                   </View>
                   <Text
                     style={[
@@ -914,16 +934,20 @@ export default function RecipeDetailModal() {
           activeOpacity={0.8}
           style={[
             styles.favoriteButton,
+            // Solid = "do this", outline = "done". A sticky footer CTA is
+            // the strongest affordance on the screen, so the state that
+            // still WANTS a tap is the one that carries the weight; once
+            // saved it recedes to a quiet confirmation. This was inverted
+            // (pale when unsaved, solid once saved), which also put it in
+            // direct contradiction with the "Add to Shopping List" button
+            // higher up the same screen, which already works this way.
             isFavorite
-              ? styles.favoriteActive
-              : [
-                  styles.favoriteInactive,
-                  {
-                    backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
-                    borderWidth: 1.5,
-                    borderColor: isDark ? "#059669" : "#D1FAE5",
-                  },
-                ],
+              ? {
+                  backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+                  borderWidth: 1.5,
+                  borderColor: isDark ? "#059669" : "#A7F3D0",
+                }
+              : styles.favoritePrimary,
           ]}
           accessibilityRole="button"
           accessibilityLabel={
@@ -933,14 +957,14 @@ export default function RecipeDetailModal() {
           <Animated.View style={{ transform: [{ scale: heartScaleAnim }] }}>
             <Heart
               size={16}
-              color={isFavorite ? "#FFFFFF" : isDark ? "#34D399" : "#059669"}
-              fill={isFavorite ? "#FFFFFF" : "transparent"}
+              color={isFavorite ? (isDark ? "#34D399" : "#059669") : "#FFFFFF"}
+              fill={isFavorite ? (isDark ? "#34D399" : "#059669") : "transparent"}
             />
           </Animated.View>
           <Text
             style={[
               styles.favoriteButtonText,
-              !isFavorite && { color: isDark ? "#34D399" : "#059669" },
+              isFavorite && { color: isDark ? "#34D399" : "#059669" },
             ]}
           >
             {isFavorite
@@ -1285,12 +1309,13 @@ const styles = StyleSheet.create({
     marginRight: 12,
     flexShrink: 0,
   },
-  stepBadgeInactive: { backgroundColor: "#1E293B" },
-  // Previously identical to stepBadgeInactive — the numbered badge never
-  // actually changed with the step, so tapping through steps while cooking
-  // only moved the card's border/background, not the number you're tracking
-  // against. Ties to the same amber already used for stepCardActive so the
-  // "this one's selected" language is consistent card-to-badge.
+  // Inactive badges are navigational furniture, not content — as flat
+  // near-black circles they were the heaviest elements on an otherwise
+  // light page, and they blunted the amber "you are here" badge by making
+  // it compete against four equally heavy dark dots. Light neutral instead
+  // (applied inline above, isDark-aware) so the amber one actually leads.
+  // Ties to the same amber as stepCardActive so the "this one's selected"
+  // language is consistent card-to-badge.
   stepBadgeActive: { backgroundColor: "#D97706" },
   stepBadgeText: {
     color: "#FFFFFF",
@@ -1327,14 +1352,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  // Base only — the actual colors are applied inline above (isDark-aware,
-  // matching the app's other secondary-emerald buttons like Pantry's "+
-  // Add"). Used to be a flat DS.colors.ink (near-black), a leftover from
-  // before the Scanner panel's green redesign that never got updated here.
-  favoriteInactive: {},
-  // DS.colors.emerald doesn't exist — this previously resolved to
-  // backgroundColor: undefined, making the "saved" button state invisible.
-  favoriteActive: { backgroundColor: "#059669" },
+  // The un-saved (action-wanted) state: solid primary emerald, same as
+  // every other primary CTA in the app. The saved state's lighter
+  // confirmation colors are applied inline above, since they're
+  // isDark-aware.
+  favoritePrimary: { backgroundColor: "#059669" },
   favoriteButtonText: {
     color: "#FFFFFF",
     fontSize: 12,
