@@ -8,7 +8,6 @@ import {
   CalendarRange,
   History,
   MessageCircleQuestion,
-  Star,
   ChevronRight,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
@@ -45,20 +44,13 @@ export default function ProfileScreen() {
   // to actually do, not just look at.
   //
   // The hamburger drawer itself is gone now (see Header.jsx) — every one of
-  // its six rows already had a home: Settings has its own button above,
-  // PRO has the banner above, and Meal Planner/Scan History/Help were
-  // already duplicated here. Saved Recipes was the one item that wasn't,
-  // so it's added below rather than left with no way in besides the
-  // bottom tab. Same color as the drawer's old Saved row, for anyone who'd
-  // already learned that association.
+  // its six rows already had a home: Settings has its own button above, PRO
+  // has the banner above, and Meal Planner/Scan History/Help are the three
+  // below. Saved Recipes used to be a fourth row here too, but "Saved" is
+  // one of BottomNav's four real tabs — that row was just a shortcut to a
+  // shortcut, one tap away regardless, so it was cut rather than kept as
+  // redundant chrome.
   const QUICK_ACTIONS = [
-    {
-      id: "saved",
-      labelKey: "menu.savedRecipes",
-      Icon: Star,
-      color: "#E11D48",
-      onPress: () => setActiveTab("saved"),
-    },
     {
       id: "planner",
       labelKey: "menu.mealPlanner",
