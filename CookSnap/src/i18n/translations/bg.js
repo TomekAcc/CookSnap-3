@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Неограничени генерирания",
   "scanner.generateRecipes": "Генерирай с AI",
   "scanner.title": "Сканиране на хладилник",
-  "scanner.subtitle": "Снимка — изкуственият интелект открива съставките веднага. Използвайте „Сканирай още“, за да добавите друг рафт.",
+  "scanner.subtitle": "Снимка — изкуственият интелект открива съставките веднага.",
   "scanner.takePhoto": "Снимка",
   "scanner.fromGallery": "От галерията",
   "scanner.scanningLabel": "CookSnap сканира...",

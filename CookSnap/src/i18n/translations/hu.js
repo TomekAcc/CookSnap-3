@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Korlátlangenerálás",
   "scanner.generateRecipes": "AI receptek generálása",
   "scanner.title": "Hűtő beolvasása",
-  "scanner.subtitle": "Készíts egy fotót – az AI azonnal felismeri a hozzávalókat. Használd a További beolvasása lehetőséget újabb polc hozzáadásához.",
+  "scanner.subtitle": "Készíts egy fotót – az AI azonnal felismeri a hozzávalókat.",
   "scanner.takePhoto": "Fotózás",
   "scanner.fromGallery": "Galériából",
   "scanner.scanningLabel": "CookSnap beolvasás...",

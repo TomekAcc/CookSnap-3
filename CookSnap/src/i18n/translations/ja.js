@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "無制限の生成",
   "scanner.generateRecipes": "AIレシピを生成",
   "scanner.title": "冷蔵庫をスキャン",
-  "scanner.subtitle": "写真を撮るだけでAIが食材を即座に検出。「追加スキャン」で他の棚も撮影できます。",
+  "scanner.subtitle": "写真を撮るだけでAIが食材を即座に検出。",
   "scanner.takePhoto": "写真を撮る",
   "scanner.fromGallery": "ギャラリー",
   "scanner.scanningLabel": "CookSnap スキャン中...",

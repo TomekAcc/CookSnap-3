@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Необмежена кількість генерацій",
   "scanner.generateRecipes": "Згенерувати рецепти зі ШІ",
   "scanner.title": "Сканувати холодильник",
-  "scanner.subtitle": "Зробіть фото — ШІ миттєво знайде інгредієнти. Натисніть «Сканувати ще», щоб додати іншу полицю.",
+  "scanner.subtitle": "Зробіть фото — ШІ миттєво знайде інгредієнти.",
   "scanner.takePhoto": "Зробити фото",
   "scanner.fromGallery": "З галереї",
   "scanner.scanningLabel": "Сканування CookSnap...",

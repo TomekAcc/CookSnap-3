@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Số lượng tạo không giới hạn",
   "scanner.generateRecipes": "Tạo công thức AI",
   "scanner.title": "Quét tủ lạnh",
-  "scanner.subtitle": "Chụp ảnh — AI sẽ tìm nguyên liệu ngay lập tức. Dùng Quét thêm để chụp thêm ngăn khác.",
+  "scanner.subtitle": "Chụp ảnh — AI sẽ tìm nguyên liệu ngay lập tức.",
   "scanner.takePhoto": "Chụp ảnh",
   "scanner.fromGallery": "Từ thư viện",
   "scanner.scanningLabel": "CookSnap đang quét...",

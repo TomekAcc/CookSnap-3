@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Sınırsız tarif üretimi",
   "scanner.generateRecipes": "Yapay Zeka ile Tarif Oluştur",
   "scanner.title": "Buzdolabını Tara",
-  "scanner.subtitle": "Fotoğraf çek — Yapay zeka malzemeleri anında bulsun. Başka bir raf eklemek için Daha Fazla Tara'yı kullan.",
+  "scanner.subtitle": "Fotoğraf çek — Yapay zeka malzemeleri anında bulsun.",
   "scanner.takePhoto": "Fotoğraf Çek",
   "scanner.fromGallery": "Galeriden Seç",
   "scanner.scanningLabel": "CookSnap Tarıyor...",

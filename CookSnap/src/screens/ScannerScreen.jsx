@@ -240,7 +240,10 @@ const styles = StyleSheet.create({
   // primary action.
   ctaPrimary: {
     width: "100%",
-    backgroundColor: "#1E293B",
+    // Emerald, not navy — matches "Take Photo" in FridgeScannerHero now
+    // too, so this screen has one consistent primary-action color instead
+    // of navy and the app's actual brand green both reading as "primary."
+    backgroundColor: "#059669",
     paddingVertical: 17,
     borderRadius: 18,
     flexDirection: "row",

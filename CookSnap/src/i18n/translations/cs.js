@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Neomezené generování",
   "scanner.generateRecipes": "Vygenerovat AI recepty",
   "scanner.title": "Naskenovat lednici",
-  "scanner.subtitle": "Vyfoťte ji – AI okamžitě rozpozná ingredience. Pomocí tlačítka Skenovat další přidáte další polici.",
+  "scanner.subtitle": "Vyfoťte ji – AI okamžitě rozpozná ingredience.",
   "scanner.takePhoto": "Vyfotit",
   "scanner.fromGallery": "Z galerie",
   "scanner.scanningLabel": "CookSnap skenuje...",

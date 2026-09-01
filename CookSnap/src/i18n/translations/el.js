@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Απεριόριστες δημιουργίες",
   "scanner.generateRecipes": "Δημιουργία συνταγών AI",
   "scanner.title": "Σάρωση Ψυγείου",
-  "scanner.subtitle": "Βγάλτε μια φωτογραφία — η τεχνητή νοημοσύνη εντοπίζει υλικά αμέσως. Χρησιμοποιήστε τη Σάρωση Περισσοτέρων για να προσθέσετε κι άλλο ράφι.",
+  "scanner.subtitle": "Βγάλτε μια φωτογραφία — η τεχνητή νοημοσύνη εντοπίζει υλικά αμέσως.",
   "scanner.takePhoto": "Φωτογραφία",
   "scanner.fromGallery": "Από τη Συλλογή",
   "scanner.scanningLabel": "Σάρωση CookSnap...",

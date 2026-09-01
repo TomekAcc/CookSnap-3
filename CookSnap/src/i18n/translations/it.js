@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Generazioni illimitate",
   "scanner.generateRecipes": "Genera ricette con IA",
   "scanner.title": "Scansiona frigo",
-  "scanner.subtitle": "Scatta una foto: l'IA troverà gli ingredienti all'istante. Usa Scansiona ancora per aggiungere un altro ripiano.",
+  "scanner.subtitle": "Scatta una foto: l'IA troverà gli ingredienti all'istante.",
   "scanner.takePhoto": "Scatta foto",
   "scanner.fromGallery": "Dalla galleria",
   "scanner.scanningLabel": "Scansione CookSnap...",

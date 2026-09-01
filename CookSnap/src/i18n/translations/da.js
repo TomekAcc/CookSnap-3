@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Ubegrænsede generationer",
   "scanner.generateRecipes": "Generer AI-opskrifter",
   "scanner.title": "Scan køleskab",
-  "scanner.subtitle": "Tag et billede – AI'en finder ingredienserne med det samme. Brug 'Scan mere' til at tilføje en hylde mere.",
+  "scanner.subtitle": "Tag et billede – AI'en finder ingredienserne med det samme.",
   "scanner.takePhoto": "Tag billede",
   "scanner.fromGallery": "Fra galleri",
   "scanner.scanningLabel": "CookSnap scanner...",

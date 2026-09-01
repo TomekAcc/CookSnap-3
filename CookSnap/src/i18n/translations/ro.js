@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Generări nelimitate",
   "scanner.generateRecipes": "Generează rețete AI",
   "scanner.title": "Scanează frigiderul",
-  "scanner.subtitle": "Fă o poză — AI-ul identifică ingredientele instantaneu. Folosește „Scanează mai mult” pentru a adăuga un alt raft.",
+  "scanner.subtitle": "Fă o poză — AI-ul identifică ingredientele instantaneu.",
   "scanner.takePhoto": "Fă o poză",
   "scanner.fromGallery": "Din galerie",
   "scanner.scanningLabel": "CookSnap scanează...",

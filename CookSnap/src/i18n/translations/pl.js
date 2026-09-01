@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Nieograniczone generowanie",
   "scanner.generateRecipes": "Wygeneruj przepisy AI",
   "scanner.title": "Skanuj lodówkę",
-  "scanner.subtitle": "Zrób zdjęcie – AI błyskawicznie znajdzie składniki. Użyj opcji Skanuj więcej, aby dodać kolejną półkę.",
+  "scanner.subtitle": "Zrób zdjęcie – AI błyskawicznie znajdzie składniki.",
   "scanner.takePhoto": "Zrób zdjęcie",
   "scanner.fromGallery": "Z galerii",
   "scanner.scanningLabel": "Skanowanie CookSnap...",

@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "דורות ללא הגבלה",
   "scanner.generateRecipes": "יצירת מתכוני AI",
   "scanner.title": "סריקת מקרר",
-  "scanner.subtitle": "צלם תמונה — ה-AI יזהה את המצרכים מיד. השתמש ב'סריקה נוספת' כדי להוסיף מדף נוסף.",
+  "scanner.subtitle": "צלם תמונה — ה-AI יזהה את המצרכים מיד.",
   "scanner.takePhoto": "צילום תמונה",
   "scanner.fromGallery": "מהגלריה",
   "scanner.scanningLabel": "CookSnap סורק...",

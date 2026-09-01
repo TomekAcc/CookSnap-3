@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "무제한 생성",
   "scanner.generateRecipes": "AI 레시피 생성",
   "scanner.title": "냉장고 스캔",
-  "scanner.subtitle": "사진을 찍으면 AI가 재료를 즉시 찾아줍니다. 다른 칸을 추가하려면 '추가 스캔'을 누르세요.",
+  "scanner.subtitle": "사진을 찍으면 AI가 재료를 즉시 찾아줍니다.",
   "scanner.takePhoto": "사진 촬영",
   "scanner.fromGallery": "갤러리",
   "scanner.scanningLabel": "CookSnap 스캔 중...",

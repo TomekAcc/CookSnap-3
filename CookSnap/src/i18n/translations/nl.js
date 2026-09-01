@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Onbeperkt genereren",
   "scanner.generateRecipes": "AI-recepten genereren",
   "scanner.title": "Koelkast Scannen",
-  "scanner.subtitle": "Maak een foto — AI vindt direct ingrediënten. Gebruik 'Meer scannen' om een extra plank toe te voegen.",
+  "scanner.subtitle": "Maak een foto — AI vindt direct ingrediënten.",
   "scanner.takePhoto": "Foto maken",
   "scanner.fromGallery": "Uit galerij",
   "scanner.scanningLabel": "CookSnap scannen...",

@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Generaciones ilimitadas",
   "scanner.generateRecipes": "Generar recetas con IA",
   "scanner.title": "Escanear nevera",
-  "scanner.subtitle": "Haz una foto: la IA detecta los ingredientes al instante. Usa «Escanear más» para añadir otra balda.",
+  "scanner.subtitle": "Haz una foto: la IA detecta los ingredientes al instante.",
   "scanner.takePhoto": "Hacer foto",
   "scanner.fromGallery": "Desde la galería",
   "scanner.scanningLabel": "Escaneando con CookSnap...",

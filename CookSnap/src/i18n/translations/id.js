@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Generasi tak terbatas",
   "scanner.generateRecipes": "Buat Resep AI",
   "scanner.title": "Pindai Kulkas",
-  "scanner.subtitle": "Ambil foto — AI langsung mendeteksi bahan. Gunakan Pindai Lagi untuk menambah rak.",
+  "scanner.subtitle": "Ambil foto — AI langsung mendeteksi bahan.",
   "scanner.takePhoto": "Ambil Foto",
   "scanner.fromGallery": "Dari Galeri",
   "scanner.scanningLabel": "Memindai dengan CookSnap...",

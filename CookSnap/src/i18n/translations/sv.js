@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Obegränsat antal genereringar",
   "scanner.generateRecipes": "Generera AI-recept",
   "scanner.title": "Skanna kylskåp",
-  "scanner.subtitle": "Ta ett foto – AI hittar ingredienserna direkt. Använd Skanna mer för att lägga till ett hyllplan till.",
+  "scanner.subtitle": "Ta ett foto – AI hittar ingredienserna direkt.",
   "scanner.takePhoto": "Ta foto",
   "scanner.fromGallery": "Från galleri",
   "scanner.scanningLabel": "CookSnap skannar...",

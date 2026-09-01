@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Rajattomasti luonteja",
   "scanner.generateRecipes": "Luo tekoälyreseptit",
   "scanner.title": "Skannaa jääkaappi",
-  "scanner.subtitle": "Ota kuva – tekoäly löytää ainekset heti. Lisää uusi hylly Skannaa lisää -toiminnolla.",
+  "scanner.subtitle": "Ota kuva – tekoäly löytää ainekset heti.",
   "scanner.takePhoto": "Ota kuva",
   "scanner.fromGallery": "Galleriasta",
   "scanner.scanningLabel": "CookSnap skannaa...",

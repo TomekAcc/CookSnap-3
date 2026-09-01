@@ -110,7 +110,7 @@ export default {
   "scanner.unlimitedGenerations": "Unlimited generations",
   "scanner.generateRecipes": "Generate AI Recipes",
   "scanner.title": "Scan Fridge",
-  "scanner.subtitle": "Take a photo — AI finds ingredients instantly. Use Scan More to add another shelf.",
+  "scanner.subtitle": "Take a photo — AI finds ingredients instantly.",
   "scanner.takePhoto": "Take Photo",
   "scanner.fromGallery": "From Gallery",
   "scanner.scanningLabel": "CookSnap Scanning...",

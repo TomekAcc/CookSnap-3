@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "สร้างได้ไม่จำกัด",
   "scanner.generateRecipes": "สร้างสูตรด้วย AI",
   "scanner.title": "สแกนตู้เย็น",
-  "scanner.subtitle": "ถ่ายภาพ — AI จะค้นหาวัตถุดิบให้ทันที ใช้ 'สแกนเพิ่ม' เพื่อถ่ายชั้นอื่นต่อ",
+  "scanner.subtitle": "ถ่ายภาพ — AI จะค้นหาวัตถุดิบให้ทันที",
   "scanner.takePhoto": "ถ่ายภาพ",
   "scanner.fromGallery": "จากแกลเลอรี",
   "scanner.scanningLabel": "CookSnap กำลังสแกน...",

@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Neograničeno generiranje",
   "scanner.generateRecipes": "Generiraj AI recepte",
   "scanner.title": "Skeniraj hladnjak",
-  "scanner.subtitle": "Fotografiraj — AI odmah pronalazi sastojke. Upotrijebi Skeniraj još za dodavanje druge police.",
+  "scanner.subtitle": "Fotografiraj — AI odmah pronalazi sastojke.",
   "scanner.takePhoto": "Fotografiraj",
   "scanner.fromGallery": "Iz galerije",
   "scanner.scanningLabel": "CookSnap skenira...",

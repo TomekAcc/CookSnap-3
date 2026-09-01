@@ -469,18 +469,28 @@ export default function FridgeScannerHero() {
               alignItems: "center",
             }}
           >
+            {/* Same pastel-emerald tone every icon badge in the app uses
+                (Profile, Pantry, Saved headers, IconBadge's own palette) —
+                this was a flat navy/gray box with an amber-on-dark-mode
+                accent that didn't match anything else on screen, reading
+                as an unstyled placeholder next to the colorful icons in
+                the cards right below it. Kept at 64px (not IconBadge's
+                standard 44px) since this is the hero of the whole screen,
+                not a small nav-row badge. */}
             <View
               style={{
                 width: 64,
                 height: 64,
                 borderRadius: 20,
-                backgroundColor: isDark ? "#1E293B" : "#F1F5F9",
+                backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+                borderWidth: 1,
+                borderColor: isDark ? "#065F46" : "#D1FAE5",
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: 14,
               }}
             >
-              <Camera size={26} color={isDark ? "#F59E0B" : "#0F172A"} />
+              <Camera size={26} color={isDark ? "#34D399" : "#059669"} />
             </View>
             <Text
               style={{
@@ -509,20 +519,26 @@ export default function FridgeScannerHero() {
             </Text>
 
             <View style={{ flexDirection: "row", width: "100%", gap: 10 }}>
+              {/* Emerald, not navy — "Generate AI Recipes" right after a
+                  scan is the same color now too (see ScannerScreen's
+                  ctaPrimary), so there's one consistent "this is the
+                  primary action" color across the whole scan flow instead
+                  of navy and the app's actual brand green both claiming
+                  that role on the same screen. */}
               <TouchableOpacity
                 onPress={handleOpenCamera}
                 activeOpacity={0.9}
                 style={{
                   flex: 1.15,
                   height: 46,
-                  backgroundColor: "#1E293B",
+                  backgroundColor: "#059669",
                   borderRadius: 13,
                   alignItems: "center",
                   flexDirection: "row",
                   justifyContent: "center",
                 }}
               >
-                <Camera size={16} color="#F59E0B" />
+                <Camera size={16} color="#FFFFFF" />
                 <Text
                   style={{
                     color: "#FFFFFF",

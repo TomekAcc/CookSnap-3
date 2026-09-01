@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "توليد بلا حدود",
   "scanner.generateRecipes": "توليد وصفات الذكاء الاصطناعي",
   "scanner.title": "مسح الثلاجة",
-  "scanner.subtitle": "التقط صورة — وسيكتشف الذكاء الاصطناعي المكونات فوراً. استخدم \"مسح المزيد\" لإضافة رف آخر.",
+  "scanner.subtitle": "التقط صورة — وسيكتشف الذكاء الاصطناعي المكونات فوراً.",
   "scanner.takePhoto": "التقاط صورة",
   "scanner.fromGallery": "من المعرض",
   "scanner.scanningLabel": "جاري مسح CookSnap...",

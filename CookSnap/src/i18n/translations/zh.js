@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "无限次生成",
   "scanner.generateRecipes": "生成 AI 食谱",
   "scanner.title": "扫描冰箱",
-  "scanner.subtitle": "拍张照片 —— AI 瞬间识别食材。点击“继续扫描”添加更多层架。",
+  "scanner.subtitle": "拍张照片 —— AI 瞬间识别食材。",
   "scanner.takePhoto": "拍照",
   "scanner.fromGallery": "从相册选择",
   "scanner.scanningLabel": "CookSnap 正在扫描...",

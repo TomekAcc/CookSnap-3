@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "असीमित जनरेशन",
   "scanner.generateRecipes": "AI रेसिपी जनरेट करें",
   "scanner.title": "फ्रिज स्कैन करें",
-  "scanner.subtitle": "फोटो खींचें — AI तुरंत सामग्री ढूँढ लेगा। दूसरी शेल्फ़ जोड़ने के लिए 'और स्कैन करें' का उपयोग करें।",
+  "scanner.subtitle": "फोटो खींचें — AI तुरंत सामग्री ढूँढ लेगा।",
   "scanner.takePhoto": "फोटो लें",
   "scanner.fromGallery": "गैलरी से चुनें",
   "scanner.scanningLabel": "CookSnap स्कैन कर रहा है...",

@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Безлимитные генерации",
   "scanner.generateRecipes": "Создать ИИ-рецепты",
   "scanner.title": "Сканировать холодильник",
-  "scanner.subtitle": "Сделайте фото — ИИ сразу распознает продукты. Нажмите «Сканировать еще», чтобы добавить новую полку.",
+  "scanner.subtitle": "Сделайте фото — ИИ сразу распознает продукты.",
   "scanner.takePhoto": "Сделать фото",
   "scanner.fromGallery": "Из галереи",
   "scanner.scanningLabel": "Сканирование CookSnap...",

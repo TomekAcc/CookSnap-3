@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Ubegrensede generasjoner",
   "scanner.generateRecipes": "Generer KI-oppskrifter",
   "scanner.title": "Skann kjøleskap",
-  "scanner.subtitle": "Ta et bilde – KI finner ingredienser umiddelbart. Bruk Skann mer for å legge til en hylle til.",
+  "scanner.subtitle": "Ta et bilde – KI finner ingredienser umiddelbart.",
   "scanner.takePhoto": "Ta bilde",
   "scanner.fromGallery": "Fra galleri",
   "scanner.scanningLabel": "CookSnap skanner...",

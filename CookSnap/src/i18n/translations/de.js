@@ -98,7 +98,7 @@ export default {
   "scanner.unlimitedGenerations": "Unbegrenzte Generierungen",
   "scanner.generateRecipes": "KI-Rezepte generieren",
   "scanner.title": "Kühlschrank scannen",
-  "scanner.subtitle": "Foto aufnehmen – KI findet sofort Zutaten. Verwende „Mehr scannen“, um ein weiteres Fach hinzuzufügen.",
+  "scanner.subtitle": "Foto aufnehmen – KI findet sofort Zutaten.",
   "scanner.takePhoto": "Foto aufnehmen",
   "scanner.fromGallery": "Aus Galerie",
   "scanner.scanningLabel": "CookSnap scannt...",
