@@ -109,30 +109,37 @@ export default function ProfileScreen() {
       }}
     >
       <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 24,
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {/* Same pastel IconBadge every other tab's header icon uses
-                (Pantry, Saved) — Profile's plain gray circle was the one
-                header on its own, out of step with the rest of the app.
-                Glyph 18 / marginRight 8 to match those tabs exactly: this
-                was 20/12, so the badge still read visibly larger and set
-                further from its title than every other header.
-                UserRound, not User: User's body is a flat-sided trapezoid
-                under a small circle, which at 18px reads as an eye (circle
-                "pupil" inside a surrounding curve) rather than a person.
-                UserRound's body is one continuous dome arc under a larger
-                head — the standard shape for a small round avatar glyph. */}
-            <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
-              <UserRound size={18} color="#059669" />
-            </IconBadge>
-            <View>
+        {/* Header — margin rhythm matches Pantry/Settings exactly (title row
+            marginBottom 8, subtitle a full-width sibling below it with
+            marginBottom 24, flush left with the icon badge instead of
+            indented under the title) — this used to nest the subtitle
+            inside the title's own column, which pushed it in from the
+            left edge and threw off the vertical rhythm compared to every
+            other tab's header. */}
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 8,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              {/* Same pastel IconBadge every other tab's header icon uses
+                  (Pantry, Saved) — Profile's plain gray circle was the one
+                  header on its own, out of step with the rest of the app.
+                  Glyph 18 / marginRight 8 to match those tabs exactly: this
+                  was 20/12, so the badge still read visibly larger and set
+                  further from its title than every other header.
+                  UserRound, not User: User's body is a flat-sided trapezoid
+                  under a small circle, which at 18px reads as an eye (circle
+                  "pupil" inside a surrounding curve) rather than a person.
+                  UserRound's body is one continuous dome arc under a larger
+                  head — the standard shape for a small round avatar glyph. */}
+              <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
+                <UserRound size={18} color="#059669" />
+              </IconBadge>
               <Text
                 style={{
                   color: colors.textPrimary,
@@ -143,41 +150,43 @@ export default function ProfileScreen() {
               >
                 {breakLigatures(t("profile.title"))}
               </Text>
-              <Text
-                style={{
-                  color: colors.textSecondary,
-                  fontWeight: "500",
-                  fontSize: 13,
-                }}
-              >
-                {t("profile.subtitle")}
-              </Text>
             </View>
-          </View>
 
-          {/* Primary Settings entry point — Profile is a bottom tab (always
-              one tap away) while Settings used to only be reachable via the
-              hamburger drawer, buried alongside Scan History/Help/PRO. That
-              mismatch was the actual source of "not intuitive" — Settings
-              belongs where a user would naturally look for it. */}
-          <TouchableOpacity
-            onPress={() => setActiveTab("settings")}
-            activeOpacity={0.75}
-            accessibilityRole="button"
-            accessibilityLabel={t("a11y.openSettings")}
+            {/* Primary Settings entry point — Profile is a bottom tab (always
+                one tap away) while Settings used to only be reachable via the
+                hamburger drawer, buried alongside Scan History/Help/PRO. That
+                mismatch was the actual source of "not intuitive" — Settings
+                belongs where a user would naturally look for it. */}
+            <TouchableOpacity
+              onPress={() => setActiveTab("settings")}
+              activeOpacity={0.75}
+              accessibilityRole="button"
+              accessibilityLabel={t("a11y.openSettings")}
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: colors.card,
+                borderWidth: 1,
+                borderColor: colors.cardBorder,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <SettingsIcon size={20} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+          <Text
             style={{
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: colors.card,
-              borderWidth: 1,
-              borderColor: colors.cardBorder,
-              alignItems: "center",
-              justifyContent: "center",
+              color: colors.textSecondary,
+              fontWeight: "500",
+              fontSize: 13,
+              marginBottom: 24,
+              lineHeight: 18,
             }}
           >
-            <SettingsIcon size={20} color={colors.textSecondary} />
-          </TouchableOpacity>
+            {t("profile.subtitle")}
+          </Text>
         </View>
 
         {isPro ? (
