@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Crown, Check, Sparkles, ShieldCheck } from "lucide-react-native";
+import { Crown, Check, Sparkles, ShieldCheck, X } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { PLANS } from "../components/ProSubscriptionModal";
 
@@ -44,6 +44,25 @@ export default function OnboardingProScreen({ onFinish }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: SLATE }}>
+      {/* Confirmed real failure from live user testing: on a screen this
+          dark and CTA-dominant, "Maybe later" — small, muted gray text
+          buried at the very bottom under a bold paid button — didn't read
+          as tappable at all. Testers reported not knowing what to do next
+          right after finishing language/units, because nothing above the
+          fold looked like a way into the free app. A persistent top-right
+          X is the standard, unambiguous "skip this" affordance almost
+          every app's paywall uses, visible the instant this screen mounts
+          without needing to scroll past the whole pitch first. */}
+      <TouchableOpacity
+        onPress={onFinish}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={t("onboarding.maybeLater")}
+        hitSlop={12}
+        style={[styles.closeButton, { top: insets.top + 12 }]}
+      >
+        <X size={20} color={TEXT_MUTED} />
+      </TouchableOpacity>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
@@ -156,6 +175,19 @@ export default function OnboardingProScreen({ onFinish }) {
 }
 
 const styles = StyleSheet.create({
+  closeButton: {
+    position: "absolute",
+    right: 16,
+    zIndex: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: SLATE_ROW,
+    borderWidth: 1,
+    borderColor: SLATE_BORDER,
+  },
   header: { alignItems: "center", marginBottom: 28 },
   crownBadge: {
     width: 56,
