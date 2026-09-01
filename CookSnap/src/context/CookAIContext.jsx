@@ -1916,10 +1916,26 @@ export function CookAIProvider({ children }) {
     ]
   );
 
-  /** PRO-only AI Recipe Modifier — throws on failure; caller shows the error. */
+  /**
+   * PRO-only AI Recipe Modifier — throws on failure; caller shows the
+   * error.
+   *
+   * Confirmed real failure, not a hypothetical: modifying a recipe, backing
+   * out of the detail screen, then reopening the same recipe reverted it to
+   * the original, unmodified version. Root cause: modifyRecipeWithGemini's
+   * result goes through normalizeRecipe, which always stamps a brand-new
+   * `ai-${Date.now()}-...` id — the same quirk ensureRecipeLanguage right
+   * above already works around (force the id back, persist by id) for its
+   * own translate-reuse call to the same underlying service. This just
+   * never got that same treatment. Merges over the original (so fields the
+   * modify prompt doesn't touch — languageId, cardIndex, etc. — survive),
+   * forces the id back, and persists into whichever list(s) actually hold
+   * this recipe (saved, generated, or both) so the caller's local display
+   * state isn't the only place the change lives.
+   */
   const modifyRecipe = useCallback(
     async (recipe, instruction) => {
-      return modifyRecipeWithGemini(
+      const result = await modifyRecipeWithGemini(
         recipe,
         instruction,
         dietaryRestrictionsWithCustom,
@@ -1927,6 +1943,16 @@ export function CookAIProvider({ children }) {
         unitSystem,
         recipeLanguageName
       );
+      const updated = { ...recipe, ...result, id: recipe.id };
+      setSavedRecipes((prev) =>
+        prev.map((r) => (String(r.id) === String(recipe.id) ? updated : r))
+      );
+      setGeneratedRecipes((prev) =>
+        Array.isArray(prev)
+          ? prev.map((r) => (String(r.id) === String(recipe.id) ? updated : r))
+          : prev
+      );
+      return updated;
     },
     [dietaryRestrictionsWithCustom, unitSystem, recipeLanguageName]
   );
