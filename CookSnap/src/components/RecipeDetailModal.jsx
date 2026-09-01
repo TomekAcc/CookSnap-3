@@ -914,7 +914,16 @@ export default function RecipeDetailModal() {
           activeOpacity={0.8}
           style={[
             styles.favoriteButton,
-            isFavorite ? styles.favoriteActive : styles.favoriteInactive,
+            isFavorite
+              ? styles.favoriteActive
+              : [
+                  styles.favoriteInactive,
+                  {
+                    backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+                    borderWidth: 1.5,
+                    borderColor: isDark ? "#059669" : "#D1FAE5",
+                  },
+                ],
           ]}
           accessibilityRole="button"
           accessibilityLabel={
@@ -924,11 +933,16 @@ export default function RecipeDetailModal() {
           <Animated.View style={{ transform: [{ scale: heartScaleAnim }] }}>
             <Heart
               size={16}
-              color="#FFFFFF"
+              color={isFavorite ? "#FFFFFF" : isDark ? "#34D399" : "#059669"}
               fill={isFavorite ? "#FFFFFF" : "transparent"}
             />
           </Animated.View>
-          <Text style={styles.favoriteButtonText}>
+          <Text
+            style={[
+              styles.favoriteButtonText,
+              !isFavorite && { color: isDark ? "#34D399" : "#059669" },
+            ]}
+          >
             {isFavorite
               ? t("recipeDetail.recipeSavedFooter")
               : t("recipeDetail.saveToFavoritesFooter")}
@@ -1313,7 +1327,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  favoriteInactive: { backgroundColor: DS.colors.ink },
+  // Base only — the actual colors are applied inline above (isDark-aware,
+  // matching the app's other secondary-emerald buttons like Pantry's "+
+  // Add"). Used to be a flat DS.colors.ink (near-black), a leftover from
+  // before the Scanner panel's green redesign that never got updated here.
+  favoriteInactive: {},
   // DS.colors.emerald doesn't exist — this previously resolved to
   // backgroundColor: undefined, making the "saved" button state invisible.
   favoriteActive: { backgroundColor: "#059669" },
