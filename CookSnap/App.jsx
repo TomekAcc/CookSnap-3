@@ -17,7 +17,6 @@ import { ModalProvider, useModalState } from "./src/context/ModalContext";
 import { useModalPresence } from "./src/utils/bottomSheet";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import ErrorBoundary from "./src/components/ErrorBoundary";
-import Header from "./src/components/Header";
 import BottomNav from "./src/components/BottomNav";
 import AddIngredientModal from "./src/components/AddIngredientModal";
 import ProSubscriptionModal from "./src/components/ProSubscriptionModal";
@@ -118,7 +117,13 @@ function AppShell() {
     <>
       <SafeAreaView
         style={{ flex: 1, backgroundColor: colors.bg }}
-        edges={["left", "right"]}
+        // "top" added here — the CookSnap wordmark used to be a permanently
+        // pinned bar above everything and handled clearing the notch/status
+        // bar itself (StatusBar is translucent, so something has to). It
+        // now renders inline as the first item inside each tab's own
+        // scrollable content instead (see Header.jsx), so this SafeAreaView
+        // is what clears the notch for the app shell as a whole.
+        edges={["left", "right", "top"]}
       >
         <StatusBar
           barStyle={isDark ? "light-content" : "dark-content"}
@@ -126,14 +131,6 @@ function AppShell() {
           translucent
         />
         <Toast />
-        <ErrorBoundary>
-          <View
-            style={{ zIndex: 10, backgroundColor: colors.bg }}
-            collapsable={false}
-          >
-            <Header />
-          </View>
-        </ErrorBoundary>
         <View style={{ flex: 1, backgroundColor: colors.bg }}>
           <ErrorBoundary>
             <MainContent />

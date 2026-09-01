@@ -16,6 +16,7 @@ import { useTheme } from "../context/ThemeContext";
 import { FULL_DIETARY_OPTIONS } from "../data/dietaryOptions";
 import PillTag from "../components/PillTag";
 import IconBadge from "../components/IconBadge";
+import Header from "../components/Header";
 import { breakLigatures } from "../utils/textLigatures";
 
 export default function ProfileScreen() {
@@ -100,6 +101,7 @@ export default function ProfileScreen() {
         paddingBottom: insets.bottom + 120,
       }}
     >
+      <Header />
       <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
         {/* Header — margin rhythm matches Pantry/Settings exactly (title row
             marginBottom 8, subtitle a full-width sibling below it with

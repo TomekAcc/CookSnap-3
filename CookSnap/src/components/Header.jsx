@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../context/ThemeContext";
 
 /**
@@ -28,17 +27,22 @@ export const HEADER_SHADOW_KILL = Object.freeze({
  * app's screens are flat pastel/white layouts with nothing rich enough
  * behind the header to make a frosted-glass effect worth that seam. Also
  * removes another always-on BlurView cost, same reasoning as BottomNav's.
+ *
+ * Renders INLINE as the first item inside each tab's own scrollable
+ * content (Scanner/Pantry/Saved/Profile), not as a permanently pinned
+ * shell above it — it carries no functionality (no menu, no icons, the
+ * old hamburger drawer is long gone), so it doesn't earn permanently
+ * reserved screen space on every screen. It used to compute its own
+ * safe-area top inset because it sat directly under the notch; now the
+ * app shell's own SafeAreaView handles that (edges includes "top"), so
+ * this is just a normal top-of-list block with ordinary padding.
  */
 export default function Header() {
   const { colors, isDark } = useTheme();
-  const insets = useSafeAreaInsets();
-
-  const topPad = Math.max(insets?.top || 0, 0);
 
   const headerStyle = [
     styles.base,
     {
-      paddingTop: topPad + 10,
       backgroundColor: colors.bg || "#FFFFFF",
     },
   ];
@@ -83,6 +87,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     zIndex: 10,
     paddingHorizontal: 16,
+    paddingTop: 6,
     paddingBottom: 10,
     overflow: "hidden",
     backgroundColor: "#FFFFFF",

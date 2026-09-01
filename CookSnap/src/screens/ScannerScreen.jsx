@@ -9,6 +9,7 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sparkles, RefreshCw } from "lucide-react-native";
+import Header from "../components/Header";
 import FridgeScannerHero from "../components/FridgeScannerHero";
 import MealPreferences from "../components/MealPreferences";
 import RecipeFeed from "../components/RecipeFeed";
@@ -126,6 +127,7 @@ export default function ScannerScreen() {
         // opening animation rather than visibly chasing it.
         keyboardOpeningTime={0}
       >
+        <Header />
         <FridgeScannerHero />
 
         {showPreferences ? <MealPreferences /> : null}
