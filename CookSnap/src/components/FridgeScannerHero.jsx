@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   Camera,
   Image as ImageIcon,
@@ -476,31 +477,59 @@ export default function FridgeScannerHero() {
                 as an unstyled placeholder next to the colorful icons in
                 the cards right below it. Kept at 64px (not IconBadge's
                 standard 44px) since this is the hero of the whole screen,
-                not a small nav-row badge. A soft emerald glow underneath
-                (matched the approved mockup, missing from the first pass)
-                is what actually made it read as the focal point rather
-                than a flat swatch — the pastel fill alone was too close
-                in weight to the page background to draw the eye first. */}
-            <View
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: 20,
-                backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
-                borderWidth: 1,
-                borderColor: isDark ? "#065F46" : "#D1FAE5",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 14,
-                shadowColor: "#059669",
-                shadowOffset: { width: 0, height: 6 },
-                shadowOpacity: isDark ? 0.5 : 0.35,
-                shadowRadius: 12,
-                elevation: 6,
-              }}
-            >
-              <Camera size={26} color={isDark ? "#34D399" : "#059669"} />
-            </View>
+                not a small nav-row badge.
+
+                Light mode uses a subtle gradient fill (matches the
+                approved mockup exactly) instead of a flat tint — that
+                gradient plus a tighter, closer-hugging shadow is what
+                reads as a deliberately elevated card; the first pass's
+                flat fill + wide, diffuse shadow read more like an
+                unintentional haze than a real shadow. Dark mode keeps a
+                flat fill (the light gradient's colors don't translate —
+                they'd either wash out or muddy against a dark card). */}
+            {isDark ? (
+              <View
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 20,
+                  backgroundColor: "#064E3B",
+                  borderWidth: 1,
+                  borderColor: "#065F46",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 14,
+                  shadowColor: "#059669",
+                  shadowOffset: { width: 0, height: 5 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}
+              >
+                <Camera size={26} color="#34D399" />
+              </View>
+            ) : (
+              <LinearGradient
+                colors={["#D1FAE5", "#A7F3D0"]}
+                start={{ x: 0.15, y: 0 }}
+                end={{ x: 0.85, y: 1 }}
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 20,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 14,
+                  shadowColor: "#059669",
+                  shadowOffset: { width: 0, height: 5 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}
+              >
+                <Camera size={26} color="#059669" />
+              </LinearGradient>
+            )}
             <Text
               style={{
                 color: colors.textPrimary,
