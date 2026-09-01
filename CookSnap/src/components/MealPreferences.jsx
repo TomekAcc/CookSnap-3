@@ -8,11 +8,10 @@ import {
   Switch,
   StyleSheet,
 } from "react-native";
-import { Sparkles, Utensils, Flame } from "lucide-react-native";
+import { Sparkles } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import PillTag from "./PillTag";
-import IconBadge from "./IconBadge";
 import { translateCount } from "../i18n";
 import { RADIUS, GREEN, emojiLine } from "../theme/tokens";
 
@@ -78,13 +77,7 @@ export default function MealPreferences() {
 
   return (
     <View style={styles.root}>
-      {/* Icon-badge + title, same pairing every other screen header in the
-          app uses (Profile, Pantry, Saved, Settings) — this component's
-          three section titles used to be the one spot left as bare text. */}
-      <View style={styles.sectionHeaderRow}>
-        <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
-          <Utensils size={18} color={isDark ? "#34D399" : "#059669"} />
-        </IconBadge>
+      <View style={{ paddingHorizontal: 4 }}>
         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
           {t("mealPrefs.title")}
         </Text>
@@ -266,14 +259,11 @@ export default function MealPreferences() {
       </View>
 
       {/* Hunger — squarish tiles, large emojis, emerald selected. Header
-          lives outside the card in its own row wrapper — exactly like
-          "Meal Preferences" above — so both section titles sit at the
-          identical horizontal position instead of "Hunger Level"
-          inheriting the card's own 14px inner padding. */}
-      <View style={styles.sectionHeaderRow}>
-        <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
-          <Flame size={18} color={isDark ? "#34D399" : "#059669"} />
-        </IconBadge>
+          lives outside the card in its own paddingHorizontal:4 wrapper —
+          exactly like "Meal Preferences" above — so both section titles
+          sit at the identical horizontal position instead of "Hunger
+          Level" inheriting the card's own 14px inner padding. */}
+      <View style={{ paddingHorizontal: 4 }}>
         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
           {t("profile.hungerLevel")}
         </Text>
@@ -349,10 +339,7 @@ export default function MealPreferences() {
           want right now," not a standing preference. Multi-select, same
           as Dietary Restrictions, since wanting both "spicy" and "comfort
           food" at once is entirely reasonable. */}
-      <View style={styles.sectionHeaderRow}>
-        <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
-          <Sparkles size={18} color={isDark ? "#34D399" : "#059669"} />
-        </IconBadge>
+      <View style={{ paddingHorizontal: 4 }}>
         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
           {t("mealPrefs.cravingTitle")}
         </Text>
@@ -396,15 +383,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     gap: 14,
   },
-  sectionHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 4,
-  },
   sectionTitle: {
     fontWeight: "800",
     fontSize: 18,
     letterSpacing: -0.3,
+    marginBottom: 2,
   },
   pillsRow: {
     gap: 8,

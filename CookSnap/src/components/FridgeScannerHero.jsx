@@ -476,7 +476,11 @@ export default function FridgeScannerHero() {
                 as an unstyled placeholder next to the colorful icons in
                 the cards right below it. Kept at 64px (not IconBadge's
                 standard 44px) since this is the hero of the whole screen,
-                not a small nav-row badge. */}
+                not a small nav-row badge. A soft emerald glow underneath
+                (matched the approved mockup, missing from the first pass)
+                is what actually made it read as the focal point rather
+                than a flat swatch — the pastel fill alone was too close
+                in weight to the page background to draw the eye first. */}
             <View
               style={{
                 width: 64,
@@ -488,6 +492,11 @@ export default function FridgeScannerHero() {
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: 14,
+                shadowColor: "#059669",
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: isDark ? 0.5 : 0.35,
+                shadowRadius: 12,
+                elevation: 6,
               }}
             >
               <Camera size={26} color={isDark ? "#34D399" : "#059669"} />
