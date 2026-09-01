@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "אין עדיין מנוי אמיתי — הקישו כדי לצפות בתצוגה מקדימה של חוויית חינם לעומת PRO",
   "settings.replayOnboardingToggle": "הצג הדרכה מחדש (בדיקה)",
   "settings.replayOnboardingToggleDesc": "הפעל מחדש את תהליך ההיכרות הראשוני, כולל מסך ההיכרות החדש של PRO",
+  "settings.done": "בוצע",
   "profile.title": "פרופיל",
   "profile.subtitle": "תזונה והעדפות",
   "profile.upgradeToPro": "שדרג ל-PRO",

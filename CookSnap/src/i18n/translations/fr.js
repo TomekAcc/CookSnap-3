@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Pas encore de vrai abonnement — activez pour tester l'expérience gratuite par rapport au PRO",
   "settings.replayOnboardingToggle": "Revoir l'accueil (Test)",
   "settings.replayOnboardingToggleDesc": "Redémarrer le parcours de premier lancement, y compris le nouvel écran de présentation PRO",
+  "settings.done": "Terminé",
   "profile.title": "Profil",
   "profile.subtitle": "Régime et préférences",
   "profile.upgradeToPro": "Passer à PRO",

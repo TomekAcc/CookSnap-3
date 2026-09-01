@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Подписка пока не оформлена — переключите, чтобы сравнить бесплатную версию и PRO",
   "settings.replayOnboardingToggle": "Повторить онбординг (тест)",
   "settings.replayOnboardingToggleDesc": "Перезапустить сценарий первого запуска, включая новый экран знакомства с PRO",
+  "settings.done": "Готово",
   "profile.title": "Профиль",
   "profile.subtitle": "Диета и предпочтения",
   "profile.upgradeToPro": "Перейти на PRO",

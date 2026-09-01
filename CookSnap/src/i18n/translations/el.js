@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Χωρίς πραγματική συνδρομή ακόμα — ενεργοποιήστε για προεπισκόπηση της δωρεάν και της PRO εμπειρίας",
   "settings.replayOnboardingToggle": "Επανάληψη υποδοχής (Δοκιμή)",
   "settings.replayOnboardingToggleDesc": "Επανεκκίνηση της ροής πρώτης εκκίνησης, συμπεριλαμβανομένης της νέας οθόνης εισαγωγής PRO",
+  "settings.done": "Τέλος",
   "profile.title": "Προφίλ",
   "profile.subtitle": "Διατροφή και προτιμήσεις",
   "profile.upgradeToPro": "Αναβάθμιση σε PRO",

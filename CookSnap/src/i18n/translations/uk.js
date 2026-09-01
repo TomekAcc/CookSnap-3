@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Справжньої підписки ще немає — перемикайте, щоб протестувати безкоштовну та PRO-версії",
   "settings.replayOnboardingToggle": "Повторити ознайомлення (Тестування)",
   "settings.replayOnboardingToggleDesc": "Перезапустити початковий процес, зокрема новий вступний екран PRO",
+  "settings.done": "Готово",
   "profile.title": "Профіль",
   "profile.subtitle": "Дієта та вподобання",
   "profile.upgradeToPro": "Отримати PRO",

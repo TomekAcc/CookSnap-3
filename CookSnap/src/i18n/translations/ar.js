@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "لا توجد اشتراكات حقيقية حتى الآن — قم بالتبديل لمعاينة التجربة المجانية مقابل تجربة PRO",
   "settings.replayOnboardingToggle": "إعادة تشغيل جولة الترحيب (للاختبار)",
   "settings.replayOnboardingToggleDesc": "إعادة تشغيل مسار التشغيل الأول، بما في ذلك شاشة مقدمة PRO الجديدة",
+  "settings.done": "تم",
   "profile.title": "الملف الشخصي",
   "profile.subtitle": "النظام الغذائي والتفضيلات",
   "profile.upgradeToPro": "الترقية إلى PRO",

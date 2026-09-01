@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Nog geen echt abonnement — schakel in om de gratis en PRO-ervaring te bekijken",
   "settings.replayOnboardingToggle": "Onboarding opnieuw afspelen (Testen)",
   "settings.replayOnboardingToggleDesc": "Start de introductie voor nieuwe gebruikers opnieuw, inclusief het nieuwe PRO-introductiescherm",
+  "settings.done": "Klaar",
   "profile.title": "Profiel",
   "profile.subtitle": "Dieet & voorkeuren",
   "profile.upgradeToPro": "Upgrade naar PRO",

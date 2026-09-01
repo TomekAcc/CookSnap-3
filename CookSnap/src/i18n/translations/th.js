@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "ยังไม่มีการสมัครสมาชิกจริง — เปิดปิดเพื่อดูตัวอย่างประสบการณ์ใช้งานแบบฟรีและแบบ PRO",
   "settings.replayOnboardingToggle": "ดูการแนะนำการใช้งานอีกครั้ง (สำหรับทดสอบ)",
   "settings.replayOnboardingToggleDesc": "เริ่มขั้นตอนการเปิดใช้งานครั้งแรกใหม่ รวมถึงหน้าแนะนำ PRO ใหม่ด้วย",
+  "settings.done": "เสร็จสิ้น",
   "profile.title": "โปรไฟล์",
   "profile.subtitle": "อาหารและความชอบ",
   "profile.upgradeToPro": "อัปเกรดเป็น PRO",

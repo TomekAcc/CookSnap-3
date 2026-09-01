@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Még nincs éles előfizetés – kapcsolja be az ingyenes és a PRO élmény előnézetéhez",
   "settings.replayOnboardingToggle": "Bevezető újrajátszása (Tesztelés)",
   "settings.replayOnboardingToggleDesc": "Az első indítási folyamat újraindítása, beleértve az új PRO bemutatóképernyőt is",
+  "settings.done": "Kész",
   "profile.title": "Profil",
   "profile.subtitle": "Étrend és beállítások",
   "profile.upgradeToPro": "Váltás PRO-ra",

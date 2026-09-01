@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "まだ実際のサブスクリプションはありません。切り替えて無料版とPRO版の体験をプレビューできます",
   "settings.replayOnboardingToggle": "チュートリアルをもう一度見る（テスト用）",
   "settings.replayOnboardingToggleDesc": "新しいPRO紹介画面を含め、初回起動時のフローを最初からやり直します",
+  "settings.done": "完了",
   "profile.title": "プロフィール",
   "profile.subtitle": "食事と好み",
   "profile.upgradeToPro": "PRO にアップグレード",

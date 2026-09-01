@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Chưa có đăng ký thực tế — bật/tắt để xem trước trải nghiệm miễn phí và PRO",
   "settings.replayOnboardingToggle": "Xem lại hướng dẫn ban đầu (Kiểm tra)",
   "settings.replayOnboardingToggleDesc": "Chạy lại quy trình chào mừng khi mở app lần đầu, bao gồm cả màn hình giới thiệu PRO mới",
+  "settings.done": "Xong",
   "profile.title": "Hồ sơ",
   "profile.subtitle": "Chế độ ăn & tùy chọn",
   "profile.upgradeToPro": "Nâng cấp lên PRO",

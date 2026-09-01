@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Belum ada langganan aktif — aktifkan untuk melihat pratinjau pengalaman gratis vs PRO",
   "settings.replayOnboardingToggle": "Putar Ulang Pengenalan (Pengujian)",
   "settings.replayOnboardingToggleDesc": "Mulai ulang alur peluncuran pertama, termasuk layar pengantar PRO yang baru",
+  "settings.done": "Selesai",
   "profile.title": "Profil",
   "profile.subtitle": "Diet & preferensi",
   "profile.upgradeToPro": "Beralih ke PRO",

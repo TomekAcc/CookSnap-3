@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Все още няма реален абонамент — превключете, за да тествате безплатната и PRO версията",
   "settings.replayOnboardingToggle": "Повтори въвеждането (тестване)",
   "settings.replayOnboardingToggleDesc": "Рестартирайте началния процес, включително новия въвеждащ екран на PRO",
+  "settings.done": "Готово",
   "profile.title": "Профил",
   "profile.subtitle": "Диета и предпочитания",
   "profile.upgradeToPro": "Надстройте до PRO",

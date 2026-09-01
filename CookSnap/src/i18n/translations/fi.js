@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Ei vielä oikeaa tilausta – ota käyttöön esikatsellaksesi ilmaista ja PRO-kokemusta",
   "settings.replayOnboardingToggle": "Toista esittely uudelleen (testaus)",
   "settings.replayOnboardingToggleDesc": "Käynnistä ensikäynnistyksen kierros uudelleen, mukaan lukien uusi PRO-esittelyruutu",
+  "settings.done": "Valmis",
   "profile.title": "Profiili",
   "profile.subtitle": "Ruokavalio ja asetukset",
   "profile.upgradeToPro": "Päivitä PRO-versioon",

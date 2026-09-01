@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Ingen riktig prenumeration än – slå på för att förhandsgranska fri- vs. PRO-upplevelsen",
   "settings.replayOnboardingToggle": "Spela upp introduktion igen (test)",
   "settings.replayOnboardingToggleDesc": "Starta om introduktionen för första gången, inklusive den nya PRO-introduktionsskärmen",
+  "settings.done": "Klar",
   "profile.title": "Profil",
   "profile.subtitle": "Kost & preferenser",
   "profile.upgradeToPro": "Uppgradera till PRO",

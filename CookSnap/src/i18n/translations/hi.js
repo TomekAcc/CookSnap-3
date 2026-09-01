@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "अभी कोई वास्तविक सब्सक्रिप्शन नहीं — फ्री बनाम PRO अनुभव का पूर्वावलोकन करने के लिए टॉगल करें",
   "settings.replayOnboardingToggle": "ऑन्बोर्डिंग दोबारा देखें (टेस्टिंग)",
   "settings.replayOnboardingToggleDesc": "नई PRO इंट्रो स्क्रीन सहित, पहली बार लॉन्च होने वाले फ्लो को दोबारा शुरू करें",
+  "settings.done": "पूर्ण",
   "profile.title": "प्रोफ़ाइल",
   "profile.subtitle": "डाइट और प्राथमिकताएं",
   "profile.upgradeToPro": "PRO में अपग्रेड करें",

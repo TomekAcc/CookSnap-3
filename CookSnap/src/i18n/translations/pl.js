@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Brak aktywnej subskrypcji — przełącz, aby podejrzeć wersję darmową i PRO",
   "settings.replayOnboardingToggle": "Odtwórz wprowadzenie (testowe)",
   "settings.replayOnboardingToggleDesc": "Uruchom ponownie proces pierwszego uruchomienia, w tym nowy ekran wprowadzający PRO",
+  "settings.done": "Gotowe",
   "profile.title": "Profil",
   "profile.subtitle": "Dieta i preferencje",
   "profile.upgradeToPro": "Przejdź na PRO",

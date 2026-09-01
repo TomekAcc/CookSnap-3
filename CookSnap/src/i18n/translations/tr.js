@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Henüz gerçek bir abonelik yok — ücretsiz ve PRO deneyimini önizlemek için açıp kapatın",
   "settings.replayOnboardingToggle": "Tanıtımı Tekrar Oynat (Test)",
   "settings.replayOnboardingToggleDesc": "Yeni PRO tanıtım ekranı dahil olmak üzere ilk açılış akışını yeniden başlatır",
+  "settings.done": "Tamam",
   "profile.title": "Profil",
   "profile.subtitle": "Diyet ve tercihler",
   "profile.upgradeToPro": "PRO'ya Yükselt",

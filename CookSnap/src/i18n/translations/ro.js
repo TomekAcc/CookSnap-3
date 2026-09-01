@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Fără abonament real deocamdată — comută pentru a previzualiza experiența gratuită vs. PRO",
   "settings.replayOnboardingToggle": "Repornește prezentarea (Testare)",
   "settings.replayOnboardingToggleDesc": "Repornește fluxul de la prima lansare, inclusiv noul ecran de prezentare PRO",
+  "settings.done": "Gata",
   "profile.title": "Profil",
   "profile.subtitle": "Dietă și preferințe",
   "profile.upgradeToPro": "Treci la PRO",

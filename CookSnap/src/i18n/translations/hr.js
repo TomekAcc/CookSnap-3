@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Još nema prave pretplate — uključi/isključi za pregled besplatnog i PRO iskustva",
   "settings.replayOnboardingToggle": "Ponovno pokreni uvod (Testiranje)",
   "settings.replayOnboardingToggleDesc": "Ponovno pokreni postupak prvog pokretanja, uključujući novi PRO uvodni zaslon",
+  "settings.done": "Gotovo",
   "profile.title": "Profil",
   "profile.subtitle": "Prehrana i postavke",
   "profile.upgradeToPro": "Nadogradite na PRO",

@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Noch kein echtes Abonnement — aktiviere dies, um die kostenlose Version und das PRO-Erlebnis zu testen",
   "settings.replayOnboardingToggle": "Onboarding wiederholen (Testen)",
   "settings.replayOnboardingToggleDesc": "Startet den Willkommens-Ablauf neu, einschließlich des neuen PRO-Einführungsbildschirms",
+  "settings.done": "Fertig",
   "profile.title": "Profil",
   "profile.subtitle": "Ernährung & Einstellungen",
   "profile.upgradeToPro": "Auf PRO upgraden",

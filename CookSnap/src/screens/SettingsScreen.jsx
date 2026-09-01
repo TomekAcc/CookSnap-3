@@ -884,6 +884,49 @@ export default function SettingsScreen() {
         </View>
       </ScrollView>
 
+      {/* Sticky "Done" CTA — confirmed real failure from live user testing:
+          testers who reached Settings via Profile's gear icon, after
+          adjusting things here, didn't know what to do next. The only way
+          out was the small chevron icon up in the header, easy to miss
+          once attention is on the content below, and it only returns to
+          Profile rather than anywhere the app is actually used. This
+          reuses the exact bottom sticky-button pattern onboarding already
+          teaches with "Get Started", and — since this screen is also
+          reachable before ever touching the scanner — closes the loop by
+          landing directly on it instead of back on Profile. */}
+      <View
+        style={{
+          paddingHorizontal: 20,
+          paddingTop: 12,
+          // BottomNav floats as its own absolutely-positioned overlay
+          // (App.jsx renders it outside this screen's tree, zIndex 40) —
+          // unlike a ScrollView's contentContainerStyle, padding on a
+          // plain sibling View like this one doesn't get scrolled past,
+          // it just pushes this bar's own bottom edge up, so it needs to
+          // actually clear BottomNav's real rendered height (~64pt) or the
+          // nav bar paints straight over this button.
+          paddingBottom: insets.bottom + 76,
+          borderTopWidth: 1,
+          borderTopColor: colors.cardBorder,
+          backgroundColor: colors.bg,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => setActiveTab("scanner")}
+          activeOpacity={0.88}
+          style={{
+            backgroundColor: "#10B981",
+            borderRadius: 18,
+            paddingVertical: 16,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#FFFFFF", fontWeight: "800", fontSize: 16 }}>
+            {t("settings.done")}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <StandardModal
         visible={languagePickerOpen}
         onClose={() => setLanguagePickerOpen(false)}

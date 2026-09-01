@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Ainda sem assinatura real — alterne para visualizar a experiência gratuita vs. PRO",
   "settings.replayOnboardingToggle": "Repetir Introdução (Testes)",
   "settings.replayOnboardingToggleDesc": "Reinicia o fluxo do primeiro acesso, incluindo a nova tela de apresentação do PRO",
+  "settings.done": "Concluído",
   "profile.title": "Perfil",
   "profile.subtitle": "Dieta e preferências",
   "profile.upgradeToPro": "Fazer upgrade para PRO",

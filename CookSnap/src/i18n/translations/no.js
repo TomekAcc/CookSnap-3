@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Ingen ekte abonnement ennå – slå på/av for å forhåndsvise gratis- og PRO-opplevelsen",
   "settings.replayOnboardingToggle": "Vis introduksjon på nytt (Test)",
   "settings.replayOnboardingToggleDesc": "Start oppstartsflyten på nytt, inkludert den nye PRO-introen",
+  "settings.done": "Ferdig",
   "profile.title": "Profil",
   "profile.subtitle": "Kosthold og preferanser",
   "profile.upgradeToPro": "Oppgrader til PRO",

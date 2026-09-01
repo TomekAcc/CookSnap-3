@@ -61,6 +61,7 @@ export default {
   "settings.proTestingToggleDesc": "No real subscription yet — toggle to preview the free vs. PRO experience",
   "settings.replayOnboardingToggle": "Replay Onboarding (Testing)",
   "settings.replayOnboardingToggleDesc": "Restart the first-launch flow, including the new PRO intro screen",
+  "settings.done": "Done",
 
   "profile.title": "Profile",
   "profile.subtitle": "Diet & preferences",

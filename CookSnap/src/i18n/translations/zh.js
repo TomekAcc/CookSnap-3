@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "暂无真实订阅 —— 切换以预览免费版与 PRO 体验",
   "settings.replayOnboardingToggle": "重新播放引导教程（测试）",
   "settings.replayOnboardingToggleDesc": "重新启动首次打开流程，包括全新的 PRO 介绍页面",
+  "settings.done": "完成",
   "profile.title": "个人资料",
   "profile.subtitle": "饮食与偏好",
   "profile.upgradeToPro": "升级到 PRO",

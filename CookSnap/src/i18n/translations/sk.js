@@ -53,6 +53,7 @@ export default {
   "settings.proTestingToggleDesc": "Zatiaľ žiadne skutočné predplatné — prepnutím si zobrazíte náhľad bezplatnej verzii vs. PRO",
   "settings.replayOnboardingToggle": "Zopakovať úvod (Testovanie)",
   "settings.replayOnboardingToggleDesc": "Reštartovať proces prvého spustenia vrátane novej úvodnej obrazovky PRO",
+  "settings.done": "Hotovo",
   "profile.title": "Profil",
   "profile.subtitle": "Diéta a preferencie",
   "profile.upgradeToPro": "Prejsť na PRO",
