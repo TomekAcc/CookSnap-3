@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Dodirni za označavanje",
   "recipeDetail.upgradeTipLabel": "Još bolje s {ingredient}",
   "recipeDetail.upgradeTipAdd": "Dodaj na popis za kupovinu",
+  "recipeDetail.upgradeTipAddedButton": "Dodano na popis za kupovinu",
   "recipeDetail.upgradeTipAdded": "{ingredient} dodano na popis za kupovinu",
   "recipeDetail.ingredientsChecked": "{checked} od {total} označeno",
   "recipeDetail.ingredientFallback": "Sastojak",

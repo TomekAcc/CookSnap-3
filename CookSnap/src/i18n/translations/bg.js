@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Докосни, за да отбележиш",
   "recipeDetail.upgradeTipLabel": "Още по-добре с {ingredient}",
   "recipeDetail.upgradeTipAdd": "Добави в списъка за пазаруване",
+  "recipeDetail.upgradeTipAddedButton": "Добавено в списъка за пазаруване",
   "recipeDetail.upgradeTipAdded": "{ingredient} беше добавен в списъка за пазаруване",
   "recipeDetail.ingredientsChecked": "Маркирани са {checked} от {total}",
   "recipeDetail.ingredientFallback": "Съставка",

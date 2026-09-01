@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "点击勾选",
   "recipeDetail.upgradeTipLabel": "加上{ingredient}会更好吃",
   "recipeDetail.upgradeTipAdd": "添加到购物清单",
+  "recipeDetail.upgradeTipAddedButton": "已添加到购物清单",
   "recipeDetail.upgradeTipAdded": "{ingredient}已添加到购物清单",
   "recipeDetail.ingredientsChecked": "已勾选 {checked}/{total}",
   "recipeDetail.ingredientFallback": "食材",

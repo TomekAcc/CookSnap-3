@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Tik om af te vinken",
   "recipeDetail.upgradeTipLabel": "Nog beter met {ingredient}",
   "recipeDetail.upgradeTipAdd": "Toevoegen aan boodschappenlijst",
+  "recipeDetail.upgradeTipAddedButton": "Toegevoegd aan boodschappenlijst",
   "recipeDetail.upgradeTipAdded": "{ingredient} toegevoegd aan boodschappenlijst",
   "recipeDetail.ingredientsChecked": "{checked} van {total} afgevinkt",
   "recipeDetail.ingredientFallback": "Ingrediënt",

@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "タップしてチェック",
   "recipeDetail.upgradeTipLabel": "{ingredient}があればもっと美味しい",
   "recipeDetail.upgradeTipAdd": "買い物リストに追加",
+  "recipeDetail.upgradeTipAddedButton": "買い物リストに追加済み",
   "recipeDetail.upgradeTipAdded": "{ingredient}を買い物リストに追加しました",
   "recipeDetail.ingredientsChecked": "{checked}/{total}チェック済み",
   "recipeDetail.ingredientFallback": "材料",

@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Atinge pentru a bifa",
   "recipeDetail.upgradeTipLabel": "Și mai bun cu {ingredient}",
   "recipeDetail.upgradeTipAdd": "Adaugă în lista de cumpărături",
+  "recipeDetail.upgradeTipAddedButton": "Adăugat în lista de cumpărături",
   "recipeDetail.upgradeTipAdded": "{ingredient} adăugat în lista de cumpărături",
   "recipeDetail.ingredientsChecked": "{checked} din {total} bifate",
   "recipeDetail.ingredientFallback": "Ingredient",

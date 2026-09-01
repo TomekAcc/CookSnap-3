@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "اضغط للشطب",
   "recipeDetail.upgradeTipLabel": "أفضل مع {ingredient}",
   "recipeDetail.upgradeTipAdd": "أضف إلى قائمة التسوق",
+  "recipeDetail.upgradeTipAddedButton": "أُضيف إلى قائمة التسوق",
   "recipeDetail.upgradeTipAdded": "تمت إضافة {ingredient} إلى قائمة التسوق",
   "recipeDetail.ingredientsChecked": "تم تحديد {checked} من {total}",
   "recipeDetail.ingredientFallback": "مكون",

@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Stuknij, aby odhaczyć",
   "recipeDetail.upgradeTipLabel": "Jeszcze lepsze z {ingredient}",
   "recipeDetail.upgradeTipAdd": "Dodaj do listy zakupów",
+  "recipeDetail.upgradeTipAddedButton": "Dodano do listy zakupów",
   "recipeDetail.upgradeTipAdded": "{ingredient} dodano do listy zakupów",
   "recipeDetail.ingredientsChecked": "Zaznaczono {checked} z {total}",
   "recipeDetail.ingredientFallback": "Składnik",

@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Zum Abhaken antippen",
   "recipeDetail.upgradeTipLabel": "Noch besser mit {ingredient}",
   "recipeDetail.upgradeTipAdd": "Zur Einkaufsliste hinzufügen",
+  "recipeDetail.upgradeTipAddedButton": "Zur Einkaufsliste hinzugefügt",
   "recipeDetail.upgradeTipAdded": "{ingredient} zur Einkaufsliste hinzugefügt",
   "recipeDetail.ingredientsChecked": "{checked} von {total} abgehakt",
   "recipeDetail.ingredientFallback": "Zutat",

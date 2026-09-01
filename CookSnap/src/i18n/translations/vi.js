@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Chạm để đánh dấu",
   "recipeDetail.upgradeTipLabel": "Ngon hơn với {ingredient}",
   "recipeDetail.upgradeTipAdd": "Thêm vào danh sách mua sắm",
+  "recipeDetail.upgradeTipAddedButton": "Đã thêm vào danh sách mua sắm",
   "recipeDetail.upgradeTipAdded": "Đã thêm {ingredient} vào danh sách mua sắm",
   "recipeDetail.ingredientsChecked": "Đã chọn {checked}/{total}",
   "recipeDetail.ingredientFallback": "Nguyên liệu",

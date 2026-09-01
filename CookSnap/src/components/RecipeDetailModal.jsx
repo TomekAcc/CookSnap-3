@@ -113,6 +113,13 @@ export default function RecipeDetailModal() {
   const { colors, isDark } = useTheme();
 
   const [checkedIngredients, setCheckedIngredients] = useState({});
+  // Confirmed real failure: tapping "Add to Shopping List" DID add the
+  // item (verified against AsyncStorage), but nothing on screen actually
+  // said so persistently — the only signal was a toast at the very top of
+  // the screen, far from this button, gone again in ~3s. This tracks
+  // whether THIS recipe's upgrade tip has been added so the button itself
+  // can show a lasting "Added" state instead of relying on the toast alone.
+  const [upgradeAdded, setUpgradeAdded] = useState(false);
   const [activeStepIdx, setActiveStepIdx] = useState(0);
   const [modifierOpen, setModifierOpen] = useState(false);
   const [modifierInstruction, setModifierInstruction] = useState("");
@@ -157,6 +164,7 @@ export default function RecipeDetailModal() {
     setActiveStepIdx(0);
     setModifierOpen(false);
     setModifierInstruction("");
+    setUpgradeAdded(false);
   }, [recipe?.id]);
 
   // The input autoFocuses the instant this opens, so the keyboard rises
@@ -251,8 +259,9 @@ export default function RecipeDetailModal() {
   const checkedCount = Object.values(checkedIngredients).filter(Boolean).length;
 
   const handleAddUpgradeIngredient = () => {
-    if (!recipe?.upgradeIngredient) return;
+    if (!recipe?.upgradeIngredient || upgradeAdded) return;
     addToShoppingList?.([recipe.upgradeIngredient]);
+    setUpgradeAdded(true);
     showToast?.(
       t("recipeDetail.upgradeTipAdded", { ingredient: recipe.upgradeIngredient }),
       "success"
@@ -797,14 +806,32 @@ export default function RecipeDetailModal() {
               <TouchableOpacity
                 onPress={handleAddUpgradeIngredient}
                 activeOpacity={0.8}
+                disabled={upgradeAdded}
                 style={[
                   styles.upgradeTipButton,
-                  { backgroundColor: isDark ? "#065F46" : "#059669" },
+                  upgradeAdded
+                    ? {
+                        backgroundColor: "transparent",
+                        borderWidth: 1,
+                        borderColor: isDark ? "#065F46" : "#A7F3D0",
+                      }
+                    : { backgroundColor: isDark ? "#065F46" : "#059669" },
                 ]}
               >
-                <ShoppingCart size={14} color="#FFFFFF" />
-                <Text style={styles.upgradeTipButtonText}>
-                  {t("recipeDetail.upgradeTipAdd")}
+                {upgradeAdded ? (
+                  <Check size={14} color={isDark ? "#34D399" : "#059669"} strokeWidth={2.5} />
+                ) : (
+                  <ShoppingCart size={14} color="#FFFFFF" />
+                )}
+                <Text
+                  style={[
+                    styles.upgradeTipButtonText,
+                    upgradeAdded && { color: isDark ? "#34D399" : "#059669" },
+                  ]}
+                >
+                  {upgradeAdded
+                    ? t("recipeDetail.upgradeTipAddedButton")
+                    : t("recipeDetail.upgradeTipAdd")}
                 </Text>
               </TouchableOpacity>
             </View>

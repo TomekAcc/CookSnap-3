@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Tryk for at markere",
   "recipeDetail.upgradeTipLabel": "Endnu bedre med {ingredient}",
   "recipeDetail.upgradeTipAdd": "Tilføj til indkøbslisten",
+  "recipeDetail.upgradeTipAddedButton": "Tilføjet til indkøbslisten",
   "recipeDetail.upgradeTipAdded": "{ingredient} tilføjet til indkøbslisten",
   "recipeDetail.ingredientsChecked": "{checked} af {total} afkrydset",
   "recipeDetail.ingredientFallback": "Ingrediens",

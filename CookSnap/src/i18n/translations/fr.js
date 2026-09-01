@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Appuyez pour cocher",
   "recipeDetail.upgradeTipLabel": "Encore meilleur avec {ingredient}",
   "recipeDetail.upgradeTipAdd": "Ajouter à la liste de courses",
+  "recipeDetail.upgradeTipAddedButton": "Ajouté à la liste de courses",
   "recipeDetail.upgradeTipAdded": "{ingredient} ajouté à la liste de courses",
   "recipeDetail.ingredientsChecked": "{checked} sur {total} cochés",
   "recipeDetail.ingredientFallback": "Ingrédient",

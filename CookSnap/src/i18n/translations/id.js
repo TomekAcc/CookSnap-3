@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Ketuk untuk menandai",
   "recipeDetail.upgradeTipLabel": "Lebih enak dengan {ingredient}",
   "recipeDetail.upgradeTipAdd": "Tambahkan ke Daftar Belanja",
+  "recipeDetail.upgradeTipAddedButton": "Ditambahkan ke Daftar Belanja",
   "recipeDetail.upgradeTipAdded": "{ingredient} ditambahkan ke Daftar Belanja",
   "recipeDetail.ingredientsChecked": "{checked} dari {total} terpilih",
   "recipeDetail.ingredientFallback": "Bahan",

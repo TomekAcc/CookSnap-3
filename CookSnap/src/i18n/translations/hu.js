@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Koppints a kipipáláshoz",
   "recipeDetail.upgradeTipLabel": "Még jobb ezzel: {ingredient}",
   "recipeDetail.upgradeTipAdd": "Hozzáadás a bevásárlólistához",
+  "recipeDetail.upgradeTipAddedButton": "Hozzáadva a bevásárlólistához",
   "recipeDetail.upgradeTipAdded": "{ingredient} hozzáadva a bevásárlólistához",
   "recipeDetail.ingredientsChecked": "{checked} / {total} kijelölve",
   "recipeDetail.ingredientFallback": "Hozzávaló",

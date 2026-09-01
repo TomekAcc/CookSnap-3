@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "הקש כדי לסמן",
   "recipeDetail.upgradeTipLabel": "טעים עוד יותר עם {ingredient}",
   "recipeDetail.upgradeTipAdd": "הוסף לרשימת הקניות",
+  "recipeDetail.upgradeTipAddedButton": "נוסף לרשימת הקניות",
   "recipeDetail.upgradeTipAdded": "{ingredient} נוסף לרשימת הקניות",
   "recipeDetail.ingredientsChecked": "סומנו {checked} מתוך {total}",
   "recipeDetail.ingredientFallback": "מצרך",

@@ -283,6 +283,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Tap to check off",
   "recipeDetail.upgradeTipLabel": "Even better with {ingredient}",
   "recipeDetail.upgradeTipAdd": "Add to Shopping List",
+  "recipeDetail.upgradeTipAddedButton": "Added to Shopping List",
   "recipeDetail.upgradeTipAdded": "{ingredient} added to Shopping List",
   "recipeDetail.ingredientsChecked": "{checked} of {total} checked",
   "recipeDetail.ingredientFallback": "Ingredient",

@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Merkitse napauttamalla",
   "recipeDetail.upgradeTipLabel": "Vielä parempi lisällä {ingredient}",
   "recipeDetail.upgradeTipAdd": "Lisää ostoslistalle",
+  "recipeDetail.upgradeTipAddedButton": "Lisätty ostoslistalle",
   "recipeDetail.upgradeTipAdded": "{ingredient} lisätty ostoslistalle",
   "recipeDetail.ingredientsChecked": "{checked}/{total} valittu",
   "recipeDetail.ingredientFallback": "Ainesosa",

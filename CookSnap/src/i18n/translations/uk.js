@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Торкніться, щоб позначити",
   "recipeDetail.upgradeTipLabel": "Ще смачніше з {ingredient}",
   "recipeDetail.upgradeTipAdd": "Додати до списку покупок",
+  "recipeDetail.upgradeTipAddedButton": "Додано до списку покупок",
   "recipeDetail.upgradeTipAdded": "{ingredient} додано до списку покупок",
   "recipeDetail.ingredientsChecked": "Вибрано {checked} із {total}",
   "recipeDetail.ingredientFallback": "Інгредієнт",

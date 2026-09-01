@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "İşaretlemek için dokun",
   "recipeDetail.upgradeTipLabel": "{ingredient} ile daha da güzel olur",
   "recipeDetail.upgradeTipAdd": "Alışveriş Listesine Ekle",
+  "recipeDetail.upgradeTipAddedButton": "Alışveriş Listesine eklendi",
   "recipeDetail.upgradeTipAdded": "{ingredient} Alışveriş Listesine eklendi",
   "recipeDetail.ingredientsChecked": "{checked} / {total} işaretlendi",
   "recipeDetail.ingredientFallback": "Malzeme",

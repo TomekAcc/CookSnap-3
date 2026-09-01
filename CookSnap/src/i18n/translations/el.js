@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Πάτησε για σημείωση",
   "recipeDetail.upgradeTipLabel": "Ακόμα καλύτερο με {ingredient}",
   "recipeDetail.upgradeTipAdd": "Προσθήκη στη λίστα αγορών",
+  "recipeDetail.upgradeTipAddedButton": "Προστέθηκε στη λίστα αγορών",
   "recipeDetail.upgradeTipAdded": "Το {ingredient} προστέθηκε στη λίστα αγορών",
   "recipeDetail.ingredientsChecked": "{checked} από {total} επιλεγμένα",
   "recipeDetail.ingredientFallback": "Υλικό",

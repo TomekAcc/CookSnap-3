@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "แตะเพื่อทำเครื่องหมาย",
   "recipeDetail.upgradeTipLabel": "อร่อยขึ้นด้วย {ingredient}",
   "recipeDetail.upgradeTipAdd": "เพิ่มลงในรายการซื้อของ",
+  "recipeDetail.upgradeTipAddedButton": "เพิ่มลงในรายการซื้อของแล้ว",
   "recipeDetail.upgradeTipAdded": "เพิ่ม {ingredient} ลงในรายการซื้อของแล้ว",
   "recipeDetail.ingredientsChecked": "เลือกแล้ว {checked} จาก {total}",
   "recipeDetail.ingredientFallback": "วัตถุดิบ",

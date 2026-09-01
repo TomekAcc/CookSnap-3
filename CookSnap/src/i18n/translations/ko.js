@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "탭하여 체크",
   "recipeDetail.upgradeTipLabel": "{ingredient}가 있으면 더 좋아요",
   "recipeDetail.upgradeTipAdd": "장보기 목록에 추가",
+  "recipeDetail.upgradeTipAddedButton": "장보기 목록에 추가됨",
   "recipeDetail.upgradeTipAdded": "{ingredient}이(가) 장보기 목록에 추가되었습니다",
   "recipeDetail.ingredientsChecked": "{checked}/{total} 선택됨",
   "recipeDetail.ingredientFallback": "재료",

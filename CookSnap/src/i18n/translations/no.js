@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Trykk for å krysse av",
   "recipeDetail.upgradeTipLabel": "Enda bedre med {ingredient}",
   "recipeDetail.upgradeTipAdd": "Legg til i handlelisten",
+  "recipeDetail.upgradeTipAddedButton": "Lagt til i handlelisten",
   "recipeDetail.upgradeTipAdded": "{ingredient} lagt til i handlelisten",
   "recipeDetail.ingredientsChecked": "{checked} av {total} avkrysset",
   "recipeDetail.ingredientFallback": "Ingrediens",

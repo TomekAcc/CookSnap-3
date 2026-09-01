@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Tryck för att bocka av",
   "recipeDetail.upgradeTipLabel": "Ännu bättre med {ingredient}",
   "recipeDetail.upgradeTipAdd": "Lägg till i inköpslistan",
+  "recipeDetail.upgradeTipAddedButton": "Tillagd i inköpslistan",
   "recipeDetail.upgradeTipAdded": "{ingredient} tillagd i inköpslistan",
   "recipeDetail.ingredientsChecked": "{checked} av {total} markerade",
   "recipeDetail.ingredientFallback": "Ingrediens",

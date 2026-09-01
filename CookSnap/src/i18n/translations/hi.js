@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "टिक करने के लिए टैप करें",
   "recipeDetail.upgradeTipLabel": "{ingredient} के साथ और भी बेहतर",
   "recipeDetail.upgradeTipAdd": "शॉपिंग लिस्ट में जोड़ें",
+  "recipeDetail.upgradeTipAddedButton": "शॉपिंग लिस्ट में जोड़ा गया",
   "recipeDetail.upgradeTipAdded": "{ingredient} शॉपिंग लिस्ट में जोड़ा गया",
   "recipeDetail.ingredientsChecked": "{checked} / {total} चुने गए",
   "recipeDetail.ingredientFallback": "सामग्री",

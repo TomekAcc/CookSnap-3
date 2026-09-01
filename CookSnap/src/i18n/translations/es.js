@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Toca para tachar",
   "recipeDetail.upgradeTipLabel": "Aún mejor con {ingredient}",
   "recipeDetail.upgradeTipAdd": "Añadir a la lista de la compra",
+  "recipeDetail.upgradeTipAddedButton": "Añadido a la lista de la compra",
   "recipeDetail.upgradeTipAdded": "{ingredient} añadido a la lista de la compra",
   "recipeDetail.ingredientsChecked": "{checked} de {total} marcados",
   "recipeDetail.ingredientFallback": "Ingrediente",

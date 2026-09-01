@@ -255,6 +255,7 @@ export default {
   "recipeDetail.tapToCheckOff": "Klepnutím odškrtnete",
   "recipeDetail.upgradeTipLabel": "Ještě lepší s {ingredient}",
   "recipeDetail.upgradeTipAdd": "Přidat do nákupního seznamu",
+  "recipeDetail.upgradeTipAddedButton": "Přidáno do nákupního seznamu",
   "recipeDetail.upgradeTipAdded": "{ingredient} přidáno do nákupního seznamu",
   "recipeDetail.ingredientsChecked": "Zškrtáno {checked} z {total}",
   "recipeDetail.ingredientFallback": "Ingredience",
