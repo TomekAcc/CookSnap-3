@@ -181,7 +181,23 @@ export const EMOJI_STYLE_MAP = {
     bgColorDark: "rgba(127, 29, 29, 0.4)",
     borderColorDark: "rgba(153, 27, 27, 0.5)",
   },
+  // 🥩 is a raw, uncooked cut of steak — kept valid here purely so recipes
+  // already stamped with it before this fix don't fall back to the generic
+  // 🥘 (same reasoning as 🥚 below), but it's never chosen for a NEW dish
+  // classification anymore. 🍖 (meat on the bone, visibly roasted/browned)
+  // replaces it as the actual beef/pork/lamb dish icon — a plated, cooked
+  // dish showing raw meat reads as unappetizing regardless of how well the
+  // rest of the icon matches the dish.
   "🥩": {
+    bg: "bg-red-100",
+    border: "border-red-200",
+    text: "text-red-900",
+    bgColor: "#FEE2E2",
+    borderColor: "#FECACA",
+    bgColorDark: "rgba(127, 29, 29, 0.4)",
+    borderColorDark: "rgba(153, 27, 27, 0.5)",
+  },
+  "🍖": {
     bg: "bg-red-100",
     border: "border-red-200",
     text: "text-red-900",
@@ -261,7 +277,7 @@ function styleFromEmoji(emoji) {
                   ? "grain"
                   : key === "🥗"
                     ? "salad"
-                    : key === "🍗" || key === "🥩"
+                    : key === "🍗" || key === "🥩" || key === "🍖"
                       ? "meat"
                       : key === "🥪"
                       ? "snack"
@@ -302,7 +318,10 @@ const DISH_TYPE_TO_EMOJI = {
   soup: "🍲",
   rice: "🍚",
   chicken: "🍗",
-  meat: "🥩",
+  // 🍖 (meat on the bone, roasted-looking), not 🥩 (a raw, red steak cut)
+  // — a completed beef/pork/lamb dish isn't served raw, same reasoning as
+  // eggs/omelet above always resolving to the cooked 🍳, never bare 🥚.
+  meat: "🍖",
   sandwich: "🥪",
   other: "🥘",
 };
@@ -503,7 +522,8 @@ export function getDishEmojiAndStyle(dishTitle, dishType) {
     t.includes("kebab") ||
     t.includes("roast")
   ) {
-    emoji = "🥩";
+    // 🍖, not 🥩 — see the DISH_TYPE_TO_EMOJI "meat" comment above.
+    emoji = "🍖";
   } else if (
     t.includes("sandwich") ||
     t.includes("wrap") ||
@@ -612,16 +632,16 @@ export function getFallbackEmoji(dishTitle, category) {
 // CODE-LEVEL DISHTYPE SANITY CHECK — confirmed real failure, not a
 // hypothetical: a live "Kidney Bean Skillet" (no meat anywhere in its
 // ingredientsList) came back from Gemini tagged dishType "meat", which
-// DISH_TYPE_TO_EMOJI maps straight to a raw-steak 🥩 — an unappetizing,
-// flatly wrong icon on a vegetarian dish. Same "prompt wording alone isn't
-// reliable enough" lesson as the diet/allergy guardrail in geminiRecipes.js:
-// the model appears to reach for "meat" as a catch-all for "savory
-// protein-forward dish" even when the protein is beans, not literal meat.
-// Since dishType only unlocks the "trust it directly" branch above when it
-// maps to a real ingredient-specific icon (🥩/🍗), this check only needs to
-// cover the ones that claim a specific animal protein is present — a false
-// "meat"/"chicken" reads as actively wrong, unlike "other" which is
-// honestly generic.
+// DISH_TYPE_TO_EMOJI maps straight to 🍖 — flatly wrong on a vegetarian
+// dish, regardless of how appetizing that icon looks. Same "prompt wording
+// alone isn't reliable enough" lesson as the diet/allergy guardrail in
+// geminiRecipes.js: the model appears to reach for "meat" as a catch-all
+// for "savory protein-forward dish" even when the protein is beans, not
+// literal meat. Since dishType only unlocks the "trust it directly" branch
+// above when it maps to a real ingredient-specific icon (🍖/🍗), this
+// check only needs to cover the ones that claim a specific animal protein
+// is present — a false "meat"/"chicken" reads as actively wrong, unlike
+// "other" which is honestly generic.
 const REAL_MEAT_KEYWORDS = [
   "beef", "steak", "pork", "lamb", "veal", "bacon", "ham", "sausage",
   "meatball", "ground meat", "mince", "ribs", "prosciutto",
