@@ -7,6 +7,7 @@ import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { animateLayout } from "../utils/layoutMotion";
+import { breakLigatures } from "../utils/textLigatures";
 
 // Same delayed-flatten pattern as Header.jsx: a live BlurView is one of the
 // more GPU-expensive effects to keep compositing every frame, and this one
@@ -144,7 +145,7 @@ export default function BottomNav() {
                     color: isActive ? activeColor : INACTIVE,
                   }}
                 >
-                  {t(tab.labelKey)}
+                  {breakLigatures(t(tab.labelKey))}
                 </Text>
               </View>
             </TouchableOpacity>

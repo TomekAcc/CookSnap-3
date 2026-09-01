@@ -17,6 +17,7 @@ import { useTheme } from "../context/ThemeContext";
 import { FULL_DIETARY_OPTIONS } from "../data/dietaryOptions";
 import PillTag from "../components/PillTag";
 import IconBadge from "../components/IconBadge";
+import { breakLigatures } from "../utils/textLigatures";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -135,17 +136,12 @@ export default function ProfileScreen() {
               <Text
                 style={{
                   color: colors.textPrimary,
-                  // Bold (700), not ExtraBold (800) — at 800 the dot on a
-                  // lowercase "i" sits close enough to the stem that it's
-                  // easy to lose at a glance; 700 keeps the same size and
-                  // weight tier as the rest of the app's screen titles
-                  // while giving the tittle real visual separation.
                   fontWeight: "700",
                   fontSize: 24,
                   letterSpacing: -0.4,
                 }}
               >
-                {t("profile.title")}
+                {breakLigatures(t("profile.title"))}
               </Text>
               <Text
                 style={{
