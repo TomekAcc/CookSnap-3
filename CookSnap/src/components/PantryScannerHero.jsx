@@ -18,6 +18,7 @@ import {
   TOTAL_SCAN_DURATION,
   PANTRY_SCAN_STEPS,
 } from "../constants/scanChoreography";
+import { startAsymptoticCreep } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
@@ -181,7 +182,16 @@ export default function PantryScannerHero({ onManualAdd }) {
     // — continuously moving, never frozen, never dishonestly full — until
     // the real response lands and this whole function proceeds to snap it
     // to the genuine 100% below.
-    let phase2Anim = null;
+    //
+    // Phase 2 originally used ANOTHER fixed-duration Animated.timing
+    // (0.92→0.99 over a flat 8000ms) — which just stopped moving once
+    // those 8 seconds elapsed if the real scan wasn't done yet. That's the
+    // exact "it still stops" a user reported after the first fix: a fixed
+    // duration is a deadline, and a deadline is always eventually wrong
+    // for a variable network call. startAsymptoticCreep drives the value
+    // off Date.now() instead — no deadline to run out, so it keeps
+    // creeping for as long as the real scan actually takes.
+    let stopCreep = null;
     const animationDone = new Promise((resolve) => {
       Animated.timing(progressBarAnim, {
         toValue: 0.92,
@@ -190,13 +200,7 @@ export default function PantryScannerHero({ onManualAdd }) {
         useNativeDriver: false,
       }).start(({ finished }) => {
         if (finished) {
-          phase2Anim = Animated.timing(progressBarAnim, {
-            toValue: 0.99,
-            duration: 8000,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: false,
-          });
-          phase2Anim.start();
+          stopCreep = startAsymptoticCreep(progressBarAnim, { from: 0.92 });
         }
         resolve();
       });
@@ -212,7 +216,7 @@ export default function PantryScannerHero({ onManualAdd }) {
     } catch (err) {
       console.warn("[Cook AI] Pantry scan choreography failed:", err?.message);
     } finally {
-      phase2Anim?.stop?.();
+      stopCreep?.();
       progressBarAnim.removeListener(listenerId);
     }
 

@@ -31,6 +31,7 @@ import {
   SCAN_STEPS,
 } from "../constants/scanChoreography";
 import { getIngredientStyle } from "../utils/imageUtils";
+import { startAsymptoticCreep } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
 import PillTag from "./PillTag";
 import PerfectCloseButton from "./PerfectCloseButton";
@@ -189,13 +190,17 @@ export default function FridgeScannerHero() {
     // same tick and snaps straight to 100% — a fast scan still looks
     // identical to before this change.
     //
-    // Phase 2 only matters when the real response ISN'T ready yet: instead
-    // of holding flat at a fixed number (the old bug) or faking its way to
-    // literal 100% (the newer bug), it keeps creeping slowly from 92%
-    // toward 99% for as long as it takes — continuous, never stopped,
-    // never claiming "100%" — until real completion overrides it. There is
-    // no scenario where the bar is either frozen or dishonestly full.
-    let phase2Anim = null;
+    // Phase 2 only matters when the real response ISN'T ready yet. Its
+    // first version was ALSO a fixed-duration Animated.timing (0.92→0.99
+    // over a flat 8000ms) — smooth for 8 seconds, then it simply stopped
+    // moving, which is exactly the "it still stops" a user reported: any
+    // fixed duration is just a deadline in disguise, and a deadline is
+    // always eventually wrong for a variable network call. Fixed by
+    // startAsymptoticCreep, which drives the value off Date.now() instead
+    // of a timing duration — there is no deadline to run out, so it keeps
+    // creeping (progressively more slowly) for as long as the real scan
+    // actually takes, never claiming "100%" and never going visibly flat,
+    // until real completion overrides it below.
     const phase1Anim = Animated.timing(progressBarAnim, {
       toValue: 0.92,
       duration: TOTAL_SCAN_DURATION,
@@ -208,14 +213,8 @@ export default function FridgeScannerHero() {
       if (!finished) return;
       setCurrentStepIdx(SCAN_STEPS.length - 1);
       endScanChoreography();
-      phase2Anim = Animated.timing(progressBarAnim, {
-        toValue: 0.99,
-        duration: 8000,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: false,
-      });
-      progressAnimRef.current = phase2Anim;
-      phase2Anim.start();
+      const stopCreep = startAsymptoticCreep(progressBarAnim, { from: 0.92 });
+      progressAnimRef.current = { stop: stopCreep };
     });
 
     const stepDuration = TOTAL_SCAN_DURATION / SCAN_STEPS.length;
