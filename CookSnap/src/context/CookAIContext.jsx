@@ -226,7 +226,39 @@ function enrichRecipes(rawRecipes) {
       : [];
   }
 }
-function safeVisibleRecipes(generatedRecipes, mealType, hungerLevel, maxCount) {
+// Confirmed real bug, not a hypothetical: every single AI-generated recipe
+// card showed the exact same "Uses 3 fridge items" badge, regardless of
+// the recipe's actual content — because `r.matchCount || 3` below always
+// fell through to the literal 3, since normalizeRecipe() in
+// geminiRecipes.js never sets a numeric `matchCount` field (only a
+// `matchBadge` *string*, which the card doesn't even read). A live test
+// against the real API confirmed the AI itself generates recipes with
+// genuinely varied ingredient counts (2-6 depending on the dish) — this
+// was purely a display bug flattening all of that into a constant. Counts
+// how many of the recipe's own ingredientsList entries actually reference
+// one of the user's real scanned fridge items (case-insensitive substring
+// match — ingredientsList entries are formatted like "1 lb Chicken Breast
+// 🍗", so this is deliberately loose rather than an exact-string match).
+function countFridgeMatches(ingredientsList, fridgeItems) {
+  if (!Array.isArray(ingredientsList) || !Array.isArray(fridgeItems)) {
+    return null;
+  }
+  const listText = ingredientsList.join(" | ").toLowerCase();
+  let count = 0;
+  for (const item of fridgeItems) {
+    const name = String(item?.name || "").toLowerCase().trim();
+    if (name && listText.includes(name)) count++;
+  }
+  return count;
+}
+
+function safeVisibleRecipes(
+  generatedRecipes,
+  mealType,
+  hungerLevel,
+  maxCount,
+  fridgeItems
+) {
   // Never show recipes before the user has actually generated any —
   // generatedRecipes stays null until generateRecipes() runs at least once,
   // so this is the one place we can tell "never generated" apart from
@@ -265,13 +297,28 @@ function safeVisibleRecipes(generatedRecipes, mealType, hungerLevel, maxCount) {
       }
     }
 
-    return stamped.slice(0, maxCount).map((r, idx) => ({
-      ...r,
-      cardIndex: idx,
-      // Strip any leftover image / vector fields — emoji-only cards
-      emoji: r.emoji,
-      matchCount: r.matchCount || 3,
-    }));
+    return stamped.slice(0, maxCount).map((r, idx) => {
+      // Real fridge-item overlap when possible; a genuine per-recipe
+      // ingredient count as a sane fallback (still varies card-to-card,
+      // unlike the old flat 3) when there's no fridge inventory to match
+      // against (e.g. a pantry-staples-only generation) or matching found
+      // nothing. r.matchCount survives untouched for FALLBACK_RECIPES,
+      // which already carry their own hand-set, genuinely varied values.
+      const fridgeMatch = countFridgeMatches(r.ingredientsList, fridgeItems);
+      const computedMatch =
+        fridgeMatch != null && fridgeMatch > 0
+          ? fridgeMatch
+          : Array.isArray(r.ingredientsList)
+            ? Math.max(r.ingredientsList.length, 1)
+            : 3;
+      return {
+        ...r,
+        cardIndex: idx,
+        // Strip any leftover image / vector fields — emoji-only cards
+        emoji: r.emoji,
+        matchCount: r.matchCount || computedMatch,
+      };
+    });
   } catch (err) {
     console.warn("[Cook AI] visibleRecipes failed:", err?.message);
   }
@@ -1245,9 +1292,10 @@ export function CookAIProvider({ children }) {
         generatedRecipes,
         mealType,
         hungerLevel,
-        isPro ? RECIPES_PER_SCAN : FREE_RECIPES_PER_GENERATION
+        isPro ? RECIPES_PER_SCAN : FREE_RECIPES_PER_GENERATION,
+        ingredients
       ),
-    [generatedRecipes, mealType, hungerLevel, isPro]
+    [generatedRecipes, mealType, hungerLevel, isPro, ingredients]
   );
 
   const showToast = useCallback((message, type = "info", duration = 3200) => {
