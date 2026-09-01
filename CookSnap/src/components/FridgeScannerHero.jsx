@@ -167,33 +167,55 @@ export default function FridgeScannerHero() {
       setProgressPct(Math.min(100, Math.round(value * 100)));
     });
 
-    // Runs the full 0->100% at a constant rate — no cap partway through.
-    // This used to stop at 92% and hold there until the real network
-    // response landed, which is exactly the "freezes at 92%" a user
-    // reported: real scan latency had crept up to 6-10s against this bar's
-    // fixed ~3.2s fill, so it sat capped and waiting for several seconds on
-    // every single scan. Now that the Vision request itself runs in ~1-2.5s
-    // (disabled an unrequested "thinking" pass on the model — see
-    // geminiVision.js), the real response is normally already in hand well
-    // before this animation even finishes, so letting it run all the way to
-    // 100% at the same rate (duration scaled up so the fill speed is
-    // unchanged, just extended past where 92% used to be) means the common
-    // case is a single smooth fill with no stall at all. The rare case
-    // where the network is still slower than this animation is still
-    // covered — see the scanStage === "completed" effect below, which
-    // forces the bar to exactly 100% the instant real data actually
-    // commits, however it got there.
-    progressAnimRef.current = Animated.timing(progressBarAnim, {
-      toValue: 1,
-      duration: TOTAL_SCAN_DURATION / 0.92,
+    // Two-phase, never-lies-about-100% approach. This has been "fixed"
+    // twice before and regressed both times, so here's the actual
+    // reasoning: a fixed-duration bar reaching literal 100% before the
+    // real network response lands is a contradiction no matter how the
+    // duration is tuned — either it's short enough to sometimes finish
+    // early (and then sits at a frozen "100%" for however much longer the
+    // real response actually takes, which is exactly what a user reported:
+    // "it stops for a while at 100% without being scanned"), or it's
+    // padded long enough to rarely finish early (which just reintroduces
+    // the earlier "freezes at 92%" complaint under a different number,
+    // since network latency varies run to run regardless of what constant
+    // is picked). No fixed duration can win against a variable network.
+    //
+    // Phase 1 runs the original pacing unchanged — TOTAL_SCAN_DURATION,
+    // linear, but capped at 92% instead of 100% — so the believable
+    // multi-stage choreography (the rotating step labels below) keeps its
+    // intended timing exactly as before. At that point endScanChoreography
+    // runs exactly like it used to; if the real response is already in
+    // hand, the scanStage === "completed" effect below fires within the
+    // same tick and snaps straight to 100% — a fast scan still looks
+    // identical to before this change.
+    //
+    // Phase 2 only matters when the real response ISN'T ready yet: instead
+    // of holding flat at a fixed number (the old bug) or faking its way to
+    // literal 100% (the newer bug), it keeps creeping slowly from 92%
+    // toward 99% for as long as it takes — continuous, never stopped,
+    // never claiming "100%" — until real completion overrides it. There is
+    // no scenario where the bar is either frozen or dishonestly full.
+    let phase2Anim = null;
+    const phase1Anim = Animated.timing(progressBarAnim, {
+      toValue: 0.92,
+      duration: TOTAL_SCAN_DURATION,
       easing: Easing.linear,
       useNativeDriver: false,
     });
+    progressAnimRef.current = phase1Anim;
 
-    progressAnimRef.current.start(({ finished }) => {
+    phase1Anim.start(({ finished }) => {
       if (!finished) return;
       setCurrentStepIdx(SCAN_STEPS.length - 1);
       endScanChoreography();
+      phase2Anim = Animated.timing(progressBarAnim, {
+        toValue: 0.99,
+        duration: 8000,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      });
+      progressAnimRef.current = phase2Anim;
+      phase2Anim.start();
     });
 
     const stepDuration = TOTAL_SCAN_DURATION / SCAN_STEPS.length;

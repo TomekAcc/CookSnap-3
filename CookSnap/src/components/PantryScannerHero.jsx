@@ -45,11 +45,12 @@ const SCAN_HEIGHT = 220;
  *
  * The real-time-vs-fixed-duration race that FridgeScannerHero solves with
  * a ref + polling interval (see endScanChoreography in CookAIContext) is
- * solved here with a simpler, self-contained Promise.all: the fixed-length
- * progress animation and the real scanPantryPhoto() network call both run
- * at once, and "completed" only fires once both are done — same guarantee
- * (never show completed before the bar finishes OR before real data is
- * back), without needing any of that cross-render polling machinery.
+ * solved here with a simpler, self-contained Promise.all: the progress
+ * animation and the real scanPantryPhoto() network call both run at once,
+ * and "completed" only fires once both are done — never before the bar's
+ * minimum choreography time, and never before real data is back. The bar
+ * itself is two-phase (see beginScan below) so it also never sits showing
+ * a literal 100% while genuinely still waiting on a slower response.
  */
 export default function PantryScannerHero({ onManualAdd }) {
   const { scanPantryPhoto, showToast, t, recipeLanguageId } = useCookAI();
@@ -168,13 +169,37 @@ export default function PantryScannerHero({ onManualAdd }) {
       setProgressPct(Math.min(100, Math.round(value * 100)));
     });
 
+    // Two-phase, never-lies-about-100% approach — same reasoning as
+    // FridgeScannerHero's identical fix (see its own comment for the full
+    // history). Phase 1 keeps the original TOTAL_SCAN_DURATION pacing
+    // exactly as before, just capped at 92% instead of running all the way
+    // to a literal 100% that may not be true yet. If scanPantryPhoto() is
+    // already done by then, Promise.all resolves immediately after and the
+    // 100%/reveal below fires in the same tick — a fast scan looks
+    // identical to before. If it's still in flight, phase 2 keeps the bar
+    // creeping slowly from 92% toward 99% for as long as it actually takes
+    // — continuously moving, never frozen, never dishonestly full — until
+    // the real response lands and this whole function proceeds to snap it
+    // to the genuine 100% below.
+    let phase2Anim = null;
     const animationDone = new Promise((resolve) => {
       Animated.timing(progressBarAnim, {
-        toValue: 1,
+        toValue: 0.92,
         duration: TOTAL_SCAN_DURATION,
         easing: Easing.linear,
         useNativeDriver: false,
-      }).start(() => resolve());
+      }).start(({ finished }) => {
+        if (finished) {
+          phase2Anim = Animated.timing(progressBarAnim, {
+            toValue: 0.99,
+            duration: 8000,
+            easing: Easing.out(Easing.quad),
+            useNativeDriver: false,
+          });
+          phase2Anim.start();
+        }
+        resolve();
+      });
     });
 
     let detected = [];
@@ -187,6 +212,7 @@ export default function PantryScannerHero({ onManualAdd }) {
     } catch (err) {
       console.warn("[Cook AI] Pantry scan choreography failed:", err?.message);
     } finally {
+      phase2Anim?.stop?.();
       progressBarAnim.removeListener(listenerId);
     }
 
