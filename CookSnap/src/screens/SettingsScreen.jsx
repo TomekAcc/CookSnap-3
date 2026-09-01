@@ -875,24 +875,30 @@ export default function SettingsScreen() {
           landing directly on it instead of back on Profile. Shown only on
           someone's first-ever visit (see showDoneHint above) — by any
           later visit they already know the header's chevron gets them
-          out, and the button is just noise then. No border-top divider:
-          a plain solid green button reads more clearly as a single CTA
-          than a bar with a hairline separating it from the content above. */}
+          out, and the button is just noise then.
+
+          A true floating overlay (position: "absolute"), not a flex
+          sibling bar with its own background — matches ScannerScreen's
+          floating "Generate Recipes" CTA exactly (same ctaHost/ctaPrimary
+          shape), rather than sitting inside an opaque colors.bg strip
+          that read as a second layer stacked over the content behind it.
+          Same explicit shadow purge ScannerScreen's own CTA already
+          needed for the identical reason (see its comment): RN adds a
+          default drop shadow to a backgroundColor+borderRadius button on
+          iOS, which blurs outward on every side — not just below — so it
+          shows as a faint gray arc ABOVE the button too, not a shadow
+          "under" it the way it looks in isolation. */}
       {showDoneHint ? (
         <View
           style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: Math.max(insets.bottom, 8) + 56 + 10,
             paddingHorizontal: 20,
-            paddingTop: 12,
-            // BottomNav floats as its own absolutely-positioned overlay
-            // (App.jsx renders it outside this screen's tree, zIndex 40) —
-            // unlike a ScrollView's contentContainerStyle, padding on a
-            // plain sibling View like this one doesn't get scrolled past,
-            // it just pushes this bar's own bottom edge up, so it needs to
-            // actually clear BottomNav's real rendered height (~64pt) or
-            // the nav bar paints straight over this button.
-            paddingBottom: insets.bottom + 76,
-            backgroundColor: colors.bg,
+            zIndex: 39,
           }}
+          pointerEvents="box-none"
         >
           <TouchableOpacity
             onPress={() => setActiveTab("scanner")}
@@ -902,6 +908,12 @@ export default function SettingsScreen() {
               borderRadius: 18,
               paddingVertical: 16,
               alignItems: "center",
+              borderWidth: 0,
+              elevation: 0,
+              shadowOpacity: 0,
+              shadowColor: "transparent",
+              shadowRadius: 0,
+              shadowOffset: { width: 0, height: 0 },
             }}
           >
             <Text style={{ color: "#FFFFFF", fontWeight: "800", fontSize: 16 }}>
