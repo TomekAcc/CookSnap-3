@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "عرض الوصفة",
   "a11y.viewRecipeNamed": "عرض الوصفة: {title}",
   "a11y.removeFromFavorites": "إزالة من المفضلة",
+  "a11y.closeRecipeDetail": "إغلاق تفاصيل الوصفة",
   "a11y.addToFavorites": "إضافة إلى المفضلة",
   "a11y.saveToFavorites": "حفظ إلى المفضلة",
   "recipeDetail.fallbackTitle": "تفاصيل الوصفة",

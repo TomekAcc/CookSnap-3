@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Προβολή συνταγής",
   "a11y.viewRecipeNamed": "Προβολή συνταγής: {title}",
   "a11y.removeFromFavorites": "Αφαίρεση από τα αγαπημένα",
+  "a11y.closeRecipeDetail": "Κλείσιμο λεπτομερειών συνταγής",
   "a11y.addToFavorites": "Προσθήκη στα αγαπημένα",
   "a11y.saveToFavorites": "Αποθήκευση στα αγαπημένα",
   "recipeDetail.fallbackTitle": "Λεπτομέρειες συνταγής",

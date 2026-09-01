@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Se oppskrift",
   "a11y.viewRecipeNamed": "Se oppskrift: {title}",
   "a11y.removeFromFavorites": "Fjern fra favoritter",
+  "a11y.closeRecipeDetail": "Lukk oppskriftsdetaljer",
   "a11y.addToFavorites": "Legg til i favoritter",
   "a11y.saveToFavorites": "Lagre i favoritter",
   "recipeDetail.fallbackTitle": "Oppskriftsdetaljer",

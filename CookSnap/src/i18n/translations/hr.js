@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Prikaži recept",
   "a11y.viewRecipeNamed": "Vidi recept: {title}",
   "a11y.removeFromFavorites": "Ukloni iz favorita",
+  "a11y.closeRecipeDetail": "Zatvori detalje recepta",
   "a11y.addToFavorites": "Dodaj u favorite",
   "a11y.saveToFavorites": "Spremi u favorite",
   "recipeDetail.fallbackTitle": "Detalji recepta",

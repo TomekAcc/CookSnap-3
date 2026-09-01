@@ -319,9 +319,21 @@ export default function FridgeScannerHero() {
 
     if (!shrinkStartedRef.current) {
       shrinkStartedRef.current = true;
-      // Real completion — snap straight to 100% right as the shrink starts,
-      // so there's never a visible "waiting at 100%" gap.
-      progressBarAnim.setValue(1);
+      // Real completion. This used to be a bare setValue(1) — an instant,
+      // un-animated jump from wherever the creep (above) had gotten to,
+      // e.g. 97%. Confirmed real complaint from a tester: "the progress
+      // bar jumps to around 97% and abruptly cuts" — the creep never
+      // claims literal 100% until this point by design, so the jump was
+      // always there, just invisible on a fast scan where it happened
+      // within a frame or two. A short real fill closes that gap with a
+      // visible motion instead of a cut, while staying fast enough (120ms)
+      // that it doesn't add a perceptible delay before the reveal below.
+      Animated.timing(progressBarAnim, {
+        toValue: 1,
+        duration: 120,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      }).start();
       setProgressPct(100);
       // Shrink and reveal together — the earlier "minimizes but still
       // loading" bug was the fixed-timer premature trigger (fixed above by

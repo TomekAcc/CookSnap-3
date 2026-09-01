@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Lihat resep",
   "a11y.viewRecipeNamed": "Lihat resep: {title}",
   "a11y.removeFromFavorites": "Hapus dari favorit",
+  "a11y.closeRecipeDetail": "Tutup detail resep",
   "a11y.addToFavorites": "Tambahkan ke favorit",
   "a11y.saveToFavorites": "Simpan ke favorit",
   "recipeDetail.fallbackTitle": "Detail Resep",

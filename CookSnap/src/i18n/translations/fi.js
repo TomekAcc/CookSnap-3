@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Näytä resepti",
   "a11y.viewRecipeNamed": "Näytä resepti: {title}",
   "a11y.removeFromFavorites": "Poista suosikeista",
+  "a11y.closeRecipeDetail": "Sulje reseptin tiedot",
   "a11y.addToFavorites": "Lisää suosikkeihin",
   "a11y.saveToFavorites": "Tallenna suosikkeihin",
   "recipeDetail.fallbackTitle": "Reseptin tiedot",

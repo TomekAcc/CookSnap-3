@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Преглед на рецепта",
   "a11y.viewRecipeNamed": "Преглед на рецепта: {title}",
   "a11y.removeFromFavorites": "Премахни от любими",
+  "a11y.closeRecipeDetail": "Затвори детайлите за рецептата",
   "a11y.addToFavorites": "Добави в любими",
   "a11y.saveToFavorites": "Запази в любими",
   "recipeDetail.fallbackTitle": "Подробности за рецептата",

@@ -85,6 +85,20 @@ export default function StandardModal({
   maxHeight,
   contentStyle = null,
   dragZoneHeight = DRAG_ZONE_HEIGHT,
+  // Confirmed real bug, not a hypothetical: this drag zone is a full-width
+  // absolute overlay at zIndex 30, stacked as a LATER sibling of
+  // `children` — so it paints (and captures every touch) on top of
+  // anything children renders underneath it, no matter what zIndex that
+  // content itself uses (a descendant can't out-stack a later sibling of
+  // its own ancestor). RecipeDetailModal added a real close button inside
+  // its header, which sits inside this zone, and every tap on it — even a
+  // Playwright forced click that bypasses hit-testing entirely — was
+  // silently swallowed by this View before React's onPress ever fired.
+  // Carving out a right-edge strip lets that one control work without
+  // touching drag-to-dismiss for the rest of the zone, or for any other
+  // sheet that doesn't pass this prop (default 0 preserves old behavior
+  // exactly).
+  dragZoneRightInset = 0,
 }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -225,7 +239,10 @@ export default function StandardModal({
           {isBottom ? (
             <GestureDetector gesture={panGesture}>
               <View
-                style={[styles.dragZone, { height: dragZoneHeight }]}
+                style={[
+                  styles.dragZone,
+                  { height: dragZoneHeight, right: dragZoneRightInset },
+                ]}
                 accessibilityElementsHidden
                 importantForAccessibility="no-hide-descendants"
               />

@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Tarifi görüntüle",
   "a11y.viewRecipeNamed": "Tarifi gör: {title}",
   "a11y.removeFromFavorites": "Favorilerden çıkar",
+  "a11y.closeRecipeDetail": "Tarif ayrıntılarını kapat",
   "a11y.addToFavorites": "Favorilere ekle",
   "a11y.saveToFavorites": "Favorilere kaydet",
   "recipeDetail.fallbackTitle": "Tarif Detayları",

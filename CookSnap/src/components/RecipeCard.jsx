@@ -134,7 +134,12 @@ export default function RecipeCard({
       <View style={styles.rail}>
         <TouchableOpacity
           onPress={() => onToggleFavorite?.(safeRecipe.id)}
-          hitSlop={12}
+          // Confirmed real complaint: a uniform 12pt hitSlop on all sides
+          // reached past the 8pt gap into where the chevron sits, so
+          // aiming at "go to recipe" could land on "toggle favorite"
+          // instead. Generous on the three sides with nothing next to
+          // them; tight on the side facing the chevron.
+          hitSlop={{ top: 14, bottom: 14, left: 14, right: 4 }}
           activeOpacity={0.85}
           style={[
             styles.heart,
@@ -218,7 +223,10 @@ const styles = StyleSheet.create({
   rail: {
     flexDirection: "row",
     alignItems: "center",
-    gap: SPACE.sm,
+    // Widened from SPACE.sm (8) — paired with the heart's now-asymmetric
+    // hitSlop above, so there's real breathing room between "toggle
+    // favorite" and "go to recipe" instead of the two nearly touching.
+    gap: SPACE.md,
     flexShrink: 0,
   },
   heart: {

@@ -19,6 +19,7 @@ import {
   Lock,
   Crown,
   ShoppingCart,
+  X,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
@@ -294,6 +295,9 @@ export default function RecipeDetailModal() {
       // reach all the way up; stops short of the stats grid's own PRO
       // MACROS touchable so that tap target still works normally.
       dragZoneHeight={185}
+      // Carves out the close button's corner (see StandardModal's own
+      // comment on this prop) — the rest of the drag zone is untouched.
+      dragZoneRightInset={60}
       contentStyle={{
         backgroundColor: colors.card,
         borderColor: colors.cardBorder,
@@ -305,10 +309,11 @@ export default function RecipeDetailModal() {
           real tester not realizing this no-close-X modal was draggable,
           but a second tester flagged the bigger/darker bar as looking
           out of place next to every other sheet's handle, not native
-          iOS. Reverted to the shared style for consistency; if
-          discoverability turns out to still be a problem, that's better
-          solved with an explicit hint than by making one sheet's handle
-          look different from the rest. */}
+          iOS. Reverted then, with a note that the next step should be "an
+          explicit hint" instead of resizing the handle again — a second
+          tester has now independently hit the same discoverability
+          problem, so this adds that explicit hint: a real close button
+          below, alongside the handle rather than instead of it. */}
       <View
         style={[
           styles.grabHandle,
@@ -317,8 +322,7 @@ export default function RecipeDetailModal() {
       />
 
       {/* Header — pastel emoji tile matches the same dish category color
-          as its RecipeCard thumbnail on the feed, via resolveCategoryBadgeColors.
-          No close button — dismiss is grab-handle drag or backdrop tap only. */}
+          as its RecipeCard thumbnail on the feed, via resolveCategoryBadgeColors. */}
       <View
         style={[styles.headerBar, { borderBottomColor: colors.cardBorder }]}
       >
@@ -334,15 +338,19 @@ export default function RecipeDetailModal() {
         </View>
 
         <View style={styles.headerTitles}>
-          {/* Same fix as RecipeCard's title — a word too wide to fit a
-              single line can't wrap and gets truncated mid-word, leaving
-              the second line empty. adjustsFontSizeToFit shrinks slightly
-              instead so it fills both lines. */}
+          {/* Same wrap-fix as RecipeCard's title (see its comment), plus a
+              real complaint on top of it: a Polish (or other longer-
+              translation) title minimized so aggressively it was hard to
+              read/notice. Unlike the card, this header isn't in a fixed-
+              height row — headerBar just grows — so there's no reason to
+              shrink first. 3 lines at full size before adjustsFontSizeToFit
+              even has to act; minimumFontScale is a safety net for
+              genuinely pathological titles only, not the normal case. */}
           <Text
             style={[styles.recipeTitle, { color: colors.textPrimary }]}
-            numberOfLines={2}
+            numberOfLines={3}
             adjustsFontSizeToFit
-            minimumFontScale={0.8}
+            minimumFontScale={0.92}
           >
             {recipe?.title || t("recipeDetail.fallbackTitle")}
           </Text>
@@ -367,6 +375,20 @@ export default function RecipeDetailModal() {
             </Text>
           </View>
         </View>
+
+        <TouchableOpacity
+          onPress={onClose}
+          activeOpacity={0.7}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.closeRecipeDetail")}
+          style={[
+            styles.closeButton,
+            { backgroundColor: colors.inputBg, borderColor: colors.cardBorder },
+          ]}
+        >
+          <X size={16} color={colors.textSecondary} strokeWidth={2.5} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -1015,6 +1037,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexShrink: 0,
     overflow: "visible",
+  },
+  closeButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    alignSelf: "flex-start",
   },
   dishBadgeEmoji: {
     fontSize: 40,

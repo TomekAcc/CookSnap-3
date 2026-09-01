@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Bekijk recept",
   "a11y.viewRecipeNamed": "Bekijk recept: {title}",
   "a11y.removeFromFavorites": "Verwijder uit favorieten",
+  "a11y.closeRecipeDetail": "Receptdetails sluiten",
   "a11y.addToFavorites": "Voeg toe aan favorieten",
   "a11y.saveToFavorites": "Opslaan als favoriet",
   "recipeDetail.fallbackTitle": "Receptdetails",

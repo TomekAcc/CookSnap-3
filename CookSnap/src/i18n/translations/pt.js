@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Ver receita",
   "a11y.viewRecipeNamed": "Ver receita: {title}",
   "a11y.removeFromFavorites": "Remover dos favoritos",
+  "a11y.closeRecipeDetail": "Fechar detalhes da receita",
   "a11y.addToFavorites": "Adicionar aos favoritos",
   "a11y.saveToFavorites": "Guardar nos favoritos",
   "recipeDetail.fallbackTitle": "Detalhes da Receita",

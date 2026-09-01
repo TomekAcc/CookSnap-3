@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "레시피 보기",
   "a11y.viewRecipeNamed": "레시피 보기: {title}",
   "a11y.removeFromFavorites": "즐겨찾기에서 제거",
+  "a11y.closeRecipeDetail": "레시피 상세 닫기",
   "a11y.addToFavorites": "즐겨찾기에 추가",
   "a11y.saveToFavorites": "즐겨찾기에 저장",
   "recipeDetail.fallbackTitle": "레시피 상세 정보",

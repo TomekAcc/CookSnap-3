@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Vezi rețeta",
   "a11y.viewRecipeNamed": "Vezi rețeta: {title}",
   "a11y.removeFromFavorites": "Elimină din favorite",
+  "a11y.closeRecipeDetail": "Închide detaliile rețetei",
   "a11y.addToFavorites": "Adaugă la favorite",
   "a11y.saveToFavorites": "Salvează la favorite",
   "recipeDetail.fallbackTitle": "Detalii rețetă",

@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "查看食谱",
   "a11y.viewRecipeNamed": "查看菜谱：{title}",
   "a11y.removeFromFavorites": "移出收藏",
+  "a11y.closeRecipeDetail": "关闭食谱详情",
   "a11y.addToFavorites": "加入收藏",
   "a11y.saveToFavorites": "保存到收藏",
   "recipeDetail.fallbackTitle": "菜谱详情",

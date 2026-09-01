@@ -220,7 +220,16 @@ export default function PantryScannerHero({ onManualAdd }) {
       progressBarAnim.removeListener(listenerId);
     }
 
-    progressBarAnim.setValue(1);
+    // Same fix as FridgeScannerHero's identical spot — was a bare
+    // setValue(1), an instant un-animated jump from wherever the creep had
+    // gotten to (e.g. 97%). Confirmed tester complaint: "jumps to around
+    // 97% and abruptly cuts." A short real fill instead of a jump.
+    Animated.timing(progressBarAnim, {
+      toValue: 1,
+      duration: 120,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: false,
+    }).start();
     setProgressPct(100);
     setDetectedCount(detected.length);
     setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
@@ -451,6 +460,52 @@ export default function PantryScannerHero({ onManualAdd }) {
               />
             ) : null}
           </Animated.View>
+
+          {/* Confirmed real failure, not a hypothetical: once a scan
+              completes, this whole component swaps its Scan/Gallery/+Add
+              row for this photo card, and the ONLY visible control left is
+              the X in the corner above — which reads as "cancel/delete",
+              not "scan again". Merging a second scan into the existing
+              pantry already works fine at the data layer (see
+              mergePantryScanResults in CookAIContext, which appends by
+              name and never touches existing items) — the bug was purely
+              that there was no visible way to trigger it, so a user who
+              wanted to add more felt forced to dismiss and start over
+              rather than trusting the X was safe. Returns to the idle
+              state (same as startScanAgain, which the X above also calls)
+              rather than jumping straight into the camera, so camera vs.
+              gallery vs. manual add is still a real choice on the second
+              scan, same as the first. */}
+          {scanStage === "completed" ? (
+            <TouchableOpacity
+              onPress={startScanAgain}
+              activeOpacity={0.85}
+              style={{
+                marginTop: 10,
+                height: 44,
+                borderRadius: 13,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+                borderWidth: 1.5,
+                borderColor: isDark ? "#059669" : "#D1FAE5",
+              }}
+              accessibilityLabel={t("a11y.scanMoreShelves")}
+            >
+              <Camera size={16} color={isDark ? "#34D399" : "#059669"} />
+              <Text
+                style={{
+                  color: isDark ? "#34D399" : "#059669",
+                  fontSize: 14,
+                  fontWeight: "800",
+                  marginLeft: 7,
+                }}
+              >
+                {t("scanner.scanMore")}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
 
           {scanStage === "scanning" && (
             <Animated.View

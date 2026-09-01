@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "ดูสูตรอาหาร",
   "a11y.viewRecipeNamed": "ดูสูตรอาหาร: {title}",
   "a11y.removeFromFavorites": "นำออกจากรายการโปรด",
+  "a11y.closeRecipeDetail": "ปิดรายละเอียดสูตรอาหาร",
   "a11y.addToFavorites": "เพิ่มในรายการโปรด",
   "a11y.saveToFavorites": "บันทึกไปยังรายการโปรด",
   "recipeDetail.fallbackTitle": "รายละเอียดสูตรอาหาร",

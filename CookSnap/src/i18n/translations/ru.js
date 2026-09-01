@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Смотреть рецепт",
   "a11y.viewRecipeNamed": "Смотреть рецепт: {title}",
   "a11y.removeFromFavorites": "Удалить из избранного",
+  "a11y.closeRecipeDetail": "Закрыть детали рецепта",
   "a11y.addToFavorites": "Добавить в избранное",
   "a11y.saveToFavorites": "Сохранить в избранное",
   "recipeDetail.fallbackTitle": "Детали рецепта",

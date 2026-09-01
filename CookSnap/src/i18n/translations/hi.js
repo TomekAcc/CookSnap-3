@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "रेसिपी देखें",
   "a11y.viewRecipeNamed": "रेसिपी देखें: {title}",
   "a11y.removeFromFavorites": "पसंदीदा से हटाएं",
+  "a11y.closeRecipeDetail": "रेसिपी विवरण बंद करें",
   "a11y.addToFavorites": "पसंदीदा में जोड़ें",
   "a11y.saveToFavorites": "पसंदीदा में सेव करें",
   "recipeDetail.fallbackTitle": "रेसिपी विवरण",

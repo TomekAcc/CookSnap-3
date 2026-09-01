@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Zobraziť recept",
   "a11y.viewRecipeNamed": "Zobraziť recept: {title}",
   "a11y.removeFromFavorites": "Odstrániť z obľúbených",
+  "a11y.closeRecipeDetail": "Zavrieť detail receptu",
   "a11y.addToFavorites": "Pridať do obľúbených",
   "a11y.saveToFavorites": "Uložiť do obľúbených",
   "recipeDetail.fallbackTitle": "Podrobnosti receptu",

@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "הצג מתכון",
   "a11y.viewRecipeNamed": "צפייה במתכון: {title}",
   "a11y.removeFromFavorites": "הסרה מהמועדפים",
+  "a11y.closeRecipeDetail": "סגור פרטי מתכון",
   "a11y.addToFavorites": "הוספה למועדפים",
   "a11y.saveToFavorites": "שמור במועדפים",
   "recipeDetail.fallbackTitle": "פרטי המתכון",

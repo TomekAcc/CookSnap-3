@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "レシピを見る",
   "a11y.viewRecipeNamed": "レシピを見る: {title}",
   "a11y.removeFromFavorites": "お気に入りから削除",
+  "a11y.closeRecipeDetail": "レシピ詳細を閉じる",
   "a11y.addToFavorites": "お気に入りに追加",
   "a11y.saveToFavorites": "お気に入りに追加",
   "recipeDetail.fallbackTitle": "レシピ詳細",

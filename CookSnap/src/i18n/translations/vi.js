@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Xem công thức",
   "a11y.viewRecipeNamed": "Xem công thức: {title}",
   "a11y.removeFromFavorites": "Xóa khỏi mục yêu thích",
+  "a11y.closeRecipeDetail": "Đóng chi tiết công thức",
   "a11y.addToFavorites": "Thêm vào mục yêu thích",
   "a11y.saveToFavorites": "Lưu vào mục yêu thích",
   "recipeDetail.fallbackTitle": "Chi tiết công thức",

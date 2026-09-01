@@ -231,6 +231,7 @@ export default {
   "a11y.viewRecipe": "Recept megtekintése",
   "a11y.viewRecipeNamed": "Recept megtekintése: {title}",
   "a11y.removeFromFavorites": "Eltávolítás a kedvencekből",
+  "a11y.closeRecipeDetail": "Recept részleteinek bezárása",
   "a11y.addToFavorites": "Hozzáadás a kedvencekhez",
   "a11y.saveToFavorites": "Mentés a kedvencek közé",
   "recipeDetail.fallbackTitle": "Recept részletei",
