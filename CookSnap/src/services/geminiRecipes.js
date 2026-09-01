@@ -417,16 +417,36 @@ const TITLE_FLAVOR_REQUIREMENTS = {
   smoky: ["smoked", "smoke", "chipotle", "bacon", "paprika"],
   maple: ["maple"],
   herbed: ["basil", "parsley", "cilantro", "coriander", "dill", "thyme", "rosemary", "oregano", "mint", "chive", "sage", "herb"],
+  // Added after a confirmed real failure: a "Vanilla ___" dessert title
+  // with no vanilla anywhere in ingredientsList — this word was simply
+  // missing from the list entirely, so the check couldn't have caught it
+  // no matter what language the recipe was in.
+  vanilla: ["vanilla"],
 };
 
+// Confirmed real failure, not a hypothetical, and a second bug on top of
+// the missing "vanilla" entry above: this check used to substring-match
+// English words (the TITLE_FLAVOR_REQUIREMENTS keys) directly against
+// `recipe.title` — but title is written in whatever language the user
+// selected. A Polish title using "Cytrynowy"/"Cytryna" (lemon) never
+// contains the literal English substring "lemon", so this safety net was
+// silently doing nothing for every one of the other 30 languages this app
+// supports; only an English-language recipe could ever trigger it. Fixed
+// by having the model self-report its own title's flavor claims as a
+// small fixed set of ENGLISH tags (titleFlavorWords, normalized below) —
+// the same "keep this one field in English internally" pattern already
+// used for category/dishType/matchBadge — so the check runs against a
+// language-independent signal instead of trying to pattern-match text in
+// an unknown language.
 function hasTitleFlavorMismatch(recipe) {
-  const title = String(recipe?.title || "").toLowerCase();
-  if (!title) return false;
+  const tags = Array.isArray(recipe?.titleFlavorWords) ? recipe.titleFlavorWords : [];
+  if (!tags.length) return false;
   const ingredientsText = (Array.isArray(recipe?.ingredientsList) ? recipe.ingredientsList : [])
     .join(" | ")
     .toLowerCase();
-  for (const [word, requiredTerms] of Object.entries(TITLE_FLAVOR_REQUIREMENTS)) {
-    if (!title.includes(word)) continue;
+  for (const tag of tags) {
+    const requiredTerms = TITLE_FLAVOR_REQUIREMENTS[String(tag || "").toLowerCase()];
+    if (!requiredTerms) continue;
     const satisfied = requiredTerms.some((term) => ingredientsText.includes(term));
     if (!satisfied) return true;
   }
@@ -670,7 +690,7 @@ Each request may include the user's active dietary restrictions (e.g. { lactose_
 STRICT CULINARY HARMONY & TASTE PAIRING RULES:
 1. FLAVOR HARMONY FIRST: Only combine ingredients that naturally taste wonderful together. NEVER force conflicting ingredients into a single dish just to use them up.
 2. SMART SUB-SELECTION, NOT A FIXED COUNT: Out of 15-20 detected ingredients, pick however many genuinely belong together in a classic, popular meal — driven by what that real dish actually calls for, never by an artificial target count. A simple dish (a yogurt bowl, a fried egg) may only need 2-3; a properly built stir-fry, curry, or pasta sauce often legitimately needs 6-9 (protein, 2-3 vegetables, aromatics like garlic/onion, a sauce component, seasoning). Do NOT drop a relevant, available ingredient just to keep the list short — an authentic recipe that's missing an ingredient it should have (e.g. a stir-fry with no aromatics, a curry with no spice base) reads as thin and undercooked. Equally, do NOT pad in an irrelevant item just to look fuller. The right number is whatever a real version of that dish actually uses — nothing more, nothing less.
-3. POPULAR & LOVED DISHES: Generate dishes people genuinely cook at home (e.g. Creamy Pesto Fettuccine, Fluffy Herb Omelet, Fresh Caprese Salad, Chicken Stir-Fry, Berry Parfait).
+3. POPULAR & LOVED DISHES: Generate dishes people genuinely cook at home (e.g. Creamy Pesto Fettuccine, Fluffy Herb Omelet, Fresh Caprese Salad, Chicken Stir-Fry, Berry Parfait). This applies exactly as much to desserts as to every other category — a dessert should be just as real and well-made as a dinner dish, not an afterthought. When the available ingredients genuinely support a specific, well-known named dish (Tiramisu, Crème Brûlée, Panna Cotta, Cheesecake, a real Trifle), use that real name and treat it as equally valid as a generic descriptive title (e.g. "Berry Yogurt Parfait") — a specifically-named classic is not a special/rare category to reach for over a generic one, nor is it something to avoid in favor of always staying generic. Pick whichever, named or generic, actually and honestly matches what the ingredients support; never force a named classic's title onto a dish that doesn't genuinely have that dish's real components (e.g. never call something "Tiramisu" without coffee and mascarpone/ladyfingers actually present — that is the exact TITLE MUST MATCH ACTUAL CONTENTS failure from rule 11, just applied to a whole dish's identity instead of one descriptor word).
 4. NO BIZARRE COMBINATIONS WHEN INVENTORY IS SPARSE: If very few ingredients are available (e.g. only yogurt, jam, or plain eggs), DO NOT force a bizarre or unappetizing combination (like jam stirred into cold yogurt with no logic, or a "yogurt soup"). Instead, elevate what's available into a comforting, popular, classic home dish (e.g. a Sweet Yogurt Bowl with a Jam Swirl, Simple Soft-Boiled Eggs with Buttered Toast, a Classic Omelet).
 5. ASSUME BASIC KITCHEN STAPLES: Always assume water, standard cooking oil or butter, salt, and black pepper are available even if not explicitly scanned — use them freely. Do not invent obscure or rare ingredients the user hasn't shown you.
 6. ACCURATE TIMES: Prep typically 5-15 min. Cook "0 min" for cold prep, 8-20 min for hot meals. Never invent impossible times.
@@ -678,7 +698,9 @@ STRICT CULINARY HARMONY & TASTE PAIRING RULES:
 8. NO BEVERAGES AS MEALS: NEVER generate a drink, beer, juice, or simple beverage as a standalone recipe (e.g. no "Beer", "Juice Smoothie", or "Oat Milk Glass" as a lunch/dinner/breakfast dish). Every recipe must be a real, solid, cooked or prepared culinary dish — a smoothie bowl or parfait eaten with a spoon is fine, a glass of something drunk on its own is not.
 9. REAL DISH TEST (do this before finalizing every recipe): would a real person recognize this as an actual dish they'd search for, cook, and want to eat — or does it read as an invented mash-up nobody has heard of? If it fails, drop the odd-fitting ingredient rather than force it in, even if that lowers the match count. Specifically: don't drop a savory or vegetable ingredient into a sweet format just because it happens to be on hand — e.g. corn belongs in savory corn fritters or corn cakes, NOT folded into a stack of sweet pancakes meant to be eaten with syrup and butter. Sweet breakfast formats (pancakes, waffles, crepes, parfaits) should only take mix-ins that are conventionally sweet (fruit, chocolate, cinnamon, honey, nuts); savory formats (fritters, hash, frittata, omelet, skillet) are where vegetables and savory add-ins belong.
 10. NEVER FABRICATE A MISSING MAIN INGREDIENT UNDER PRESSURE TO FILL 5 RECIPES: the ONLY items you may use beyond the scanned fridge/pantry list are water, cooking oil, butter, salt, and black pepper — nothing else, ever, no matter how sparse the real inventory is. This is a confirmed real failure, not a hypothetical: given only Ketchup + Mustard, a past batch invented "Tofu" and also named a dish "Omelet" that contained no eggs at all; given only Milk + Butter + Parmesan, a past batch invented Eggs and Pasta neither ingredient was in the fridge. Given only Yogurt, a past batch invented Honey and titled the dish "Vanilla Honey Yogurt Bowl" — honey and vanilla are NOT assumed staples (see rule 5's exact list), and the user doesn't own either. All three are unusable to the user — they don't own those ingredients. This mistake is easy to make specifically with common-feeling flavor add-ins (honey, sugar, garlic, vanilla, cinnamon, lemon) that feel "basic" but are NOT on the five-item assumed-staple list — treat them exactly like any other missing ingredient: not allowed unless actually scanned. When the true inventory is this thin, it is far better to write a smaller, simpler, 100%-honest recipe (a seasoned dip, a quick glaze, a simply-prepared single item) using ONLY what's actually available than to invent a fake ingredient — main or flavoring — just to make a fuller-looking dish.
-11. TITLE MUST MATCH ACTUAL CONTENTS: never name a dish after a format or ingredient it doesn't really contain — e.g. never call something "Omelet," "Frittata," or "Scramble" unless eggs are genuinely in its ingredientsList. This applies just as strictly to FLAVOR/TECHNIQUE DESCRIPTOR WORDS, not just format words — this is a confirmed real failure, not a hypothetical: a past recipe was titled "Herbed Chicken Skillet" but contained zero herbs anywhere in its ingredientsList or steps (only chicken, onion, garlic, broccoli). A separate past recipe was titled "Creamy Mushroom Pasta" with an ingredientsList of only flour, mushrooms, onion, and garlic — no cream, milk, cheese, butter, or any dairy/fat of any kind, so nothing in the dish was actually creamy. Before finalizing every title, check each descriptor word (Herbed, Spiced, Garlic, Honey, Lemon, Smoky, Buttery, Cheesy, Creamy, etc.) against the actual ingredientsList — if the word implies an ingredient or quality that isn't genuinely present, either add that real ingredient or remove the word from the title.
+11. TITLE MUST MATCH ACTUAL CONTENTS: never name a dish after a format or ingredient it doesn't really contain — e.g. never call something "Omelet," "Frittata," or "Scramble" unless eggs are genuinely in its ingredientsList. This applies just as strictly to FLAVOR/TECHNIQUE DESCRIPTOR WORDS, not just format words — this is a confirmed real failure, not a hypothetical: a past recipe was titled "Herbed Chicken Skillet" but contained zero herbs anywhere in its ingredientsList or steps (only chicken, onion, garlic, broccoli). A separate past recipe was titled "Creamy Mushroom Pasta" with an ingredientsList of only flour, mushrooms, onion, and garlic — no cream, milk, cheese, butter, or any dairy/fat of any kind, so nothing in the dish was actually creamy. A third, in a non-English recipe, used the target language's own word for "lemon" in the title with no lemon anywhere in ingredientsList; a fourth was a "Vanilla ___" dessert with no vanilla used at all. Before finalizing every title, check each descriptor word (Herbed, Spiced, Garlic, Honey, Lemon, Smoky, Buttery, Cheesy, Creamy, Vanilla, etc. — in whatever language the title is actually written) against the actual ingredientsList — if the word implies an ingredient or quality that isn't genuinely present, either add that real ingredient or remove the word from the title.
+
+TITLE FLAVOR ACCURACY — "titleFlavorWords" FIELD (feeds a code-level check, this is not just a style note): after finalizing each title, translate any flavor/technique descriptor word it uses — in whatever language the title is actually written — into the matching English tag(s) from this fixed list: "creamy", "cheesy", "buttery", "garlicky", "garlic", "honey", "lemony", "lemon", "spicy", "smoky", "maple", "herbed", "vanilla". Put those tags in "titleFlavorWords" (empty array [] if the title makes no such claim — true for most titles). This is separate from the title text itself, which always stays in the recipe's own selected language — this field alone stays in English regardless of language, same as "category"/"dishType"/"matchBadge". Get this right: an app-level check drops any recipe whose titleFlavorWords tag isn't actually backed by a matching ingredient in ingredientsList, so an inaccurate tag here can silently cost the user a recipe that was otherwise fine. Example: a title translating to "Creamy Garlic Chicken", with cream and garlic both genuinely in ingredientsList, → titleFlavorWords: ["creamy", "garlic"]. A title translating to "Vanilla Bean Pudding" with no vanilla in ingredientsList is exactly the failure this exists to catch — either add real vanilla to ingredientsList or rewrite the title to not claim it.
 12. "ingredientsList" MUST CONTAIN ONLY REAL INGREDIENT ENTRIES, NEVER AN INSTRUCTION: every string in "ingredientsList" must be exactly "<Quantity> <Ingredient> <Emoji>" — nothing else. This is a confirmed real failure, not a hypothetical: a past oven-based dessert recipe's ingredientsList opened with "Preheat the oven to 350°F. 🫙" as if it were an ingredient — a full instruction sentence with a random pantry emoji, not a quantity+ingredient at all. The preheat instruction belongs ONLY as its own step in "steps", never in "ingredientsList", no matter how central it is to the recipe. Before finalizing, check every ingredientsList entry: if it's a sentence, ends with a period, or names an oven/temperature/action rather than a food item, it does not belong there — remove it.
 13. PROOFREAD SPELLING: before finalizing, re-read every title and ingredient name for a genuinely correct spelling of that word in the target language (e.g. "Crepes" not "Crpes") — a dropped or transposed letter in a dish name is a real, visible defect.
 14. NO FROM-SCRATCH DOUGH ON A SHORT TIMELINE: if the fridge/pantry has no real pasta, noodles, or bread product, do not invent one by having the user mix flour and water into a dough and roll/cut/knead it — that is a genuine skill- and time-intensive technique (mixing, resting, rolling, cutting) that cannot honestly fit into a quick weeknight cookTime/totalTime. This is a confirmed real failure, not a hypothetical: a past "Creamy Mushroom Pasta" recipe had the user make fresh pasta dough from flour and water from scratch, then boil and sauce it, all within a stated 15-minute cookTime / 25-minute totalTime — not achievable by a home cook. If no real pasta/noodle/bread product was scanned, either write a totally different dish that doesn't need one (a stir-fry, a rice bowl, a skillet) or, if a from-scratch dough dish is genuinely the best fit, give it an honest totalTime (60+ minutes) that actually accounts for mixing, resting, and rolling the dough.
@@ -708,6 +730,7 @@ TITLE DISH-TYPE WORD (MANDATORY — confirmed real failure, and this is a hard b
 - The LAST word of every title (its dish-type word) MUST be a real, specific, recognizable format: Bowl, Skillet, Stir-Fry, Salad, Soup, Curry, Hash, Fritters, Casserole, Sandwich, Wrap, Pasta, Noodles, Rice, Omelet, Frittata, Pancakes, Crepes, Parfait, Pudding, Cake, Toast (ONLY when the dish is genuinely a slice of bread with a topping — never pair it with rice, meat, or anything that isn't a bread-based topping), or similar — never a vague container word that could describe any food: BANNED dish-type words are "Plate", "Dish", "Meal", "Medley", "Delight", "Creation", "Mix", "Bowl of [X]" used generically.
 - The dish-type word must genuinely match what's cooked. Before finalizing every title, silently ask: "would a real person recognize this exact combination as a dish that exists?" — if the lead ingredient and the dish-type word together describe nothing real (like "Rice Toast"), rewrite the title entirely using a dish-type word that actually fits what the recipe is (a chicken/broccoli/rice stir-fry is a "Bowl", a "Skillet", or "Fried Rice" — never a "Plate" or "Toast").
 - IN A NON-ENGLISH LANGUAGE, TRANSLATE THE CONCEPT, NOT THE NOUN: this word list is English so this rule is easy to check, but it names dish CONCEPTS (a pan-cooked one-dish meal, a bowl-format meal, etc.), not literal nouns to carry into every language unchanged. Confirmed real failure: a Polish title read "Aromatyczna Patelnia z Mięsem" — literally "Aromatic Frying-Pan with Meat," putting the physical cooking vessel as the title's head noun, which is not how a Polish speaker names a dish (a Polish speaker would use "z patelni" — "from the pan" — as a trailing descriptor, if at all, never as the subject of the title). English's "[descriptor] [ingredient] Skillet/Bowl" noun-final pattern does not map word-for-word onto every language's grammar. In each target language, express the same dish concept the way a native speaker actually titles that dish — which may mean a completely different word order, a different part of speech for the "dish-type" idea, or dropping the vessel/format word entirely if that language's own naming convention doesn't lean on it the way English does. Silently re-check every non-English title with the same NATIVE FLUENCY question used elsewhere in this prompt: would a native speaker who cooks for a living actually title a dish this way, or does this read as an English title translated word-for-word?
+- UNIVERSAL DISH NAMES STAY AS THEMSELVES — DON'T FORCE-TRANSLATE THEM: some dish names are genuinely international loanwords that native speakers of most languages already use as-is, unchanged, when they cook and talk about that exact dish — Tiramisu, Crème Brûlée, Panna Cotta, Pizza, Lasagna, Paella, Sushi, Ramen, Risotto, Curry, and similar. When a recipe genuinely is one of these (see rule 3's naming guidance above), KEEP that name in its recognized form rather than inventing a native-language equivalent nobody actually uses — a forced native translation of an already-universal name is its own kind of unnatural title, the mirror image of the "Patelnia" failure above. This is a judgment call the same way everything else in NATIVE FLUENCY is: the test is always the same question — what would a real native speaker of the target language actually call this dish out loud? For a genuinely local/regional dish concept (a generic skillet, a bowl, a home-style soup) that has no single internationally-recognized name, use the natural construction in the target language instead, per the rule above.
 
 OTHER TITLE NAMING RULES:
 1. LENGTH CAP: 2–4 words. Never more than 4. Titles must fit on one line in a card UI — long titles wrap to two lines and break the visual rhythm of the recipe list.
@@ -752,6 +775,7 @@ REQUIRED FIELDS PER RECIPE OBJECT:
 - "carbs": "Xg" — same estimation basis as protein.
 - "fat": "Xg" — same estimation basis as protein.
 - "matchBadge": English (e.g. "Uses 4 fridge items")
+- "titleFlavorWords": array of English tags (from the fixed list: "creamy","cheesy","buttery","garlicky","garlic","honey","lemony","lemon","spicy","smoky","maple","herbed","vanilla") — see TITLE FLAVOR ACCURACY below. Empty array [] on most recipes.
 - "servings": "Serves X people"
 - "ingredientsList": array of "Quantity Ingredient Emoji" strings (never 📦) — units must match the single selected system per TEMPERATURE & UNIT ACCURACY above, never both.
 - "steps": 3 to 5 imperative English strings per the DYNAMIC STEP COUNT rule, each ending with a period. Any recipe using an oven/broiler/grill MUST have its own preheat step with an explicit temperature in the selected system — never assume the oven is already hot. Any step naming a baking dish/cake pan/loaf pan/casserole dish/muffin tin/pie dish MUST state that dish's size right there — never just "pour into a baking dish."
@@ -1187,6 +1211,7 @@ Return ONLY a raw JSON array of exactly ${recipeCount} objects with these exact 
 - "carbs": string (e.g. "35g") — same estimation basis as protein.
 - "fat": string (e.g. "14g") — same estimation basis as protein.
 - "matchBadge": string (English — never shown to the user, leave as English)
+- "titleFlavorWords": array of English tags — see TITLE FLAVOR ACCURACY above. [] for most recipes; only include a tag when the title in ${language} genuinely uses that descriptor concept AND ingredientsList genuinely backs it up.
 - "servings": string, written entirely in ${language} — translate both the number-word phrasing AND "Serves"/"people" (or whatever ${language}'s natural equivalent phrase is), not just the surrounding words. ${isEnglish ? `E.g. "Serves ${servings} people".` : `Do NOT leave this field in English — e.g. for Polish this would be "Dla ${servings} osób", for Spanish "Sirve a ${servings} personas"; produce the real ${language} equivalent, not a transliteration.`}
 - "ingredientsList": array of Quantity + Ingredient + Emoji strings ONLY (inventory only, scaled for ${servings}, ingredient names in ${language}) — every entry must be a real food item, NEVER an instruction. Confirmed real failure: a past batch put "Preheat the oven to 350°F. 🫙" as an ingredientsList entry — that is a step, not an ingredient, and must never appear here even for oven recipes (the preheat instruction goes in "steps" only). Quantities MUST use ONLY the ${isMetric ? "METRIC (grams/ml)" : "US CUSTOMARY"} system per UNIT SYSTEM above${isMetric ? ` — e.g. "120g Mąka 🌾" (ingredient translated, "g"/"ml" written as-is)` : isEnglish ? ` — e.g. "1 cup Flour 🌾"` : ` — e.g. for Polish "1 szklanka Mąka 🌾" NOT "1 cup Mąka 🌾" (the unit WORD translates too — see UNIT SYSTEM above)`}.
 - "steps": array of 3 to 5 imperative strings in ${language} per the DYNAMIC STEP COUNT rule above, each ending with a period. If the recipe uses an oven/broiler/grill, one step MUST be an explicit preheat instruction with a real ${isMetric ? "°C" : "°F"} temperature. Any step finishing meat/poultry/seafood must pair its time with a real doneness cue (temperature or a visual/textural check), never a time estimate alone — see MEAT/POULTRY/SEAFOOD DONENESS & TECHNIQUE above, which also governs matching the cook time/technique to the actual cut.
@@ -1211,6 +1236,7 @@ Example JSON Output:
     "carbs": "14g",
     "fat": "26g",
     "matchBadge": "Uses 3 fridge items",
+    "titleFlavorWords": [],
     "servings": "Serves ${servings} ${servings === 1 ? "person" : "people"}",
     "ingredientsList": ["3 Eggs 🥚", "2 tbsp Hummus 🫙", "1/2 Red Bell Pepper 🫑"],
     "steps": [
@@ -1225,7 +1251,7 @@ Example JSON Output:
   },
   {
     "id": 2,
-    "title": "Honey Yogurt Bowl",
+    "title": "Jam Swirl Yogurt Bowl",
     "dishType": "sweet_bowl",
     "category": "breakfast",
     "categoryLabel": "Breakfast",
@@ -1237,6 +1263,7 @@ Example JSON Output:
     "carbs": "32g",
     "fat": "6g",
     "matchBadge": "Uses 2 fridge items",
+    "titleFlavorWords": [],
     "servings": "Serves ${servings} ${servings === 1 ? "person" : "people"}",
     "ingredientsList": ["1 cup Greek Yogurt 🥣", "2 tbsp Jam 🍓"],
     "steps": [
@@ -1846,6 +1873,16 @@ function normalizeRecipe(recipe, idx, mealType, servings = 2, language = "Englis
     carbs: formatMacroGrams(safe.carbs),
     fat: formatMacroGrams(safe.fat),
     matchBadge: typeof safe.matchBadge === "string" ? safe.matchBadge : "",
+    // Sanitized against the fixed vocabulary rather than trusted as-is —
+    // an unrecognized tag here would silently never match any
+    // TITLE_FLAVOR_REQUIREMENTS key and just be dead weight, so drop
+    // anything outside the known list instead of passing it through.
+    titleFlavorWords: Array.isArray(safe.titleFlavorWords)
+      ? safe.titleFlavorWords
+          .filter((tag) => typeof tag === "string")
+          .map((tag) => tag.toLowerCase().trim())
+          .filter((tag) => TITLE_FLAVOR_REQUIREMENTS[tag])
+      : [],
     servings: servingsLabel,
     emoji: dishVisual.emoji,
     emojiBgClass: dishVisual.bgClass,
