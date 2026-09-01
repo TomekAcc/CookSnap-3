@@ -500,10 +500,10 @@ export default function FridgeScannerHero() {
                   justifyContent: "center",
                   marginBottom: 14,
                   shadowColor: "#059669",
-                  shadowOffset: { width: 0, height: 5 },
-                  shadowOpacity: 0.4,
-                  shadowRadius: 8,
-                  elevation: 5,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.18,
+                  shadowRadius: 6,
+                  elevation: 3,
                 }}
               >
                 <Camera size={26} color="#34D399" />
@@ -518,6 +518,19 @@ export default function FridgeScannerHero() {
               // shadow silently didn't. The shadow now lives on this outer
               // plain View (no overflow set, so nothing clips it); the
               // LinearGradient inside only owns the fill + clipping.
+              //
+              // Opacity dropped hard from the first pass (0.3 → 0.12) —
+              // that one still read as a diffuse green "glow"/halo even
+              // after the clipping fix, not a real shadow. Reason: RN's
+              // shadow has no CSS "spread" property, so the mockup's
+              // negative-spread box-shadow (which is what tightened it in
+              // the browser) has no direct equivalent here — the same
+              // nominal opacity/blur numbers spread out much further on
+              // real iOS than in Chromium. This app's own proven card
+              // shadow (designSystem.js DS.shadow.card) sits at just
+              // 0.04–0.06 opacity; landing near there (with a bit more for
+              // the emerald tint to still read at all) is what actually
+              // keeps this looking like elevation instead of a glow.
               <View
                 style={{
                   width: 64,
@@ -525,10 +538,10 @@ export default function FridgeScannerHero() {
                   borderRadius: 20,
                   marginBottom: 14,
                   shadowColor: "#059669",
-                  shadowOffset: { width: 0, height: 5 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 8,
-                  elevation: 5,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.12,
+                  shadowRadius: 5,
+                  elevation: 3,
                 }}
               >
                 <LinearGradient
