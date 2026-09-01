@@ -334,9 +334,15 @@ export default function RecipeDetailModal() {
         </View>
 
         <View style={styles.headerTitles}>
+          {/* Same fix as RecipeCard's title — a word too wide to fit a
+              single line can't wrap and gets truncated mid-word, leaving
+              the second line empty. adjustsFontSizeToFit shrinks slightly
+              instead so it fills both lines. */}
           <Text
             style={[styles.recipeTitle, { color: colors.textPrimary }]}
             numberOfLines={2}
+            adjustsFontSizeToFit
+            minimumFontScale={0.8}
           >
             {recipe?.title || t("recipeDetail.fallbackTitle")}
           </Text>

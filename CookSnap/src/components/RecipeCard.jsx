@@ -97,9 +97,18 @@ export default function RecipeCard({
       </View>
 
       <View style={styles.body}>
+        {/* Confirmed real failure: a title containing one word too wide to
+            fit even a full line (e.g. a long compound ingredient name)
+            can't wrap normally — RN truncates it mid-word right where it
+            ran out of room on line 1, leaving line 2 sitting empty. That
+            reads as broken layout, not "long title." adjustsFontSizeToFit
+            lets the title shrink slightly instead, so it actually fills
+            both lines rather than dead-ending early. */}
         <Text
           style={[styles.title, { color: colors.textPrimary }]}
           numberOfLines={2}
+          adjustsFontSizeToFit
+          minimumFontScale={0.8}
         >
           {safeRecipe.title}
         </Text>
