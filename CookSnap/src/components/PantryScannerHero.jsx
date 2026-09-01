@@ -311,7 +311,10 @@ export default function PantryScannerHero({ onManualAdd }) {
             style={{
               flex: 1.3,
               height: 46,
-              backgroundColor: "#1E293B",
+              // Matches FridgeScannerHero's "Take Photo" button — same
+              // primary scan action, was the old dark-navy+amber pairing
+              // left over from before that redesign shipped.
+              backgroundColor: "#059669",
               paddingHorizontal: 14,
               borderRadius: 13,
               flexDirection: "row",
@@ -319,7 +322,7 @@ export default function PantryScannerHero({ onManualAdd }) {
               justifyContent: "center",
             }}
           >
-            <Camera size={16} color="#F59E0B" />
+            <Camera size={16} color="#FFFFFF" />
             <Text
               style={{ color: "#FFFFFF", fontSize: 15, fontWeight: "600", marginLeft: 8 }}
               numberOfLines={1}
