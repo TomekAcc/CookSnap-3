@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -52,12 +52,26 @@ export default function SettingsScreen() {
     deactivatePro,
     resetOnboarding,
     setActiveTab,
+    settingsDoneHintShown,
+    markSettingsDoneHintShown,
     t,
   } = useCookAI();
   const { setProModalOpen } = useModalState();
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
   const [unitsPickerOpen, setUnitsPickerOpen] = useState(false);
   const selectedLanguage = getLanguageById(recipeLanguageId);
+
+  // Real feedback: the "Done" button only earns its keep on someone's
+  // very first visit — after that they already know Settings has a way
+  // out via the header's back arrow, and the button just adds noise on
+  // every later visit. Captured once via the lazy initializer (not read
+  // live) so THIS visit still shows it even once markSettingsDoneHintShown
+  // flips the underlying flag true a moment later.
+  const [showDoneHint] = useState(() => !settingsDoneHintShown);
+  useEffect(() => {
+    if (showDoneHint) markSettingsDoneHintShown();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -858,39 +872,44 @@ export default function SettingsScreen() {
           reuses the exact bottom sticky-button pattern onboarding already
           teaches with "Get Started", and — since this screen is also
           reachable before ever touching the scanner — closes the loop by
-          landing directly on it instead of back on Profile. */}
-      <View
-        style={{
-          paddingHorizontal: 20,
-          paddingTop: 12,
-          // BottomNav floats as its own absolutely-positioned overlay
-          // (App.jsx renders it outside this screen's tree, zIndex 40) —
-          // unlike a ScrollView's contentContainerStyle, padding on a
-          // plain sibling View like this one doesn't get scrolled past,
-          // it just pushes this bar's own bottom edge up, so it needs to
-          // actually clear BottomNav's real rendered height (~64pt) or the
-          // nav bar paints straight over this button.
-          paddingBottom: insets.bottom + 76,
-          borderTopWidth: 1,
-          borderTopColor: colors.cardBorder,
-          backgroundColor: colors.bg,
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => setActiveTab("scanner")}
-          activeOpacity={0.88}
+          landing directly on it instead of back on Profile. Shown only on
+          someone's first-ever visit (see showDoneHint above) — by any
+          later visit they already know the header's chevron gets them
+          out, and the button is just noise then. No border-top divider:
+          a plain solid green button reads more clearly as a single CTA
+          than a bar with a hairline separating it from the content above. */}
+      {showDoneHint ? (
+        <View
           style={{
-            backgroundColor: "#10B981",
-            borderRadius: 18,
-            paddingVertical: 16,
-            alignItems: "center",
+            paddingHorizontal: 20,
+            paddingTop: 12,
+            // BottomNav floats as its own absolutely-positioned overlay
+            // (App.jsx renders it outside this screen's tree, zIndex 40) —
+            // unlike a ScrollView's contentContainerStyle, padding on a
+            // plain sibling View like this one doesn't get scrolled past,
+            // it just pushes this bar's own bottom edge up, so it needs to
+            // actually clear BottomNav's real rendered height (~64pt) or
+            // the nav bar paints straight over this button.
+            paddingBottom: insets.bottom + 76,
+            backgroundColor: colors.bg,
           }}
         >
-          <Text style={{ color: "#FFFFFF", fontWeight: "800", fontSize: 16 }}>
-            {t("settings.done")}
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            onPress={() => setActiveTab("scanner")}
+            activeOpacity={0.88}
+            style={{
+              backgroundColor: "#10B981",
+              borderRadius: 18,
+              paddingVertical: 16,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "#FFFFFF", fontWeight: "800", fontSize: 16 }}>
+              {t("settings.done")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
       <StandardModal
         visible={languagePickerOpen}

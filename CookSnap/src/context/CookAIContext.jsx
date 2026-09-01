@@ -48,6 +48,7 @@ const UNIT_SYSTEM_STORAGE_KEY = "cookai:unitSystem:v1";
 const INGREDIENT_PRIORITY_STORAGE_KEY = "cookai:ingredientPriority:v1";
 const RECIPE_LANGUAGE_STORAGE_KEY = "cookai:recipeLanguage:v1";
 const ONBOARDING_STORAGE_KEY = "cookai:onboardingComplete:v1";
+const SETTINGS_DONE_HINT_STORAGE_KEY = "cookai:settingsDoneHintShown:v1";
 const DIETARY_RESTRICTIONS_STORAGE_KEY = "cookai:dietaryRestrictions:v1";
 const CUSTOM_DIET_AVOID_STORAGE_KEY = "cookai:customDietAvoid:v1";
 const CUSTOM_DIET_PREFER_STORAGE_KEY = "cookai:customDietPrefer:v1";
@@ -1157,6 +1158,43 @@ export function CookAIProvider({ children }) {
     AsyncStorage.removeItem(ONBOARDING_STORAGE_KEY).catch((err) =>
       console.warn("[Cook AI] onboarding reset failed:", err?.message)
     );
+    // Replaying onboarding is meant to simulate a genuine first-time user
+    // end to end — that includes Settings' one-time "Done" hint below,
+    // not just the onboarding screens themselves.
+    setSettingsDoneHintShownState(false);
+    AsyncStorage.removeItem(SETTINGS_DONE_HINT_STORAGE_KEY).catch((err) =>
+      console.warn("[Cook AI] settings done-hint reset failed:", err?.message)
+    );
+  }, []);
+
+  // Confirmed real feedback: Settings' sticky "Done" button only earns its
+  // keep the very first time someone lands there — by any later visit,
+  // they've already learned the screen has a way out and the extra button
+  // just adds noise. SettingsScreen reads this flag once per mount (via
+  // its own lazy useState initializer, not live) so it still shows for
+  // that first visit even though this flips true the moment it mounts.
+  const [settingsDoneHintShown, setSettingsDoneHintShownState] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(SETTINGS_DONE_HINT_STORAGE_KEY);
+        if (!cancelled && raw === "true") setSettingsDoneHintShownState(true);
+      } catch (err) {
+        console.warn("[Cook AI] settings done-hint hydrate failed:", err?.message);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const markSettingsDoneHintShown = useCallback(() => {
+    setSettingsDoneHintShownState(true);
+    AsyncStorage.setItem(SETTINGS_DONE_HINT_STORAGE_KEY, "true").catch((err) =>
+      console.warn("[Cook AI] settings done-hint persist failed:", err?.message)
+    );
   }, []);
 
   const [toast, setToast] = useState(null);
@@ -2089,6 +2127,8 @@ export function CookAIProvider({ children }) {
       onboardingHydrated,
       completeOnboarding,
       resetOnboarding,
+      settingsDoneHintShown,
+      markSettingsDoneHintShown,
       toast,
       showToast,
     }),
@@ -2181,6 +2221,8 @@ export function CookAIProvider({ children }) {
       onboardingHydrated,
       completeOnboarding,
       resetOnboarding,
+      settingsDoneHintShown,
+      markSettingsDoneHintShown,
       toast,
       showToast,
     ]
