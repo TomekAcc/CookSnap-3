@@ -56,6 +56,7 @@ export default function SettingsScreen() {
   } = useCookAI();
   const { setProModalOpen } = useModalState();
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
+  const [unitsPickerOpen, setUnitsPickerOpen] = useState(false);
   const selectedLanguage = getLanguageById(recipeLanguageId);
 
   return (
@@ -498,11 +499,17 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Measurement Units — same segmented-picker shape as App Theme
-            above. AI recipes are always generated in exactly ONE system
-            (never both shown at once — see geminiRecipes.js UNIT SYSTEM
-            rule), so this choice directly controls what future generated
-            recipes look like. */}
+        {/* Measurement Units — confirmed real feedback: this and Recipe
+            Language are the two choices onboarding already asks for, and
+            re-showing this one as the same full always-expanded picker
+            made Settings read as "redo the setup wizard" instead of "here
+            is what you already chose." Recipe Language avoids exactly
+            this by collapsing to a summary row once a value is set; this
+            now matches that same pattern instead of being the odd one
+            out on the same screen. AI recipes are always generated in
+            exactly ONE system (never both at once — see geminiRecipes.js
+            UNIT SYSTEM rule), so this still directly controls what future
+            generated recipes look like. */}
         <View style={{ marginBottom: 14 }}>
           <Text
             style={{
@@ -515,81 +522,39 @@ export default function SettingsScreen() {
             {t("settings.measurementUnits")}
           </Text>
 
-          <View style={{ flexDirection: "row", gap: 8 }}>
-            <TouchableOpacity
-              onPress={() => setUnitSystem("us")}
-              activeOpacity={0.88}
-              style={{
-                flex: 1,
-                paddingVertical: 12,
-                paddingHorizontal: 10,
-                borderRadius: 16,
-                backgroundColor: colors.card,
-                borderWidth: 2,
-                borderColor: unitSystem === "us" ? "#10B981" : colors.cardBorder,
-                alignItems: "center",
-                gap: 4,
-                overflow: "hidden",
-              }}
-            >
-              <Ruler
-                size={20}
-                color={unitSystem === "us" ? "#10B981" : colors.textSecondary}
-              />
+          <TouchableOpacity
+            onPress={() => setUnitsPickerOpen(true)}
+            activeOpacity={0.7}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              backgroundColor: colors.card,
+              borderRadius: 18,
+              paddingVertical: 14,
+              paddingHorizontal: 16,
+              borderWidth: 1,
+              borderColor: colors.cardBorder,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+              {unitSystem === "us" ? (
+                <Ruler size={18} color={colors.textSecondary} />
+              ) : (
+                <Thermometer size={18} color={colors.textSecondary} />
+              )}
               <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
                 style={{
-                  fontSize: 12,
+                  fontSize: 15,
                   fontWeight: "800",
-                  textAlign: "center",
-                  width: "100%",
-                  minWidth: 0,
-                  color: unitSystem === "us" ? "#10B981" : colors.textPrimary,
+                  color: colors.textPrimary,
                 }}
               >
-                {t("settings.usUnits")}
+                {unitSystem === "us" ? t("settings.usUnits") : t("settings.metricUnits")}
               </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => setUnitSystem("metric")}
-              activeOpacity={0.88}
-              style={{
-                flex: 1,
-                paddingVertical: 12,
-                paddingHorizontal: 10,
-                borderRadius: 16,
-                backgroundColor: colors.card,
-                borderWidth: 2,
-                borderColor:
-                  unitSystem === "metric" ? "#10B981" : colors.cardBorder,
-                alignItems: "center",
-                gap: 4,
-                overflow: "hidden",
-              }}
-            >
-              <Thermometer
-                size={20}
-                color={unitSystem === "metric" ? "#34D399" : colors.textSecondary}
-              />
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{
-                  fontSize: 12,
-                  fontWeight: "800",
-                  textAlign: "center",
-                  width: "100%",
-                  minWidth: 0,
-                  color:
-                    unitSystem === "metric" ? "#34D399" : colors.textPrimary,
-                }}
-              >
-                {t("settings.metricUnits")}
-              </Text>
-            </TouchableOpacity>
-          </View>
+            </View>
+            <ChevronRight size={18} color={colors.textSecondary} />
+          </TouchableOpacity>
         </View>
 
         {/* Ingredient Source Priority — real feedback from a live tester:
@@ -1058,6 +1023,116 @@ export default function SettingsScreen() {
             })}
           </View>
         </ScrollView>
+      </StandardModal>
+
+      <StandardModal
+        visible={unitsPickerOpen}
+        onClose={() => setUnitsPickerOpen(false)}
+        maxHeight="50%"
+        dragZoneHeight={64}
+        contentStyle={{
+          backgroundColor: colors.card,
+          borderColor: colors.cardBorder,
+        }}
+      >
+        <View
+          style={{
+            width: 40,
+            height: 4.5,
+            borderRadius: 3,
+            alignSelf: "center",
+            marginVertical: 6,
+            backgroundColor: colors.sheetHandle || colors.cardBorder,
+          }}
+        />
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "800",
+            color: colors.textPrimary,
+            paddingHorizontal: 20,
+            marginBottom: 12,
+          }}
+        >
+          {t("settings.measurementUnits")}
+        </Text>
+        <View
+          style={{
+            marginHorizontal: 20,
+            marginBottom: insets.bottom + 24,
+            backgroundColor: colors.bg,
+            borderRadius: 18,
+            padding: 6,
+            borderWidth: 1,
+            borderColor: colors.cardBorder,
+          }}
+        >
+          {[
+            { id: "us", labelKey: "settings.usUnits", Icon: Ruler },
+            { id: "metric", labelKey: "settings.metricUnits", Icon: Thermometer },
+          ].map((option, index) => {
+            const isSelected = unitSystem === option.id;
+            const Icon = option.Icon;
+            return (
+              <TouchableOpacity
+                key={option.id}
+                onPress={() => {
+                  setUnitsPickerOpen(false);
+                  requestAnimationFrame(() => {
+                    setUnitSystem(option.id);
+                  });
+                }}
+                activeOpacity={0.7}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingVertical: 14,
+                  paddingHorizontal: 12,
+                  borderBottomWidth: index === 0 ? 1 : 0,
+                  borderBottomColor: colors.cardBorder,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                  <Icon size={20} color={colors.textSecondary} />
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontWeight: "800",
+                      color: colors.textPrimary,
+                    }}
+                  >
+                    {t(option.labelKey)}
+                  </Text>
+                </View>
+                {isSelected ? (
+                  <View
+                    style={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: 11,
+                      backgroundColor: "#10B981",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Check size={14} color="#FFFFFF" strokeWidth={2.5} />
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: 11,
+                      borderWidth: 1.5,
+                      borderColor: colors.cardBorder,
+                    }}
+                  />
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </StandardModal>
     </View>
   );
