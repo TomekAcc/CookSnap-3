@@ -674,41 +674,22 @@ export function classifyPantryItemLocal(name) {
   };
 }
 
+/**
+ * @deprecated Always returns []. Never invent pantry items.
+ *
+ * Used to return a hardcoded 4-item starter list (Olive Oil, Sea Salt,
+ * Dried Oregano, All-Purpose Flour) on ANY scan failure — including a
+ * genuinely empty/correct model response for a non-pantry photo, which is
+ * the confirmed real bug a user reported: scanning a photo with nothing
+ * pantry-related in it "found 4 items" every single time, always the same
+ * four. That's the opposite of this app's own stated policy — brand-new
+ * users start with a clean, empty pantry, no seeded staples (see
+ * safePantryInit in CookAIContext) — so silently reintroducing fake
+ * staples on a scan failure was never consistent with that to begin with.
+ * Matches getFallbackFridgeItems' identical fix above.
+ */
 export function getFallbackPantryItems() {
-  return [
-    {
-      id: "pantry-fb-oil",
-      name: "Olive Oil",
-      emoji: "🫒",
-      category: "Oils & Sauces",
-      role: "Healthy cooking oil & dressing base",
-      inStock: true,
-    },
-    {
-      id: "pantry-fb-salt",
-      name: "Sea Salt",
-      emoji: "🧂",
-      category: "Spices & Herbs",
-      role: "Essential seasoning",
-      inStock: true,
-    },
-    {
-      id: "pantry-fb-oregano",
-      name: "Dried Oregano",
-      emoji: "🌿",
-      category: "Spices & Herbs",
-      role: "Herb accent for Italian dishes",
-      inStock: true,
-    },
-    {
-      id: "pantry-fb-flour",
-      name: "All-Purpose Flour",
-      emoji: "🌾",
-      category: "Grains & Baking",
-      role: "Thickener & baking foundation",
-      inStock: true,
-    },
-  ];
+  return [];
 }
 
 export async function analyzePantryImage(
@@ -819,14 +800,30 @@ export async function analyzePantryImage(
         continue;
       }
 
-      if (Array.isArray(items) && items.length > 0) {
-        const normalized = normalizePantryItems(items);
-        if (normalized.length > 0) {
-          console.log(
-            `[Cook AI Vision] Pantry SUCCESS — ${normalized.length} staples via ${endpointName}`
-          );
-          return normalized;
+      // Confirmed real failure, reported directly by a user: scanned a
+      // photo with no pantry items in it at all, and the app confidently
+      // reported "4 items found" — Olive Oil, Sea Salt, Dried Oregano, All-
+      // Purpose Flour, every single time, regardless of what the photo
+      // actually showed. Root cause: `items.length > 0` below used to be
+      // required before this branch would return anything, so a genuinely
+      // empty (and correct) `[]` from the model — "there's no food here" —
+      // fell through exactly like a real failure and landed on
+      // getFallbackPantryItems()'s hardcoded 4-item list at the bottom of
+      // this function. Verified live: analyzeFridgeImage already handles
+      // this correctly (an empty model response returns [] immediately,
+      // see `jsonString === "[]"` above in this file) — this was purely a
+      // pantry-side gap, not a model problem. An empty array is now a
+      // valid, final answer, exactly like the fridge path.
+      if (Array.isArray(items)) {
+        if (items.length === 0) {
+          console.log(`[Cook AI Vision] Pantry ${endpointName} returned empty pantry list.`);
+          return [];
         }
+        const normalized = normalizePantryItems(items);
+        console.log(
+          `[Cook AI Vision] Pantry SUCCESS — ${normalized.length} staples via ${endpointName}`
+        );
+        return normalized;
       }
     } catch (err) {
       console.warn(`[Cook AI Vision] Pantry failed:`, err?.message);
