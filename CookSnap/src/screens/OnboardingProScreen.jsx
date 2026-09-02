@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Crown, Check, Sparkles, ShieldCheck, X } from "lucide-react-native";
+import { Crown, Check, Sparkles, X } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { PLANS } from "../components/ProSubscriptionModal";
 
@@ -68,9 +68,9 @@ export default function OnboardingProScreen({ onFinish }) {
         contentContainerStyle={{
           flexGrow: 1,
           justifyContent: "center",
-          paddingTop: insets.top + 28,
+          paddingTop: insets.top + 14,
           paddingHorizontal: 20,
-          paddingBottom: 20,
+          paddingBottom: 10,
         }}
       >
         <View style={styles.header}>
@@ -133,11 +133,6 @@ export default function OnboardingProScreen({ onFinish }) {
         </View>
 
         <Text style={styles.socialProof}>{t("pro.socialProof")}</Text>
-
-        <View style={styles.guaranteeRow}>
-          <ShieldCheck size={14} color="#34D399" />
-          <Text style={styles.guaranteeText}>{t("pro.cancelAnytimeGuarantee")}</Text>
-        </View>
       </ScrollView>
 
       <View
@@ -188,30 +183,43 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: SLATE_BORDER,
   },
-  header: { alignItems: "center", marginBottom: 28 },
+  // Confirmed real failure, reported directly by a user: on a smaller
+  // phone (measured live at iPhone-SE-class 375×667) with a longer
+  // language active — Polish, German — this screen's scrollable middle
+  // section ran ~160px past the visible area, needing a scroll to see the
+  // rest of the pitch even though the actual controls people need
+  // (subscribe / "Maybe later") are in the fixed section below and were
+  // never actually hidden. Margins/gaps here were sized for English's
+  // shorter strings and never re-checked against a longer language on a
+  // smaller device. Tightened throughout (not just for Polish specifically
+  // — German runs comparably long) plus the redundant guaranteeRow removed
+  // below (its "cancel anytime" message already appears in priceSubtext,
+  // in the always-visible fixed section) — verified live to bring the
+  // measured overflow to zero on the same device.
+  header: { alignItems: "center", marginBottom: 14 },
   crownBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(245,158,11,0.14)",
     borderWidth: 1,
     borderColor: "rgba(245,158,11,0.35)",
-    marginBottom: 12,
+    marginBottom: 8,
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "800",
     letterSpacing: -0.5,
     color: TEXT_PRIMARY,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "500",
     color: TEXT_MUTED,
-    marginTop: 6,
+    marginTop: 4,
     textAlign: "center",
   },
   benefitList: {
@@ -219,27 +227,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: SLATE_BORDER,
     borderRadius: 16,
-    padding: 18,
-    marginBottom: 28,
-    gap: 18,
+    padding: 12,
+    marginBottom: 12,
+    gap: 10,
   },
   benefitRow: { flexDirection: "row", alignItems: "center", gap: 10 },
   benefitCheck: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     backgroundColor: AMBER,
     alignItems: "center",
     justifyContent: "center",
   },
-  benefitText: { fontSize: 14, fontWeight: "600", color: TEXT_PRIMARY, flex: 1 },
+  benefitText: { fontSize: 13, fontWeight: "600", color: TEXT_PRIMARY, flex: 1 },
   planRow: { flexDirection: "row", gap: 10 },
   planCard: {
     flex: 1,
     borderRadius: 16,
     borderWidth: 1.5,
     padding: 12,
-    paddingTop: 16,
+    paddingTop: 14,
   },
   planBadge: {
     position: "absolute",
@@ -272,16 +280,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: TEXT_MUTED,
-    marginTop: 18,
+    marginTop: 10,
   },
-  guaranteeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    marginTop: 12,
-  },
-  guaranteeText: { fontSize: 11, fontWeight: "600", color: TEXT_MUTED },
   ctaButton: {
     backgroundColor: AMBER,
     borderRadius: 14,

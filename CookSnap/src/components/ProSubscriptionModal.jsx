@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
-import { Crown, Check, Lock, ShieldCheck, Sparkles } from "lucide-react-native";
+import { Crown, Check, Lock, Sparkles } from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
 import StandardModal from "./StandardModal";
@@ -104,10 +104,33 @@ export default function ProSubscriptionModal() {
     >
       <View style={[styles.grabHandle, { backgroundColor: "rgba(255,255,255,0.25)" }]} />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      {/* Confirmed real failure, reported directly by a user: on a
+          smaller phone (measured live at iPhone-SE-class 375×667) with a
+          longer language active (Polish, German), the comparison table
+          alone pushed content roughly 250px past the visible area — which
+          used to include the Subscribe button itself, since everything
+          from the header through the CTA lived inside one ScrollView.
+          That's a real, silent conversion loss: the one button this
+          screen exists to get tapped could require scrolling to even
+          find. A comparison table's height scales with row count AND
+          language length, so no amount of spacing-only tuning can
+          promise it always fits — the CTA needs to be structurally safe
+          from that, not just usually safe. Split into a flex:1 ScrollView
+          (header/plans/comparison/social proof) plus a fixed section
+          below (unaffected by scroll position) for the CTA + price
+          subtext, mirroring OnboardingProScreen's identical, verified
+          fix. minHeight: 0 is required here — without it a flex child in
+          a column can refuse to shrink below its content size on web,
+          which would silently undo the whole point of this split. */}
+      <View style={{ flex: 1, minHeight: 0 }}>
+        <ScrollView
+          style={{ flexShrink: 1 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
         <View style={styles.header}>
           <View style={styles.crownBadge}>
-            <Crown size={26} color={AMBER} fill={AMBER_LIGHT} />
+            <Crown size={20} color={AMBER} fill={AMBER_LIGHT} />
           </View>
           <Text style={styles.title}>{t("pro.unlockTitle")}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
@@ -191,31 +214,34 @@ export default function ProSubscriptionModal() {
         <Text style={styles.socialProof}>
           {t("pro.socialProof")}
         </Text>
+        </ScrollView>
 
-        <TouchableOpacity onPress={handleSubscribe} activeOpacity={0.88} style={styles.ctaButton}>
-          <Sparkles size={18} color="#0F172A" />
-          <Text style={styles.ctaButtonText}>
+        {/* Fixed, outside the ScrollView on purpose — see the comment
+            above this section's opening View for why. guaranteeRow was
+            dropped entirely rather than moved here: its "cancel anytime"
+            message is already covered by priceSubtext directly below,
+            same redundancy fixed in OnboardingProScreen. */}
+        <View style={styles.ctaSection}>
+          <TouchableOpacity onPress={handleSubscribe} activeOpacity={0.88} style={styles.ctaButton}>
+            <Sparkles size={18} color="#0F172A" />
+            <Text style={styles.ctaButtonText}>
+              {plan.trial
+                ? t("pro.startTrial")
+                : t("pro.subscribeCta", { price: plan.price, period: plan.period })}
+            </Text>
+          </TouchableOpacity>
+
+          <Text style={styles.priceSubtext}>
             {plan.trial
-              ? t("pro.startTrial")
-              : t("pro.subscribeCta", { price: plan.price, period: plan.period })}
+              ? t("pro.thenPriceCancelAnytime", {
+                  price: plan.price,
+                  period: plan.period,
+                  perMonthValue: plan.perMonthValue,
+                })
+              : t("pro.billedMonthlyCancelAnytime")}
           </Text>
-        </TouchableOpacity>
-
-        <Text style={styles.priceSubtext}>
-          {plan.trial
-            ? t("pro.thenPriceCancelAnytime", {
-                price: plan.price,
-                period: plan.period,
-                perMonthValue: plan.perMonthValue,
-              })
-            : t("pro.billedMonthlyCancelAnytime")}
-        </Text>
-
-        <View style={styles.guaranteeRow}>
-          <ShieldCheck size={14} color="#34D399" />
-          <Text style={styles.guaranteeText}>{t("pro.cancelAnytimeGuarantee")}</Text>
         </View>
-      </ScrollView>
+      </View>
     </StandardModal>
   );
 }
@@ -231,42 +257,42 @@ const styles = StyleSheet.create({
     height: 4.5,
     borderRadius: 3,
     alignSelf: "center",
-    marginVertical: 6,
+    marginVertical: 4,
   },
-  scrollContent: { paddingTop: 4, paddingBottom: 20 },
-  header: { alignItems: "center", marginBottom: 12 },
+  scrollContent: { paddingTop: 0, paddingBottom: 2 },
+  header: { alignItems: "center", marginBottom: 6 },
   crownBadge: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(245,158,11,0.14)",
     borderWidth: 1,
     borderColor: "rgba(245,158,11,0.35)",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   title: {
-    fontSize: 22,
+    fontSize: 19,
     fontWeight: "800",
     letterSpacing: -0.4,
     color: TEXT_PRIMARY,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "500",
     color: TEXT_MUTED,
-    marginTop: 4,
+    marginTop: 2,
     textAlign: "center",
   },
-  planRow: { flexDirection: "row", gap: 10, marginBottom: 10 },
+  planRow: { flexDirection: "row", gap: 8, marginBottom: 5 },
   planCard: {
     flex: 1,
-    borderRadius: 16,
+    borderRadius: 14,
     borderWidth: 1.5,
-    padding: 12,
-    paddingTop: 16,
+    padding: 8,
+    paddingTop: 10,
   },
   planBadge: {
     position: "absolute",
@@ -300,23 +326,23 @@ const styles = StyleSheet.create({
   },
   radioInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: AMBER },
   compareCard: {
-    borderRadius: 16,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: SLATE_BORDER,
     backgroundColor: SLATE_ROW,
     paddingHorizontal: 12,
-    marginBottom: 10,
+    marginBottom: 4,
     overflow: "hidden",
   },
   compareHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 8,
-    paddingBottom: 5,
+    paddingTop: 4,
+    paddingBottom: 2,
   },
   compareHeaderCell: {
     flex: 1,
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: "800",
     color: TEXT_MUTED,
     textAlign: "center",
@@ -325,20 +351,23 @@ const styles = StyleSheet.create({
   compareRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 2,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: SLATE_BORDER,
   },
-  compareLabel: { fontSize: 12.5, fontWeight: "600", color: TEXT_PRIMARY },
+  compareLabel: { fontSize: 11.5, fontWeight: "600", color: TEXT_PRIMARY, lineHeight: 14 },
   compareCell: { flex: 1, alignItems: "center", justifyContent: "center" },
-  compareFreeText: { fontSize: 11.5, fontWeight: "600", color: TEXT_MUTED },
-  compareProText: { fontSize: 11.5, fontWeight: "700", color: AMBER },
+  compareFreeText: { fontSize: 10.5, fontWeight: "600", color: TEXT_MUTED },
+  compareProText: { fontSize: 10.5, fontWeight: "700", color: AMBER },
   socialProof: {
     textAlign: "center",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "600",
     color: TEXT_MUTED,
-    marginBottom: 8,
+    marginBottom: 2,
+  },
+  ctaSection: {
+    paddingTop: 8,
   },
   ctaButton: {
     backgroundColor: AMBER,
@@ -375,13 +404,4 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
     marginTop: 8,
   },
-  guaranteeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    marginTop: 10,
-    marginBottom: 2,
-  },
-  guaranteeText: { fontSize: 11, fontWeight: "600", color: TEXT_MUTED },
 });
