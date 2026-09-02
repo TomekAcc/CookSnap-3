@@ -56,6 +56,52 @@ export default function ShoppingListModal({
     };
   }, []);
 
+  // Confirmed real failure, reported directly by a user: check an item off
+  // (buy it), then later mark that same pantry item out of stock again —
+  // the shopping list's header count updates correctly, but the row itself
+  // never shows up, as if the list were frozen. Root cause: this component
+  // never unmounts between opens (PantryTab always renders it, just toggles
+  // `visible`), so checkedIds and opacityRef are keyed by item id and live
+  // for the component's entire lifetime. The first check-off animates that
+  // id's opacity all the way to 0 and leaves checkedIds[id] permanently
+  // true — neither is ever reset. When the same id later re-enters the
+  // list, handleItemPress's `if (checkedIds[itemId]) return` means tapping
+  // it again does nothing, and getRowOpacity hands back the same
+  // Animated.Value still parked at 0 from the previous cycle — a real row,
+  // present in the DOM, genuinely invisible. Fixes it by treating a
+  // newly-(re)appeared id as a clean slate: whenever an id shows up in
+  // `items` that wasn't there on the previous render, clear its checked
+  // flag and snap its opacity back to 1 before this render's paint.
+  const prevIdsRef = useRef(new Set());
+  useEffect(() => {
+    const currentIds = new Set(
+      safeItems.map((item, i) => item?.id || item?.name || `item-${i}`)
+    );
+    const newlyPresent = [...currentIds].filter((id) => !prevIdsRef.current.has(id));
+    if (newlyPresent.length) {
+      setCheckedIds((prev) => {
+        let changed = false;
+        const next = { ...prev };
+        for (const id of newlyPresent) {
+          if (next[id]) {
+            delete next[id];
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
+      for (const id of newlyPresent) {
+        opacityRef.current[id]?.setValue(1);
+      }
+    }
+    prevIdsRef.current = currentIds;
+    // safeItems is a fresh array/derived value every render (it's either the
+    // `items` prop directly or the [] fallback) — depending on its elements'
+    // identity via this join keeps the effect from re-running every render
+    // for no reason while still catching every real add/remove.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [safeItems.map((item, i) => item?.id || item?.name || `item-${i}`).join("|")]);
+
   const getRowOpacity = (itemId) => {
     if (!opacityRef.current[itemId]) {
       opacityRef.current[itemId] = new Animated.Value(1);
