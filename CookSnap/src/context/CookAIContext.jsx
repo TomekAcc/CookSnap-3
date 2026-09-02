@@ -731,6 +731,13 @@ export function CookAIProvider({ children }) {
   /** Next capture appends to existing ingredients (Scan More) instead of replacing. */
   const scanAppendModeRef = useRef(false);
 
+  // Pantry's counterparts to isScanning/cameraOpen/fridgePhoto above — see
+  // the pantryScanSessionIdRef comment further down for why these live
+  // here instead of as PantryScannerHero component state.
+  const [isPantryScanning, setIsPantryScanning] = useState(false);
+  const [pantryCameraOpen, setPantryCameraOpen] = useState(false);
+  const [pantryPhoto, setPantryPhoto] = useState(null);
+
   const [scanHistory, setScanHistory] = useState([]);
   // fridgePhoto + scanHistory + ingredients persistence — same hydrate-once-
   // then-persist pattern as pantry/favorites above. fridgePhoto/scanHistory
@@ -1254,6 +1261,20 @@ export function CookAIProvider({ children }) {
   const ingredientsCommittedRef = useRef(false);
   const scanAwaitTimerRef = useRef(null);
   const scanMetaRef = useRef({ photoUri: null, source: "camera" });
+  // Pantry's own copy of the fridge scan refs directly above — same
+  // fire-and-forget-then-poll pattern, kept in context (not component-local
+  // state) for the same reason: confirmed real complaint, a user leaves the
+  // Pantry tab mid- or right-after a scan and the scanned photo/result
+  // vanishes on return, even though the items were actually detected and
+  // merged. Component-local state gets wiped the instant PantryTab
+  // unmounts (this app switches tabs via a plain conditional render, not a
+  // persistent navigator); these refs and the pantryPhoto/isPantryScanning
+  // state below live on the provider instead, so an in-flight or just-
+  // finished scan survives navigating away and back exactly like fridge.
+  const pantryScanSessionIdRef = useRef(0);
+  const pantryPendingDetectedRef = useRef(null);
+  const pantryIngredientsCommittedRef = useRef(false);
+  const pantryScanAwaitTimerRef = useRef(null);
   const [recipesSectionY, setRecipesSectionY] = useState(0);
   const [scanStartedAt, setScanStartedAt] = useState(null);
 
@@ -1285,6 +1306,7 @@ export function CookAIProvider({ children }) {
   }, []);
 
   const hasScanned = !!fridgePhoto;
+  const hasPantryScanned = !!pantryPhoto;
 
   const visibleRecipes = useMemo(
     () =>
@@ -1564,6 +1586,13 @@ export function CookAIProvider({ children }) {
     setCameraOpen(true);
   }, []);
 
+  /** Pantry's own version — every pantry scan already merges/appends (see
+   * mergePantryScanResults), so there's no separate "append mode" flag to
+   * set here, just open the camera. */
+  const startPantryScanMore = useCallback(() => {
+    setPantryCameraOpen(true);
+  }, []);
+
   const resetScan = useCallback(() => {
     if (scanAwaitTimerRef.current) {
       clearInterval(scanAwaitTimerRef.current);
@@ -1780,8 +1809,17 @@ export function CookAIProvider({ children }) {
     return detected.length;
   }, []);
 
-  const scanPantryPhoto = useCallback(
-    async (photoUri) => {
+  /**
+   * Fire-and-forget, mirroring completeScan's fridge counterpart above:
+   * kicks off the real Vision analysis immediately and returns, without
+   * waiting for it. The result lands in pantryPendingDetectedRef, and
+   * endPantryScanChoreography (below) is what actually commits it — called
+   * by PantryScannerHero's own local progress-bar timing effect once its
+   * choreography finishes, same split as the fridge scan.
+   */
+  const completePantryScan = useCallback(
+    async (photoUri, source = "camera") => {
+      if (!photoUri) return;
       // Single choke point, same reasoning as completeScan's fridge-cap
       // check above: every pantry scan entry point funnels through here,
       // so gating right here (rather than in each call site) means none of
@@ -1795,27 +1833,104 @@ export function CookAIProvider({ children }) {
         // try to mount a second native Modal while that one is still
         // mid-dismissal.
         setTimeout(() => setProModalOpen?.(true), EXIT_DURATION_MS + 40);
-        return [];
+        return;
       }
+
+      setPantryPhoto(photoUri);
+      const sessionId = Date.now();
+      pantryScanSessionIdRef.current = sessionId;
+      if (pantryScanAwaitTimerRef.current) {
+        clearInterval(pantryScanAwaitTimerRef.current);
+        pantryScanAwaitTimerRef.current = null;
+      }
+      pantryPendingDetectedRef.current = null;
+      pantryIngredientsCommittedRef.current = false;
+      setIsPantryScanning(true);
+
       try {
         const detected = await analyzePantryImage(photoUri, "", recipeLanguageName);
-        const count = mergePantryScanResults(detected);
-        showToast(
-          t(
-            count === 1 ? "toast.addedPantryStaplesOne" : "toast.addedPantryStaplesOther",
-            { count }
-          ),
-          "success"
-        );
-        return detected;
+        if (pantryScanSessionIdRef.current !== sessionId) return;
+        if (pantryIngredientsCommittedRef.current) return;
+        pantryPendingDetectedRef.current = Array.isArray(detected) ? detected : [];
       } catch (err) {
+        if (pantryScanSessionIdRef.current !== sessionId) return;
+        if (pantryIngredientsCommittedRef.current) return;
         console.warn("[Cook AI] Pantry scan failed:", err?.message);
+        pantryPendingDetectedRef.current = [];
         showToast(t("errors.analyzePantryFailed"), "error");
-        return [];
       }
     },
-    [mergePantryScanResults, showToast, t, recipeLanguageName, registerPantryScanAttempt, setProModalOpen]
+    [t, recipeLanguageName, registerPantryScanAttempt, setProModalOpen, showToast]
   );
+
+  /**
+   * Called when the pantry progress bar choreography hits 100%. Waits for
+   * the Vision API (pantryPendingDetectedRef) before committing — prevents
+   * an empty-state flash while the request is still in flight. Being a
+   * context function (not component state) means this still runs and
+   * still merges the real result even if PantryScannerHero has since
+   * unmounted (the user left the Pantry tab mid-scan) — the merge and the
+   * "added N staples" toast are not lost, only the visual choreography
+   * that led up to them.
+   */
+  const endPantryScanChoreography = useCallback(() => {
+    if (pantryIngredientsCommittedRef.current) {
+      setIsPantryScanning(false);
+      return;
+    }
+
+    if (pantryPendingDetectedRef.current === null) {
+      if (pantryScanAwaitTimerRef.current) return;
+      const startedAt = Date.now();
+      pantryScanAwaitTimerRef.current = setInterval(() => {
+        const timedOut = Date.now() - startedAt > 60000;
+        if (pantryPendingDetectedRef.current !== null || timedOut) {
+          clearInterval(pantryScanAwaitTimerRef.current);
+          pantryScanAwaitTimerRef.current = null;
+          if (timedOut && pantryPendingDetectedRef.current === null) {
+            pantryPendingDetectedRef.current = [];
+          }
+          endPantryScanChoreography();
+        }
+      }, 120);
+      return;
+    }
+
+    if (pantryScanAwaitTimerRef.current) {
+      clearInterval(pantryScanAwaitTimerRef.current);
+      pantryScanAwaitTimerRef.current = null;
+    }
+
+    const fullList = Array.isArray(pantryPendingDetectedRef.current)
+      ? pantryPendingDetectedRef.current
+      : [];
+    pantryIngredientsCommittedRef.current = true;
+
+    const count = mergePantryScanResults(fullList);
+    showToast(
+      t(
+        count === 1 ? "toast.addedPantryStaplesOne" : "toast.addedPantryStaplesOther",
+        { count }
+      ),
+      "success"
+    );
+    setIsPantryScanning(false);
+  }, [mergePantryScanResults, showToast, t]);
+
+  /** Dismiss the just-scanned photo/summary and return to the idle Scan
+   * Pantry prompt — does NOT touch pantryItems, matching the existing "X"
+   * button's contract (it dismisses the scan summary, not the inventory). */
+  const resetPantryPhoto = useCallback(() => {
+    if (pantryScanAwaitTimerRef.current) {
+      clearInterval(pantryScanAwaitTimerRef.current);
+      pantryScanAwaitTimerRef.current = null;
+    }
+    setPantryPhoto(null);
+    setIsPantryScanning(false);
+    pantryScanSessionIdRef.current = 0;
+    pantryPendingDetectedRef.current = null;
+    pantryIngredientsCommittedRef.current = false;
+  }, []);
 
   const generateRecipes = useCallback(async () => {
     // Re-entrancy guard: without this, a fast double-tap or a preference
@@ -2139,7 +2254,9 @@ export function CookAIProvider({ children }) {
       clearPantry,
       addToShoppingList,
       mergePantryScanResults,
-      scanPantryPhoto,
+      completePantryScan,
+      endPantryScanChoreography,
+      resetPantryPhoto,
       isGeneratingRecipes,
       generatedRecipes,
       recipeGenerationFailed,
@@ -2176,8 +2293,14 @@ export function CookAIProvider({ children }) {
       completeScan,
       endScanChoreography,
       resetScan,
+      isPantryScanning,
+      pantryCameraOpen,
+      setPantryCameraOpen,
+      pantryPhoto,
+      hasPantryScanned,
       prepareScanMore,
       startScanMore,
+      startPantryScanMore,
       visibleRecipes,
       scanHistory,
       restoreScan,
@@ -2237,7 +2360,9 @@ export function CookAIProvider({ children }) {
       clearPantry,
       addToShoppingList,
       mergePantryScanResults,
-      scanPantryPhoto,
+      completePantryScan,
+      endPantryScanChoreography,
+      resetPantryPhoto,
       isGeneratingRecipes,
       generatedRecipes,
       recipeGenerationFailed,
@@ -2271,8 +2396,14 @@ export function CookAIProvider({ children }) {
       completeScan,
       endScanChoreography,
       resetScan,
+      isPantryScanning,
+      pantryCameraOpen,
+      setPantryCameraOpen,
+      pantryPhoto,
+      hasPantryScanned,
       prepareScanMore,
       startScanMore,
+      startPantryScanMore,
       scanHistory,
       restoreScan,
       dietaryRestrictions,

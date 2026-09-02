@@ -132,6 +132,19 @@ export default function FridgeScannerHero() {
   const [holdingAtComplete, setHoldingAtComplete] = useState(false);
   const completionHandledRef = useRef(false);
   const scanStage = holdingAtComplete ? "scanning" : rawScanStage;
+  // Confirmed real failure, found while verifying the identical fix on
+  // PantryScannerHero: leaving this tab AFTER a scan finished, then coming
+  // back, remounts this component fresh — completionHandledRef and
+  // holdingAtComplete both reset, so the effect below saw an already-
+  // "completed" rawScanStage and (wrongly) replayed the whole
+  // fill+hold+reveal choreography as if it had just finished: the
+  // completed photo/pills briefly vanished, the card re-grew, and the
+  // laser overlay's scanning veil flashed back over the photo, before
+  // settling back to "completed" a moment later. Captured once (useRef's
+  // initializer only runs on first render) so the effect can tell "the
+  // scan finished during THIS mount, play the reveal" apart from "we
+  // mounted straight into an already-finished scan, just show it".
+  const mountedAlreadyCompleteRef = useRef(rawScanStage === "completed");
   const scanHeight = useMemo(() => getScanHeight(), []);
   const hasFood = Array.isArray(ingredients) && ingredients.length > 0;
   const foodCount = hasFood ? ingredients.length : 0;
@@ -171,6 +184,17 @@ export default function FridgeScannerHero() {
     }
     if (completionHandledRef.current) return undefined;
     completionHandledRef.current = true;
+
+    if (mountedAlreadyCompleteRef.current) {
+      // Already complete before this component even mounted (see the
+      // comment on mountedAlreadyCompleteRef above) — snap straight to the
+      // resting values with no motion instead of replaying a reveal that
+      // already happened once, in a previous mount.
+      progressBarAnim.setValue(1);
+      setProgressPct(100);
+      return undefined;
+    }
+
     setHoldingAtComplete(true);
 
     let cancelled = false;
