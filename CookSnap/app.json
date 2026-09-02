@@ -13,12 +13,14 @@
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.tomekacc.cookai",
       "infoPlist": {
         "NSCameraUsageDescription": "Cook AI needs camera access to scan your fridge and detect ingredients.",
         "NSPhotoLibraryUsageDescription": "Cook AI needs photo library access so you can upload a fridge photo from your gallery."
       }
     },
     "android": {
+      "package": "com.tomekacc.cookai",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F5F5F7"
