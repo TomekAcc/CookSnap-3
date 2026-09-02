@@ -117,7 +117,21 @@ export default function FridgeScannerHero() {
   const scanMoreButtonRef = useRef(null);
   const [scanMoreAnchor, setScanMoreAnchor] = useState(null);
 
-  const scanStage = resolveScanStage(hasScanned, isScanning);
+  // Confirmed real failure, reported directly by a user: the progress bar
+  // "didn't go to 100%" and just closed/continued without it being visible
+  // that it reached the full line. Root cause: scanStage used to be this
+  // raw derived value directly, so the instant isScanning flipped false
+  // (real completion), scanStage flipped straight to "completed" in the
+  // SAME render — which unmounts the entire progress-bar block below
+  // (everything gated on scanStage === "scanning") before the fill-to-100%
+  // animation, or even the final "100%" text, ever gets a frame on screen.
+  // holdingAtComplete keeps the displayed scanStage pinned at "scanning"
+  // for one deliberate beat after real completion, so the fill + hold
+  // effect further down actually has a mounted bar to animate.
+  const rawScanStage = resolveScanStage(hasScanned, isScanning);
+  const [holdingAtComplete, setHoldingAtComplete] = useState(false);
+  const completionHandledRef = useRef(false);
+  const scanStage = holdingAtComplete ? "scanning" : rawScanStage;
   const scanHeight = useMemo(() => getScanHeight(), []);
   const hasFood = Array.isArray(ingredients) && ingredients.length > 0;
   const foodCount = hasFood ? ingredients.length : 0;
@@ -144,6 +158,43 @@ export default function FridgeScannerHero() {
   const progressAnimRef = useRef(null);
   const shrinkStartedRef = useRef(false);
 
+  // Drives the real fill-to-100% + a brief visible hold, keyed off the RAW
+  // (unheld) stage so it fires exactly once on true completion, independent
+  // of the deliberately-delayed display `scanStage` above. Without this
+  // being separate from the shrink/reveal effect below, the fill animation
+  // and the view that unmounts it would land in the same tick — see the
+  // comment on holdingAtComplete above for the full failure this fixes.
+  useEffect(() => {
+    if (rawScanStage !== "completed") {
+      completionHandledRef.current = false;
+      return undefined;
+    }
+    if (completionHandledRef.current) return undefined;
+    completionHandledRef.current = true;
+    setHoldingAtComplete(true);
+
+    let cancelled = false;
+    Animated.timing(progressBarAnim, {
+      toValue: 1,
+      duration: 120,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: false,
+    }).start(() => {
+      if (cancelled) return;
+      setProgressPct(100);
+      // Hold the genuinely-full bar on screen for a beat before letting
+      // the shrink/reveal effect below swap the view away — long enough
+      // to actually register as "done", short enough not to feel laggy.
+      setTimeout(() => {
+        if (!cancelled) setHoldingAtComplete(false);
+      }, 380);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [rawScanStage, progressBarAnim]);
+
   // Linear progress 0→1 over TOTAL_SCAN_DURATION → commit + shrink at 100%.
   useEffect(() => {
     if (scanStage !== "scanning") {
@@ -157,6 +208,20 @@ export default function FridgeScannerHero() {
       }
       return undefined;
     }
+
+    // Confirmed real regression, caught while testing the fill/hold fix
+    // above: this effect also depends on endScanChoreography, whose
+    // identity from context changes as a side effect of committing the
+    // scanned ingredients — which fires DURING the post-completion hold
+    // (scanStage still reads "scanning" on purpose, see holdingAtComplete
+    // above). Without this guard, that spurious re-run wiped
+    // progressBarAnim back to 0 and restarted the whole 3.2s phase1 climb
+    // from scratch, so the bar visibly dropped from 100% down to ~3%
+    // before the completed view took over — worse than the original bug.
+    // completionHandledRef is only ever true once real completion has
+    // already been handled, so this can't block a genuine new scan (Effect
+    // above resets it to false the moment a fresh scan starts).
+    if (completionHandledRef.current) return undefined;
 
     photoHeightAnim.setValue(scanHeight);
     shrinkStartedRef.current = false;
@@ -319,23 +384,12 @@ export default function FridgeScannerHero() {
 
     if (!shrinkStartedRef.current) {
       shrinkStartedRef.current = true;
-      // Real completion. This used to be a bare setValue(1) — an instant,
-      // un-animated jump from wherever the creep (above) had gotten to,
-      // e.g. 97%. Confirmed real complaint from a tester: "the progress
-      // bar jumps to around 97% and abruptly cuts" — the creep never
-      // claims literal 100% until this point by design, so the jump was
-      // always there, just invisible on a fast scan where it happened
-      // within a frame or two. A short real fill closes that gap with a
-      // visible motion instead of a cut, while staying fast enough (120ms)
-      // that it doesn't add a perceptible delay before the reveal below.
-      Animated.timing(progressBarAnim, {
-        toValue: 1,
-        duration: 120,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: false,
-      }).start();
-      setProgressPct(100);
-      // Shrink and reveal together — the earlier "minimizes but still
+      // The fill-to-100% itself now happens earlier, in the effect above
+      // keyed on rawScanStage — by the time this branch runs, holdingAtComplete
+      // has already flipped back to false specifically because that fill +
+      // visible hold finished, so progressBarAnim/progressPct are already at
+      // their real 100% here. Shrink and reveal together — the earlier
+      // "minimizes but still
       // loading" bug was the fixed-timer premature trigger (fixed above by
       // gating this whole block on real completion), not the overlap
       // between these two animations. Waiting for the shrink to finish

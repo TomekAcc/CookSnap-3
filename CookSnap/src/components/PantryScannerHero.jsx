@@ -220,19 +220,28 @@ export default function PantryScannerHero({ onManualAdd }) {
       progressBarAnim.removeListener(listenerId);
     }
 
-    // Same fix as FridgeScannerHero's identical spot — was a bare
-    // setValue(1), an instant un-animated jump from wherever the creep had
-    // gotten to (e.g. 97%). Confirmed tester complaint: "jumps to around
-    // 97% and abruptly cuts." A short real fill instead of a jump.
-    Animated.timing(progressBarAnim, {
-      toValue: 1,
-      duration: 120,
-      easing: Easing.out(Easing.quad),
-      useNativeDriver: false,
-    }).start();
+    // Confirmed real failure, reported directly by a user: the bar "didn't
+    // go to 100%" and just closed/continued without the full line ever
+    // being visible. The previous fix here replaced setValue(1) with this
+    // same 120ms fill, but that alone wasn't enough — setScanStage below
+    // used to run in the SAME tick as this animation started, which
+    // unmounts the entire scanning card (it's gated on
+    // scanStage === "scanning") before the fill has a single frame to
+    // render. Now we actually await the fill, then hold on the real,
+    // visible 100% for a beat before switching the view away, so the user
+    // can see it hit the full line before it closes and continues.
+    await new Promise((resolve) => {
+      Animated.timing(progressBarAnim, {
+        toValue: 1,
+        duration: 120,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      }).start(() => resolve());
+    });
     setProgressPct(100);
     setDetectedCount(detected.length);
     setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
+    await new Promise((resolve) => setTimeout(resolve, 380));
 
     Animated.timing(photoHeightAnim, {
       toValue: COMPACT_HEIGHT,
