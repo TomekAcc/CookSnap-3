@@ -1,49 +1,60 @@
 {
   "expo": {
-    "name": "CookSnap",
-    "slug": "cooksnap",
-    "scheme": "cooksnap",
+    "name": "Cook AI",
+    "slug": "cook-ai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#F8FAFC",
-    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5F5F7"
+    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cooksnap.app"
+      "infoPlist": {
+        "NSCameraUsageDescription": "Cook AI needs camera access to scan your fridge and detect ingredients.",
+        "NSPhotoLibraryUsageDescription": "Cook AI needs photo library access so you can upload a fridge photo from your gallery."
+      }
     },
     "android": {
-      "package": "com.cooksnap.app",
       "adaptiveIcon": {
-        "backgroundColor": "#0F172A",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F5F5F7"
       },
-      "predictiveBackGestureEnabled": false
-    },
-    "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
-      "expo-router",
       [
         "expo-camera",
         {
-          "cameraPermission": "CookSnap uses your camera to scan your fridge and pantry for ingredients."
+          "cameraPermission": "Allow Cook AI to access your camera to scan fridge ingredients."
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "CookSnap uses your photo library so you can scan a picture of your fridge or pantry."
+          "photosPermission": "Allow Cook AI to access your photos to upload a fridge picture."
         }
-      ]
+      ],
+      "expo-localization"
     ],
-    "experiments": {
-      "typedRoutes": true
+    "extra": {
+      "eas": {
+        "projectId": "9f7a33bb-a1f0-435d-9286-4ad349f8d948"
+      }
+    },
+    "owner": "tomekacc",
+    "runtimeVersion": "exposdk:54.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/9f7a33bb-a1f0-435d-9286-4ad349f8d948",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
     }
   }
 }

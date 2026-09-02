@@ -1,26 +1,25 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class",
-  content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
+  content: ["./App.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
       colors: {
         slate: {
-          950: "#0F172A",
+          50: "#F8FAFC",
+          100: "#F1F5F9",
+          800: "#1E293B",
+          900: "#0F172A",
         },
-        offwhite: "#F8FAFC",
-        accent: {
-          mint: "#B8F2E6",
-          peach: "#FFD6BA",
-          lavender: "#D9D2FF",
-          sky: "#C9E4FF",
-          butter: "#FFF3B0",
-          coral: "#FFC2B4",
+        emerald: {
+          50: "#ECFDF5",
+          500: "#10B981",
+          600: "#22C55E",
         },
-      },
-      fontFamily: {
-        sans: ["System"],
+        amber: {
+          400: "#FBBF24",
+          500: "#F59E0B",
+        },
       },
     },
   },
