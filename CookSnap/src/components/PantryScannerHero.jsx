@@ -25,6 +25,7 @@ import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import PantryScanMoreSheet from "./PantryScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useScanCompleteSound } from "../hooks/useScanCompleteSound";
 
 /** Compact height for the captured photo once a scan finishes. */
 const COMPACT_HEIGHT = 130;
@@ -118,6 +119,7 @@ export default function PantryScannerHero({ onManualAdd }) {
   // scan finished during THIS mount, play the reveal" apart from "we
   // mounted straight into an already-finished scan, just show it".
   const mountedAlreadyCompleteRef = useRef(rawScanStage === "completed");
+  const playScanCompleteSound = useScanCompleteSound();
 
   const itemCount = Array.isArray(pantryItems) ? pantryItems.length : 0;
 
@@ -170,6 +172,9 @@ export default function PantryScannerHero({ onManualAdd }) {
       if (cancelled) return;
       setProgressPct(100);
       setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
+      // Same audio cue as FridgeScannerHero's identical spot, same
+      // reasoning — see its comment there for the full history.
+      playScanCompleteSound();
       setTimeout(() => {
         if (!cancelled) setHoldingAtComplete(false);
       }, 380);
@@ -178,7 +183,7 @@ export default function PantryScannerHero({ onManualAdd }) {
     return () => {
       cancelled = true;
     };
-  }, [rawScanStage, progressBarAnim]);
+  }, [rawScanStage, progressBarAnim, playScanCompleteSound]);
 
   // Linear progress 0→1 over TOTAL_SCAN_DURATION → commit + shrink at 100%.
   useEffect(() => {

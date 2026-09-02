@@ -42,7 +42,8 @@
           "photosPermission": "Allow Cook AI to access your photos to upload a fridge picture."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "expo-audio"
     ],
     "extra": {
       "eas": {

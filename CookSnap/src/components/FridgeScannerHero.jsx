@@ -38,6 +38,7 @@ import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import ScanMoreSheet from "./ScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useScanCompleteSound } from "../hooks/useScanCompleteSound";
 
 /** Compact header after AI detection completes. */
 const COMPACT_HEIGHT = 150;
@@ -145,6 +146,7 @@ export default function FridgeScannerHero() {
   // scan finished during THIS mount, play the reveal" apart from "we
   // mounted straight into an already-finished scan, just show it".
   const mountedAlreadyCompleteRef = useRef(rawScanStage === "completed");
+  const playScanCompleteSound = useScanCompleteSound();
   const scanHeight = useMemo(() => getScanHeight(), []);
   const hasFood = Array.isArray(ingredients) && ingredients.length > 0;
   const foodCount = hasFood ? ingredients.length : 0;
@@ -206,6 +208,13 @@ export default function FridgeScannerHero() {
     }).start(() => {
       if (cancelled) return;
       setProgressPct(100);
+      // Confirmed real feedback, from a live tester: a scan finishing had
+      // no audio cue at all, only visual — fired right at the same moment
+      // the bar genuinely reaches 100%, not before (a fresh scan) and
+      // never on the mountedAlreadyCompleteRef replay-skip path above
+      // (returning to an already-done scan isn't a new completion, so it
+      // shouldn't play again).
+      playScanCompleteSound();
       // Hold the genuinely-full bar on screen for a beat before letting
       // the shrink/reveal effect below swap the view away — long enough
       // to actually register as "done", short enough not to feel laggy.
@@ -217,7 +226,7 @@ export default function FridgeScannerHero() {
     return () => {
       cancelled = true;
     };
-  }, [rawScanStage, progressBarAnim]);
+  }, [rawScanStage, progressBarAnim, playScanCompleteSound]);
 
   // Linear progress 0→1 over TOTAL_SCAN_DURATION → commit + shrink at 100%.
   useEffect(() => {
