@@ -8,7 +8,7 @@ import { translateCount } from "../i18n";
 import RecipeCard from "./RecipeCard";
 import ProBanner from "./ProBanner";
 import EmptyStateSparkle from "./EmptyStateSparkle";
-import { ICON } from "../theme/tokens";
+import { ICON, SPACE } from "../theme/tokens";
 
 export default function RecipeFeed({ onSelectRecipe } = {}) {
   const {
@@ -197,10 +197,10 @@ const styles = StyleSheet.create({
   usage: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: SPACE.xs,
     flexShrink: 1,
     maxWidth: "46%",
-    marginTop: 3,
+    marginTop: SPACE.xs - 1,
   },
   usageCaption: {
     color: "#059669",

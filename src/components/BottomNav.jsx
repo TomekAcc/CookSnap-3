@@ -129,9 +129,9 @@ export default function BottomNav() {
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={{
-                    fontSize: 10,
-                    lineHeight: 13,
-                    letterSpacing: -0.1,
+                    fontSize: 11,
+                    lineHeight: 14,
+                    letterSpacing: -0.2,
                     width: "100%",
                     minWidth: 0,
                     textAlign: "center",
@@ -141,7 +141,7 @@ export default function BottomNav() {
                     // through animateLayout(), that width change gets
                     // animated into a visible reflow "jump" instead of just
                     // recoloring in place.
-                    fontWeight: "600",
+                    fontWeight: "700",
                     color: isActive ? activeColor : INACTIVE,
                   }}
                 >

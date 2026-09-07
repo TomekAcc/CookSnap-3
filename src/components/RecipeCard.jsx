@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   meta: {
     fontSize: TYPE.small,
     fontWeight: WEIGHT.medium,
-    marginTop: 7,
+    marginTop: SPACE.sm,
     lineHeight: 18,
   },
   metaStrong: {

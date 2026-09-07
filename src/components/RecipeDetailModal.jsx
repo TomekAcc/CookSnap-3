@@ -34,7 +34,7 @@ import StandardModal from "./StandardModal";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { DS } from "../utils/designSystem";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
-import { emojiLine } from "../theme/tokens";
+import { emojiLine, SPACE } from "../theme/tokens";
 
 /** Hermes-safe emoji strip (no /u flag). */
 function stripInlineEmojis(str) {
@@ -1064,8 +1064,8 @@ const styles = StyleSheet.create({
   recipeSubtitleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
-    marginTop: 6,
+    gap: SPACE.xs + 1,
+    marginTop: SPACE.sm - 2,
   },
   recipeSubtitle: {
     color: "#64748B",
