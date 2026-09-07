@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
-import { Crown, Check, Lock, Sparkles } from "lucide-react-native";
+import { Crown, Check, Lock, Sparkles, X } from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
 import StandardModal from "./StandardModal";
@@ -99,10 +99,23 @@ export default function ProSubscriptionModal() {
       // paywall should feel like one clean, glanceable screen, not a list to
       // scroll through. More room here plus tighter spacing below (not a
       // removed row) is what gets back to no-scroll on a typical phone.
-      maxHeight="88%"
+      maxHeight="92%"
       contentStyle={{ backgroundColor: SLATE, borderColor: SLATE_ROW }}
+      dragZoneRightInset={60}
     >
       <View style={[styles.grabHandle, { backgroundColor: "rgba(255,255,255,0.25)" }]} />
+
+      {/* Close X — consistent with RecipeDetailModal pattern */}
+      <TouchableOpacity
+        onPress={close}
+        activeOpacity={0.7}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        accessibilityRole="button"
+        accessibilityLabel="Close"
+        style={[styles.closeButton, { backgroundColor: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.15)" }]}
+      >
+        <X size={16} color={TEXT_MUTED} strokeWidth={2.5} />
+      </TouchableOpacity>
 
       {/* Confirmed real failure, reported directly by a user: on a
           smaller phone (measured live at iPhone-SE-class 375×667) with a
@@ -258,6 +271,19 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     alignSelf: "center",
     marginVertical: 4,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 12,
+    right: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    zIndex: 10,
   },
   scrollContent: { paddingTop: 0, paddingBottom: 2 },
   header: { alignItems: "center", marginBottom: 6 },
