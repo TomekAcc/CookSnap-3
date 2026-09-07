@@ -338,19 +338,17 @@ export default function RecipeDetailModal() {
         </View>
 
         <View style={styles.headerTitles}>
-          {/* Same wrap-fix as RecipeCard's title (see its comment), plus a
-              real complaint on top of it: a Polish (or other longer-
-              translation) title minimized so aggressively it was hard to
-              read/notice. Unlike the card, this header isn't in a fixed-
-              height row — headerBar just grows — so there's no reason to
-              shrink first. 3 lines at full size before adjustsFontSizeToFit
-              even has to act; minimumFontScale is a safety net for
-              genuinely pathological titles only, not the normal case. */}
+          {/* Real complaint: a Polish (or other longer-translation) title
+              was minimized so aggressively by adjustsFontSizeToFit that it
+              became hard to read. headerBar already grows to fit content —
+              there is no fixed-height constraint forcing a shrink — so the
+              title should wrap to up to 3 lines at FULL size. Removing
+              adjustsFontSizeToFit entirely (not just raising the scale)
+              is what guarantees a long pollack/non-English title stays
+              readable instead of silently shrinking. */}
           <Text
             style={[styles.recipeTitle, { color: colors.textPrimary }]}
             numberOfLines={3}
-            adjustsFontSizeToFit
-            minimumFontScale={0.92}
           >
             {recipe?.title || t("recipeDetail.fallbackTitle")}
           </Text>
