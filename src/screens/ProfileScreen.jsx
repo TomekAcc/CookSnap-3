@@ -98,6 +98,7 @@ export default function ProfileScreen() {
       style={{ flex: 1, backgroundColor: colors.bg }}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
+        paddingTop: 16,
         paddingBottom: insets.bottom + 120,
       }}
     >
