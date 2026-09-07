@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
 import { Crown, Check, Lock, Sparkles, X } from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
@@ -64,6 +64,8 @@ export default function ProSubscriptionModal() {
   const [selectedPlanId, setSelectedPlanId] = useState("annual");
   const close = () => setProModalOpen(false);
   const plan = PLANS[selectedPlanId];
+  const screenHeight = Dimensions.get("window").height;
+  const sheetHeight = screenHeight * 0.92 - 40;
 
   // Real usage beats a generic tagline — someone who just hit their daily
   // generation cap is a much warmer lead than someone who hasn't generated
@@ -89,18 +91,20 @@ export default function ProSubscriptionModal() {
   };
 
   return (
+    // The default 75% sheet cap fit every row before the "Recipes per
+    // generation" comparison row was added — that pushed content past it,
+    // introducing a real scroll where there wasn't one, right where a
+    // paywall should feel like one clean, glanceable screen, not a list to
+    // scroll through. More room here sets an explicit numeric height (not
+    // a % of an already-constrained parent) so the inner `flex: 1` scroll
+    // region actually knows its bounds instead of collapsing to maxHeight
+    // of a content-sized sheet.
     <StandardModal
       visible={!!proModalOpen}
       onClose={close}
       type="bottom-sheet"
-      // The default 75% sheet cap fit every row before the "Recipes per
-      // generation" comparison row was added — that pushed content past it,
-      // introducing a real scroll where there wasn't one, right where a
-      // paywall should feel like one clean, glanceable screen, not a list to
-      // scroll through. More room here plus tighter spacing below (not a
-      // removed row) is what gets back to no-scroll on a typical phone.
-      maxHeight="92%"
-      contentStyle={{ backgroundColor: SLATE, borderColor: SLATE_ROW }}
+      maxHeight={sheetHeight}
+      contentStyle={{ height: sheetHeight, backgroundColor: SLATE, borderColor: SLATE_ROW }}
       dragZoneRightInset={60}
     >
       <View style={[styles.grabHandle, { backgroundColor: "rgba(255,255,255,0.25)" }]} />
