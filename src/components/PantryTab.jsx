@@ -193,7 +193,10 @@ export default function PantryTab() {
       >
         <Header />
 
-        {/* Header — margin rhythm matches SavedScreen's "Saved Recipes"
+        {/* Content wrapper — paddingHorizontal matches Saved/Profile so all
+            tab content stays aligned with CookSnap wordmark above. */}
+        <View style={{ paddingHorizontal: 20 }}>
+          {/* Header — margin rhythm matches SavedScreen's "Saved Recipes"
             header exactly (title row marginBottom 8, subtitle marginBottom
             24 doubling as the gap before the next block). */}
         <View>
@@ -774,6 +777,7 @@ export default function PantryTab() {
             </View>
           )}
 
+        </View>
         </View>
       </ScrollView>
 
