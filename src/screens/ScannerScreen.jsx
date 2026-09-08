@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Sparkles, RefreshCw } from "lucide-react-native";
+import { Sparkles, RefreshCw, X } from "lucide-react-native";
 import Header from "../components/Header";
 import FridgeScannerHero from "../components/FridgeScannerHero";
 import MealPreferences from "../components/MealPreferences";
@@ -36,6 +36,7 @@ export default function ScannerScreen() {
     dailyRecipeGenerationCount,
     freeDailyRecipeGenerations,
     ingredients,
+    setActiveTab,
     t,
   } = useCookAI();
   const { setProModalOpen } = useModalState();
@@ -75,6 +76,18 @@ export default function ScannerScreen() {
   // generatedRecipes stays null until generateRecipes() has run at least
   // once — same "never generated" signal RecipeFeed uses.
   const hasGeneratedOnce = generatedRecipes != null;
+  // First-generation pantry prompt — shown once after the first successful
+  // recipe generation, dismissed by tapping "Go to Pantry" or the dismiss
+  // button. Confirmed user feedback: people scan the fridge, get recipes,
+  // and never realise the Pantry tab exists. This prompt appears right after
+  // the first recipe generation, right where they're already looking.
+  const [showPantryCta, setShowPantryCta] = useState(false);
+  const [pantryCtaDismissed, setPantryCtaDismissed] = useState(false);
+  useEffect(() => {
+    if (hasGeneratedOnce && !pantryCtaDismissed) {
+      setShowPantryCta(true);
+    }
+  }, [hasGeneratedOnce, pantryCtaDismissed]);
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg, overflow: "hidden" }]}>
@@ -151,6 +164,49 @@ export default function ScannerScreen() {
                 recipes exist, is the only option that's both reliably
                 visible after generating AND never covers anything. */}
             <RecipeFeed />
+          </View>
+        ) : null}
+
+        {showPantryCta ? (
+          <View
+            style={[
+              styles.pantryCta,
+              {
+                backgroundColor: colors.card || "#FFFFFF",
+                borderColor: colors.cardBorder || "#E5E7EB",
+              },
+            ]}
+          >
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={[styles.pantryCtaTitle, { color: colors.textPrimary }]}>
+                {t("scanner.pantryCtaTitle")}
+              </Text>
+              <Text style={[styles.pantryCtaBody, { color: colors.textSecondary }]}>
+                {t("scanner.pantryCtaBody")}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setActiveTab("pantry");
+                setShowPantryCta(false);
+              }}
+              activeOpacity={0.85}
+              style={styles.pantryCtaBtn}
+            >
+              <Text style={styles.pantryCtaBtnText}>{t("scanner.pantryCtaBtn")}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setPantryCtaDismissed(true);
+                setShowPantryCta(false);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={t("a11y.dismiss")}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={styles.pantryCtaDismiss}
+            >
+              <X size={14} color="#94A3B8" strokeWidth={2.5} />
+            </TouchableOpacity>
           </View>
         ) : null}
       </KeyboardAwareScrollView>
@@ -271,4 +327,50 @@ const styles = StyleSheet.create({
   // from the same accent language already used for these two concepts
   // throughout the app (Sparkles/emerald, Crown/amber) instead of reading
   // as unstyled system text bolted on afterward.
+  //
+  // First-generation pantry prompt — appears once after the first recipe
+  // generation, invites the user to add pantry staples. Dismissible.
+  pantryCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 16,
+    borderWidth: 1,
+    paddingVertical: 12,
+    paddingLeft: 14,
+    paddingRight: 34,
+    marginHorizontal: 20,
+    marginTop: 14,
+  },
+  pantryCtaTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    letterSpacing: -0.2,
+    marginBottom: 2,
+  },
+  pantryCtaBody: {
+    fontSize: 12,
+    fontWeight: "500",
+    lineHeight: 16,
+  },
+  pantryCtaBtn: {
+    backgroundColor: "#059669",
+    borderRadius: 12,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+  },
+  pantryCtaBtnText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  pantryCtaDismiss: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

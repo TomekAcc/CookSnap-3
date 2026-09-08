@@ -133,6 +133,9 @@ export default {
   "scanner.add": "Add",
   "scanner.addItemPlaceholder": "e.g. Mozzarella, Garlic...",
   "scanner.pointAtFridge": "Point at your open fridge",
+  "scanner.pantryCtaTitle": "Keep staples ready",
+  "scanner.pantryCtaBody": "Add pantry staples you always have on hand — CookSnap includes them in every recipe automatically.",
+  "scanner.pantryCtaBtn": "Go to Pantry",
 
   "a11y.viewFridgePhoto": "View full fridge photo",
   "a11y.dismissFridgePhoto": "Dismiss fridge photo",
