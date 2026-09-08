@@ -52,7 +52,6 @@ export default function SavedScreen() {
       style={{ flex: 1, backgroundColor: colors.bg }}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
-        paddingTop: 16,
         paddingBottom: insets.bottom + 120,
         // flexGrow lets the empty state below claim the leftover height and
         // center itself in it, instead of hugging the header and leaving a

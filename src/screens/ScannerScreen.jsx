@@ -99,7 +99,6 @@ export default function ScannerScreen() {
         style={[styles.flex, { overflow: "hidden" }]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingTop: 16,
           // The button is now a true position:"absolute" overlay (like
           // BottomNav), not a space-reserving flex sibling — so this only
           // needs to clear both overlays' combined height with no leftover

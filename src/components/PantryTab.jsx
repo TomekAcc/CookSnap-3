@@ -187,7 +187,6 @@ export default function PantryTab() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: 20,
-          paddingTop: 16,
           paddingBottom: insets.bottom + 120,
         }}
         keyboardShouldPersistTaps="handled"
