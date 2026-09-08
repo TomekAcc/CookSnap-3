@@ -449,6 +449,15 @@ export default function FridgeScannerHero() {
           useNativeDriver: true,
         }),
       ]).start();
+    } else {
+      // Fallback: if this effect re-runs after completion was already
+      // handled (e.g. returning to the tab), force ingredients visible
+      // instead of leaving them at opacity 0 — otherwise the user sees a
+      // blank page under the scanned photo.
+      photoHeightAnim.setValue(COMPACT_HEIGHT);
+      ingredientsOpacity.setValue(1);
+      ingredientsTranslate.setValue(0);
+      radarOpacity.setValue(0);
     }
   }, [
     scanStage,
@@ -930,7 +939,9 @@ export default function FridgeScannerHero() {
                       fontSize: 11,
                       fontWeight: "800",
                       letterSpacing: 0.2,
+                      flexShrink: 1,
                     }}
+                    numberOfLines={1}
                   >
                     {t("scanner.scanMore")}
                   </Text>
@@ -972,7 +983,13 @@ export default function FridgeScannerHero() {
                     }}
                   >
                     <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        flexShrink: 1,
+                        minWidth: 0,
+                        paddingRight: 8,
+                      }}
                     >
                       <View
                         style={{
@@ -983,6 +1000,7 @@ export default function FridgeScannerHero() {
                           alignItems: "center",
                           justifyContent: "center",
                           marginRight: 8,
+                          flexShrink: 0,
                         }}
                       >
                         <Zap size={18} color="#059669" />
@@ -992,7 +1010,11 @@ export default function FridgeScannerHero() {
                           color: colors.textPrimary,
                           fontWeight: "800",
                           fontSize: 14,
+                          flexShrink: 1,
+                          minWidth: 0,
                         }}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
                       >
                         {t("scanner.visionRadarTitle")}
                       </Text>
@@ -1001,8 +1023,10 @@ export default function FridgeScannerHero() {
                       style={{
                         backgroundColor: isDark ? "#064E3B" : "#D1FAE5",
                         paddingHorizontal: 10,
-                        paddingVertical: 3,
+                        paddingVertical: 4,
                         borderRadius: 999,
+                        flexShrink: 0,
+                        maxWidth: "60%",
                       }}
                     >
                       <Text
@@ -1011,6 +1035,9 @@ export default function FridgeScannerHero() {
                           fontSize: 10,
                           fontWeight: "900",
                         }}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        textAlign="center"
                       >
                         {t("scanner.activeScan")}
                       </Text>
@@ -1063,7 +1090,11 @@ export default function FridgeScannerHero() {
                           color: colors.textSecondary,
                           fontSize: 10,
                           fontWeight: "700",
+                          flexShrink: 1,
+                          minWidth: 0,
                         }}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
                       >
                         {t("scanner.scanProgress")}
                       </Text>
@@ -1072,6 +1103,8 @@ export default function FridgeScannerHero() {
                           color: "#059669",
                           fontSize: 12,
                           fontWeight: "900",
+                          flexShrink: 0,
+                          marginLeft: 8,
                         }}
                       >
                         {progressPct}%
