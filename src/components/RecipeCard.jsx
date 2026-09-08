@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: TYPE.title,
     fontWeight: WEIGHT.bold,
-    lineHeight: 22,
+    lineHeight: 24,
     letterSpacing: -0.3,
   },
   meta: {

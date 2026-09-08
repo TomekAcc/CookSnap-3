@@ -470,9 +470,9 @@ export function getDishEmojiAndStyle(dishTitle, dishType) {
   } else if (
     // Deliberately no bare "bowl" here — buddha bowls, stir-fry bowls, and
     // grain bowls are savory, not dessert. Only specific sweet-dish words
-    // route here.
-    t.includes("yogurt") ||
-    t.includes("jogurt") ||
+    // route here. Removed "yogurt"/"jogurt" — yogurt appears in savory
+    // dishes too (cucumber-yogurt sauce, raita, tzatziki), so it can't
+    // auto-route to the dessert emoji.
     t.includes("parfait") ||
     t.includes("dessert") ||
     t.includes("smoothie") ||
