@@ -1040,6 +1040,8 @@ export default function FridgeScannerHero() {
                         fontSize: 12,
                         flex: 1,
                       }}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
                     >
                       {scanningLabel ||
                         t(SCAN_STEPS[currentStepIdx].textKey) ||
@@ -1111,17 +1113,41 @@ export default function FridgeScannerHero() {
                 }}
               >
                 {!hasFood ? (
-                  <Text
+                  <View
                     style={{
-                      color: colors.textSecondary,
-                      fontSize: 13,
-                      fontWeight: "600",
-                      textAlign: "center",
-                      paddingVertical: 16,
+                      padding: 20,
+                      backgroundColor: colors.card,
+                      borderWidth: 1,
+                      borderColor: colors.cardBorder,
+                      borderRadius: 24,
+                      alignItems: "center",
                     }}
                   >
-                    {t("scanner.noItemsDetected")}
-                  </Text>
+                    <View
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 16,
+                        backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Text style={{ fontSize: 22 }}>🔍</Text>
+                    </View>
+                    <Text
+                      style={{
+                        color: colors.textSecondary,
+                        fontSize: 13,
+                        fontWeight: "600",
+                        textAlign: "center",
+                        lineHeight: 18,
+                      }}
+                    >
+                      {t("scanner.noItemsDetected")}
+                    </Text>
+                  </View>
                 ) : (
                   <View
                     style={{
