@@ -287,6 +287,7 @@ export default {
   "recipeDetail.upgradeTipAddedButton": "Added to Shopping List",
   "recipeDetail.upgradeTipAdded": "{ingredient} added to Shopping List",
   "recipeDetail.ingredientsChecked": "{checked} of {total} checked",
+  "recipeDetail.stepsChecked": "{checked} of {total} steps done",
   "recipeDetail.ingredientFallback": "Ingredient",
   "recipeDetail.instructionsTitle": "Instructions",
   "recipeDetail.recipeSavedFooter": "RECIPE SAVED TO FAVORITES",

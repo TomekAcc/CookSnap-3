@@ -121,7 +121,7 @@ export default function RecipeDetailModal() {
   // whether THIS recipe's upgrade tip has been added so the button itself
   // can show a lasting "Added" state instead of relying on the toast alone.
   const [upgradeAdded, setUpgradeAdded] = useState(false);
-  const [activeStepIdx, setActiveStepIdx] = useState(0);
+  const [checkedSteps, setCheckedSteps] = useState({});
   const [modifierOpen, setModifierOpen] = useState(false);
   const [modifierInstruction, setModifierInstruction] = useState("");
   const [isModifying, setIsModifying] = useState(false);
@@ -257,7 +257,15 @@ export default function RecipeDetailModal() {
     }));
   };
 
+  const toggleStepCheck = (idx) => {
+    setCheckedSteps((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
+
   const checkedCount = Object.values(checkedIngredients).filter(Boolean).length;
+  const stepsCheckedCount = Object.values(checkedSteps).filter(Boolean).length;
 
   const handleAddUpgradeIngredient = () => {
     if (!recipe?.upgradeIngredient || upgradeAdded) return;
@@ -865,18 +873,46 @@ export default function RecipeDetailModal() {
         </View>
 
         <View style={[styles.sectionContainer, styles.instructionsSection]}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              styles.sectionTitleSolo,
-              { color: colors.textPrimary },
-            ]}
-          >
-            {t("recipeDetail.instructionsTitle")}
-          </Text>
+          <View style={styles.sectionHeaderRow}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                styles.sectionTitleSolo,
+                { color: colors.textPrimary },
+              ]}
+            >
+              {t("recipeDetail.instructionsTitle")}
+            </Text>
+            {/* Same discovery-hint → progress-count pattern as Ingredients:
+                it starts as a hint so a first-time viewer knows the rows are
+                tappable, then switches to a live "2 of 4" count once they
+                check the first step, and turns green when all are done. */}
+            {stepsCheckedCount > 0 ? (
+              <Text
+                style={[
+                  styles.sectionHint,
+                  {
+                    color:
+                      stepsCheckedCount === steps.length
+                        ? colors.accentGreen || "#10B981"
+                        : colors.textSecondary,
+                  },
+                ]}
+              >
+                {t("recipeDetail.stepsChecked", {
+                  checked: stepsCheckedCount,
+                  total: steps.length,
+                })}
+              </Text>
+            ) : (
+              <Text style={[styles.sectionHint, { color: colors.textSecondary }]}>
+                {t("recipeDetail.tapToCheckOff")}
+              </Text>
+            )}
+          </View>
           <View style={styles.listStack}>
             {steps.map((step, idx) => {
-              const isActive = activeStepIdx === idx;
+              const isChecked = !!checkedSteps[idx];
               const stepText =
                 typeof step === "object"
                   ? step?.text || step?.instruction || ""
@@ -885,25 +921,18 @@ export default function RecipeDetailModal() {
               return (
                 <TouchableOpacity
                   key={`step-${idx}`}
-                  onPress={() => setActiveStepIdx(idx)}
-                  activeOpacity={0.8}
+                  onPress={() => toggleStepCheck(idx)}
+                  activeOpacity={0.7}
                   style={[
                     styles.stepCard,
-                    isActive
+                    isChecked
                       ? {
-                          ...styles.stepCardActive,
-                          // Amber, matching the amber badge beside it — a
-                          // previous dark-mode pass overrode BOTH themes
-                          // with slate here, so the card said "grey" while
-                          // its own badge said "amber" and the selected
-                          // step read as barely selected at all.
                           backgroundColor: isDark
-                            ? "rgba(120, 53, 15, 0.32)"
-                            : "#FFFBEB",
-                          borderColor: isDark ? "#B45309" : "#FBBF24",
+                            ? "rgba(16, 185, 129, 0.12)"
+                            : "rgba(236, 253, 245, 0.7)",
+                          borderColor: isDark ? "#10B981" : "#A7F3D0",
                         }
                       : {
-                          ...styles.stepCardInactive,
                           backgroundColor: colors.card,
                           borderColor: colors.cardBorder,
                         },
@@ -911,30 +940,30 @@ export default function RecipeDetailModal() {
                 >
                   <View
                     style={[
-                      styles.stepBadge,
-                      isActive
-                        ? styles.stepBadgeActive
-                        : {
-                            backgroundColor: isDark ? colors.inputBg : "#F1F5F9",
-                            borderWidth: 1,
-                            borderColor: colors.cardBorder,
-                          },
+                      styles.checkCircle,
+                      isChecked
+                        ? styles.checkCircleActive
+                        : styles.checkCircleInactive,
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.stepBadgeText,
-                        !isActive && { color: colors.textSecondary },
-                      ]}
-                    >
-                      {idx + 1}
-                    </Text>
+                    {isChecked ? (
+                      <Check size={12} color="#FFFFFF" strokeWidth={3} />
+                    ) : (
+                      <Text
+                        style={[
+                          styles.checkCircleNumber,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
+                        {idx + 1}
+                      </Text>
+                    )}
                   </View>
                   <Text
                     style={[
                       styles.stepText,
                       { color: colors.textPrimary },
-                      isActive && styles.stepTextActive,
+                      isChecked && { textDecorationLine: "line-through", opacity: 0.6 },
                     ]}
                   >
                     {stepText}
@@ -1315,6 +1344,11 @@ const styles = StyleSheet.create({
   checkCircleActive: {
     borderColor: "#10B981",
     backgroundColor: "#10B981",
+  },
+  checkCircleNumber: {
+    fontSize: 11,
+    fontWeight: "700",
+    lineHeight: 13,
   },
   stepCard: {
     borderRadius: 16,
