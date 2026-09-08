@@ -21,7 +21,7 @@ const EXACT_MAP = [
   { keys: ["garlic", "czosnek"], emoji: "🧄", category: "veg" },
   { keys: ["ginger"], emoji: "🫚", category: "veg" },
   { keys: ["lemon", "lime", "citrus"], emoji: "🍋", category: "veg" },
-  { keys: ["mushroom"], emoji: "🍄", category: "veg" },
+  { keys: ["mushroom"], emoji: "🍄‍🟫", category: "veg" },
   { keys: ["onion", "shallot", "leek", "cebula"], emoji: "🧅", category: "veg" },
   { keys: ["bell pepper", "papryka", "capsicum", "chili", "chilli"], emoji: "🫑", category: "veg" },
   { keys: ["potato", "sweet potato"], emoji: "🥔", category: "veg" },
