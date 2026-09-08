@@ -1034,10 +1034,10 @@ export default function FridgeScannerHero() {
                           color: isDark ? "#34D399" : "#065F46",
                           fontSize: 10,
                           fontWeight: "900",
+                          textAlign: "center",
                         }}
                         numberOfLines={1}
                         ellipsizeMode="tail"
-                        textAlign="center"
                       >
                         {t("scanner.activeScan")}
                       </Text>
