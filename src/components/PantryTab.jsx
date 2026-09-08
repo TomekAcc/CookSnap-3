@@ -193,8 +193,8 @@ export default function PantryTab() {
       >
         <Header />
 
-        {/* Content wrapper — consistent 20px gap after Header across all tabs */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
+        {/* Content wrapper — consistent 16px gap after Header (golden middle) */}
+        <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
           {/* Header — margin rhythm matches SavedScreen's "Saved Recipes"
             header exactly (title row marginBottom 8, subtitle marginBottom
             24 doubling as the gap before the next block). */}

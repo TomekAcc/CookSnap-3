@@ -102,7 +102,7 @@ export default function ProfileScreen() {
       }}
     >
       <Header />
-      <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
         {/* Header — margin rhythm matches Pantry/Settings exactly (title row
             marginBottom 8, subtitle a full-width sibling below it with
             marginBottom 24, flush left with the icon badge instead of
