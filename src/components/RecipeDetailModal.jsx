@@ -162,7 +162,7 @@ export default function RecipeDetailModal() {
 
   useEffect(() => {
     setCheckedIngredients({});
-    setActiveStepIdx(0);
+    // setActiveStepIdx(0); // REMOVED: activeStepIdx state was removed
     setModifierOpen(false);
     setModifierInstruction("");
     setUpgradeAdded(false);
