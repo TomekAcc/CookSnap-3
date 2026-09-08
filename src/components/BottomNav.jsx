@@ -22,7 +22,7 @@ const FLATTEN_DELAY_MS = 120;
 
 const TABS = [
   { id: "scanner", labelKey: "nav.scanner", icon: Flame },
-  { id: "pantry", labelKey: "nav.pantry", icon: Utensils, iconStyle: { marginTop: 1 } },
+  { id: "pantry", labelKey: "nav.pantry", icon: Utensils },
   { id: "saved", labelKey: "nav.saved", icon: Heart },
   { id: "profile", labelKey: "nav.profile", icon: User },
 ];
@@ -111,7 +111,6 @@ export default function BottomNav() {
                 size={ICON_SIZE}
                 color={isActive ? activeColor : INACTIVE}
                 strokeWidth={isActive ? 2.4 : 1.8}
-                style={tab.iconStyle}
               />
               {/* The clipping guarantee lives on THIS plain View, not on the
                   Text's own numberOfLines/ellipsizeMode — on web, a Text
@@ -171,7 +170,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around",
     paddingHorizontal: 8,
     // minHeight, not a hard height — a translated label longer than any
     // English tab name (some languages run noticeably longer per word)
