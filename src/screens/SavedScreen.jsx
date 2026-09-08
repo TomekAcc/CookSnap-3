@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-nati
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Bookmark, Heart } from "lucide-react-native";
 import EmptyStateSparkle from "../components/EmptyStateSparkle";
+import Header from "../components/Header";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
@@ -58,7 +59,8 @@ export default function SavedScreen() {
         flexGrow: 1,
       }}
     >
-      <View style={{ paddingHorizontal: 20, paddingTop: 46, flex: 1 }}>
+      <Header />
+      <View style={{ paddingHorizontal: 20, paddingTop: 20, flex: 1 }}>
         <View
           style={{
             flexDirection: "row",

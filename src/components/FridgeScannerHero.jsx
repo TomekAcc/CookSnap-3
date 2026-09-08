@@ -587,7 +587,7 @@ export default function FridgeScannerHero() {
 
   return (
     <>
-      <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 8 }}>
+      <View style={{ marginHorizontal: 16, marginTop: 20, marginBottom: 8 }}>
         {scanStage === "idle" && (
           <View
             style={{

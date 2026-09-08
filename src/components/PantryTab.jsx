@@ -33,6 +33,7 @@ import ShoppingListModal from "./ShoppingListModal";
 import PantryScannerHero from "./PantryScannerHero";
 import ErrorBoundary from "./ErrorBoundary";
 import IconBadge from "./IconBadge";
+import Header from "./Header";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // PANTRY_CATEGORIES' own values stay English (they're also the actual
@@ -190,9 +191,10 @@ export default function PantryTab() {
         keyboardShouldPersistTaps="handled"
         onScrollBeginDrag={() => setOpenSwipeId(null)}
       >
-        {/* Content wrapper — paddingHorizontal matches Saved/Profile so all
-            tab content stays aligned. Increased paddingTop to compensate for removed Header. */}
-        <View style={{ paddingHorizontal: 20, paddingTop: 46 }}>
+        <Header />
+
+        {/* Content wrapper — consistent 20px gap after Header across all tabs */}
+        <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
           {/* Header — margin rhythm matches SavedScreen's "Saved Recipes"
             header exactly (title row marginBottom 8, subtitle marginBottom
             24 doubling as the gap before the next block). */}
