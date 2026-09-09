@@ -99,9 +99,8 @@ export default function RecipeCard({
       <View style={styles.body}>
         <Text
           style={[styles.title, { color: colors.textPrimary }]}
-          numberOfLines={2}
-          adjustsFontSizeToFit
-          minimumFontScale={0.8}
+          // Usunięto limit numberOfLines oraz skalowanie
+          // Tytuły ułożą się naturalnie, a ich zwięzłość zapewni prompt Gemini
         >
           {safeRecipe.title}
         </Text>
