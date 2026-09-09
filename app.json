@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "Cook AI",
+    "slug": "cook-ai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5F5F7"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tomekacc.cookai",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Cook AI needs camera access to scan your fridge and detect ingredients.",
+        "NSPhotoLibraryUsageDescription": "Cook AI needs photo library access so you can upload a fridge photo from your gallery."
+      }
+    },
+    "android": {
+      "package": "com.tomekacc.cookai",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F5F5F7"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Cook AI to access your camera to scan fridge ingredients."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Cook AI to access your photos to upload a fridge picture."
+        }
+      ],
+      "expo-localization",
+      "expo-audio",
+      "expo-asset",
+      "expo-font",
+      "expo-image",
+      "expo-status-bar"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "9f7a33bb-a1f0-435d-9286-4ad349f8d948"
+      }
+    },
+    "owner": "tomekacc",
+    "runtimeVersion": "exposdk:54.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/9f7a33bb-a1f0-435d-9286-4ad349f8d948",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    }
+  }
+}
