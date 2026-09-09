@@ -963,7 +963,7 @@ export default function RecipeDetailModal() {
                     style={[
                       styles.stepText,
                       { color: colors.textPrimary },
-                      isChecked && { textDecorationLine: "line-through", opacity: 0.6 },
+                      isChecked && { opacity: 0.5 },
                     ]}
                   >
                     {stepText}
@@ -1357,6 +1357,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: "row",
     alignItems: "flex-start",
+    gap: 16,
     marginBottom: 8,
     minHeight: 64,
   },
