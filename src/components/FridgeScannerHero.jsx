@@ -936,7 +936,7 @@ export default function FridgeScannerHero() {
                   <Text
                     style={{
                       color: "#0F172A",
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: "800",
                       letterSpacing: 0.2,
                       flexShrink: 1,
@@ -1032,7 +1032,7 @@ export default function FridgeScannerHero() {
                       <Text
                         style={{
                           color: isDark ? "#34D399" : "#065F46",
-                          fontSize: 10,
+                          fontSize: 11,
                           fontWeight: "900",
                           textAlign: "center",
                         }}
@@ -1088,7 +1088,7 @@ export default function FridgeScannerHero() {
                       <Text
                         style={{
                           color: colors.textSecondary,
-                          fontSize: 10,
+                          fontSize: 11,
                           fontWeight: "700",
                           flexShrink: 1,
                           minWidth: 0,
