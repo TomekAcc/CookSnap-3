@@ -100,7 +100,8 @@ export default function RecipeCard({
         <Text
           style={[styles.title, { color: colors.textPrimary }]}
           numberOfLines={2}
-          ellipsizeMode="tail"
+          adjustsFontSizeToFit
+          minimumFontScale={0.8}
         >
           {safeRecipe.title}
         </Text>
