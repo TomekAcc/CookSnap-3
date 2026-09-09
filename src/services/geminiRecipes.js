@@ -1132,6 +1132,10 @@ ${regenerateGuardrail}${usedDishTypesGuardrail}═══ CULINARY HARMONY (MANDA
 - Never title a dish after a format/ingredient it doesn't really contain (e.g. don't call it "Omelet" unless eggs are actually in its ingredientsList).
 - EXCEPTION: this lock never overrides the diet guardrail above — if an inventory item conflicts with an active restriction, exclude it even though it's in the fridge/pantry list.${ingredientPriorityLine}
 
+═══ CULINARY HARMONY (MANDATORY) ═══
+- NO BIZARRE COMBINATIONS: Just because an ingredient was scanned DOES NOT mean it must be used in every dish. Do not force mismatched ingredients together. Confirmed real failure: AI combined Eggs and Lemon to make "Lemon Eggs" because both were scanned. This is a gross hallucination. If a combination sounds strange, unappetizing, or weird to a real chef, DO NOT generate it.
+- LESS IS MORE: It is ALWAYS better to write a simple, 2-ingredient or 3-ingredient traditional recipe than a 5-ingredient weird hallucination. Prioritize taste and culinary correctness above all else. If you have to drop a scanned ingredient to make the dish taste good, DROP IT.
+
 ${diversityOrMainMealsRule}
 
 ═══ UNIT SYSTEM (MANDATORY — USE ONLY THIS ONE, NEVER BOTH) ═══
