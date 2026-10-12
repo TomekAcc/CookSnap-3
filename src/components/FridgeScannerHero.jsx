@@ -159,6 +159,7 @@ export default function FridgeScannerHero() {
   const [newItemName, setNewItemName] = useState("");
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [progressPct, setProgressPct] = useState(0);
+  const [progressTrackWidth, setProgressTrackWidth] = useState(0);
   const cameraRef = useRef(null);
 
   const photoHeightAnim = useRef(new Animated.Value(COMPACT_HEIGHT)).current;
@@ -170,6 +171,13 @@ export default function FridgeScannerHero() {
   const stepOpacity = useRef(new Animated.Value(1)).current;
   const stepTranslate = useRef(new Animated.Value(0)).current;
   const progressBarAnim = useRef(new Animated.Value(0)).current;
+  // Icon "breathing" pulse (scale) and progress-bar shimmer sweep
+  // (translateX of a light overlay) — both purely cosmetic, looped only
+  // while scanStage === "scanning" via the same effect that already drives
+  // badgePulse below, so they start/stop together with no separate
+  // lifecycle to manage.
+  const iconPulse = useRef(new Animated.Value(1)).current;
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
   const progressAnimRef = useRef(null);
   const shrinkStartedRef = useRef(false);
 
@@ -410,8 +418,45 @@ export default function FridgeScannerHero() {
       );
       pulseLoop.start();
 
+      // Icon "breathing" — slow scale pulse so the Vision Radar icon reads
+      // as actively working, not a static glyph. 1.6s cycle (slower than
+      // badgePulse's 0.7s) so the two don't read as mechanically identical.
+      const iconPulseLoop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(iconPulse, {
+            toValue: 1.12,
+            duration: 800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(iconPulse, {
+            toValue: 1,
+            duration: 800,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      iconPulseLoop.start();
+
+      // Progress-bar shimmer — a light diagonal sweep travels left-to-right
+      // across the fill on a steady 1.4s loop, independent of actual scan
+      // progress (purely decorative, like a loading skeleton's shimmer).
+      shimmerAnim.setValue(0);
+      const shimmerLoop = Animated.loop(
+        Animated.timing(shimmerAnim, {
+          toValue: 1,
+          duration: 1400,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })
+      );
+      shimmerLoop.start();
+
       return () => {
         pulseLoop.stop();
+        iconPulseLoop.stop();
+        shimmerLoop.stop();
       };
     }
 
@@ -466,6 +511,8 @@ export default function FridgeScannerHero() {
     ingredientsOpacity,
     ingredientsTranslate,
     badgePulse,
+    iconPulse,
+    shimmerAnim,
     radarOpacity,
     radarTranslate,
   ]);
@@ -975,75 +1022,58 @@ export default function FridgeScannerHero() {
                     padding: 16,
                   }}
                 >
+                  {/* Design decision, per direct request: the "ACTIVE SCAN"
+                      badge that used to sit here was removed outright
+                      rather than reworked to survive every language's text
+                      length — it was redundant with the "Skanowanie..."
+                      pill on the photo above AND the step label right
+                      below, three simultaneous "it's scanning" signals on
+                      one screen. Removing it is also the permanent fix for
+                      the truncation bug this card had: with nothing
+                      fighting the title for row width, there's no language
+                      length that can overflow it. The icon now pulses
+                      (iconPulse, scale) so the row still reads as "live"
+                      without needing the badge for that. */}
                   <View
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
-                      justifyContent: "space-between",
                     }}
                   >
-                    <View
+                    <Animated.View
                       style={{
-                        flexDirection: "row",
+                        width: 32,
+                        height: 32,
+                        borderRadius: 12,
+                        backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
                         alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: 8,
+                        flexShrink: 0,
+                        transform: [{ scale: iconPulse }],
+                      }}
+                    >
+                      <Zap size={18} color="#059669" />
+                    </Animated.View>
+                    <Text
+                      style={{
+                        color: colors.textPrimary,
+                        fontWeight: "800",
+                        fontSize: 14,
                         flexShrink: 1,
                         minWidth: 0,
-                        paddingRight: 8,
                       }}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
                     >
-                      <View
-                        style={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: 12,
-                          backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          marginRight: 8,
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Zap size={18} color="#059669" />
-                      </View>
-                      <Text
-                        style={{
-                          color: colors.textPrimary,
-                          fontWeight: "800",
-                          fontSize: 14,
-                          flexShrink: 1,
-                          minWidth: 0,
-                        }}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {t("scanner.visionRadarTitle")}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        backgroundColor: isDark ? "#064E3B" : "#D1FAE5",
-                        paddingHorizontal: 10,
-                        paddingVertical: 4,
-                        borderRadius: 999,
-                        flexShrink: 0,
-                        maxWidth: "60%",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: isDark ? "#34D399" : "#065F46",
-                          fontSize: 11,
-                          fontWeight: "900",
-                          textAlign: "center",
-                        }}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {t("scanner.activeScan")}
-                      </Text>
-                    </View>
+                      {t("scanner.visionRadarTitle")}
+                    </Text>
                   </View>
 
+                  {/* Bumped from fontSize 12/22 — per a direct design
+                      request to make this row (what's actually happening
+                      right now) the clear visual focus of the card, with
+                      the progress row below receding in comparison. */}
                   <Animated.View
                     style={{
                       backgroundColor: colors.inputBg,
@@ -1057,14 +1087,14 @@ export default function FridgeScannerHero() {
                       transform: [{ translateY: stepTranslate }],
                     }}
                   >
-                    <Text style={{ fontSize: 22, marginRight: 12 }}>
+                    <Text style={{ fontSize: 24, marginRight: 12 }}>
                       {SCAN_STEPS[currentStepIdx].icon}
                     </Text>
                     <Text
                       style={{
                         color: colors.textPrimary,
                         fontWeight: "800",
-                        fontSize: 12,
+                        fontSize: 14,
                         flex: 1,
                       }}
                       numberOfLines={2}
@@ -1088,7 +1118,7 @@ export default function FridgeScannerHero() {
                       <Text
                         style={{
                           color: colors.textSecondary,
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: "700",
                           flexShrink: 1,
                           minWidth: 0,
@@ -1100,9 +1130,9 @@ export default function FridgeScannerHero() {
                       </Text>
                       <Text
                         style={{
-                          color: "#059669",
-                          fontSize: 12,
-                          fontWeight: "900",
+                          color: colors.textSecondary,
+                          fontSize: 11,
+                          fontWeight: "800",
                           flexShrink: 0,
                           marginLeft: 8,
                         }}
@@ -1114,10 +1144,13 @@ export default function FridgeScannerHero() {
                       style={{
                         width: "100%",
                         backgroundColor: isDark ? "#1E293B" : "#F1F5F9",
-                        height: 10,
+                        height: 8,
                         borderRadius: 999,
                         overflow: "hidden",
                       }}
+                      onLayout={(e) =>
+                        setProgressTrackWidth(e.nativeEvent.layout.width)
+                      }
                     >
                       <Animated.View
                         style={{
@@ -1130,6 +1163,37 @@ export default function FridgeScannerHero() {
                           }),
                         }}
                       />
+                      {/* Decorative shimmer — a soft light streak sweeping
+                          left-to-right on a steady loop, independent of
+                          actual progress (same idea as a loading-skeleton
+                          shimmer). Degrades gracefully to "no visible
+                          movement" before onLayout fires once, since both
+                          interpolation endpoints are then equal. */}
+                      <Animated.View
+                        pointerEvents="none"
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          bottom: 0,
+                          width: 36,
+                          opacity: 0.35,
+                          transform: [
+                            {
+                              translateX: shimmerAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [-36, progressTrackWidth + 36],
+                              }),
+                            },
+                          ],
+                        }}
+                      >
+                        <LinearGradient
+                          colors={["transparent", "#FFFFFF", "transparent"]}
+                          start={{ x: 0, y: 0.5 }}
+                          end={{ x: 1, y: 0.5 }}
+                          style={{ width: "100%", height: "100%" }}
+                        />
+                      </Animated.View>
                     </View>
                   </View>
                 </View>
