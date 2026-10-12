@@ -124,7 +124,6 @@ export default {
   "scanner.pantryCtaTitle": "Zeskanuj swoją spiżarnię",
   "scanner.pantryCtaBody": "Zrób zdjęcie półek w swojej kuchni — CookSnap doda wszystkie produkty do spiżarni i automatycznie uwzględni je w przyszłych przepisach.",
   "scanner.pantryCtaBtn": "Przejdź do spiżarni",
-  "scanner.scanTip": "Wskazówka: otwórz szuflady i wysuń produkty do przodu, aby uzyskać najlepsze wyniki.",
   "pantry.generateCtaTitle": "Gotowy do gotowania?",
   "pantry.generateCtaBody": "Wygeneruj przepisy na podstawie produktów z lodówki i spiżarni.",
   "pantry.generateCtaBtn": "Generuj przepisy",

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, Image as ImageIcon, Plus, CheckCircle2, Lightbulb } from "lucide-react-native";
+import { Camera, Image as ImageIcon, Plus, CheckCircle2 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
@@ -505,36 +505,6 @@ export default function PantryScannerHero({ onManualAdd }) {
               {t("scanner.add")}
             </Text>
           </TouchableOpacity>
-        </View>
-
-        {/* Same reasoning as FridgeScannerHero's scanTip — items behind a
-            closed cabinet door or stacked behind others in a cupboard
-            never show up in the photo, so the scan undercounts and
-            recipes end up thinner than the pantry actually supports. Same
-            icon + tightened-copy treatment as Fridge's version too — see
-            its own comment for why. */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: 10,
-            paddingHorizontal: 12,
-            gap: 5,
-          }}
-        >
-          <Lightbulb size={12} color={colors.textSecondary} strokeWidth={2} />
-          <Text
-            style={{
-              color: colors.textSecondary,
-              fontSize: 12,
-              fontWeight: "500",
-              textAlign: "center",
-              lineHeight: 16,
-            }}
-          >
-            {t("scanner.scanTip")}
-          </Text>
         </View>
         </View>
       ) : (
