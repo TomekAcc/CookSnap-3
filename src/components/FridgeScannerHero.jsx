@@ -112,6 +112,8 @@ export default function FridgeScannerHero() {
     canScanFridge,
     t,
     recipeLanguageId,
+    firstScanHintShown,
+    markFirstScanHintShown,
   } = useCookAI();
   const { setScanMoreOpen, setProModalOpen } = useModalState();
   const { colors, isDark } = useTheme();
@@ -178,8 +180,47 @@ export default function FridgeScannerHero() {
   // lifecycle to manage.
   const iconPulse = useRef(new Animated.Value(1)).current;
   const shimmerAnim = useRef(new Animated.Value(0)).current;
+  // First-launch highlight on the "Take Photo" button — see its own
+  // comment at the JSX below for why this exists.
+  const firstScanHintPulse = useRef(new Animated.Value(0)).current;
   const progressAnimRef = useRef(null);
   const shrinkStartedRef = useRef(false);
+
+  // Confirmed real feedback: a first-time user landing on this idle screen
+  // right after onboarding didn't register that this is where you scan —
+  // even though the card already has a clear title/subtitle/button. Rather
+  // than add another onboarding screen to tap through (more friction, easy
+  // to swipe past on autopilot), this puts a one-time soft pulsing glow
+  // directly on the "Take Photo" button — the attention cue sits exactly
+  // where the action needs to happen, at the moment it needs to happen.
+  // Shown only once ever (firstScanHintShown persists via CookAIContext,
+  // same pattern as Settings' one-time "Done" hint), dismissed the moment
+  // the user taps either scan action below.
+  useEffect(() => {
+    if (scanStage !== "idle" || firstScanHintShown) {
+      firstScanHintPulse.stopAnimation();
+      firstScanHintPulse.setValue(0);
+      return undefined;
+    }
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(firstScanHintPulse, {
+          toValue: 1,
+          duration: 900,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(firstScanHintPulse, {
+          toValue: 0,
+          duration: 900,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [scanStage, firstScanHintShown, firstScanHintPulse]);
 
   // Drives the real fill-to-100% + a brief visible hold, keyed off the RAW
   // (unheld) stage so it fires exactly once on true completion, independent
@@ -770,35 +811,74 @@ export default function FridgeScannerHero() {
                   primary action" color across the whole scan flow instead
                   of navy and the app's actual brand green both claiming
                   that role on the same screen. */}
-              <TouchableOpacity
-                onPress={handleOpenCamera}
-                activeOpacity={0.9}
-                style={{
-                  flex: 1.15,
-                  height: 46,
-                  backgroundColor: "#059669",
-                  borderRadius: 13,
-                  alignItems: "center",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                }}
-              >
-                <Camera size={16} color="#FFFFFF" />
-                <Text
-                  style={{
-                    color: "#FFFFFF",
-                    fontSize: 15,
-                    fontWeight: "600",
-                    marginLeft: 8,
+              <View style={{ flex: 1.15 }}>
+                {/* One-time glow halo — see the firstScanHintPulse effect
+                    above for why. Sits behind the button (negative inset,
+                    lower in paint order), pulses opacity + scale together
+                    so it reads as a soft breathing highlight rather than a
+                    hard outline. pointerEvents none so it never steals the
+                    tap. */}
+                {!firstScanHintShown && (
+                  <Animated.View
+                    pointerEvents="none"
+                    style={{
+                      position: "absolute",
+                      top: -6,
+                      bottom: -6,
+                      left: -6,
+                      right: -6,
+                      borderRadius: 19,
+                      backgroundColor: "#059669",
+                      opacity: firstScanHintPulse.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 0.35],
+                      }),
+                      transform: [
+                        {
+                          scale: firstScanHintPulse.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0.94, 1.06],
+                          }),
+                        },
+                      ],
+                    }}
+                  />
+                )}
+                <TouchableOpacity
+                  onPress={() => {
+                    markFirstScanHintShown();
+                    handleOpenCamera();
                   }}
-                  numberOfLines={1}
+                  activeOpacity={0.9}
+                  style={{
+                    height: 46,
+                    backgroundColor: "#059669",
+                    borderRadius: 13,
+                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                  }}
                 >
-                  {t("scanner.takePhoto")}
-                </Text>
-              </TouchableOpacity>
+                  <Camera size={16} color="#FFFFFF" />
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: 15,
+                      fontWeight: "600",
+                      marginLeft: 8,
+                    }}
+                    numberOfLines={1}
+                  >
+                    {t("scanner.takePhoto")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
               <TouchableOpacity
-                onPress={handlePickFromGallery}
+                onPress={() => {
+                  markFirstScanHintShown();
+                  handlePickFromGallery();
+                }}
                 activeOpacity={0.9}
                 style={{
                   flex: 1,

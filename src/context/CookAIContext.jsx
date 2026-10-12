@@ -54,6 +54,7 @@ const INGREDIENT_PRIORITY_STORAGE_KEY = "cookai:ingredientPriority:v1";
 const RECIPE_LANGUAGE_STORAGE_KEY = "cookai:recipeLanguage:v1";
 const ONBOARDING_STORAGE_KEY = "cookai:onboardingComplete:v1";
 const SETTINGS_DONE_HINT_STORAGE_KEY = "cookai:settingsDoneHintShown:v1";
+const FIRST_SCAN_HINT_STORAGE_KEY = "cookai:firstScanHintShown:v1";
 const DIETARY_RESTRICTIONS_STORAGE_KEY = "cookai:dietaryRestrictions:v1";
 const CUSTOM_DIET_AVOID_STORAGE_KEY = "cookai:customDietAvoid:v1";
 const CUSTOM_DIET_PREFER_STORAGE_KEY = "cookai:customDietPrefer:v1";
@@ -1246,6 +1247,10 @@ export function CookAIProvider({ children }) {
     AsyncStorage.removeItem(SETTINGS_DONE_HINT_STORAGE_KEY).catch((err) =>
       console.warn("[Cook AI] settings done-hint reset failed:", err?.message)
     );
+    setFirstScanHintShownState(false);
+    AsyncStorage.removeItem(FIRST_SCAN_HINT_STORAGE_KEY).catch((err) =>
+      console.warn("[Cook AI] first-scan hint reset failed:", err?.message)
+    );
   }, []);
 
   // Confirmed real feedback: Settings' sticky "Done" button only earns its
@@ -1275,6 +1280,35 @@ export function CookAIProvider({ children }) {
     setSettingsDoneHintShownState(true);
     AsyncStorage.setItem(SETTINGS_DONE_HINT_STORAGE_KEY, "true").catch((err) =>
       console.warn("[Cook AI] settings done-hint persist failed:", err?.message)
+    );
+  }, []);
+
+  // Confirmed real feedback: a first-time user landing on the idle Scanner
+  // screen right after onboarding didn't register that this is where you
+  // scan — same one-time-hint pattern as Settings' "Done" button above.
+  // Shown once, dismissed the moment the user actually taps either scan
+  // action (handled in FridgeScannerHero, not here), never shown again.
+  const [firstScanHintShown, setFirstScanHintShownState] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(FIRST_SCAN_HINT_STORAGE_KEY);
+        if (!cancelled && raw === "true") setFirstScanHintShownState(true);
+      } catch (err) {
+        console.warn("[Cook AI] first-scan hint hydrate failed:", err?.message);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const markFirstScanHintShown = useCallback(() => {
+    setFirstScanHintShownState(true);
+    AsyncStorage.setItem(FIRST_SCAN_HINT_STORAGE_KEY, "true").catch((err) =>
+      console.warn("[Cook AI] first-scan hint persist failed:", err?.message)
     );
   }, []);
 
@@ -2368,6 +2402,8 @@ export function CookAIProvider({ children }) {
       resetOnboarding,
       settingsDoneHintShown,
       markSettingsDoneHintShown,
+      firstScanHintShown,
+      markFirstScanHintShown,
       toast,
       showToast,
     }),
@@ -2470,6 +2506,8 @@ export function CookAIProvider({ children }) {
       resetOnboarding,
       settingsDoneHintShown,
       markSettingsDoneHintShown,
+      firstScanHintShown,
+      markFirstScanHintShown,
       toast,
       showToast,
     ]

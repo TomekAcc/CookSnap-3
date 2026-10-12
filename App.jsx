@@ -31,7 +31,6 @@ import SavedScreen from "./src/screens/SavedScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
 import OnboardingScreen from "./src/screens/OnboardingScreen";
-import OnboardingProScreen from "./src/screens/OnboardingProScreen";
 
 // Runs once, before the first Text renders — see globalFont.js for why this
 // has to patch the JSX runtime rather than Text.render or createElement.
@@ -151,11 +150,15 @@ function AppShell() {
  * read that decides which one to show — resolves, so an existing user
  * never sees onboarding flash on screen while that read is in flight.
  *
- * `proIntroShown` is local, ephemeral state (not persisted) — it only
- * needs to gate the single beat between the language/units step and
- * `completeOnboarding()` firing, so there's no need for its own storage
- * key. "Maybe later" and subscribing both call `finishOnboarding`, just
- * one of them also calls `activatePro()` first.
+ * The PRO intro step that used to sit here (right after language/units,
+ * before `completeOnboarding()`) was removed per direct product decision:
+ * confirmed real feedback was that pitching a subscription before the user
+ * has done anything at all in the app — no scan, no recipe, zero context
+ * for why "unlimited scans" would matter to them — felt pushed too soon.
+ * The app already has a better mechanism for this: ProSubscriptionModal
+ * shows contextually, at the moment a free user actually hits their daily
+ * scan/generation limit or taps a PRO-locked feature, which is both less
+ * intrusive and higher-intent than an abstract pitch during onboarding.
  */
 function RootGate() {
   const {
@@ -165,16 +168,8 @@ function RootGate() {
     recipeLanguageHydrated,
   } = useCookAI();
   const { colors } = useTheme();
-  const [proIntroShown, setProIntroShown] = React.useState(false);
   const fadeAnim = React.useRef(new Animated.Value(1)).current;
 
-  // The language/units screen is light-themed; the PRO intro right after
-  // it (and the app shell beyond that) intentionally isn't — same dark
-  // "PRO" chrome used everywhere else PRO shows up, kept deliberately
-  // distinct from the rest of the app. That's a real, wanted contrast, so
-  // the fix isn't matching the colors — it's not hard-cutting between
-  // them. A quick fade-to-fade-in softens the jump without touching either
-  // screen's own look.
   const crossfadeTo = (advance) => {
     Animated.timing(fadeAnim, {
       toValue: 0,
@@ -196,10 +191,8 @@ function RootGate() {
 
   let screen;
   if (!onboardingComplete) {
-    screen = proIntroShown ? (
-      <OnboardingProScreen onFinish={() => crossfadeTo(completeOnboarding)} />
-    ) : (
-      <OnboardingScreen onContinue={() => crossfadeTo(() => setProIntroShown(true))} />
+    screen = (
+      <OnboardingScreen onContinue={() => crossfadeTo(completeOnboarding)} />
     );
   } else if (!recipeLanguageHydrated) {
     // Confirmed real failure, reported by a first-time tester: a returning
