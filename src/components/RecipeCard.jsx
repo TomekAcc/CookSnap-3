@@ -183,10 +183,13 @@ const styles = StyleSheet.create({
     // routinely wraps to 2 lines now, making each card taller — at the old
     // SPACE.lg (16px) gap, one card's wrapped title sat close enough to the
     // next card's title that consecutive recipes read as blending together
-    // rather than as clearly separate cards. SPACE.xxl gives real breathing
-    // room between dish titles regardless of how many lines a given title
-    // wraps to.
-    marginBottom: SPACE.xxl,
+    // rather than as clearly separate cards. First bumped to SPACE.xxl
+    // (24px) — confirmed on a real device that still wasn't enough (the
+    // app's real custom font/real device text metrics render visibly
+    // denser than the web preview this was first checked against), so
+    // moved to SPACE.xxxl (32px), the top of the spacing scale, for an
+    // unambiguous gap this time.
+    marginBottom: SPACE.xxxl,
   },
   tile: {
     width: 76,
