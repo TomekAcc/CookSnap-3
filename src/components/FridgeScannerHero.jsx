@@ -22,6 +22,7 @@ import {
   RefreshCw,
   CheckCircle2,
   Zap,
+  Lightbulb,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
@@ -786,20 +787,37 @@ export default function FridgeScannerHero() {
                 recipes built from that scan end up thinner than they could
                 be. No vision model fixes what a photo physically doesn't
                 show; the real fix is coaching the shot itself, right before
-                it's taken, when the user can still act on it. */}
-            <Text
+                it's taken, when the user can still act on it.
+                Second pass on this, per a direct design request: a bare
+                paragraph of secondary-color body text read as stray
+                leftover copy competing with the primary buttons above it,
+                not a deliberate tip — tightened the wording (one clause,
+                not two) and paired it with a small Lightbulb icon so it
+                reads as "here's a tip" at a glance instead of an
+                unexplained caption. */}
+            <View
               style={{
-                color: colors.textSecondary,
-                fontSize: 12,
-                fontWeight: "500",
-                textAlign: "center",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
                 marginTop: 12,
-                lineHeight: 16,
                 paddingHorizontal: 12,
+                gap: 5,
               }}
             >
-              {t("scanner.scanTip")}
-            </Text>
+              <Lightbulb size={12} color={colors.textSecondary} strokeWidth={2} />
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontSize: 12,
+                  fontWeight: "500",
+                  textAlign: "center",
+                  lineHeight: 16,
+                }}
+              >
+                {t("scanner.scanTip")}
+              </Text>
+            </View>
           </View>
         )}
 
