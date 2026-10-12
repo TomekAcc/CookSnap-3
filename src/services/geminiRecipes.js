@@ -743,6 +743,7 @@ CORE PRINCIPLES:
    - SAUTÉ ORDER: onions and aromatics ALWAYS go first (sweat until translucent) before adding vegetables that release water (mushrooms, zucchini, tomatoes) — otherwise the water prevents the onion from caramelizing.
    - CUTTING: never assume the user knows to cut ingredients. If a recipe involves meat, specify "cut into bite-sized pieces" or "slice into strips" before cooking. If a recipe involves vegetables to be cooked together, specify how they should be cut (diced, sliced, chopped). A step saying "fry the mushrooms and meat" without mentioning cutting first is incomplete.
    - MIXING/FLIPPING: when browning meat or vegetables in a pan, specify "turn occasionally" or "stir every 2-3 minutes until browned on all sides" — do not just say "brown".
+   - GROUND/MINCED MEAT (MANDATORY, DISTINCT FROM THE SLICE/CUBE CASE ABOVE): confirmed real complaint — "throw the meat in the pan and fry it" leaves out the one thing an inexperienced cook genuinely doesn't know to do with ground meat specifically: break it apart as it cooks. Any step adding ground/minced meat to a pan MUST say to break it up with a spatula/spoon into small crumbled pieces while it cooks (not just "cook until browned"), and must say to keep breaking it apart and stirring until no raw/pink pieces remain — ground meat clumps into one solid mass if left alone, and a beginner has no way to know that unless the step says so.
    - Every step must be complete enough that someone cooking for the first time could follow it without guessing. This is not a "beginner mode" — even professional recipes (Ania Gotuje, Kwestia Smaku, BBC Good Food) specify these details because the cutting/order/flipping is the actual cooking technique, not a beginner concession.
 6. A DISH MUST BE A COMPLETE, HONEST VERSION OF ITSELF — not a stripped-down fragment: a soup must actually be a soup, an omelet must be an omelet, a sauce must be a sauce. If the real inventory genuinely supports naming a dish, write it as a real, complete version of that dish. Never label a fragment as a full dish — either build the complete version with what's actually available, or rename it to what it really is.
    - SOUP MINIMUM (MANDATORY, STILL A CONFIRMED LIVE FAILURE — plain water does NOT fix this on its own): any dishType "soup" MUST have at least 5 real ingredients (not counting plain water) AND at least TWO aromatics (never onion alone — pair it with garlic, celery, carrot, leek, or a dried herb/spice). "Onion + tomato passata + cream + water" is still a thin fragment even with water added, because water alone has no flavor to contribute — it only counts as a liquid base when the aromatics and seasoning around it are already doing real work. If the available inventory can't support 5 real ingredients and 2 aromatics for a genuine soup, do NOT force a soup — pick a different dish entirely (a sauce, a dip, a pan dish) that's honest about being simple, rather than a thin dish wearing "soup" as its label.
@@ -1207,7 +1208,7 @@ ${
 - "ingredientsList" format: "<Quantity> <Ingredient> <Emoji>" e.g. "3 Eggs 🥚", "150g Cheese 🧀"
 - Recalculate ALL quantities for SERVINGS=${servings} and hunger="${hungerLevel}".
 - Include "servings": "Serves ${servings} ${servings === 1 ? "person" : "people"}".
-- Emoji rule: accurate food emoji, else category (🥦 veg, 🥩 meat, 🥛 dairy, 🌾 grain, 🫙 pantry, 🍳 egg) — NEVER 📦/box.
+- Emoji rule: accurate food emoji, else category (🥦 veg, 🥩 meat, 🥛 dairy, 🌾 grain, 🫙 pantry, 🍳 egg) — NEVER 📦/box. For mushrooms specifically, use 🍄‍🟫 (brown mushroom), NEVER the plain 🍄 — confirmed real failure: 🍄 renders as a red-spotted toadstool (visually a poisonous Amanita muscaria) on most platforms, which is an alarming and wrong thing to show next to a recipe ingredient.
 
 Return ONLY a raw JSON array of exactly ${recipeCount} objects with these exact keys:
 - "id": number (1..${recipeCount})
@@ -1546,8 +1547,35 @@ function extractTrailingEmoji(text) {
   // arrows/stars block — and stop well short of U+2E80+, so no CJK character
   // can ever be mistaken for a trailing emoji and stripped off a Chinese or
   // Japanese ingredient name.
+  //
+  // Confirmed real failure, same root cause one level deeper: a single
+  // "emoji unit" here didn't cover a ZWJ-joined COMPOUND emoji like 🍄‍🟫
+  // (mushroom U+1F344 + ZERO WIDTH JOINER U+200D + brown square U+1F7EB —
+  // three codepoints, one glyph). The old pattern only matched the LAST
+  // unit of a compound (the 🟫 half); the outer loop's re-match on what
+  // remained ("…pieczarki 🍄‍") then stopped at the bare ZWJ since it isn't
+  // itself emoji-shaped, leaving "🍄‍" (mushroom + dangling joiner) stuck in
+  // the ingredient NAME text with our own clean 🍄‍🟫 appended after it —
+  // live result: "150g pieczarki 🍄‍ 🍄‍🟫". The repeated group's trailing
+  // `‍?` below consumes an emoji unit together with its own following
+  // joiner in the same pass, so a whole ZWJ chain comes off in one match.
   const m = s.match(
-    /((?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF\u2B00-\u2BFF])[\uFE0E\uFE0F]?)\s*$/
+    /((?:(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF\u2B00-\u2BFF])[\uFE0E\uFE0F]?\u200D?)+)\s*$/
+  );
+  return m ? m[1] : null;
+}
+
+// Confirmed real failure, same family as extractTrailingEmoji but at the
+// OTHER end: the spec tells the model to put its emoji at the very end
+// ("<Quantity> <Ingredient> <Emoji>"), but a live response put one right
+// after the quantity too — "100g 🍄‍🟫 pieczarki 🍄‍🟫" — which the
+// trailing-only stripper above never touches, since it isn't at the end of
+// the string. Mirrors extractTrailingEmoji exactly, anchored at the start
+// instead of the end.
+function extractLeadingEmoji(text) {
+  const s = String(text || "").trim();
+  const m = s.match(
+    /^((?:(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[☀-➿⬀-⯿])[︎️]?‍?)+)\s*/
   );
   return m ? m[1] : null;
 }
@@ -1581,7 +1609,21 @@ export function formatIngredientsList(lines) {
       const qtyMatch = withoutEmoji.match(
         /^(?:\d+[\/\d]*\.?\d*\s*(?:x|g|ml|tbsp|tsp|pcs|cloves|cup|cups|pinch|handful)?\s+)?(.+)$/i
       );
-      const name = (qtyMatch?.[1] || withoutEmoji).trim();
+      let name = (qtyMatch?.[1] || withoutEmoji).trim();
+
+      // Strip a leading emoji the model put right after the quantity —
+      // see extractLeadingEmoji's own comment for the confirmed live case.
+      // withoutEmoji === <quantityPrefix><name> exactly (qtyMatch's group 1
+      // is the string's own tail), so slicing off name's old length and
+      // appending the cleaned version reconstructs it losslessly.
+      const leadingEmoji = extractLeadingEmoji(name);
+      if (leadingEmoji) {
+        const cleanName = name.slice(leadingEmoji.length).trim();
+        withoutEmoji =
+          withoutEmoji.slice(0, withoutEmoji.length - name.length) + cleanName;
+        name = cleanName;
+      }
+
       const style = getIngredientStyle(name);
       const logical = style.emoji || getIngredientEmoji(name) || "🛒";
 

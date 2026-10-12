@@ -21,7 +21,17 @@ const EXACT_MAP = [
   { keys: ["garlic", "czosnek"], emoji: "🧄", category: "veg" },
   { keys: ["ginger"], emoji: "🫚", category: "veg" },
   { keys: ["lemon", "lime", "citrus"], emoji: "🍋", category: "veg" },
-  { keys: ["mushroom"], emoji: "🍄‍🟫", category: "veg" },
+  // Confirmed real feedback: a Polish recipe showed the plain 🍄 — which
+  // renders as a red-spotted toadstool (visually a fly agaric / Amanita
+  // muscaria, i.e. a poisonous mushroom) in most emoji sets — instead of
+  // the neutral 🍄‍🟫 below. This table only had the English "mushroom"
+  // keyword, so a Polish ingredient name ("pieczarki", "grzyby") never
+  // matched it and fell through to the model's own emoji choice, which
+  // isn't guarded against picking the toxic-looking glyph. Same
+  // English-only-keyword-table gap already found and worked around in
+  // geminiRecipes.js's flavor check — adding the Polish terms here closes
+  // it for this specific case; see also the "NEVER 🍄" prompt rule.
+  { keys: ["mushroom", "pieczarka", "pieczarki", "grzyb", "grzyby"], emoji: "🍄‍🟫", category: "veg" },
   { keys: ["onion", "shallot", "leek", "cebula"], emoji: "🧅", category: "veg" },
   { keys: ["bell pepper", "papryka", "capsicum", "chili", "chilli"], emoji: "🫑", category: "veg" },
   { keys: ["potato", "sweet potato"], emoji: "🥔", category: "veg" },
