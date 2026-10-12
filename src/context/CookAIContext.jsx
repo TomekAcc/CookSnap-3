@@ -41,6 +41,11 @@ const PANTRY_SCAN_COUNT_STORAGE_KEY = "cookai:dailyPantryScans:v1";
 const GENERATION_COUNT_STORAGE_KEY = "cookai:dailyRecipeGenCount:v1";
 const FAVORITES_STORAGE_KEY = "cookai:favorites:v1";
 const SAVED_RECIPES_STORAGE_KEY = "cookai:savedRecipes:v1";
+// Append-only signal log — no UI reads this back; it exists purely so a
+// future analytics pass (see docs/IMPLEMENTATION_ROADMAP.md #7) has real
+// "was this detection actually right" data to pull instead of guessing
+// from support messages. Capped the same way scanHistory is.
+const FEEDBACK_LOG_STORAGE_KEY = "cookai:feedbackLog:v1";
 const FRIDGE_PHOTO_STORAGE_KEY = "cookai:fridgePhoto:v1";
 const SCAN_HISTORY_STORAGE_KEY = "cookai:scanHistory:v1";
 const INGREDIENTS_STORAGE_KEY = "cookai:ingredients:v1";
@@ -187,6 +192,28 @@ function mergeUniqueIngredients(prevItems, newScannedItems) {
   }
 
   return [...existing, ...uniqueNewItems];
+}
+
+/**
+ * Fire-and-forget append to the local feedback/signal log (recipe ratings,
+ * flagged bad detections). Never throws into the caller — a logging
+ * failure must not block the user action (favoriting, removing an
+ * ingredient) that triggered it. Capped at 200 like scanHistory caps at 10,
+ * just a higher ceiling since this is meant to accumulate over weeks, not
+ * show the last few items in a UI.
+ */
+async function appendFeedbackLog(entry) {
+  try {
+    const raw = await AsyncStorage.getItem(FEEDBACK_LOG_STORAGE_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    const next = [
+      { ...entry, loggedAt: new Date().toISOString() },
+      ...(Array.isArray(list) ? list : []),
+    ].slice(0, 200);
+    await AsyncStorage.setItem(FEEDBACK_LOG_STORAGE_KEY, JSON.stringify(next));
+  } catch (err) {
+    console.warn("[Cook AI] feedback log append failed:", err?.message);
+  }
 }
 
 /** Brand-new users start with a clean, empty pantry — no seeded staples. */
@@ -1326,12 +1353,25 @@ export function CookAIProvider({ children }) {
     toastTimerRef.current = setTimeout(() => setToast(null), duration);
   }, []);
 
+  // Removing a vision-detected ingredient (as opposed to one the user typed
+  // in themselves via AddIngredientModal) is the user telling us the scan
+  // got it wrong — the same "wasn't actually there" signal
+  // docs/IMPLEMENTATION_ROADMAP.md #7 asks for, without adding a second tap
+  // target next to the X button that already does this.
   const removeIngredient = useCallback((id) => {
-    setIngredients((prev) => prev.filter((i) => i.id !== id));
+    setIngredients((prev) => {
+      const removed = prev.find((i) => i.id === id);
+      if (removed?.source === "scan") {
+        appendFeedbackLog({ type: "scanIngredientFlagged", name: removed.name });
+      }
+      return prev.filter((i) => i.id !== id);
+    });
   }, []);
 
   const addIngredient = useCallback((item) => {
-    setIngredients((prev) => mergeUniqueIngredients(prev, [item]));
+    setIngredients((prev) =>
+      mergeUniqueIngredients(prev, [{ ...item, source: "manual" }])
+    );
     setAddIngredientOpen(false);
   }, []);
 
@@ -1339,7 +1379,9 @@ export function CookAIProvider({ children }) {
   const appendIngredients = useCallback((newItems) => {
     const incoming = Array.isArray(newItems) ? newItems : [];
     if (!incoming.length) return;
-    setIngredients((prev) => mergeUniqueIngredients(prev, incoming));
+    setIngredients((prev) =>
+      mergeUniqueIngredients(prev, incoming.map((i) => ({ ...i, source: "scan" })))
+    );
   }, []);
 
   const pushScanHistory = useCallback((photoUri, source, itemCount, snapshotIngredients) => {
@@ -1533,7 +1575,7 @@ export function CookAIProvider({ children }) {
     // is deferred), so `mergedIngredients` is populated by the time
     // setIngredients() returns below, preserving the original need for a
     // synchronous merged list to snapshot into scan history right after.
-    const newScannedItems = fullList;
+    const newScannedItems = fullList.map((i) => ({ ...i, source: "scan" }));
     const normalizeName = (n) => String(n || "").toLowerCase().trim();
 
     let mergedIngredients = [];
