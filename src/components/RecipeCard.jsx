@@ -178,7 +178,15 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.card,
     borderWidth: 1,
     padding: SPACE.lg,
-    marginBottom: SPACE.lg,
+    // Confirmed real feedback: titles no longer get truncated to one line
+    // (see "Unrestrict recipe title lines"), so a normal 2-3 word title
+    // routinely wraps to 2 lines now, making each card taller — at the old
+    // SPACE.lg (16px) gap, one card's wrapped title sat close enough to the
+    // next card's title that consecutive recipes read as blending together
+    // rather than as clearly separate cards. SPACE.xxl gives real breathing
+    // room between dish titles regardless of how many lines a given title
+    // wraps to.
+    marginBottom: SPACE.xxl,
   },
   tile: {
     width: 76,
