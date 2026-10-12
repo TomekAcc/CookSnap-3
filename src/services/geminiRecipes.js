@@ -438,19 +438,64 @@ const TITLE_FLAVOR_REQUIREMENTS = {
 // used for category/dishType/matchBadge — so the check runs against a
 // language-independent signal instead of trying to pattern-match text in
 // an unknown language.
+//
+// THIRD bug, same root cause, found live: fixing the title side this way
+// only moved the problem one field over. This check still substring-matched
+// TITLE_FLAVOR_REQUIREMENTS' own English terms ("cream", "milk", "garlic", …)
+// against `ingredientsList` — but ingredientsList is ALSO written in the
+// user's language. A real Polish recipe with "100ml śmietana 18%" (cream)
+// never contains the literal substring "cream", so every non-English
+// "creamy"/"garlicky"/"herbed"/etc. recipe was being wrongly rejected
+// regardless of whether it genuinely had the ingredient — live-confirmed:
+// a Polish batch dropped 4 of 5 recipes per attempt on this exact mismatch.
+// Fixed the same way as the title side: the model now self-reports which
+// qualifying English ingredient-category terms are genuinely present via
+// `flavorEvidenceTags`, so both sides of this comparison are
+// language-independent fixed-English tokens instead of one being raw
+// user-language text.
 function hasTitleFlavorMismatch(recipe) {
   const tags = Array.isArray(recipe?.titleFlavorWords) ? recipe.titleFlavorWords : [];
   if (!tags.length) return false;
-  const ingredientsText = (Array.isArray(recipe?.ingredientsList) ? recipe.ingredientsList : [])
-    .join(" | ")
-    .toLowerCase();
+  const evidence = new Set(
+    (Array.isArray(recipe?.flavorEvidenceTags) ? recipe.flavorEvidenceTags : []).map((t) =>
+      String(t || "").toLowerCase().trim()
+    )
+  );
   for (const tag of tags) {
     const requiredTerms = TITLE_FLAVOR_REQUIREMENTS[String(tag || "").toLowerCase()];
     if (!requiredTerms) continue;
-    const satisfied = requiredTerms.some((term) => ingredientsText.includes(term));
+    const satisfied = requiredTerms.some((term) => evidence.has(term));
     if (!satisfied) return true;
   }
   return false;
+}
+
+// Flattened, deduplicated vocabulary the model is allowed to use for
+// `flavorEvidenceTags` — single source of truth shared with
+// TITLE_FLAVOR_REQUIREMENTS so the two can never drift out of sync.
+const FLAVOR_EVIDENCE_VOCABULARY = [
+  ...new Set(Object.values(TITLE_FLAVOR_REQUIREMENTS).flat()),
+];
+
+// CODE-LEVEL "THIN SOUP" SAFETY NET — confirmed real failure, live-verified
+// twice: the prompt's own SOUP MINIMUM rule (CORE PRINCIPLES #6) explicitly
+// requires 5+ real ingredients and 2+ aromatics for anything labeled a
+// soup, using this exact "onion + passata + cream (+ water)" case as its
+// own worked example of what's NOT acceptable — yet the live model still
+// produced "potato, onion, cream, water" (4 items, one aromatic) for a
+// "Zupa krem z pieczonych ziemniaków" after that rule was already in the
+// prompt. Prompt instruction alone isn't reliable enough here, matching
+// every other check in this file — so this backs it with a code-level
+// floor. Deliberately simple (total ingredient count only, not an
+// aromatics count) since detecting "is this just water" or "is this a
+// real aromatic" by keyword would require per-language matching, the same
+// class of bug hasTitleFlavorMismatch had before flavorEvidenceTags fixed
+// it — a plain count threshold needs no language parsing and still
+// directly catches the confirmed failure shape (it was 4, this requires 5).
+function hasThinSoup(recipe) {
+  if (recipe?.dishType !== "soup") return false;
+  const count = Array.isArray(recipe?.ingredientsList) ? recipe.ingredientsList.length : 0;
+  return count < 5;
 }
 
 /**
@@ -699,7 +744,8 @@ CORE PRINCIPLES:
    - CUTTING: never assume the user knows to cut ingredients. If a recipe involves meat, specify "cut into bite-sized pieces" or "slice into strips" before cooking. If a recipe involves vegetables to be cooked together, specify how they should be cut (diced, sliced, chopped). A step saying "fry the mushrooms and meat" without mentioning cutting first is incomplete.
    - MIXING/FLIPPING: when browning meat or vegetables in a pan, specify "turn occasionally" or "stir every 2-3 minutes until browned on all sides" — do not just say "brown".
    - Every step must be complete enough that someone cooking for the first time could follow it without guessing. This is not a "beginner mode" — even professional recipes (Ania Gotuje, Kwestia Smaku, BBC Good Food) specify these details because the cutting/order/flipping is the actual cooking technique, not a beginner concession.
-6. A DISH MUST BE A COMPLETE, HONEST VERSION OF ITSELF — not a stripped-down fragment: a soup must actually be a soup (with a proper liquid base like stock/broth/water plus aromatics and body), an omelet must be an omelet, a sauce must be a sauce. If the real inventory genuinely supports naming a dish, write it as a real, complete version of that dish — a tomato soup reduced to "onion, passata and cream" is not a soup, it's passata with cream; a tomato soup needs a liquid base (stock, broth, or well-seasoned water), aromatics (onion and garlic), and seasoning so it reads as a genuine soup. Never label a fragment as a full dish — either build the complete version with what's actually available, or rename it to what it really is.
+6. A DISH MUST BE A COMPLETE, HONEST VERSION OF ITSELF — not a stripped-down fragment: a soup must actually be a soup, an omelet must be an omelet, a sauce must be a sauce. If the real inventory genuinely supports naming a dish, write it as a real, complete version of that dish. Never label a fragment as a full dish — either build the complete version with what's actually available, or rename it to what it really is.
+   - SOUP MINIMUM (MANDATORY, STILL A CONFIRMED LIVE FAILURE — plain water does NOT fix this on its own): any dishType "soup" MUST have at least 5 real ingredients (not counting plain water) AND at least TWO aromatics (never onion alone — pair it with garlic, celery, carrot, leek, or a dried herb/spice). "Onion + tomato passata + cream + water" is still a thin fragment even with water added, because water alone has no flavor to contribute — it only counts as a liquid base when the aromatics and seasoning around it are already doing real work. If the available inventory can't support 5 real ingredients and 2 aromatics for a genuine soup, do NOT force a soup — pick a different dish entirely (a sauce, a dip, a pan dish) that's honest about being simple, rather than a thin dish wearing "soup" as its label.
 7. REAL DISH TEST (MANDATORY — do this before finalizing every recipe): would a real person actually cook and eat this dish? Never generate a dish that is a bizarre combination, a "for-the-sake-of-it" mashup, or something that sounds unappetizing. Concretely: a "creamy orange dessert with chicken" is not a real dish — it's a mistake. A "sweet oatmeal bowl" with random savory ingredients is not a real dish. A "cashew oatmeal" without cashews in inventory is fabricated. Every recipe must pass this test: ask yourself "would this be served in a real home kitchen or restaurant?" — if not, it fails. A recipe that fails the REAL DISH TEST is worse than no recipe at all.
 8. PHYSICAL SENSE CHECK (MANDATORY — do this before finalizing every step): every step must be physically possible and use ingredients in their correct form. A raw ingredient must be raw when it's meant to be cooked, and a cooked ingredient must never be described as "poured", "poured in", or added as if it were a liquid when it can't be. Concretely: you pour RAW whisked eggs into a pan (they are liquid); you never "pour" a cooked/solid egg or a solid ingredient. Re-read each step and check "can a person actually do this with the ingredient in the state it would be in at that point?" — if not, fix it.
 9. Use a single measurement system (US or Metric) as specified — never mix or show both. When the recipe language is not English, translate the unit words too (e.g. "łyżka" not "tbsp").
@@ -723,6 +769,7 @@ REQUIRED FIELDS PER RECIPE OBJECT:
 - "fat": "Xg"
 - "matchBadge": English (e.g. "Uses 4 fridge items")
 - "titleFlavorWords": array of English tags from ["creamy","cheesy","buttery","garlicky","garlic","honey","lemony","lemon","spicy","smoky","maple","herbed","vanilla"] — empty array [] on most recipes
+- "flavorEvidenceTags": array of English ingredient-category terms from ${JSON.stringify(FLAVOR_EVIDENCE_VOCABULARY)} — list every one that genuinely corresponds to a real ingredient in THIS recipe's ingredientsList (even if the title doesn't mention it), always in English regardless of the recipe's language. This lets the app verify flavor claims without parsing a non-English ingredient list. [] if none apply.
 - "servings": "Serves X people"
 - "ingredientsList": array of "Quantity Ingredient Emoji" strings
 - "steps": 3 to 5 imperative strings, each ending with a period
@@ -1177,6 +1224,7 @@ Return ONLY a raw JSON array of exactly ${recipeCount} objects with these exact 
 - "fat": string (e.g. "14g") — same estimation basis as protein.
 - "matchBadge": string (English — never shown to the user, leave as English)
 - "titleFlavorWords": array of English tags — see TITLE FLAVOR ACCURACY above. [] for most recipes; only include a tag when the title in ${language} genuinely uses that descriptor concept AND ingredientsList genuinely backs it up.
+- "flavorEvidenceTags": array of English ingredient-category terms, ONLY from this exact fixed list: ${FLAVOR_EVIDENCE_VOCABULARY.map((t) => `"${t}"`).join(", ")}. This is a SEPARATE self-check field, always in English regardless of ${language} (like "category"/"dishType"), that exists because ingredientsList is written in ${language} and the app cannot otherwise verify your flavor claims in a non-English language. List EVERY term from that fixed list whose real-world ingredient genuinely appears anywhere in THIS recipe's ingredientsList — e.g. if ingredientsList contains the ${language} word for cream (however it's spelled in ${language}), include "cream" here; if it contains the ${language} word for garlic, include "garlic". This is independent of titleFlavorWords — list every term that applies even if the title doesn't mention it. [] only when genuinely none apply. Any tag you put in titleFlavorWords whose matching term is missing here will cause the recipe to be silently discarded, so be accurate and complete, not conservative.
 - "servings": string, written entirely in ${language} — translate both the number-word phrasing AND "Serves"/"people" (or whatever ${language}'s natural equivalent phrase is), not just the surrounding words. ${isEnglish ? `E.g. "Serves ${servings} people".` : `Do NOT leave this field in English — e.g. for Polish this would be "Dla ${servings} osób", for Spanish "Sirve a ${servings} personas"; produce the real ${language} equivalent, not a transliteration.`}
 - "ingredientsList": array of Quantity + Ingredient + Emoji strings ONLY (inventory only, scaled for ${servings}, ingredient names in ${language}) — every entry must be a real food item, NEVER an instruction. Confirmed real failure: a past batch put "Preheat the oven to 350°F. 🫙" as an ingredientsList entry — that is a step, not an ingredient, and must never appear here even for oven recipes (the preheat instruction goes in "steps" only). Quantities MUST use ONLY the ${isMetric ? "METRIC (grams/ml)" : "US CUSTOMARY"} system per UNIT SYSTEM above${isMetric ? ` — e.g. "120g Mąka 🌾" (ingredient translated, "g"/"ml" written as-is)` : isEnglish ? ` — e.g. "1 cup Flour 🌾"` : ` — e.g. for Polish "1 szklanka Mąka 🌾" NOT "1 cup Mąka 🌾" (the unit WORD translates too — see UNIT SYSTEM above)`}.
 - "steps": array of 3 to 5 imperative strings in ${language} per the DYNAMIC STEP COUNT rule above, each ending with a period. If the recipe uses an oven/broiler/grill, one step MUST be an explicit preheat instruction with a real ${isMetric ? "°C" : "°F"} temperature. Any step finishing meat/poultry/seafood must pair its time with a real doneness cue (temperature or a visual/textural check), never a time estimate alone — see MEAT/POULTRY/SEAFOOD DONENESS & TECHNIQUE above, which also governs matching the cook time/technique to the actual cut.
@@ -1202,6 +1250,7 @@ Example JSON Output:
     "fat": "26g",
     "matchBadge": "Uses 3 fridge items",
     "titleFlavorWords": [],
+    "flavorEvidenceTags": [],
     "servings": "Serves ${servings} ${servings === 1 ? "person" : "people"}",
     "ingredientsList": ["3 Eggs 🥚", "2 tbsp Hummus 🫙", "1/2 Red Bell Pepper 🫑"],
     "steps": [
@@ -1229,6 +1278,7 @@ Example JSON Output:
     "fat": "6g",
     "matchBadge": "Uses 2 fridge items",
     "titleFlavorWords": [],
+    "flavorEvidenceTags": ["yogurt"],
     "servings": "Serves ${servings} ${servings === 1 ? "person" : "people"}",
     "ingredientsList": ["1 cup Greek Yogurt 🥣", "2 tbsp Jam 🍓"],
     "steps": [
@@ -1241,7 +1291,7 @@ Example JSON Output:
   }
 ]
 
-Note: the second example above is intentionally a quick/cold dish with only 3 steps — a real sparse-inventory case (just yogurt + jam) elevated into a classic comforting bowl, NOT padded to 5 steps and NOT forced into an odd combination. Match this pattern whenever the available ingredients are simple. It also shows "upgradeIngredient"/"upgradeNote" as null, null — this should be the outcome for MOST recipes; the first example's feta suggestion is the rare exception, not the default.
+Note: the second example above is intentionally a quick/cold dish with only 3 steps — a real sparse-inventory case (just yogurt + jam) elevated into a classic comforting bowl, NOT padded to 5 steps and NOT forced into an odd combination. Match this pattern whenever the available ingredients are simple. It also shows "upgradeIngredient"/"upgradeNote" as null, null — this should be the outcome for MOST recipes; the first example's feta suggestion is the rare exception, not the default. Note its "flavorEvidenceTags": ["yogurt"] even though "titleFlavorWords" is empty — list every qualifying term that's genuinely true of the ingredients, independent of whether the title happens to mention it.
 
 Note: whenever a recipe requires the oven, its steps MUST include its own preheat instruction with a real temperature in the ${isMetric ? "METRIC" : "US CUSTOMARY"} system only, e.g. ${isMetric ? '"Preheat the oven to 200°C."' : '"Preheat the oven to 400°F."'} — never a bake step with no temperature ever stated, and never mix in the other unit system. Format ingredient quantities in that same single system throughout, e.g. ${
   isMetric
@@ -1848,6 +1898,15 @@ function normalizeRecipe(recipe, idx, mealType, servings = 2, language = "Englis
           .map((tag) => tag.toLowerCase().trim())
           .filter((tag) => TITLE_FLAVOR_REQUIREMENTS[tag])
       : [],
+    // Sanitized the same way as titleFlavorWords, against the shared
+    // FLAVOR_EVIDENCE_VOCABULARY — see hasTitleFlavorMismatch for why this
+    // field exists (language-independent evidence for the claims above).
+    flavorEvidenceTags: Array.isArray(safe.flavorEvidenceTags)
+      ? safe.flavorEvidenceTags
+          .filter((tag) => typeof tag === "string")
+          .map((tag) => tag.toLowerCase().trim())
+          .filter((tag) => FLAVOR_EVIDENCE_VOCABULARY.includes(tag))
+      : [],
     servings: servingsLabel,
     emoji: dishVisual.emoji,
     emojiBgClass: dishVisual.bgClass,
@@ -2393,6 +2452,14 @@ export async function generateRecipesWithGemini(
     if (normalized.length < beforeFlavorMismatchFilter) {
       console.warn(
         `[Cook AI] ${label} returned ${beforeFlavorMismatchFilter - normalized.length} recipe(s) whose title claimed a flavor/ingredient not actually in ingredientsList.`
+      );
+    }
+
+    const beforeThinSoupFilter = normalized.length;
+    normalized = normalized.filter((r) => !hasThinSoup(r));
+    if (normalized.length < beforeThinSoupFilter) {
+      console.warn(
+        `[Cook AI] ${label} returned ${beforeThinSoupFilter - normalized.length} recipe(s) labeled "soup" with fewer than 5 ingredients.`
       );
     }
 
