@@ -350,14 +350,18 @@ export default function RecipeDetailModal() {
               was minimized so aggressively by adjustsFontSizeToFit that it
               became hard to read. headerBar already grows to fit content —
               there is no fixed-height constraint forcing a shrink — so the
-              title should wrap to up to 3 lines at FULL size. Removing
-              adjustsFontSizeToFit entirely (not just raising the scale)
-              is what guarantees a long pollack/non-English title stays
-              readable instead of silently shrinking. */}
-          <Text
-            style={[styles.recipeTitle, { color: colors.textPrimary }]}
-            numberOfLines={3}
-          >
+              title should wrap at FULL size. Removing adjustsFontSizeToFit
+              entirely (not just raising the scale) is what guarantees a
+              long pollack/non-English title stays readable instead of
+              silently shrinking.
+              SECOND confirmed real failure, same root cause: the 3-line cap
+              added here still truncated longer titles mid-phrase with an
+              ellipsis ("Żółtym Serem, ..."), live-verified with a longer
+              Polish title. Same fix RecipeCard already applied for the
+              same reason (see its own "Unrestrict recipe title lines"
+              commit) — drop the line cap entirely since nothing here needs
+              a fixed height. */}
+          <Text style={[styles.recipeTitle, { color: colors.textPrimary }]}>
             {recipe?.title || t("recipeDetail.fallbackTitle")}
           </Text>
           {/* Real icon component instead of an inline "⏱️" glyph — emoji
