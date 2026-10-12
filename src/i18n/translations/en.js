@@ -125,7 +125,7 @@ export default {
   "scanner.itemsFoundFew": "{count} items found",
   "scanner.itemsFoundMany": "{count} items found",
   "scanner.scanMore": "Scan More",
-  "scanner.visionRadarTitle": "CookSnap Vision Radar",
+  "scanner.visionRadarTitle": "Vision Radar",
   "scanner.activeScan": "ACTIVE SCAN",
   "scanner.scanProgress": "SCAN PROGRESS",
   "scanner.noItemsDetected": "No items detected — try Scan More or add manually.",
