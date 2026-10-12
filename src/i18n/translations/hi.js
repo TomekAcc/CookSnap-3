@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "पैंट्री आइटम शामिल करें",
   "mealPrefs.staplesDesc": "आपकी पैंट्री में स्टॉक के रूप में चिह्नित सामग्री",
   "mealPrefs.servings": "सर्विंग्स",
-  "mealPrefs.servingsDesc": "कितने लोग खाना खा रहे हैं?",
   "mealPrefs.personUnit": "व्यक्ति",
   "mealPrefs.peopleUnit": "लोग",
   "mealPrefs.peopleUnitFew": "लोग",

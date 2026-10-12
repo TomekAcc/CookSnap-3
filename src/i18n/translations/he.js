@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "כלול פריטי מזווה",
   "mealPrefs.staplesDesc": "מרכיבים המסומנים כזמינים במזווה שלך",
   "mealPrefs.servings": "מנות",
-  "mealPrefs.servingsDesc": "כמה סועדים יש?",
   "mealPrefs.personUnit": "סועד",
   "mealPrefs.peopleUnit": "סועדים",
   "mealPrefs.peopleUnitFew": "סועדים",

@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Zahrnout položky ze spíže",
   "mealPrefs.staplesDesc": "Suroviny označené jako dostupné ve vaší spíži",
   "mealPrefs.servings": "Porce",
-  "mealPrefs.servingsDesc": "Pro kolik lidí vaříte?",
   "mealPrefs.personUnit": " OSOBA",
   "mealPrefs.peopleUnit": "LIDÉ",
   "mealPrefs.peopleUnitFew": "OSOBY",

@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Uključi artikle iz smočnice",
   "mealPrefs.staplesDesc": "Sastojci označeni kao dostupni u vašoj smočnici",
   "mealPrefs.servings": "Porcije",
-  "mealPrefs.servingsDesc": "Koliko ljudi jede?",
   "mealPrefs.personUnit": " OSOBA",
   "mealPrefs.peopleUnit": "OSOBA",
   "mealPrefs.peopleUnitFew": "OSOBE",

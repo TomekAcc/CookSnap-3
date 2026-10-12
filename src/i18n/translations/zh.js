@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "包含储藏室物品",
   "mealPrefs.staplesDesc": "在你的储藏室中标记为有库存的食材",
   "mealPrefs.servings": "用餐人数",
-  "mealPrefs.servingsDesc": "几个人用餐？",
   "mealPrefs.personUnit": "人",
   "mealPrefs.peopleUnit": "人",
   "mealPrefs.peopleUnitFew": "人",

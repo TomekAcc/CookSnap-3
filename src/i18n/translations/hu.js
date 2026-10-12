@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Kamra tételeinek belefoglalása",
   "mealPrefs.staplesDesc": "A kamrádban készleten lévőként megjelölt hozzávalók",
   "mealPrefs.servings": "Adagok",
-  "mealPrefs.servingsDesc": "Hány főre?",
   "mealPrefs.personUnit": "FŐ",
   "mealPrefs.peopleUnit": "FŐ",
   "mealPrefs.peopleUnitFew": "FŐ",

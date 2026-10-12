@@ -152,7 +152,6 @@ export default {
   "mealPrefs.includeStaples": "Uwzględnij produkty ze spiżarni",
   "mealPrefs.staplesDesc": "Składniki oznaczone jako dostępne w twojej spiżarni",
   "mealPrefs.servings": "Porcje",
-  "mealPrefs.servingsDesc": "Dla ilu osób gotujemy?",
   "mealPrefs.personUnit": "OSOBA",
   "mealPrefs.peopleUnit": "OSÓB",
   "mealPrefs.peopleUnitFew": "OSOBY",

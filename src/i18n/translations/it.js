@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Includi articoli della dispensa",
   "mealPrefs.staplesDesc": "Ingredienti contrassegnati come disponibili nella tua dispensa",
   "mealPrefs.servings": "Porzioni",
-  "mealPrefs.servingsDesc": "Per quante persone cucini?",
   "mealPrefs.personUnit": "PERSONA",
   "mealPrefs.peopleUnit": "PERSONE",
   "mealPrefs.peopleUnitFew": "PERSONE",

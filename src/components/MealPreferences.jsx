@@ -202,9 +202,6 @@ export default function MealPreferences() {
             <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
               {t("mealPrefs.servings")}
             </Text>
-            <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
-              {t("mealPrefs.servingsDesc")}
-            </Text>
           </View>
         </View>
 

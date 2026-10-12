@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Zahrnúť položky zo špajze",
   "mealPrefs.staplesDesc": "Suroviny označené ako dostupné vo vašej špajzi",
   "mealPrefs.servings": "Porcie",
-  "mealPrefs.servingsDesc": "Pre koľko ľudí varíte?",
   "mealPrefs.personUnit": " OSOBA",
   "mealPrefs.peopleUnit": "LUDIA",
   "mealPrefs.peopleUnitFew": "OSOBY",

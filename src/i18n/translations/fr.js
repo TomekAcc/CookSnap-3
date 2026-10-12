@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Inclure les articles du garde-manger",
   "mealPrefs.staplesDesc": "Ingrédients marqués comme disponibles dans votre garde-manger",
   "mealPrefs.servings": "Portions",
-  "mealPrefs.servingsDesc": "Combien de personnes mangent ?",
   "mealPrefs.personUnit": "PERSONNE",
   "mealPrefs.peopleUnit": "PERSONNES",
   "mealPrefs.peopleUnitFew": "PERSONNES",

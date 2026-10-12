@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Включване на артикулите от килера",
   "mealPrefs.staplesDesc": "Съставки, отбелязани като налични в килера ти",
   "mealPrefs.servings": "Порции",
-  "mealPrefs.servingsDesc": "Колко хора ще ядат?",
   "mealPrefs.personUnit": "ЧОВЕК",
   "mealPrefs.peopleUnit": "ДУШИ",
   "mealPrefs.peopleUnitFew": "ЧОВЕКА",

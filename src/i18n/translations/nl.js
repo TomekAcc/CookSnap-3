@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Voorraadkastitems opnemen",
   "mealPrefs.staplesDesc": "Ingrediënten die als op voorraad zijn gemarkeerd in je voorraadkast",
   "mealPrefs.servings": "Porties",
-  "mealPrefs.servingsDesc": "Voor hoeveel personen kook je?",
   "mealPrefs.personUnit": "PERSOON",
   "mealPrefs.peopleUnit": "PERSONEN",
   "mealPrefs.peopleUnitFew": "PERSONEN",

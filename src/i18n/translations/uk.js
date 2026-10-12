@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Враховувати продукти з комори",
   "mealPrefs.staplesDesc": "Інгредієнти, позначені як наявні у вашій коморі",
   "mealPrefs.servings": "Порції",
-  "mealPrefs.servingsDesc": "Скільки людей їстимуть?",
   "mealPrefs.personUnit": "ОСОБА",
   "mealPrefs.peopleUnit": "ОСІБ",
   "mealPrefs.peopleUnitFew": "ОСОБИ",

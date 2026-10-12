@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Inkluder spiskammervarer",
   "mealPrefs.staplesDesc": "Ingredienser merket som på lager i spiskammeret ditt",
   "mealPrefs.servings": "Porsjoner",
-  "mealPrefs.servingsDesc": "Hvor mange skal spise?",
   "mealPrefs.personUnit": "PERSON",
   "mealPrefs.peopleUnit": "PERSONER",
   "mealPrefs.peopleUnitFew": "PERSONER",

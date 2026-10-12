@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "パントリーのアイテムを含める",
   "mealPrefs.staplesDesc": "パントリーで在庫ありとしてマークされた材料",
   "mealPrefs.servings": "分量",
-  "mealPrefs.servingsDesc": "何人分の食事ですか？",
   "mealPrefs.personUnit": "人分",
   "mealPrefs.peopleUnit": "人分",
   "mealPrefs.peopleUnitFew": "人",

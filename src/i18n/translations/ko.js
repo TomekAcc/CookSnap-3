@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "팬트리 항목 포함",
   "mealPrefs.staplesDesc": "팬트리에서 재고 있음으로 표시된 재료",
   "mealPrefs.servings": "인원 수",
-  "mealPrefs.servingsDesc": "몇 명이서 드시나요?",
   "mealPrefs.personUnit": "명",
   "mealPrefs.peopleUnit": "명",
   "mealPrefs.peopleUnitFew": "인분",

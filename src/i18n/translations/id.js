@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Sertakan barang lemari dapur",
   "mealPrefs.staplesDesc": "Bahan yang ditandai tersedia di lemari dapur Anda",
   "mealPrefs.servings": "Porsi",
-  "mealPrefs.servingsDesc": "Berapa orang yang akan makan?",
   "mealPrefs.personUnit": "ORANG",
   "mealPrefs.peopleUnit": "ORANG",
   "mealPrefs.peopleUnitFew": "ORANG",

@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Учитывать продукты из кладовой",
   "mealPrefs.staplesDesc": "Ингредиенты, отмеченные как имеющиеся в вашей кладовой",
   "mealPrefs.servings": "Порции",
-  "mealPrefs.servingsDesc": "На сколько человек готовим?",
   "mealPrefs.personUnit": "ЧЕЛОВЕК",
   "mealPrefs.peopleUnit": "ЧЕЛОВЕКА",
   "mealPrefs.peopleUnitFew": "ЧЕЛОВЕКА",

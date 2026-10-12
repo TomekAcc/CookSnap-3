@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "تضمين عناصر المخزن",
   "mealPrefs.staplesDesc": "المكونات المحددة كمتوفرة في مخزنك",
   "mealPrefs.servings": "الحصص",
-  "mealPrefs.servingsDesc": "كم عدد الأشخاص الذين سيأكلون؟",
   "mealPrefs.personUnit": "شخص",
   "mealPrefs.peopleUnit": "أشخاص",
   "mealPrefs.peopleUnitFew": "أشخاص",

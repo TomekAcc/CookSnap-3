@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Sisällytä ruokakomeron tuotteet",
   "mealPrefs.staplesDesc": "Ainesosat, jotka on merkitty varastossa oleviksi ruokakomerossasi",
   "mealPrefs.servings": "Annokset",
-  "mealPrefs.servingsDesc": "Kuinka monelle ruokaa valmistetaan?",
   "mealPrefs.personUnit": "HENKILÖ",
   "mealPrefs.peopleUnit": "HENKILÖÄ",
   "mealPrefs.peopleUnitFew": "HENKILÖÄ",

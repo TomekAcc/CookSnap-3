@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Bao gồm nguyên liệu trong tủ đựng thức ăn",
   "mealPrefs.staplesDesc": "Nguyên liệu được đánh dấu còn hàng trong tủ đựng thức ăn của bạn",
   "mealPrefs.servings": "Khẩu phần",
-  "mealPrefs.servingsDesc": "Có bao nhiêu người ăn?",
   "mealPrefs.personUnit": "NGƯỜI",
   "mealPrefs.peopleUnit": "NGƯỜI",
   "mealPrefs.peopleUnitFew": "NGƯỜI",

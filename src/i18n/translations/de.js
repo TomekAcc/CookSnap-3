@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Vorratskammer-Artikel einbeziehen",
   "mealPrefs.staplesDesc": "Zutaten, die in deiner Vorratskammer als vorrätig markiert sind",
   "mealPrefs.servings": "Portionen",
-  "mealPrefs.servingsDesc": "Wie viele Personen essen mit?",
   "mealPrefs.personUnit": "PERSON",
   "mealPrefs.peopleUnit": "PERSONEN",
   "mealPrefs.peopleUnitFew": "PERSONEN",

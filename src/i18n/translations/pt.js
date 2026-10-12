@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Incluir itens da despensa",
   "mealPrefs.staplesDesc": "Ingredientes marcados como em stock na sua despensa",
   "mealPrefs.servings": "Porções",
-  "mealPrefs.servingsDesc": "Quantas pessoas vão comer?",
   "mealPrefs.personUnit": "PESSOA",
   "mealPrefs.peopleUnit": "PESSOAS",
   "mealPrefs.peopleUnitFew": "PESSOAS",

@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Kiler ürünlerini dahil et",
   "mealPrefs.staplesDesc": "Kilerinizde stokta olarak işaretlenen malzemeler",
   "mealPrefs.servings": "Porsiyon",
-  "mealPrefs.servingsDesc": "Kaç kişi yemek yiyecek?",
   "mealPrefs.personUnit": "KİŞİ",
   "mealPrefs.peopleUnit": "KİŞİ",
   "mealPrefs.peopleUnitFew": "KİŞİ",

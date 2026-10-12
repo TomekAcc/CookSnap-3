@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Συμπερίληψη ειδών ντουλαπιού",
   "mealPrefs.staplesDesc": "Υλικά επισημασμένα ως διαθέσιμα στο ντουλάπι σας",
   "mealPrefs.servings": "Μερίδες",
-  "mealPrefs.servingsDesc": "Πόσα άτομα τρώνε;",
   "mealPrefs.personUnit": "ΑΤΟΜΟ",
   "mealPrefs.peopleUnit": "ΑΤΟΜΑ",
   "mealPrefs.peopleUnitFew": "ΑΤΟΜΑ",

@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Include articolele din cămară",
   "mealPrefs.staplesDesc": "Ingrediente marcate ca disponibile în cămara ta",
   "mealPrefs.servings": "Porții",
-  "mealPrefs.servingsDesc": "Câte persoane mănâncă?",
   "mealPrefs.personUnit": "PERSOANĂ",
   "mealPrefs.peopleUnit": "PERSOANE",
   "mealPrefs.peopleUnitFew": "PERSOANE",

@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "Inkludera skafferivaror",
   "mealPrefs.staplesDesc": "Ingredienser markerade som i lager i ditt skafferi",
   "mealPrefs.servings": "Portioner",
-  "mealPrefs.servingsDesc": "Hur många ska äta?",
   "mealPrefs.personUnit": "PERSON",
   "mealPrefs.peopleUnit": "PERSONER",
   "mealPrefs.peopleUnitFew": "PERSONER",

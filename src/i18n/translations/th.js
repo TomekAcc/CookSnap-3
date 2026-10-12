@@ -146,7 +146,6 @@ export default {
   "mealPrefs.includeStaples": "รวมรายการในตู้กับข้าว",
   "mealPrefs.staplesDesc": "วัตถุดิบที่ทำเครื่องหมายว่ามีอยู่ในตู้กับข้าวของคุณ",
   "mealPrefs.servings": "จำนวนเสิร์ฟ",
-  "mealPrefs.servingsDesc": "มีคนทานกี่คน?",
   "mealPrefs.personUnit": "คน",
   "mealPrefs.peopleUnit": "คน",
   "mealPrefs.peopleUnitFew": "คน",

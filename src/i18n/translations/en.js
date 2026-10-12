@@ -169,7 +169,6 @@ export default {
   "mealPrefs.includeStaples": "Include Pantry Items",
   "mealPrefs.staplesDesc": "Ingredients marked in stock in your Pantry",
   "mealPrefs.servings": "Servings",
-  "mealPrefs.servingsDesc": "How many people are eating?",
   "mealPrefs.personUnit": "PERSON",
   "mealPrefs.peopleUnit": "PEOPLE",
   "mealPrefs.peopleUnitFew": "PEOPLE",
