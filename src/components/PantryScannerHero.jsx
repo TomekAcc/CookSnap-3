@@ -434,7 +434,8 @@ export default function PantryScannerHero({ onManualAdd }) {
   return (
     <>
       {scanStage === "idle" ? (
-        <View style={{ flexDirection: "row", marginBottom: 16, gap: 8 }}>
+        <View style={{ marginBottom: 16 }}>
+        <View style={{ flexDirection: "row", gap: 8 }}>
           <TouchableOpacity
             onPress={handleOpenCamera}
             activeOpacity={0.85}
@@ -504,6 +505,25 @@ export default function PantryScannerHero({ onManualAdd }) {
               {t("scanner.add")}
             </Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Same reasoning as FridgeScannerHero's scanTip — items behind a
+            closed cabinet door or stacked behind others in a cupboard
+            never show up in the photo, so the scan undercounts and
+            recipes end up thinner than the pantry actually supports. */}
+        <Text
+          style={{
+            color: colors.textSecondary,
+            fontSize: 12,
+            fontWeight: "500",
+            textAlign: "center",
+            marginTop: 10,
+            lineHeight: 16,
+            paddingHorizontal: 12,
+          }}
+        >
+          {t("scanner.scanTip")}
+        </Text>
         </View>
       ) : (
         <View style={{ marginBottom: 16 }}>

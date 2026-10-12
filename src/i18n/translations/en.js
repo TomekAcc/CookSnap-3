@@ -133,9 +133,14 @@ export default {
   "scanner.add": "Add",
   "scanner.addItemPlaceholder": "e.g. Mozzarella, Garlic...",
   "scanner.pointAtFridge": "Point at your open fridge",
+  "scanner.scanTip": "Tip: pull items to the front and open drawers — the scanner can only see what's visible in the photo.",
   "scanner.pantryCtaTitle": "Scan your pantry",
   "scanner.pantryCtaBody": "Take a photo of your kitchen shelves — CookSnap adds every item to your pantry and includes them in future recipes automatically.",
   "scanner.pantryCtaBtn": "Go to Pantry",
+
+  "pantry.generateCtaTitle": "Ready to cook?",
+  "pantry.generateCtaBody": "Generate recipes using your fridge and pantry items together.",
+  "pantry.generateCtaBtn": "Generate Recipes",
 
   "a11y.viewFridgePhoto": "View full fridge photo",
   "a11y.dismissFridgePhoto": "Dismiss fridge photo",

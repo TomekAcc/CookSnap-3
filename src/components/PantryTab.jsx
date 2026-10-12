@@ -58,6 +58,7 @@ export default function PantryTab() {
     removePantryItem,
     clearPantry,
     showToast,
+    setActiveTab,
     t,
   } = useCookAI();
   const { setLocalSheetOpen } = useModalState();
@@ -270,6 +271,71 @@ export default function PantryTab() {
             render a detected-items list itself: that's the In Stock / Out
             of Stock sections below, already fed by the same scan result. */}
         <PantryScannerHero onManualAdd={handleOpenAddModal} />
+
+        {/* Confirmed user feedback: people land on Pantry (often from the
+            "Scan your pantry" nudge on Scanner — see that screen's own
+            pantryCta) to manage their staples, then have no obvious way
+            back to actually generating recipes — the bottom nav's
+            "Scanner" tab icon doesn't read as "where recipes happen" to
+            someone who already scanned once. Always-visible (not a
+            one-time dismissible nudge like Scanner's own pantry prompt)
+            since this is ongoing navigational clarity, not a one-time
+            discovery tip — someone can land on Pantry repeatedly and need
+            the way back each time. */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            borderRadius: 16,
+            borderWidth: 1,
+            padding: 14,
+            marginBottom: 16,
+            backgroundColor: colors.card || "#FFFFFF",
+            borderColor: colors.cardBorder || "#E5E7EB",
+          }}
+        >
+          <View style={{ flex: 1, paddingRight: 10 }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "700",
+                letterSpacing: -0.2,
+                marginBottom: 2,
+                color: colors.textPrimary,
+              }}
+            >
+              {t("pantry.generateCtaTitle")}
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "500",
+                lineHeight: 16,
+                color: colors.textSecondary,
+              }}
+            >
+              {t("pantry.generateCtaBody")}
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => setActiveTab("scanner")}
+            activeOpacity={0.85}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 6,
+              backgroundColor: "#059669",
+              borderRadius: 12,
+              paddingVertical: 9,
+              paddingHorizontal: 12,
+            }}
+          >
+            <Sparkles size={14} color="#FFFFFF" />
+            <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>
+              {t("pantry.generateCtaBtn")}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Search */}
         <View

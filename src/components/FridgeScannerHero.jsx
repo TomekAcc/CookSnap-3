@@ -779,6 +779,27 @@ export default function FridgeScannerHero() {
                 </Text>
               </TouchableOpacity>
             </View>
+
+            {/* Confirmed user feedback: the scanner only sees what's in the
+                photo — items buried behind others, stacked produce, or
+                anything inside a closed drawer never get detected, so
+                recipes built from that scan end up thinner than they could
+                be. No vision model fixes what a photo physically doesn't
+                show; the real fix is coaching the shot itself, right before
+                it's taken, when the user can still act on it. */}
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontSize: 12,
+                fontWeight: "500",
+                textAlign: "center",
+                marginTop: 12,
+                lineHeight: 16,
+                paddingHorizontal: 12,
+              }}
+            >
+              {t("scanner.scanTip")}
+            </Text>
           </View>
         )}
 
