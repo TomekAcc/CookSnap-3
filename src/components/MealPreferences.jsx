@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   cardSub: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "500",
     marginTop: 1,
   },
