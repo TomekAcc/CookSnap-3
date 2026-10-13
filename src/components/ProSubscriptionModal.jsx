@@ -151,14 +151,31 @@ export default function ProSubscriptionModal() {
           find. A comparison table's height scales with row count AND
           language length, so no amount of spacing-only tuning can
           promise it always fits — the CTA needs to be structurally safe
-          from that, not just usually safe. Split into a flex:1 ScrollView
+          from that, not just usually safe. Split into a ScrollView
           (header/plans/comparison/social proof) plus a fixed section
           below (unaffected by scroll position) for the CTA + price
           subtext, mirroring OnboardingProScreen's identical, verified
-          fix. minHeight: 0 is required here — without it a flex child in
-          a column can refuse to shrink below its content size on web,
-          which would silently undo the whole point of this split. */}
-      <View style={{ flex: 1, minHeight: 0 }}>
+          fix.
+
+          maxHeight here, NOT flex: 1 — confirmed real regression from the
+          very next fix (the dead-space gap below): once StandardModal's
+          sheet stopped forcing an explicit `height` and switched to
+          content-based auto-sizing capped by `maxHeight`, this wrapper's
+          `flex: 1` sat inside a parent with no definite size. That's fine
+          in CSS/react-native-web (an unbounded flex:1 just behaves like
+          the child isn't flexing), but React Native's actual Yoga layout
+          engine is stricter: flex:1 with no bounded ancestor can resolve
+          to a height of 0, collapsing this whole wrapper — ScrollView AND
+          the CTA button both invisible, which is exactly what "the PRO
+          button doesn't open anything" looks like from the outside (the
+          modal WAS opening, just rendering at ~0 height). An explicit
+          maxHeight gives this wrapper its own genuine bound regardless of
+          the parent's resolved size, so ScrollView's flexShrink below
+          still has something real to shrink against once content exceeds
+          it. minHeight: 0 stays for the same reason as before — without
+          it a flex/shrink child in a column can refuse to shrink below
+          its content size on web. */}
+      <View style={{ maxHeight: sheetHeight, minHeight: 0 }}>
         <ScrollView
           style={{ flexShrink: 1 }}
           showsVerticalScrollIndicator={false}
