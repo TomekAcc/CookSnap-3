@@ -13,15 +13,21 @@ const AMBER_LIGHT = "#FBBF24";
 const TEXT_PRIMARY = "#F8FAFC";
 const TEXT_MUTED = "#94A3B8";
 
+// periodUnit/perMonthPrice drive translated display text at render time
+// (see PERIOD_SUFFIX_KEY below) — a plain "/year"/"/mo" literal here was a
+// confirmed real bug: every OTHER string on this screen is localized via
+// t(), but the price and perMonthValue read directly off this object, so
+// the period suffix stayed hardcoded English in every language ("Then
+// $24.99/year ($2.08/mo)" inside an otherwise-Polish sentence).
 export const PLANS = {
   annual: {
     id: "annual",
     labelKey: "pro.annual",
     badgeKey: "pro.saveBadge",
     price: "$24.99",
-    period: "/year",
+    periodUnit: "year",
     perMonthKey: "pro.annualPerMonth",
-    perMonthValue: "$2.08/mo",
+    perMonthPrice: "$2.08",
     trial: true,
   },
   monthly: {
@@ -29,12 +35,14 @@ export const PLANS = {
     labelKey: "pro.monthly",
     badgeKey: null,
     price: "$4.99",
-    period: "/month",
+    periodUnit: "month",
     perMonthKey: "pro.monthlyPerMonth",
-    perMonthValue: "$4.99/mo",
+    perMonthPrice: "$4.99",
     trial: false,
   },
 };
+
+const PERIOD_SUFFIX_KEY = { year: "pro.yearSuffix", month: "pro.monthSuffix" };
 
 const COMPARISON_ROWS = [
   { labelKey: "pro.fridgeScans", freeKey: "pro.perDayLimit", proKey: "pro.unlimited" },
@@ -64,6 +72,8 @@ export default function ProSubscriptionModal() {
   const [selectedPlanId, setSelectedPlanId] = useState("annual");
   const close = () => setProModalOpen(false);
   const plan = PLANS[selectedPlanId];
+  const planPeriod = t(PERIOD_SUFFIX_KEY[plan.periodUnit]);
+  const planPerMonthValue = `${plan.perMonthPrice}${t("pro.moSuffix")}`;
   const screenHeight = Dimensions.get("window").height;
   const sheetHeight = screenHeight * 0.92 - 40;
 
@@ -95,16 +105,25 @@ export default function ProSubscriptionModal() {
     // generation" comparison row was added — that pushed content past it,
     // introducing a real scroll where there wasn't one, right where a
     // paywall should feel like one clean, glanceable screen, not a list to
-    // scroll through. More room here sets an explicit numeric height (not
-    // a % of an already-constrained parent) so the inner `flex: 1` scroll
-    // region actually knows its bounds instead of collapsing to maxHeight
-    // of a content-sized sheet.
+    // scroll through. maxHeight is a generous explicit numeric cap (not a
+    // % of an already-constrained parent) so the inner `flex: 1` scroll
+    // region has real bounds to work with once content actually reaches
+    // that cap — but it's a CAP, not a forced size: contentStyle no longer
+    // sets an explicit `height` here (it used to, which forced the sheet
+    // to always BE maxHeight regardless of actual content — confirmed real
+    // bug, reported directly by a user: on a shorter language/plan
+    // combination the content didn't reach that height at all, leaving a
+    // large dead gap between the social-proof line and the CTA). Without a
+    // forced height, the sheet now shrinks to fit short content and only
+    // engages the scroll+fixed-footer split once content genuinely
+    // exceeds maxHeight — both the original overflow fix and this gap fix
+    // hold at the same time.
     <StandardModal
       visible={!!proModalOpen}
       onClose={close}
       type="bottom-sheet"
       maxHeight={sheetHeight}
-      contentStyle={{ height: sheetHeight, backgroundColor: SLATE, borderColor: SLATE_ROW }}
+      contentStyle={{ backgroundColor: SLATE, borderColor: SLATE_ROW }}
       dragZoneRightInset={60}
     >
       <View style={[styles.grabHandle, { backgroundColor: "rgba(255,255,255,0.25)" }]} />
@@ -177,7 +196,9 @@ export default function ProSubscriptionModal() {
                 <Text style={styles.planLabel}>{t(p.labelKey)}</Text>
                 <Text style={styles.planPrice}>
                   {p.price}
-                  <Text style={styles.planPeriod}>{p.period}</Text>
+                  <Text style={styles.planPeriod}>
+                    {t(PERIOD_SUFFIX_KEY[p.periodUnit])}
+                  </Text>
                 </Text>
                 <Text style={styles.planSub}>{t(p.perMonthKey)}</Text>
                 <View
@@ -244,7 +265,7 @@ export default function ProSubscriptionModal() {
             <Text style={styles.ctaButtonText}>
               {plan.trial
                 ? t("pro.startTrial")
-                : t("pro.subscribeCta", { price: plan.price, period: plan.period })}
+                : t("pro.subscribeCta", { price: plan.price, period: planPeriod })}
             </Text>
           </TouchableOpacity>
 
@@ -252,8 +273,8 @@ export default function ProSubscriptionModal() {
             {plan.trial
               ? t("pro.thenPriceCancelAnytime", {
                   price: plan.price,
-                  period: plan.period,
-                  perMonthValue: plan.perMonthValue,
+                  period: planPeriod,
+                  perMonthValue: planPerMonthValue,
                 })
               : t("pro.billedMonthlyCancelAnytime")}
           </Text>
