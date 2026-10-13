@@ -35,6 +35,7 @@ import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { DS } from "../utils/designSystem";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
 import { emojiLine, SPACE } from "../theme/tokens";
+import { isAssumedStapleIngredient } from "../utils/assumedStaples";
 
 /** Hermes-safe emoji strip (no /u flag). */
 function stripInlineEmojis(str) {
@@ -107,6 +108,7 @@ export default function RecipeDetailModal() {
     recipeLanguageId,
     showToast,
     addToShoppingList,
+    setActiveTab,
     t,
   } = useCookAI();
   const { selectedRecipe, setSelectedRecipe, setProModalOpen } =
@@ -234,6 +236,21 @@ export default function RecipeDetailModal() {
   const onOpenProModal = () => {
     onClose();
     setTimeout(() => setProModalOpen?.(true), EXIT_DURATION_MS + 40);
+  };
+
+  // "Staple" ingredients (salt/pepper/oil) are never actually from the
+  // user's scan — they're assumed on every recipe unless scanned AND
+  // marked out of stock in Pantry (see BASIC_STAPLES in geminiRecipes.js).
+  // Tapping the tag is the fix for "I don't actually have this": jump to
+  // Pantry so they can add/mark it there, same exit-then-navigate pattern
+  // as onOpenProModal above (this sheet's own Modal must finish closing
+  // before the tab switch, for the same native multi-Modal reason).
+  const onOpenPantryForStaple = () => {
+    onClose();
+    setTimeout(() => {
+      setActiveTab?.("pantry");
+      showToast?.(t("recipeDetail.assumedStapleToast"), "info");
+    }, EXIT_DURATION_MS + 40);
   };
 
   const dishStyle = getDishEmojiAndColor(recipe?.title, recipe?.dishType);
@@ -743,6 +760,10 @@ export default function RecipeDetailModal() {
                 getIngredientEmoji(cleanedTitle) ||
                 "🛒";
               const itemQty = formatQtyFromItem(item);
+              const isAssumedStaple = isAssumedStapleIngredient(
+                rawName,
+                recipeLanguageId
+              );
 
               return (
                 <TouchableOpacity
@@ -777,6 +798,18 @@ export default function RecipeDetailModal() {
                       numberOfLines={2}
                     >
                       {cleanedTitle || t("recipeDetail.ingredientFallback")}
+                      {isAssumedStaple ? (
+                        <Text
+                          onPress={onOpenPantryForStaple}
+                          style={[
+                            styles.assumedStapleTag,
+                            { color: colors.textSecondary },
+                          ]}
+                        >
+                          {"  ·  "}
+                          {t("recipeDetail.assumedStapleTag")}
+                        </Text>
+                      ) : null}
                     </Text>
                   </View>
 
@@ -1317,6 +1350,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#1E293B",
     flex: 1,
+  },
+  assumedStapleTag: {
+    fontSize: 12,
+    fontWeight: "500",
+    textDecorationLine: "underline",
   },
   ingredientNameChecked: {
     color: "#94A3B8",

@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Приложи",
   "recipeDetail.ingredientsTitle": "Съставки",
   "recipeDetail.tapToCheckOff": "Докосни, за да отбележиш",
+  "recipeDetail.assumedStapleTag": "основен",
+  "recipeDetail.assumedStapleToast": "Нямате това? Отбележете го в Килера и следващия път няма да го предполагаме.",
   "recipeDetail.upgradeTipLabel": "Още по-добре с {ingredient}",
   "recipeDetail.upgradeTipAdd": "Добави в списъка за пазаруване",
   "recipeDetail.upgradeTipAddedButton": "Добавено в списъка за пазаруване",

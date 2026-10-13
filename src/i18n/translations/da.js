@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Anvend",
   "recipeDetail.ingredientsTitle": "Ingredienser",
   "recipeDetail.tapToCheckOff": "Tryk for at markere",
+  "recipeDetail.assumedStapleTag": "basisvare",
+  "recipeDetail.assumedStapleToast": "Har du ikke det her? Markér det i Spisekammeret, så antager vi det ikke næste gang.",
   "recipeDetail.upgradeTipLabel": "Endnu bedre med {ingredient}",
   "recipeDetail.upgradeTipAdd": "Tilføj til indkøbslisten",
   "recipeDetail.upgradeTipAddedButton": "Tilføjet til indkøbslisten",

@@ -259,6 +259,8 @@ export default {
   "recipeDetail.apply": "Zastosuj",
   "recipeDetail.ingredientsTitle": "Składniki",
   "recipeDetail.tapToCheckOff": "Stuknij, aby odhaczyć",
+  "recipeDetail.assumedStapleTag": "podstawa",
+  "recipeDetail.assumedStapleToast": "Nie masz tego? Zaznacz w Spiżarni, a następnym razem nie będziemy tego zakładać.",
   "recipeDetail.upgradeTipLabel": "Jeszcze lepsze z {ingredient}",
   "recipeDetail.upgradeTipAdd": "Dodaj do listy zakupów",
   "recipeDetail.upgradeTipAddedButton": "Dodano do listy zakupów",

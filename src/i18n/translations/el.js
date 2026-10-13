@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Εφαρμογή",
   "recipeDetail.ingredientsTitle": "Υλικά",
   "recipeDetail.tapToCheckOff": "Πάτησε για σημείωση",
+  "recipeDetail.assumedStapleTag": "βασικό",
+  "recipeDetail.assumedStapleToast": "Δεν το έχετε; Σημειώστε το στο Ντουλάπι και δεν θα το υποθέσουμε την επόμενη φορά.",
   "recipeDetail.upgradeTipLabel": "Ακόμα καλύτερο με {ingredient}",
   "recipeDetail.upgradeTipAdd": "Προσθήκη στη λίστα αγορών",
   "recipeDetail.upgradeTipAddedButton": "Προστέθηκε στη λίστα αγορών",

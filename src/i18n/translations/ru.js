@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Применить",
   "recipeDetail.ingredientsTitle": "Ингредиенты",
   "recipeDetail.tapToCheckOff": "Нажмите, чтобы отметить",
+  "recipeDetail.assumedStapleTag": "базовый",
+  "recipeDetail.assumedStapleToast": "Этого нет? Отметьте в Кладовой, и в следующий раз мы не будем это предполагать.",
   "recipeDetail.upgradeTipLabel": "Ещё вкуснее с {ingredient}",
   "recipeDetail.upgradeTipAdd": "Добавить в список покупок",
   "recipeDetail.upgradeTipAddedButton": "Добавлено в список покупок",

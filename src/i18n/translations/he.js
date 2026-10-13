@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "החל",
   "recipeDetail.ingredientsTitle": "מצרכים",
   "recipeDetail.tapToCheckOff": "הקש כדי לסמן",
+  "recipeDetail.assumedStapleTag": "בסיסי",
+  "recipeDetail.assumedStapleToast": "אין לך את זה? סמן זאת במזווה ובפעם הבאה לא נניח זאת.",
   "recipeDetail.upgradeTipLabel": "טעים עוד יותר עם {ingredient}",
   "recipeDetail.upgradeTipAdd": "הוסף לרשימת הקניות",
   "recipeDetail.upgradeTipAddedButton": "נוסף לרשימת הקניות",

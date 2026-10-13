@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Terapkan",
   "recipeDetail.ingredientsTitle": "Bahan-bahan",
   "recipeDetail.tapToCheckOff": "Ketuk untuk menandai",
+  "recipeDetail.assumedStapleTag": "dasar",
+  "recipeDetail.assumedStapleToast": "Tidak punya ini? Tandai di Pantry dan kami tidak akan menganggapnya lagi lain kali.",
   "recipeDetail.upgradeTipLabel": "Lebih enak dengan {ingredient}",
   "recipeDetail.upgradeTipAdd": "Tambahkan ke Daftar Belanja",
   "recipeDetail.upgradeTipAddedButton": "Ditambahkan ke Daftar Belanja",

@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Appliquer",
   "recipeDetail.ingredientsTitle": "Ingrédients",
   "recipeDetail.tapToCheckOff": "Appuyez pour cocher",
+  "recipeDetail.assumedStapleTag": "de base",
+  "recipeDetail.assumedStapleToast": "Vous n'en avez pas ? Indiquez-le dans le Garde-manger, et nous ne le supposerons plus la prochaine fois.",
   "recipeDetail.upgradeTipLabel": "Encore meilleur avec {ingredient}",
   "recipeDetail.upgradeTipAdd": "Ajouter à la liste de courses",
   "recipeDetail.upgradeTipAddedButton": "Ajouté à la liste de courses",

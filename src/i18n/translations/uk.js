@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Застосувати",
   "recipeDetail.ingredientsTitle": "Інгредієнти",
   "recipeDetail.tapToCheckOff": "Торкніться, щоб позначити",
+  "recipeDetail.assumedStapleTag": "базовий",
+  "recipeDetail.assumedStapleToast": "Немає цього? Позначте в Коморі, і наступного разу ми не будемо це припускати.",
   "recipeDetail.upgradeTipLabel": "Ще смачніше з {ingredient}",
   "recipeDetail.upgradeTipAdd": "Додати до списку покупок",
   "recipeDetail.upgradeTipAddedButton": "Додано до списку покупок",

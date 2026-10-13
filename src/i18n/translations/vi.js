@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Áp dụng",
   "recipeDetail.ingredientsTitle": "Nguyên liệu",
   "recipeDetail.tapToCheckOff": "Chạm để đánh dấu",
+  "recipeDetail.assumedStapleTag": "cơ bản",
+  "recipeDetail.assumedStapleToast": "Không có món này? Đánh dấu trong Tủ bếp và lần sau chúng tôi sẽ không giả định nữa.",
   "recipeDetail.upgradeTipLabel": "Ngon hơn với {ingredient}",
   "recipeDetail.upgradeTipAdd": "Thêm vào danh sách mua sắm",
   "recipeDetail.upgradeTipAddedButton": "Đã thêm vào danh sách mua sắm",

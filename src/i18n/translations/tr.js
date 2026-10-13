@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Uygula",
   "recipeDetail.ingredientsTitle": "Malzemeler",
   "recipeDetail.tapToCheckOff": "İşaretlemek için dokun",
+  "recipeDetail.assumedStapleTag": "temel",
+  "recipeDetail.assumedStapleToast": "Bu yok mu? Kiler'de işaretleyin, bir dahaki sefere bunu varsaymayacağız.",
   "recipeDetail.upgradeTipLabel": "{ingredient} ile daha da güzel olur",
   "recipeDetail.upgradeTipAdd": "Alışveriş Listesine Ekle",
   "recipeDetail.upgradeTipAddedButton": "Alışveriş Listesine eklendi",

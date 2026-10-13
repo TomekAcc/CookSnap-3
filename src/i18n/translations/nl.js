@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Toepassen",
   "recipeDetail.ingredientsTitle": "Ingrediënten",
   "recipeDetail.tapToCheckOff": "Tik om af te vinken",
+  "recipeDetail.assumedStapleTag": "basis",
+  "recipeDetail.assumedStapleToast": "Heb je dit niet? Markeer het in de Voorraadkast, dan gaan we er de volgende keer niet meer van uit.",
   "recipeDetail.upgradeTipLabel": "Nog beter met {ingredient}",
   "recipeDetail.upgradeTipAdd": "Toevoegen aan boodschappenlijst",
   "recipeDetail.upgradeTipAddedButton": "Toegevoegd aan boodschappenlijst",

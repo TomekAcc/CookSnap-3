@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Aplicar",
   "recipeDetail.ingredientsTitle": "Ingredientes",
   "recipeDetail.tapToCheckOff": "Toca para tachar",
+  "recipeDetail.assumedStapleTag": "básico",
+  "recipeDetail.assumedStapleToast": "¿No lo tienes? Márcalo en la Despensa y no lo asumiremos la próxima vez.",
   "recipeDetail.upgradeTipLabel": "Aún mejor con {ingredient}",
   "recipeDetail.upgradeTipAdd": "Añadir a la lista de la compra",
   "recipeDetail.upgradeTipAddedButton": "Añadido a la lista de la compra",

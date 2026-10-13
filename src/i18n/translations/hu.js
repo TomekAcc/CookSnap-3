@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Alkalmaz",
   "recipeDetail.ingredientsTitle": "Hozzávalók",
   "recipeDetail.tapToCheckOff": "Koppints a kipipáláshoz",
+  "recipeDetail.assumedStapleTag": "alap",
+  "recipeDetail.assumedStapleToast": "Nincs ilyened? Jelöld meg a Kamrában, és legközelebb nem fogjuk feltételezni.",
   "recipeDetail.upgradeTipLabel": "Még jobb ezzel: {ingredient}",
   "recipeDetail.upgradeTipAdd": "Hozzáadás a bevásárlólistához",
   "recipeDetail.upgradeTipAddedButton": "Hozzáadva a bevásárlólistához",

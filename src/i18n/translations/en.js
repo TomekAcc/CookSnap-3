@@ -288,6 +288,8 @@ export default {
   "recipeDetail.apply": "Apply",
   "recipeDetail.ingredientsTitle": "Ingredients",
   "recipeDetail.tapToCheckOff": "Tap to check off",
+  "recipeDetail.assumedStapleTag": "staple",
+  "recipeDetail.assumedStapleToast": "Don't have it? Mark it in Pantry and we won't assume it next time.",
   "recipeDetail.upgradeTipLabel": "Even better with {ingredient}",
   "recipeDetail.upgradeTipAdd": "Add to Shopping List",
   "recipeDetail.upgradeTipAddedButton": "Added to Shopping List",

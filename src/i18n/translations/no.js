@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Bruk",
   "recipeDetail.ingredientsTitle": "Ingredienser",
   "recipeDetail.tapToCheckOff": "Trykk for å krysse av",
+  "recipeDetail.assumedStapleTag": "basisvare",
+  "recipeDetail.assumedStapleToast": "Har du ikke dette? Merk det i Kjøkkenskapet, så antar vi det ikke neste gang.",
   "recipeDetail.upgradeTipLabel": "Enda bedre med {ingredient}",
   "recipeDetail.upgradeTipAdd": "Legg til i handlelisten",
   "recipeDetail.upgradeTipAddedButton": "Lagt til i handlelisten",

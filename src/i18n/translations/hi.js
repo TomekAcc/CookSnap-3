@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "लागू करें",
   "recipeDetail.ingredientsTitle": "सामग्री",
   "recipeDetail.tapToCheckOff": "टिक करने के लिए टैप करें",
+  "recipeDetail.assumedStapleTag": "बेसिक",
+  "recipeDetail.assumedStapleToast": "यह नहीं है? पेंट्री में इसे चिह्नित करें, अगली बार हम यह नहीं मानेंगे।",
   "recipeDetail.upgradeTipLabel": "{ingredient} के साथ और भी बेहतर",
   "recipeDetail.upgradeTipAdd": "शॉपिंग लिस्ट में जोड़ें",
   "recipeDetail.upgradeTipAddedButton": "शॉपिंग लिस्ट में जोड़ा गया",

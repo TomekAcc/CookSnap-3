@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "应用",
   "recipeDetail.ingredientsTitle": "食材",
   "recipeDetail.tapToCheckOff": "点击勾选",
+  "recipeDetail.assumedStapleTag": "常备",
+  "recipeDetail.assumedStapleToast": "没有这个？在储藏室里标记一下，下次我们就不会这样假设了。",
   "recipeDetail.upgradeTipLabel": "加上{ingredient}会更好吃",
   "recipeDetail.upgradeTipAdd": "添加到购物清单",
   "recipeDetail.upgradeTipAddedButton": "已添加到购物清单",

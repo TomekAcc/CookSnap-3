@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Anwenden",
   "recipeDetail.ingredientsTitle": "Zutaten",
   "recipeDetail.tapToCheckOff": "Zum Abhaken antippen",
+  "recipeDetail.assumedStapleTag": "Grundzutat",
+  "recipeDetail.assumedStapleToast": "Hast du das nicht? Markiere es in der Vorratskammer, dann gehen wir nächstes Mal nicht mehr davon aus.",
   "recipeDetail.upgradeTipLabel": "Noch besser mit {ingredient}",
   "recipeDetail.upgradeTipAdd": "Zur Einkaufsliste hinzufügen",
   "recipeDetail.upgradeTipAddedButton": "Zur Einkaufsliste hinzugefügt",

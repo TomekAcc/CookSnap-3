@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "適用",
   "recipeDetail.ingredientsTitle": "材料",
   "recipeDetail.tapToCheckOff": "タップしてチェック",
+  "recipeDetail.assumedStapleTag": "常備品",
+  "recipeDetail.assumedStapleToast": "これがない場合は、パントリーでマークしてください。次回からは前提にしません。",
   "recipeDetail.upgradeTipLabel": "{ingredient}があればもっと美味しい",
   "recipeDetail.upgradeTipAdd": "買い物リストに追加",
   "recipeDetail.upgradeTipAddedButton": "買い物リストに追加済み",

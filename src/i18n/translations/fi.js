@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Käytä",
   "recipeDetail.ingredientsTitle": "Ainesosat",
   "recipeDetail.tapToCheckOff": "Merkitse napauttamalla",
+  "recipeDetail.assumedStapleTag": "perusraaka-aine",
+  "recipeDetail.assumedStapleToast": "Eikö tätä ole? Merkitse se Ruokakomerossa, niin emme oleta sitä seuraavalla kerralla.",
   "recipeDetail.upgradeTipLabel": "Vielä parempi lisäämällä {ingredient}",
   "recipeDetail.upgradeTipAdd": "Lisää ostoslistalle",
   "recipeDetail.upgradeTipAddedButton": "Lisätty ostoslistalle",

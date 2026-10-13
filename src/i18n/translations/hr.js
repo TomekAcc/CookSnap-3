@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Primijeni",
   "recipeDetail.ingredientsTitle": "Sastojci",
   "recipeDetail.tapToCheckOff": "Dodirni za označavanje",
+  "recipeDetail.assumedStapleTag": "osnovno",
+  "recipeDetail.assumedStapleToast": "Nemate ovo? Označite to u Ostavi i sljedeći put to nećemo pretpostaviti.",
   "recipeDetail.upgradeTipLabel": "Još bolje s {ingredient}",
   "recipeDetail.upgradeTipAdd": "Dodaj na popis za kupovinu",
   "recipeDetail.upgradeTipAddedButton": "Dodano na popis za kupovinu",

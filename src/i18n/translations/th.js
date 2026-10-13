@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "ใช้",
   "recipeDetail.ingredientsTitle": "วัตถุดิบ",
   "recipeDetail.tapToCheckOff": "แตะเพื่อทำเครื่องหมาย",
+  "recipeDetail.assumedStapleTag": "พื้นฐาน",
+  "recipeDetail.assumedStapleToast": "ไม่มีสิ่งนี้ใช่ไหม ทำเครื่องหมายไว้ในคลังอาหาร แล้วครั้งหน้าเราจะไม่สมมติว่าคุณมี",
   "recipeDetail.upgradeTipLabel": "อร่อยขึ้นด้วย {ingredient}",
   "recipeDetail.upgradeTipAdd": "เพิ่มลงในรายการซื้อของ",
   "recipeDetail.upgradeTipAddedButton": "เพิ่มลงในรายการซื้อของแล้ว",

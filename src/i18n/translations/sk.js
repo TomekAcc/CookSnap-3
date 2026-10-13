@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Použiť",
   "recipeDetail.ingredientsTitle": "Suroviny",
   "recipeDetail.tapToCheckOff": "Ťuknutím odškrtnete",
+  "recipeDetail.assumedStapleTag": "základná",
+  "recipeDetail.assumedStapleToast": "Nemáte to? Označte to v Špajzi a nabudúce to nebudeme predpokladať.",
   "recipeDetail.upgradeTipLabel": "Ešte lepšie s {ingredient}",
   "recipeDetail.upgradeTipAdd": "Pridať do nákupného zoznamu",
   "recipeDetail.upgradeTipAddedButton": "Pridané do nákupného zoznamu",

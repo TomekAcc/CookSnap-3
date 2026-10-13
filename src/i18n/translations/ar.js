@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "تطبيق",
   "recipeDetail.ingredientsTitle": "المكونات",
   "recipeDetail.tapToCheckOff": "اضغط للشطب",
+  "recipeDetail.assumedStapleTag": "أساسي",
+  "recipeDetail.assumedStapleToast": "ليس لديك هذا؟ حدده في المؤونة ولن نفترض وجوده في المرة القادمة.",
   "recipeDetail.upgradeTipLabel": "أفضل مع {ingredient}",
   "recipeDetail.upgradeTipAdd": "أضف إلى قائمة التسوق",
   "recipeDetail.upgradeTipAddedButton": "أُضيف إلى قائمة التسوق",

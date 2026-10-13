@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Aplică",
   "recipeDetail.ingredientsTitle": "Ingrediente",
   "recipeDetail.tapToCheckOff": "Atinge pentru a bifa",
+  "recipeDetail.assumedStapleTag": "de bază",
+  "recipeDetail.assumedStapleToast": "Nu ai asta? Marchează-l în Cămară și nu vom mai presupune asta data viitoare.",
   "recipeDetail.upgradeTipLabel": "Și mai bun cu {ingredient}",
   "recipeDetail.upgradeTipAdd": "Adaugă în lista de cumpărături",
   "recipeDetail.upgradeTipAddedButton": "Adăugat în lista de cumpărături",

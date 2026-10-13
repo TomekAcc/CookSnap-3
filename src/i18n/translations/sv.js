@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "Använd",
   "recipeDetail.ingredientsTitle": "Ingredienser",
   "recipeDetail.tapToCheckOff": "Tryck för att bocka av",
+  "recipeDetail.assumedStapleTag": "basvara",
+  "recipeDetail.assumedStapleToast": "Har du inte det här? Markera det i Skafferiet så antar vi inte det nästa gång.",
   "recipeDetail.upgradeTipLabel": "Ännu bättre med {ingredient}",
   "recipeDetail.upgradeTipAdd": "Lägg till i inköpslistan",
   "recipeDetail.upgradeTipAddedButton": "Tillagd i inköpslistan",

@@ -253,6 +253,8 @@ export default {
   "recipeDetail.apply": "적용",
   "recipeDetail.ingredientsTitle": "재료",
   "recipeDetail.tapToCheckOff": "탭하여 체크",
+  "recipeDetail.assumedStapleTag": "기본 재료",
+  "recipeDetail.assumedStapleToast": "이게 없으신가요? 식료품에서 표시해두시면 다음엔 있다고 가정하지 않을게요.",
   "recipeDetail.upgradeTipLabel": "{ingredient}가 있으면 더 좋아요",
   "recipeDetail.upgradeTipAdd": "장보기 목록에 추가",
   "recipeDetail.upgradeTipAddedButton": "장보기 목록에 추가됨",
