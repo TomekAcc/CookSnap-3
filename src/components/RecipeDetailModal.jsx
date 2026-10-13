@@ -36,7 +36,7 @@ import StandardModal from "./StandardModal";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { DS } from "../utils/designSystem";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
-import { emojiLine, SPACE } from "../theme/tokens";
+import { emojiLine, SPACE, strokeFor } from "../theme/tokens";
 import { isAssumedStapleIngredient } from "../utils/assumedStaples";
 
 /** Hermes-safe emoji strip (no /u flag). */
@@ -818,12 +818,19 @@ export default function RecipeDetailModal() {
                       <TouchableOpacity
                         onPress={() => onAssumedStaplePress(cleanedTitle)}
                         activeOpacity={0.6}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        style={styles.assumedStapleIconBtn}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        style={[
+                          styles.assumedStapleIconBtn,
+                          { backgroundColor: colors.inputBg },
+                        ]}
                         accessibilityRole="button"
                         accessibilityLabel={t("recipeDetail.assumedStapleTag")}
                       >
-                        <Info size={14} color={colors.textSecondary} />
+                        <Info
+                          size={16}
+                          color={colors.textSecondary}
+                          strokeWidth={strokeFor(16)}
+                        />
                       </TouchableOpacity>
                     ) : null}
                   </View>
@@ -1369,6 +1376,11 @@ const styles = StyleSheet.create({
   assumedStapleIconBtn: {
     marginLeft: 6,
     flexShrink: 0,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
   },
   ingredientNameChecked: {
     color: "#94A3B8",
