@@ -39,6 +39,7 @@ import ScanLaserOverlay from "./ScanLaserOverlay";
 import ScanMoreSheet from "./ScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useScanCompleteSound } from "../hooks/useScanCompleteSound";
+import AnimatedEllipsis, { stripTrailingEllipsis } from "./AnimatedEllipsis";
 
 /** Compact header after AI detection completes. */
 const COMPACT_HEIGHT = 150;
@@ -993,8 +994,16 @@ export default function FridgeScannerHero() {
                       flexShrink: 1,
                     }}
                   >
-                    {t("scanner.scanningLabel")}
+                    {stripTrailingEllipsis(t("scanner.scanningLabel"))}
                   </Text>
+                  <AnimatedEllipsis
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: 12,
+                      fontWeight: "800",
+                      letterSpacing: 0.3,
+                    }}
+                  />
                 </Animated.View>
               )}
 
@@ -1180,9 +1189,34 @@ export default function FridgeScannerHero() {
                       numberOfLines={2}
                       ellipsizeMode="tail"
                     >
-                      {scanningLabel ||
-                        t(SCAN_STEPS[currentStepIdx].textKey) ||
-                        t("scanner.analyzingLabel")}
+                      {(() => {
+                        const rawLabel =
+                          scanningLabel ||
+                          t(SCAN_STEPS[currentStepIdx].textKey) ||
+                          t("scanner.analyzingLabel");
+                        // Only step/analyzing labels phrased as "X in
+                        // progress..." get the animated dots appended — a
+                        // plain step description like "Górne półki" never
+                        // had a trailing ellipsis to begin with, so it's
+                        // left untouched rather than gaining dots that
+                        // would misleadingly imply it's its own loading
+                        // state.
+                        const hadEllipsis = /[.…]+\s*$/.test(rawLabel);
+                        return (
+                          <>
+                            {stripTrailingEllipsis(rawLabel)}
+                            {hadEllipsis && (
+                              <AnimatedEllipsis
+                                style={{
+                                  color: colors.textPrimary,
+                                  fontWeight: "800",
+                                  fontSize: 14,
+                                }}
+                              />
+                            )}
+                          </>
+                        );
+                      })()}
                     </Text>
                   </Animated.View>
 
