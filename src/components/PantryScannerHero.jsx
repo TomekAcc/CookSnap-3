@@ -26,7 +26,6 @@ import ScanLaserOverlay from "./ScanLaserOverlay";
 import PantryScanMoreSheet from "./PantryScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useScanCompleteSound } from "../hooks/useScanCompleteSound";
-import AnimatedEllipsis, { stripTrailingEllipsis } from "./AnimatedEllipsis";
 
 /** Compact height for the captured photo once a scan finishes. */
 const COMPACT_HEIGHT = 130;
@@ -656,26 +655,7 @@ export default function PantryScannerHero({ onManualAdd }) {
                   <Text
                     style={{ color: colors.textPrimary, fontWeight: "800", fontSize: 12, flex: 1 }}
                   >
-                    {(() => {
-                      const rawLabel =
-                        t(PANTRY_SCAN_STEPS[currentStepIdx].textKey) ||
-                        t("pantry.analyzingLabel");
-                      const hadEllipsis = /[.…]+\s*$/.test(rawLabel);
-                      return (
-                        <>
-                          {stripTrailingEllipsis(rawLabel)}
-                          {hadEllipsis && (
-                            <AnimatedEllipsis
-                              style={{
-                                color: colors.textPrimary,
-                                fontWeight: "800",
-                                fontSize: 12,
-                              }}
-                            />
-                          )}
-                        </>
-                      );
-                    })()}
+                    {t(PANTRY_SCAN_STEPS[currentStepIdx].textKey) || t("pantry.analyzingLabel")}
                   </Text>
                 </Animated.View>
 
