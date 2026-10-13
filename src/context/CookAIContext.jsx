@@ -1801,6 +1801,34 @@ export function CookAIProvider({ children }) {
     setPantryItems((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
+  // Lets the user correct a recipe ingredient the generator just assumed
+  // (salt/pepper/cooking oil — see BASIC_STAPLES in geminiRecipes.js)
+  // without leaving the recipe screen: one atomic update that either flips
+  // an existing Pantry entry to out-of-stock or creates one already marked
+  // that way, rather than addPantryItem (always forces inStock: true) +
+  // togglePantryItem (needs the real stored id, which addPantryItem's
+  // return value doesn't reliably have for an already-existing item — its
+  // id comes from a fresh classifyPantryItemLocal() call, not the matched
+  // entry). Two separate calls would also leave a render in between where
+  // the item still reads as in-stock.
+  const markPantryItemOutOfStock = useCallback((rawName) => {
+    const name = String(rawName || "").trim();
+    if (!name) return;
+    setPantryItems((prev) => {
+      const existing = prev.find(
+        (p) => normalizePantryName(p.name) === normalizePantryName(name)
+      );
+      if (existing) {
+        return prev.map((p) =>
+          p.id === existing.id ? { ...p, inStock: false } : p
+        );
+      }
+      const classified = classifyPantryItemLocal(name);
+      if (!classified?.name) return prev;
+      return [{ ...classified, inStock: false }, ...prev];
+    });
+  }, []);
+
   const clearPantry = useCallback(() => {
     setPantryItems([]);
   }, []);
@@ -2327,6 +2355,7 @@ export function CookAIProvider({ children }) {
       togglePantryItem,
       addPantryItem,
       removePantryItem,
+      markPantryItemOutOfStock,
       clearPantry,
       addToShoppingList,
       mergePantryScanResults,
@@ -2435,6 +2464,7 @@ export function CookAIProvider({ children }) {
       togglePantryItem,
       addPantryItem,
       removePantryItem,
+      markPantryItemOutOfStock,
       clearPantry,
       addToShoppingList,
       mergePantryScanResults,

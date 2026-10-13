@@ -8,6 +8,7 @@ import {
 import { getIngredientEmoji } from "../utils/ingredientEmoji";
 import { translate } from "../i18n";
 import { LANGUAGE_OPTIONS } from "../data/languageOptions";
+import { matchesStapleCategory } from "../utils/assumedStaples";
 
 /**
  * The offline/local-template fallback (buildSmartFallbackRecipes) has no
@@ -2373,17 +2374,26 @@ export async function generateRecipesWithGemini(
   // scanned — unless the user explicitly scanned that exact staple and
   // marked it out of stock, a real "I don't have this" signal that
   // should win over the blind assumption.
+  // "category" uses matchesStapleCategory, which checks every supported
+  // language's word for that staple (not just English) — a Pantry item's
+  // name could be an English quick-add chip OR text kept from whatever
+  // recipe language was active when the user marked it out of stock via
+  // RecipeDetailModal's "I don't have this" confirm. "basic spices" has no
+  // such table (see assumedStaples.js's own comment on why) and keeps the
+  // original plain English-keyword check.
   const BASIC_STAPLES = [
-    { label: "salt", keyword: "salt" },
-    { label: "pepper", keyword: "pepper" },
-    { label: "cooking oil", keyword: "oil" },
+    { label: "salt", category: "salt" },
+    { label: "pepper", category: "pepper" },
+    { label: "cooking oil", category: "oil" },
     { label: "basic spices", keyword: "spice" },
   ];
   const outOfStockNames = (pantryItems || [])
     .filter((p) => p?.inStock === false)
     .map((p) => (p.name || "").toLowerCase());
-  const assumedStaples = BASIC_STAPLES.filter(
-    ({ keyword }) => !outOfStockNames.some((name) => name.includes(keyword))
+  const assumedStaples = BASIC_STAPLES.filter(({ category, keyword }) =>
+    category
+      ? !outOfStockNames.some((name) => matchesStapleCategory(name, category))
+      : !outOfStockNames.some((name) => name.includes(keyword))
   ).map(({ label }) => label);
   const pantryListText = [assumedStaples.join(", "), pantryNames]
     .filter(Boolean)

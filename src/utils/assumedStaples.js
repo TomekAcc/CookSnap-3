@@ -72,3 +72,26 @@ export function isAssumedStapleIngredient(ingredientLine, languageId = "en") {
     toWordList(entry, languageId).some((word) => hasWord(line, word, spaceless))
   );
 }
+
+/**
+ * Checks a plain Pantry item NAME (not a recipe ingredient line) against
+ * one staple category ("salt" | "pepper" | "oil") across EVERY supported
+ * language at once, not just the app's current one. Unlike a recipe's
+ * ingredientsList line, a Pantry item's name carries no language tag of
+ * its own — it could be an English quick-add chip ("Olive Oil") or a name
+ * typed/kept in whatever language the recipe was in when the user marked
+ * it out of stock — so there's no single languageId to check against here.
+ * Used by geminiRecipes.js to decide whether the user's own "I don't have
+ * this" signal should override the BASIC_STAPLES assumption.
+ */
+export function matchesStapleCategory(name, category) {
+  if (!name) return false;
+  const entry = STAPLE_WORDS[category];
+  if (!entry) return false;
+  const lower = String(name).toLowerCase();
+
+  return Object.keys(entry).some((langId) => {
+    const spaceless = SPACELESS_LANGS.has(langId);
+    return toWordList(entry, langId).some((word) => hasWord(lower, word, spaceless));
+  });
+}

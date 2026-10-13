@@ -8,6 +8,7 @@ import {
   Animated,
   TextInput,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import {
   Clock,
@@ -109,7 +110,7 @@ export default function RecipeDetailModal() {
     recipeLanguageId,
     showToast,
     addToShoppingList,
-    setActiveTab,
+    markPantryItemOutOfStock,
     t,
   } = useCookAI();
   const { selectedRecipe, setSelectedRecipe, setProModalOpen } =
@@ -242,16 +243,29 @@ export default function RecipeDetailModal() {
   // "Staple" ingredients (salt/pepper/oil) are never actually from the
   // user's scan — they're assumed on every recipe unless scanned AND
   // marked out of stock in Pantry (see BASIC_STAPLES in geminiRecipes.js).
-  // Tapping the tag is the fix for "I don't actually have this": jump to
-  // Pantry so they can add/mark it there, same exit-then-navigate pattern
-  // as onOpenProModal above (this sheet's own Modal must finish closing
-  // before the tab switch, for the same native multi-Modal reason).
-  const onOpenPantryForStaple = () => {
-    onClose();
-    setTimeout(() => {
-      setActiveTab?.("pantry");
-      showToast?.(t("recipeDetail.assumedStapleToast"), "info");
-    }, EXIT_DURATION_MS + 40);
+  // First version of this sent the user to the Pantry tab to fix it
+  // themselves, but confirmed real confusion from a live tester: landing
+  // on a blank Pantry screen with just a toast gave no clear next step.
+  // This stays on the recipe entirely — a direct confirm that writes the
+  // out-of-stock flag itself, so there's exactly one thing to decide and
+  // nothing to figure out on another screen.
+  const onAssumedStaplePress = (ingredientName) => {
+    Alert.alert(
+      t("recipeDetail.assumedStapleConfirmTitle"),
+      t("recipeDetail.assumedStapleConfirmMessage", {
+        ingredient: ingredientName,
+      }),
+      [
+        { text: t("recipeDetail.cancel"), style: "cancel" },
+        {
+          text: t("recipeDetail.assumedStapleConfirmAction"),
+          onPress: () => {
+            markPantryItemOutOfStock?.(ingredientName);
+            showToast?.(t("recipeDetail.assumedStapleConfirmedToast"), "success");
+          },
+        },
+      ]
+    );
   };
 
   const dishStyle = getDishEmojiAndColor(recipe?.title, recipe?.dishType);
@@ -802,7 +816,7 @@ export default function RecipeDetailModal() {
                     </Text>
                     {isAssumedStaple ? (
                       <TouchableOpacity
-                        onPress={onOpenPantryForStaple}
+                        onPress={() => onAssumedStaplePress(cleanedTitle)}
                         activeOpacity={0.6}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                         style={styles.assumedStapleIconBtn}
