@@ -59,9 +59,11 @@ export default function PantryTab() {
     clearPantry,
     showToast,
     setActiveTab,
+    registerRecipeGenerationAttempt,
+    generateRecipes,
     t,
   } = useCookAI();
-  const { setLocalSheetOpen } = useModalState();
+  const { setLocalSheetOpen, setProModalOpen } = useModalState();
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -123,6 +125,22 @@ export default function PantryTab() {
     setLocalSheetOpen(true);
     setShowAddModal(true);
   }, [setLocalSheetOpen]);
+
+  // Confirmed real feedback: the "Generuj przepisy" button used to only
+  // switch to the Scanner tab, leaving the user to tap "Generate" a
+  // second time once they got there — the button's own label promised an
+  // action it didn't actually perform. Same gating as ScannerScreen's own
+  // generate button (free-tier check first, paywall on denial), then
+  // switches tabs to show the freshly generated recipes — one tap now
+  // actually does what it says.
+  const handleGenerateFromPantry = useCallback(() => {
+    if (!registerRecipeGenerationAttempt?.()) {
+      setProModalOpen(true);
+      return;
+    }
+    generateRecipes?.();
+    setActiveTab("scanner");
+  }, [registerRecipeGenerationAttempt, generateRecipes, setActiveTab, setProModalOpen]);
 
   const handleRestockItem = useCallback(
     (item) => {
@@ -318,7 +336,7 @@ export default function PantryTab() {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => setActiveTab("scanner")}
+            onPress={handleGenerateFromPantry}
             activeOpacity={0.85}
             style={{
               flexDirection: "row",
