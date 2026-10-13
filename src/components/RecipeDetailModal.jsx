@@ -20,6 +20,7 @@ import {
   Crown,
   ShoppingCart,
   X,
+  Info,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
@@ -798,19 +799,19 @@ export default function RecipeDetailModal() {
                       numberOfLines={2}
                     >
                       {cleanedTitle || t("recipeDetail.ingredientFallback")}
-                      {isAssumedStaple ? (
-                        <Text
-                          onPress={onOpenPantryForStaple}
-                          style={[
-                            styles.assumedStapleTag,
-                            { color: colors.textSecondary },
-                          ]}
-                        >
-                          {"  ·  "}
-                          {t("recipeDetail.assumedStapleTag")}
-                        </Text>
-                      ) : null}
                     </Text>
+                    {isAssumedStaple ? (
+                      <TouchableOpacity
+                        onPress={onOpenPantryForStaple}
+                        activeOpacity={0.6}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        style={styles.assumedStapleIconBtn}
+                        accessibilityRole="button"
+                        accessibilityLabel={t("recipeDetail.assumedStapleTag")}
+                      >
+                        <Info size={14} color={colors.textSecondary} />
+                      </TouchableOpacity>
+                    ) : null}
                   </View>
 
                   <View style={styles.ingredientRight}>
@@ -1351,10 +1352,9 @@ const styles = StyleSheet.create({
     color: "#1E293B",
     flex: 1,
   },
-  assumedStapleTag: {
-    fontSize: 12,
-    fontWeight: "500",
-    textDecorationLine: "underline",
+  assumedStapleIconBtn: {
+    marginLeft: 6,
+    flexShrink: 0,
   },
   ingredientNameChecked: {
     color: "#94A3B8",
