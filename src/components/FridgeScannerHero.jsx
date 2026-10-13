@@ -161,7 +161,6 @@ export default function FridgeScannerHero() {
   const [newItemName, setNewItemName] = useState("");
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [progressPct, setProgressPct] = useState(0);
-  const [progressTrackWidth, setProgressTrackWidth] = useState(0);
   const cameraRef = useRef(null);
 
   const photoHeightAnim = useRef(new Animated.Value(COMPACT_HEIGHT)).current;
@@ -173,13 +172,12 @@ export default function FridgeScannerHero() {
   const stepOpacity = useRef(new Animated.Value(1)).current;
   const stepTranslate = useRef(new Animated.Value(0)).current;
   const progressBarAnim = useRef(new Animated.Value(0)).current;
-  // Icon "breathing" pulse (scale) and progress-bar shimmer sweep
-  // (translateX of a light overlay) — both purely cosmetic, looped only
-  // while scanStage === "scanning" via the same effect that already drives
+  // Icon "breathing" pulse (scale) — purely cosmetic, looped only while
+  // scanStage === "scanning" via the same effect that already drives
   // badgePulse below, so they start/stop together with no separate
-  // lifecycle to manage.
+  // lifecycle to manage. (The progress-bar shimmer that used to live here
+  // alongside it was removed per direct feedback — see the JSX below.)
   const iconPulse = useRef(new Animated.Value(1)).current;
-  const shimmerAnim = useRef(new Animated.Value(0)).current;
   // First-launch highlight on the "Take Photo" button — see its own
   // comment at the JSX below for why this exists.
   const firstScanHintPulse = useRef(new Animated.Value(0)).current;
@@ -480,24 +478,9 @@ export default function FridgeScannerHero() {
       );
       iconPulseLoop.start();
 
-      // Progress-bar shimmer — a light diagonal sweep travels left-to-right
-      // across the fill on a steady 1.4s loop, independent of actual scan
-      // progress (purely decorative, like a loading skeleton's shimmer).
-      shimmerAnim.setValue(0);
-      const shimmerLoop = Animated.loop(
-        Animated.timing(shimmerAnim, {
-          toValue: 1,
-          duration: 1400,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        })
-      );
-      shimmerLoop.start();
-
       return () => {
         pulseLoop.stop();
         iconPulseLoop.stop();
-        shimmerLoop.stop();
       };
     }
 
@@ -553,7 +536,6 @@ export default function FridgeScannerHero() {
     ingredientsTranslate,
     badgePulse,
     iconPulse,
-    shimmerAnim,
     radarOpacity,
     radarTranslate,
   ]);
@@ -1228,9 +1210,6 @@ export default function FridgeScannerHero() {
                         borderRadius: 999,
                         overflow: "hidden",
                       }}
-                      onLayout={(e) =>
-                        setProgressTrackWidth(e.nativeEvent.layout.width)
-                      }
                     >
                       <Animated.View
                         style={{
@@ -1243,37 +1222,6 @@ export default function FridgeScannerHero() {
                           }),
                         }}
                       />
-                      {/* Decorative shimmer — a soft light streak sweeping
-                          left-to-right on a steady loop, independent of
-                          actual progress (same idea as a loading-skeleton
-                          shimmer). Degrades gracefully to "no visible
-                          movement" before onLayout fires once, since both
-                          interpolation endpoints are then equal. */}
-                      <Animated.View
-                        pointerEvents="none"
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          bottom: 0,
-                          width: 36,
-                          opacity: 0.35,
-                          transform: [
-                            {
-                              translateX: shimmerAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [-36, progressTrackWidth + 36],
-                              }),
-                            },
-                          ],
-                        }}
-                      >
-                        <LinearGradient
-                          colors={["transparent", "#FFFFFF", "transparent"]}
-                          start={{ x: 0, y: 0.5 }}
-                          end={{ x: 1, y: 0.5 }}
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      </Animated.View>
                     </View>
                   </View>
                 </View>
