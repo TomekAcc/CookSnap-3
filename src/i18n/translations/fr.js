@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Puis {price}{period} ({perMonthValue}) — résiliable à tout moment",
   "pro.billedMonthlyCancelAnytime": "Facturé mensuellement — résiliable à tout moment",
   "pro.cancelAnytimeGuarantee": "Résiliez en 1 geste dans l'App Store, à tout moment",
+  "pro.trialReminderGuarantee": "Nous vous préviendrons avant la fin",
   "pro.trialDayZero": "Aujourd'hui : commencez votre essai gratuit",
   "pro.trialDayReminder": "Jour 5 : nous vous prévenons avant le prélèvement",
   "pro.trialDayCharge": "Jour 7 : {price}{period} sauf annulation",

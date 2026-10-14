@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Danach {price}{period} ({perMonthValue}) — jederzeit kündbar",
   "pro.billedMonthlyCancelAnytime": "Monatliche Abrechnung — jederzeit kündbar",
   "pro.cancelAnytimeGuarantee": "Jederzeit mit 1 Tipp im App Store kündbar",
+  "pro.trialReminderGuarantee": "Wir erinnern dich, bevor sie endet",
   "pro.trialDayZero": "Heute: Starte deine kostenlose Testphase",
   "pro.trialDayReminder": "Tag 5: Wir erinnern dich vor der Abbuchung",
   "pro.trialDayCharge": "Tag 7: {price}{period}, außer du kündigst",

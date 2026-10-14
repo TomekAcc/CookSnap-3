@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Ardından {price}{period} ({perMonthValue}) — dilediğin zaman iptal et",
   "pro.billedMonthlyCancelAnytime": "Aylık faturalandırılır — dilediğin zaman iptal et",
   "pro.cancelAnytimeGuarantee": "App Store'dan tek dokunuşla istediğin zaman iptal et",
+  "pro.trialReminderGuarantee": "Bitmeden önce size hatırlatırız",
   "pro.trialDayZero": "Bugün: ücretsiz deneme sürenizi başlatın",
   "pro.trialDayReminder": "5. gün: ücretlendirmeden önce hatırlatırız",
   "pro.trialDayCharge": "7. gün: iptal etmezseniz {price}{period}",

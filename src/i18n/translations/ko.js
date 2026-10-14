@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "이후 {price}{period}({perMonthValue}) — 언제든지 해지 가능",
   "pro.billedMonthlyCancelAnytime": "월간 청구 — 언제든지 해지 가능",
   "pro.cancelAnytimeGuarantee": "App Store에서 탭 한 번으로 언제든지 해지하세요",
+  "pro.trialReminderGuarantee": "종료 전에 알려드려요",
   "pro.trialDayZero": "오늘: 무료 체험 시작",
   "pro.trialDayReminder": "5일 차: 결제 전에 알려드려요",
   "pro.trialDayCharge": "7일 차: 취소하지 않으면 {price}{period}",

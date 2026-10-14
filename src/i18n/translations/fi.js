@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Sen jälkeen {price}{period} ({perMonthValue}) — peru milloin tahansa",
   "pro.billedMonthlyCancelAnytime": "Laskutetaan kuukausittain – peru milloin tahansa",
   "pro.cancelAnytimeGuarantee": "Peru milloin tahansa yhdellä napautuksella App Storesta",
+  "pro.trialReminderGuarantee": "Muistutamme sinua ennen sen päättymistä",
   "pro.trialDayZero": "Tänään: aloita ilmainen kokeilujakso",
   "pro.trialDayReminder": "Päivä 5: muistutamme ennen veloitusta",
   "pro.trialDayCharge": "Päivä 7: {price}{period} ellet peruuta",

@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Deretter {price}{period} ({perMonthValue}) – si opp når som helst",
   "pro.billedMonthlyCancelAnytime": "Faktureres månedlig – si opp når som helst",
   "pro.cancelAnytimeGuarantee": "Si opp når som helst med ett trykk i App Store",
+  "pro.trialReminderGuarantee": "Vi minner deg før den utløper",
   "pro.trialDayZero": "I dag: start din gratis prøveperiode",
   "pro.trialDayReminder": "Dag 5: vi minner deg før du belastes",
   "pro.trialDayCharge": "Dag 7: {price}{period} med mindre du sier opp",

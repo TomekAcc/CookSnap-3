@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Sau đó {price}{period} ({perMonthValue}) — hủy bất cứ lúc nào",
   "pro.billedMonthlyCancelAnytime": "Thanh toán hàng tháng — hủy bất cứ lúc nào",
   "pro.cancelAnytimeGuarantee": "Hủy bất cứ lúc nào chỉ với 1 chạm trong App Store",
+  "pro.trialReminderGuarantee": "Chúng tôi sẽ nhắc bạn trước khi kết thúc",
   "pro.trialDayZero": "Hôm nay: bắt đầu dùng thử miễn phí",
   "pro.trialDayReminder": "Ngày 5: chúng tôi nhắc bạn trước khi tính phí",
   "pro.trialDayCharge": "Ngày 7: {price}{period} trừ khi bạn hủy",

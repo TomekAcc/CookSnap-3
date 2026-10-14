@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "След това {price}{period} ({perMonthValue}) — отменете по всяко време",
   "pro.billedMonthlyCancelAnytime": "Таксува се месечно — отменете по всяко време",
   "pro.cancelAnytimeGuarantee": "Отменете по всяко време с 1 докосване в App Store",
+  "pro.trialReminderGuarantee": "Ще ви напомним преди да изтече",
   "pro.trialDayZero": "Днес: започнете безплатния си пробен период",
   "pro.trialDayReminder": "Ден 5: ще ви напомним преди таксуването",
   "pro.trialDayCharge": "Ден 7: {price}{period}, освен ако не отмените",

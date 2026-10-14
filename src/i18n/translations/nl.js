@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Daarna {price}{period} ({perMonthValue}) — op elk moment opzegbaar",
   "pro.billedMonthlyCancelAnytime": "Maandelijks gefactureerd — op elk moment opzegbaar",
   "pro.cancelAnytimeGuarantee": "Zeg op elk moment op met 1 tik in de App Store",
+  "pro.trialReminderGuarantee": "We herinneren je voordat deze afloopt",
   "pro.trialDayZero": "Vandaag: start je gratis proefperiode",
   "pro.trialDayReminder": "Dag 5: we herinneren je voor je wordt belast",
   "pro.trialDayCharge": "Dag 7: {price}{period} tenzij je opzegt",

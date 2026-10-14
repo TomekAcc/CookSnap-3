@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "फिर {price}{period} ({perMonthValue}) — कभी भी रद्द करें",
   "pro.billedMonthlyCancelAnytime": "मासिक बिल किया जाता है — कभी भी रद्द करें",
   "pro.cancelAnytimeGuarantee": "App Store में 1 टैप से कभी भी रद्द करें",
+  "pro.trialReminderGuarantee": "खत्म होने से पहले हम आपको याद दिलाएंगे",
   "pro.trialDayZero": "आज: अपना मुफ़्त ट्रायल शुरू करें",
   "pro.trialDayReminder": "दिन 5: चार्ज से पहले हम आपको याद दिलाएंगे",
   "pro.trialDayCharge": "दिन 7: रद्द न करने पर {price}{period}",

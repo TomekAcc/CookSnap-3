@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "לאחר מכן {price}{period} ({perMonthValue}) — ניתן לבטל בכל עת",
   "pro.billedMonthlyCancelAnytime": "חיוב חודשי — ניתן לבטל בכל עת",
   "pro.cancelAnytimeGuarantee": "ביטול קל בכל עת בלחיצה אחת ב-App Store",
+  "pro.trialReminderGuarantee": "נזכיר לך לפני הסיום",
   "pro.trialDayZero": "היום: התחל את תקופת הניסיון החינמית שלך",
   "pro.trialDayReminder": "יום 5: נזכיר לך לפני החיוב",
   "pro.trialDayCharge": "יום 7: {price}{period} אלא אם תבטל",

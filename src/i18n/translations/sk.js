@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Potom {price}{period} ({perMonthValue}) — zrušenie kedykoľvek",
   "pro.billedMonthlyCancelAnytime": "Fakturované mesačne — zrušenie kedykoľvek",
   "pro.cancelAnytimeGuarantee": "Zrušte kedykoľvek 1 klepnutím v App Store",
+  "pro.trialReminderGuarantee": "Pripomenieme vám to pred koncom",
   "pro.trialDayZero": "Dnes: začnite bezplatnú skúšobnú dobu",
   "pro.trialDayReminder": "Deň 5: pripomenieme vám to pred účtovaním",
   "pro.trialDayCharge": "Deň 7: {price}{period}, ak nezrušíte",

@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Zatim {price}{period} ({perMonthValue}) — otkaži bilo kada",
   "pro.billedMonthlyCancelAnytime": "Mjesečna naplata — otkaži bilo kada",
   "pro.cancelAnytimeGuarantee": "Otkaži bilo kada jednim dodirom u App Storeu",
+  "pro.trialReminderGuarantee": "Podsjetit ćemo vas prije isteka",
   "pro.trialDayZero": "Danas: pokrenite besplatno probno razdoblje",
   "pro.trialDayReminder": "5. dan: podsjetit ćemo vas prije naplate",
   "pro.trialDayCharge": "7. dan: {price}{period} osim ako ne otkažete",

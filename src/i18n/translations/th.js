@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "จากนั้น {price}{period} ({perMonthValue}) — ยกเลิกได้ตลอดเวลา",
   "pro.billedMonthlyCancelAnytime": "เรียกเก็บเงินรายเดือน — ยกเลิกได้ตลอดเวลา",
   "pro.cancelAnytimeGuarantee": "ยกเลิกได้ตลอดเวลาด้วยการแตะ 1 ครั้งใน App Store",
+  "pro.trialReminderGuarantee": "เราจะแจ้งเตือนก่อนหมดเวลา",
   "pro.trialDayZero": "วันนี้: เริ่มทดลองใช้ฟรี",
   "pro.trialDayReminder": "วันที่ 5: เราจะแจ้งเตือนก่อนเรียกเก็บเงิน",
   "pro.trialDayCharge": "วันที่ 7: {price}{period} เว้นแต่คุณยกเลิก",

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
-import { Crown, Check, Sparkles, X, ChevronRight } from "lucide-react-native";
+import { Crown, Check, Sparkles, X, ChevronRight, Bell } from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
@@ -67,17 +67,16 @@ const PRO_BENEFIT_KEYS = [
   "pro.benefitAutoPlan",
 ];
 
-// Blinkist's real case study (user-sourced): replacing a vague free-trial
-// disclaimer with a concrete step-by-step "here's exactly what happens and
-// when" timeline measurably reduced trial-cancellation complaints and
-// increased signups — the fear isn't the trial, it's not knowing when
-// you'll be charged or whether you'll remember to cancel. Only the last
-// step needs the live price/period, interpolated at render time.
-const TRIAL_STEP_KEYS = [
-  "pro.trialDayZero",
-  "pro.trialDayReminder",
-  "pro.trialDayCharge",
-];
+// Blinkist's real case study (user-sourced) said a concrete trial timeline
+// cuts cancellation anxiety — true, but the full 3-step version (tried
+// first) cost too much vertical space on a screen the user had just
+// called "overcrowded" and that was sitting at exactly 0px of spare
+// height. Kept the one genuinely new piece of information the full
+// timeline added over the old plain guarantee — a proactive reminder
+// before the trial ends, the actual psychological lever in Blinkist's
+// case — as a single line instead of three. The exact charge date/price
+// already lives in the required disclosure text right below the CTA, so
+// repeating it here would just be the redundancy the user also flagged.
 
 /**
  * PRO paywall — built directly on StandardModal (not StandardSmoothModal)
@@ -345,42 +344,23 @@ export default function ProSubscriptionModal() {
         {/* Fixed, outside the ScrollView on purpose — see the comment
             above this section's opening View for why.
 
-            Trial timeline replaces the old single-line "cancel anytime"
-            guarantee when a trial is active (annual plan) — a concrete
-            today/reminder/charge-date timeline is a stronger, more
-            specific version of the same risk-reversal message (Blinkist's
-            real case study: this exact swap measurably cut trial-cancel
-            complaints and raised signups), so showing both would be
-            redundant rather than additive. The monthly plan has no trial,
-            so it keeps the plain guarantee line — a 3-step "timeline" with
-            nothing time-based to show on day 5/7 wouldn't make sense. */}
+            One line, not a 3-step timeline (see the comment on the old
+            TRIAL_STEP_KEYS array above for why that version got cut) —
+            still swaps copy based on whether a trial is active, same
+            Bell-vs-Check icon distinction either way. */}
         <View style={styles.ctaSection}>
-          {plan.trial ? (
-            <View style={styles.trialTimeline}>
-              {TRIAL_STEP_KEYS.map((key, i) => (
-                <View key={key} style={styles.trialStepRow}>
-                  <View style={styles.trialStepIndicator}>
-                    <View style={[styles.trialDot, { backgroundColor: colors.accentAmber }]} />
-                    {i < TRIAL_STEP_KEYS.length - 1 ? (
-                      <View style={[styles.trialLine, { backgroundColor: colors.cardBorder }]} />
-                    ) : null}
-                  </View>
-                  <Text style={[styles.trialStepText, { color: colors.textPrimary }]}>
-                    {key === "pro.trialDayCharge"
-                      ? t(key, { price: plan.price, period: planPeriod })
-                      : t(key)}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          ) : (
-            <View style={styles.guaranteeRow}>
+          <View style={styles.guaranteeRow}>
+            {plan.trial ? (
+              <Bell size={12} color={colors.textSecondary} strokeWidth={2.5} />
+            ) : (
               <Check size={12} color={colors.textSecondary} strokeWidth={3} />
-              <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
-                {t("pro.cancelAnytimeGuarantee")}
-              </Text>
-            </View>
-          )}
+            )}
+            <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
+              {plan.trial
+                ? t("pro.trialReminderGuarantee")
+                : t("pro.cancelAnytimeGuarantee")}
+            </Text>
+          </View>
           <TouchableOpacity
             onPress={handleSubscribe}
             activeOpacity={0.88}
@@ -554,28 +534,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   guaranteeText: { fontSize: 11, fontWeight: "600" },
-  trialTimeline: { marginBottom: 6 },
-  trialStepRow: { flexDirection: "row", alignItems: "flex-start" },
-  trialStepIndicator: { width: 14, alignItems: "center" },
-  trialDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    marginTop: 3,
-  },
-  trialLine: {
-    width: 1.5,
-    flex: 1,
-    minHeight: 7,
-    marginVertical: 1,
-  },
-  trialStepText: {
-    flex: 1,
-    fontSize: 11.5,
-    fontWeight: "600",
-    marginLeft: 8,
-    marginBottom: 3,
-  },
   ctaButton: {
     borderRadius: 14,
     minHeight: 44,

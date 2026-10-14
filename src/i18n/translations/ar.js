@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "ثم {price}{period} ({perMonthValue}) — يمكنك الإلغاء في أي وقت",
   "pro.billedMonthlyCancelAnytime": "يُحاسب شهرياً — يمكنك الإلغاء في أي وقت",
   "pro.cancelAnytimeGuarantee": "ألغِ في أي وقت بضغطة واحدة في App Store",
+  "pro.trialReminderGuarantee": "سنذكرك قبل انتهائها",
   "pro.trialDayZero": "اليوم: ابدأ تجربتك المجانية",
   "pro.trialDayReminder": "اليوم 5: سنذكرك قبل الخصم",
   "pro.trialDayCharge": "اليوم 7: {price}{period} ما لم تُلغِ",

@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "之后为 {price}{period}（折合 {perMonthValue}）— 随时可取消",
   "pro.billedMonthlyCancelAnytime": "按月扣费 — 随时可取消",
   "pro.cancelAnytimeGuarantee": "在 App Store 一键即可随时取消",
+  "pro.trialReminderGuarantee": "结束前我们会提醒你",
   "pro.trialDayZero": "今天：开始免费试用",
   "pro.trialDayReminder": "第5天：扣费前会提醒你",
   "pro.trialDayCharge": "第7天：{price}{period}，除非你取消",

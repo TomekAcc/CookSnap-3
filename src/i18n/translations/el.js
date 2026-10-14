@@ -305,6 +305,7 @@ export default {
   "pro.thenPriceCancelAnytime": "Μετά {price}{period} ({perMonthValue}) — ακύρωση όποτε θέλετε",
   "pro.billedMonthlyCancelAnytime": "Μηνιαία χρέωση — ακύρωση όποτε θέλετε",
   "pro.cancelAnytimeGuarantee": "Ακύρωση ανά πάσα στιγμή με 1 άγγιγμα στο App Store",
+  "pro.trialReminderGuarantee": "Θα σας υπενθυμίσουμε πριν τη λήξη",
   "pro.trialDayZero": "Σήμερα: ξεκινήστε τη δωρεάν δοκιμή σας",
   "pro.trialDayReminder": "Ημέρα 5: θα σας υπενθυμίσουμε πριν τη χρέωση",
   "pro.trialDayCharge": "Ημέρα 7: {price}{period} εκτός αν ακυρώσετε",
