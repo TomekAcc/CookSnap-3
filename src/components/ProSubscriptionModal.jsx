@@ -496,13 +496,30 @@ const styles = StyleSheet.create({
   // with measure-pro-overflow.js after adding it (12px of overflow crept
   // back in at a standard phone size) and trimmed until back to the
   // zero-scroll result.
+  //
+  // marginHorizontal: -20 cancels out StandardModal's own sheet
+  // paddingHorizontal (20, applied to every child of the sheet) — direct
+  // feedback that the gradient read as a card floating with a visible
+  // white gutter on each side instead of a true wash reaching the sheet's
+  // own edges, which looked cropped/unfinished rather than intentional.
+  // paddingHorizontal below re-establishes inset spacing for the actual
+  // content (crown/title/subtitle) now that the gradient background
+  // itself bleeds full width. borderRadius on the gradient's own top
+  // corners is deliberately a touch smaller than the sheet's (30) rather
+  // than identical — the gradient sits a few px below the very top edge
+  // (under the grab handle), and StandardModal's sheet doesn't clip
+  // overflow, so a matching-or-larger radius here would let the
+  // gradient's square corner show past the sheet's rounded one in that
+  // small gap; a slightly smaller radius reads as intentionally nested
+  // instead.
   header: {
     alignItems: "center",
     marginBottom: 10,
-    borderRadius: 24,
+    marginHorizontal: -20,
+    borderRadius: 22,
     paddingTop: 18,
     paddingBottom: 12,
-    paddingHorizontal: 10,
+    paddingHorizontal: 30,
   },
   crownBadge: {
     width: 44,
