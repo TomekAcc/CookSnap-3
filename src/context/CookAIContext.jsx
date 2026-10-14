@@ -795,11 +795,41 @@ export function CookAIProvider({ children }) {
   // always lands in the SAME commit that flipped isScanning false — no
   // consumer of scanRevealActive, however deep, can ever observe a stale
   // "not holding" value for even one frame.
+  //
+  // Confirmed real failure, reported directly by a user: opening the app
+  // fresh (with a fridge photo already scanned in a PAST session) dropped
+  // straight into what looked like an active scan — BottomNav hidden,
+  // ScannerScreen's preferences/recipes/CTA all suppressed — with no way
+  // to navigate anywhere. Root cause: fridgePhoto starts null and only
+  // hydrates from AsyncStorage inside a useEffect, well after first
+  // mount — so on a cold start with an existing scan, rawScanStageForHold
+  // goes "idle" (first render, before hydration) -> "completed" (once
+  // hydration lands), with NO "scanning" render ever in between. That
+  // idle->completed jump looked identical, to this code, as a real scan
+  // finishing, so it fired setScanRevealActive(true) on every single cold
+  // start for any returning user — permanently (the 480ms timer that's
+  // supposed to release it never even starts, since nothing in
+  // FridgeScannerHero is actually running a scan to trigger its release).
+  // A genuine live scan ALWAYS passes through "scanning" before reaching
+  // "completed"; hydrating pre-existing data never does. sawScanningRef
+  // requires having actually observed "scanning" at least once this
+  // session before "completed" is allowed to trigger the hold — the same
+  // idle-hydration-vs-real-completion distinction FridgeScannerHero's own
+  // mountedAlreadyCompleteRef already made locally before this logic moved
+  // here, which got dropped in the move and needed restoring.
   const rawScanStageForHold = !fridgePhoto ? "idle" : isScanning ? "scanning" : "completed";
+  const sawScanningForHoldRef = useRef(rawScanStageForHold === "scanning");
   const prevRawScanStageForHoldRef = useRef(rawScanStageForHold);
   if (prevRawScanStageForHoldRef.current !== rawScanStageForHold) {
     prevRawScanStageForHoldRef.current = rawScanStageForHold;
-    if (rawScanStageForHold === "completed" && !scanRevealActive) {
+    if (rawScanStageForHold === "scanning") {
+      sawScanningForHoldRef.current = true;
+    }
+    if (
+      rawScanStageForHold === "completed" &&
+      !scanRevealActive &&
+      sawScanningForHoldRef.current
+    ) {
       setScanRevealActive(true);
     }
   }
