@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Crown, Check, Sparkles, X, ChevronRight, Bell } from "lucide-react-native";
+import {
+  Crown,
+  Check,
+  Sparkles,
+  X,
+  ChevronRight,
+  Bell,
+  Camera,
+  UtensilsCrossed,
+  Target,
+  BarChart3,
+  CalendarDays,
+} from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
@@ -55,20 +67,26 @@ export const PLANS = {
 const PERIOD_SUFFIX_KEY = { year: "pro.yearSuffix", month: "pro.monthSuffix" };
 
 // Each benefit string carries its own leading emoji baked in at the i18n
-// layer (see PRO_BENEFIT_KEYS below) — this pulls just that leading emoji
-// back out so it can render as a proper colored icon chip instead of a
-// bare character floating on white. Matches ONLY the fixed, known emoji
-// set this app's i18n layer actually prepends (📸🍽️🎯📊🗓️, each either a
-// plain surrogate-pair emoji or one followed by the U+FE0F variation
-// selector) — same surrogate-pair-based matching already proven
-// Hermes-safe elsewhere in this app (see stripInlineEmojis in
-// FridgeScannerHero.jsx), not the \p{Extended_Pictographic} Unicode
-// property syntax Hermes doesn't reliably support.
+// layer (see PRO_BENEFIT_KEYS below) — strips it back out so it doesn't
+// render twice now that each row has its own proper vector icon (see
+// PRO_BENEFIT_ICONS below) instead of the emoji itself. Direct feedback,
+// and the right call: emoji glyphs are the one icon language on this
+// whole sheet (every other icon — Crown, Sparkles, Bell, the close X —
+// is a lucide vector icon) that isn't actually controlled by the app;
+// Apple/Google/a browser each draw the SAME emoji differently, which
+// undercuts exactly the "one consistent, designed" feel the rest of the
+// sheet already has. Matches ONLY the fixed, known emoji set this app's
+// i18n layer actually prepends (📸🍽️🎯📊🗓️, each either a plain
+// surrogate-pair emoji or one followed by the U+FE0F variation selector)
+// — same surrogate-pair-based matching already proven Hermes-safe
+// elsewhere in this app (see stripInlineEmojis in FridgeScannerHero.jsx),
+// not the \p{Extended_Pictographic} Unicode property syntax Hermes
+// doesn't reliably support.
 function splitLeadingEmoji(str) {
   const s = String(str || "").trim();
   const match = s.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]️?)\s*/);
-  if (!match) return { emoji: null, text: s };
-  return { emoji: match[1], text: s.slice(match[0].length) };
+  if (!match) return { text: s };
+  return { text: s.slice(match[0].length) };
 }
 
 // Benefit-led copy, not feature/limit labels — replaced the Free-vs-PRO
@@ -87,6 +105,18 @@ const PRO_BENEFIT_KEYS = [
   "pro.benefitMacros",
   "pro.benefitAutoPlan",
 ];
+
+// One lucide icon per benefit, matching each row's meaning the same way
+// its (now-stripped) emoji used to — a fixed app-level design choice, not
+// translatable content, so this stays a plain object here rather than
+// living in the i18n layer the way the emoji did.
+const PRO_BENEFIT_ICONS = {
+  "pro.benefitUnlimitedScans": Camera,
+  "pro.benefitFiveRecipes": UtensilsCrossed,
+  "pro.benefitAiModifier": Target,
+  "pro.benefitMacros": BarChart3,
+  "pro.benefitAutoPlan": CalendarDays,
+};
 
 // Blinkist's real case study (user-sourced) said a concrete trial timeline
 // cuts cancellation anxiety — true, but the full 3-step version (tried
@@ -343,32 +373,34 @@ export default function ProSubscriptionModal() {
             bordered card wrapper (floats straight on the sheet so there's
             one fewer box competing for attention).
 
-            Each benefit's own topic emoji now sits in a small amber-tinted
-            chip (same tokens as the crown badge above, so the whole sheet
-            reads as one consistent accent family) instead of floating as a
-            bare character on white — confirmed real feedback that the page
+            Each row's own topic icon sits in a small amber-tinted chip
+            (same tokens as the crown badge above, so the whole sheet reads
+            as one consistent accent family) instead of floating as a bare
+            character on white — confirmed real feedback that the page
             felt flat/monochrome with color only on the CTA and the
-            selected plan card. This is still only ONE icon per row (the
-            emoji moved into the chip, it didn't gain a sibling) — a
-            previous round already confirmed a check-circle ALONGSIDE the
-            emoji read as two icons doing one job; a chip framing the same
-            emoji isn't a second icon, just a better frame for the first
-            one. */}
+            selected plan card. This is still only ONE icon per row — a
+            previous round already confirmed a check-circle ALONGSIDE an
+            icon read as two icons doing one job. The icon itself is a
+            lucide vector icon now, not the emoji the translated string
+            still carries (stripped via splitLeadingEmoji) — every OTHER
+            icon on this sheet (Crown, Sparkles, Bell, the close X) is
+            already a lucide icon the app fully controls; emoji were the
+            one icon language left that renders differently per platform
+            instead of looking like a single, designed system. */}
         <View style={styles.benefitsList}>
           {PRO_BENEFIT_KEYS.map((key) => {
-            const { emoji, text } = splitLeadingEmoji(t(key));
+            const { text } = splitLeadingEmoji(t(key));
+            const BenefitIcon = PRO_BENEFIT_ICONS[key];
             return (
               <View key={key} style={styles.benefitRow}>
-                {emoji ? (
-                  <View
-                    style={[
-                      styles.benefitIconChip,
-                      { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
-                    ]}
-                  >
-                    <Text style={styles.benefitIconEmoji}>{emoji}</Text>
-                  </View>
-                ) : null}
+                <View
+                  style={[
+                    styles.benefitIconChip,
+                    { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
+                  ]}
+                >
+                  <BenefitIcon size={15} color={colors.accentAmber} strokeWidth={2.25} />
+                </View>
                 <Text style={[styles.benefitText, { color: colors.textPrimary }]}>
                   {text}
                 </Text>
@@ -573,7 +605,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexShrink: 0,
   },
-  benefitIconEmoji: { fontSize: 14 },
   benefitText: {
     flex: 1,
     fontSize: 13.5,
