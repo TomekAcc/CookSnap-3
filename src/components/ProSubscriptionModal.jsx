@@ -30,11 +30,15 @@ const AMBER_TINT_BADGE = "rgba(255,159,10,0.14)";
 const AMBER_TINT_BADGE_BORDER = "rgba(255,159,10,0.35)";
 const AMBER_LIGHT_FILL = "#FFC877";
 const ON_AMBER = "#1D1D1F";
-// Must stay identical to the header gradient's own first color stop (see
-// the LinearGradient below) — this is a flat fill for the fixed-height
-// strip directly above where that gradient starts, so the two need to
-// meet at the exact same color for the seam between them to be invisible.
-const AMBER_TINT_BADGE_TOP = "rgba(255,159,10,0.20)";
+// Distance from the sheet's true top edge to where the ScrollView's content
+// (and so the hero block) begins: StandardModal's sheet paddingTop (6) +
+// the grab handle's height and vertical margins (4.5 + 4 + 4) + the
+// ScrollView's own top padding (2). The hero wash adds this to the
+// measured hero height so it reaches down to the bottom of the subtitle.
+const HERO_WASH_TOP_OFFSET = 20.5;
+// Used for the first frame, before onLayout has reported the real hero
+// height — roughly a two-line title + two-line subtitle hero.
+const HERO_WASH_FALLBACK_HEIGHT = 200;
 
 // periodUnit/perMonthPrice drive translated display text at render time
 // (see PERIOD_SUFFIX_KEY below) — a plain "/year"/"/mo" literal here was a
@@ -172,6 +176,7 @@ export default function ProSubscriptionModal() {
   } = useCookAI();
   const { colors } = useTheme();
   const [selectedPlanId, setSelectedPlanId] = useState("annual");
+  const [heroHeight, setHeroHeight] = useState(HERO_WASH_FALLBACK_HEIGHT);
   const close = () => setProModalOpen(false);
   const plan = PLANS[selectedPlanId];
   const planPeriod = t(PERIOD_SUFFIX_KEY[plan.periodUnit]);
@@ -215,27 +220,44 @@ export default function ProSubscriptionModal() {
       maxHeight={sheetHeight}
       dragZoneRightInset={60}
     >
-      {/* Confirmed real feedback, on a screenshot: the header gradient
-          below (styles.header) already bleeds full-width via its own
-          negative margin, but it only starts where the ScrollView's
-          content does — a short strip above it (StandardModal's own
-          paddingTop + this grab handle's own height/margins + the
-          ScrollView's small top padding) stayed plain white, right where
-          the sheet's actual rounded top corners are. Over that short a
-          distance the mismatch between the gradient card's own corner
-          radius (22, deliberately smaller — see styles.header) and the
-          sheet's real one (30) was visible as a white sliver right in the
-          corners, exactly where the eye lands first. This fills that
-          specific, fixed-height gap (NOT the variable-height hero text
-          below it, which the existing gradient already handles safely
-          across every language) with the same color the gradient itself
-          starts at, so the two meet with no visible seam — and matches
-          the sheet's own 30 corner radius exactly, since nothing is
-          layered on top of IT to make a smaller radius look nested. */}
-      <View
+      {/* Soft warm wash behind the hero (crown/title/subtitle) — direct
+          feedback that the page read as flat/monochrome even after the
+          benefit icon chips (pale by design, meant to sit quietly next to
+          the icons rather than compete with them). Rather than pushing
+          MORE color into every row (this sheet already went through — and
+          recovered from — a "too much color, messy" complaint), this is
+          ONE contained move: the same accent amber used everywhere else
+          on the sheet, fading to fully transparent so it composites
+          correctly over either theme's card background.
+
+          It lives HERE, as a direct child of the sheet, not inside the
+          ScrollView — an earlier version put the gradient on the hero
+          block inside the ScrollView with a negative horizontal margin to
+          bleed past StandardModal's 20px side padding. That never worked:
+          a ScrollView clips anything that extends past its own frame, so
+          the gradient stayed a rounded card inset by 20px on each side
+          (confirmed on a real device screenshot, and in hindsight in the
+          web screenshots too — I misread those). A follow-up flat "filler"
+          strip above it then overlapped the gradient's first stop and
+          drew a visibly darker band. One absolutely-positioned layer,
+          sibling of the grab handle, is outside the ScrollView's clip and
+          needs no seam to match. left/right: 0 is the sheet's outer edge
+          (the sheet's paddingHorizontal only affects flow children, not
+          absolute ones); the top radius is the sheet's own (30) so the
+          wash follows the sheet's corners exactly.
+
+          Its height follows the measured hero block (onLayout below), not
+          a fixed number, since the title/subtitle wrap to a different
+          number of lines per language; it fades to 0 at the bottom so
+          there's never a hard edge either way. pointerEvents none keeps
+          it from ever swallowing a tap or the sheet's drag gesture. */}
+      <LinearGradient
+        pointerEvents="none"
+        colors={["rgba(255,159,10,0.20)", "rgba(255,159,10,0.05)", "rgba(255,159,10,0)"]}
+        locations={[0, 0.55, 1]}
         style={[
-          styles.headerTopFiller,
-          { backgroundColor: AMBER_TINT_BADGE_TOP },
+          styles.heroWash,
+          { height: Math.round(heroHeight + HERO_WASH_TOP_OFFSET + 10) },
         ]}
       />
       <View
@@ -294,23 +316,16 @@ export default function ProSubscriptionModal() {
           bounces={false}
           overScrollMode="never"
         >
-        {/* Soft warm wash behind the hero (crown/title/subtitle) — direct
-            feedback that the page read as flat/monochrome even after the
-            benefit icon chips (those are pale by design, meant to sit
-            quietly next to full-color emoji glyphs rather than compete
-            with them — fine on their own, but not enough color on their
-            own to read as "attractive, makes me want to buy"). Rather than
-            pushing MORE color into every row (this sheet already went
-            through — and recovered from — a "too much color, messy"
-            complaint earlier), this is ONE confident, contained move: a
-            gradient card at the top, the same accent amber already used
-            everywhere else on the sheet, fading to fully transparent so it
-            composites correctly over either theme's card background
-            without a hardcoded end color. */}
-        <LinearGradient
-          colors={["rgba(255,159,10,0.20)", "rgba(255,159,10,0.05)", "rgba(255,159,10,0)"]}
-          locations={[0, 0.55, 1]}
+        {/* Hero block — transparent on purpose, the amber wash behind it is
+            the sibling layer at the top of this sheet (see the comment
+            there). onLayout reports its height so that layer can size
+            itself to it. */}
+        <View
           style={styles.header}
+          onLayout={(e) => {
+            const h = e.nativeEvent.layout.height;
+            if (h > 0) setHeroHeight((prev) => (Math.abs(prev - h) > 0.5 ? h : prev));
+          }}
         >
           <View
             style={[
@@ -326,7 +341,7 @@ export default function ProSubscriptionModal() {
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             {subtitle}
           </Text>
-        </LinearGradient>
+        </View>
 
         <View style={styles.planRow}>
           {[PLANS.annual, PLANS.monthly].map((p) => {
@@ -490,22 +505,19 @@ export function ProModal(props) {
 }
 
 const styles = StyleSheet.create({
-  // See its own render-site comment — fills the fixed-height gap between
-  // the sheet's true top edge and where the header gradient itself
-  // starts. left/right: -20 cancels StandardModal's sheet
-  // paddingHorizontal (20), same trick as the gradient's own
-  // marginHorizontal below, since position:"absolute" is relative to the
-  // padding box by default, not the sheet's actual outer edge.
-  // borderTopLeftRadius/Right match the sheet's own (30) exactly, not a
-  // smaller "nested" radius — nothing sits on top of this one corner to
-  // make a smaller radius read as intentional the way it does for the
-  // gradient further down.
-  headerTopFiller: {
+  // See its own render-site comment. left/right: 0 already means the
+  // sheet's outer edge — StandardModal's 20px paddingHorizontal only moves
+  // normal-flow children, not absolutely positioned ones (the close button's
+  // right: 16 sits 16px from the edge for the same reason). An earlier
+  // version used -20 here on the wrong assumption and pushed the wash 20px
+  // past the sheet on each side, past the sheet's rounded corner. The top
+  // radius is the sheet's own (30). height is supplied at render time from
+  // the measured hero.
+  heroWash: {
     position: "absolute",
     top: 0,
-    left: -20,
-    right: -20,
-    height: 36,
+    left: 0,
+    right: 0,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
@@ -538,35 +550,16 @@ const styles = StyleSheet.create({
   // confirmed by measurement (measure-pro-overflow.js) that this was
   // real, substantial overflow (235px in Polish on a 375×667 screen), not
   // a cosmetic nitpick.
-  // marginBottom/paddingBottom trimmed to offset the paddingTop/Bottom this
-  // gradient card adds (it used to be a plain, unpadded View) — re-measured
-  // with measure-pro-overflow.js after adding it (12px of overflow crept
-  // back in at a standard phone size) and trimmed until back to the
-  // zero-scroll result.
-  //
-  // marginHorizontal: -20 cancels out StandardModal's own sheet
-  // paddingHorizontal (20, applied to every child of the sheet) — direct
-  // feedback that the gradient read as a card floating with a visible
-  // white gutter on each side instead of a true wash reaching the sheet's
-  // own edges, which looked cropped/unfinished rather than intentional.
-  // paddingHorizontal below re-establishes inset spacing for the actual
-  // content (crown/title/subtitle) now that the gradient background
-  // itself bleeds full width. borderRadius on the gradient's own top
-  // corners is deliberately a touch smaller than the sheet's (30) rather
-  // than identical — the gradient sits a few px below the very top edge
-  // (under the grab handle), and StandardModal's sheet doesn't clip
-  // overflow, so a matching-or-larger radius here would let the
-  // gradient's square corner show past the sheet's rounded one in that
-  // small gap; a slightly smaller radius reads as intentionally nested
-  // instead.
+  // Vertical spacing was trimmed to keep the whole sheet at zero scroll on
+  // a standard phone (re-measured with measure-pro-overflow.js after the
+  // hero gained its own padding) — keep it in step with that measurement.
+  // The amber wash behind this block is a separate layer (see heroWash).
   header: {
     alignItems: "center",
     marginBottom: 10,
-    marginHorizontal: -20,
-    borderRadius: 22,
     paddingTop: 18,
     paddingBottom: 12,
-    paddingHorizontal: 30,
+    paddingHorizontal: 10,
   },
   crownBadge: {
     width: 44,
