@@ -282,10 +282,10 @@ export default {
   "pro.moSuffix": "/Mon.",
   "pro.freeColumnHeader": "Kostenlos",
   "pro.scansAndGenerations": "Scans & Rezeptgenerierungen",
-  "pro.benefitUnlimitedScans": "📸 Unbegrenzte Kühlschrank- und Vorratskammer-Scans, jeden Tag",
+  "pro.benefitUnlimitedScans": "📸 Unbegrenzt Kühlschrank & Vorrat scannen",
   "pro.benefitFiveRecipes": "🍽️ 5 frische Rezeptideen statt nur 3",
-  "pro.benefitAiModifier": "🎯 Jedes Rezept mit KI anpassen — Zutaten tauschen, Geschmack abstimmen",
-  "pro.benefitMacros": "📊 Vollständige Makronährstoffe für jedes Rezept ansehen",
+  "pro.benefitAiModifier": "🎯 Jedes Rezept mit KI anpassen",
+  "pro.benefitMacros": "📊 Makronährstoffe für jedes Rezept",
   "pro.benefitAutoPlan": "🗓️ KI plant deine ganze Woche automatisch",
 
   "pro.fridgeScans": "Kühlschrank-Scans",

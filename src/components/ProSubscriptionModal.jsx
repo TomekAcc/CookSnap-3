@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
   // The amber wash behind this block is a separate layer (see heroWash).
   header: {
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8,
     paddingTop: 18,
     paddingBottom: 12,
     paddingHorizontal: 10,
@@ -639,7 +639,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 18,
   },
-  planRow: { flexDirection: "row", gap: 10, marginBottom: 20 },
+  planRow: { flexDirection: "row", gap: 10, marginBottom: 18 },
   planCard: {
     flex: 1,
     borderRadius: 16,
@@ -701,7 +701,7 @@ const styles = StyleSheet.create({
   // reads as vague rather than convincing. Swap in a REAL stat/rating here
   // if one exists — don't bring back an unverifiable one just to fill the
   // space back in.
-  benefitsList: { marginBottom: 16, gap: 2 },
+  benefitsList: { marginBottom: 14, gap: 2 },
   benefitRow: {
     flexDirection: "row",
     alignItems: "center",
