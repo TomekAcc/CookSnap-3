@@ -3,19 +3,20 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from
 import { Crown, Check, Sparkles, X, ChevronRight } from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
+import { useTheme } from "../context/ThemeContext";
 import StandardModal from "./StandardModal";
 
-const SLATE = "#0F172A";
-const SLATE_ROW = "#1E293B";
-const SLATE_BORDER = "#334155";
-const AMBER = "#F59E0B";
-const AMBER_LIGHT = "#FBBF24";
-// Matches ThemeContext's accentGreen / tokens.js's GREEN — the app's own
-// logo/success color, reused here so the benefit checklist's checkmarks
-// read as "included" without adding a 4th amber signal to the screen.
-const GREEN = "#10B981";
-const TEXT_PRIMARY = "#F8FAFC";
-const TEXT_MUTED = "#94A3B8";
+// Amber is a fixed accent (ThemeContext's accentAmber is the SAME hex in
+// both LIGHT_COLORS and DARK_COLORS), so its derived tints are safe as
+// literals rather than computed per-theme. Content placed ON TOP of a
+// filled amber surface (the CTA button, the save badge) always needs dark
+// text/icons for contrast — that's true regardless of which theme is
+// active, so ON_AMBER is also a fixed value, not a `colors.*` lookup.
+const AMBER_TINT_SOFT = "rgba(255,159,10,0.10)";
+const AMBER_TINT_BADGE = "rgba(255,159,10,0.14)";
+const AMBER_TINT_BADGE_BORDER = "rgba(255,159,10,0.35)";
+const AMBER_LIGHT_FILL = "#FFC877";
+const ON_AMBER = "#1D1D1F";
 
 // periodUnit/perMonthPrice drive translated display text at render time
 // (see PERIOD_SUFFIX_KEY below) — a plain "/year"/"/mo" literal here was a
@@ -80,9 +81,21 @@ const TRIAL_STEP_KEYS = [
 
 /**
  * PRO paywall — built directly on StandardModal (not StandardSmoothModal)
- * so the dark slate/amber luxury chrome isn't fighting the light-theme
- * default. Dismiss is backdrop-tap or the built-in drag gesture only, no
- * close-X, matching the rest of the app's sheet convention.
+ * for the same "sheet + fixed CTA footer" split every other full-height
+ * modal in the app uses. Previously hardcoded a one-off dark navy/amber
+ * "luxury" skin regardless of the user's actual theme setting — the ONLY
+ * screen in the app that did this, confirmed real complaint ("not sure
+ * about the colors... something feels off") that survived several rounds
+ * of spacing/color-balance fixes within that dark skin, because the real
+ * issue wasn't the balance, it was that this screen didn't match anything
+ * else in CookSnap. Now pulls from useTheme() like every other modal
+ * (RecipeDetailModal, etc.) — light or dark, it follows the same setting
+ * the rest of the app does instead of overriding it. Dismiss is
+ * backdrop-tap or the built-in drag gesture only, no close-X ambiguity —
+ * wait, there IS a close-X here (unlike RecipeDetailModal's sheets),
+ * kept from the original design since this is the one sheet where an
+ * accidental backdrop-tap dismiss of a purchase decision screen is worth
+ * guarding against with an explicit, deliberate close action.
  */
 export default function ProSubscriptionModal() {
   const { proModalOpen, setProModalOpen } = useModalState();
@@ -93,6 +106,7 @@ export default function ProSubscriptionModal() {
     freeDailyRecipeGenerations,
     t,
   } = useCookAI();
+  const { colors } = useTheme();
   const [selectedPlanId, setSelectedPlanId] = useState("annual");
   const close = () => setProModalOpen(false);
   const plan = PLANS[selectedPlanId];
@@ -141,16 +155,22 @@ export default function ProSubscriptionModal() {
     // forced height, the sheet now shrinks to fit short content and only
     // engages the scroll+fixed-footer split once content genuinely
     // exceeds maxHeight — both the original overflow fix and this gap fix
-    // hold at the same time.
+    // hold at the same time. No custom contentStyle background here
+    // anymore — StandardModal's own default (colors.card) matches every
+    // other sheet in the app.
     <StandardModal
       visible={!!proModalOpen}
       onClose={close}
       type="bottom-sheet"
       maxHeight={sheetHeight}
-      contentStyle={{ backgroundColor: SLATE, borderColor: SLATE_ROW }}
       dragZoneRightInset={60}
     >
-      <View style={[styles.grabHandle, { backgroundColor: "rgba(255,255,255,0.25)" }]} />
+      <View
+        style={[
+          styles.grabHandle,
+          { backgroundColor: colors.sheetHandle || colors.cardBorder },
+        ]}
+      />
 
       {/* Close X — consistent with RecipeDetailModal pattern */}
       <TouchableOpacity
@@ -159,9 +179,12 @@ export default function ProSubscriptionModal() {
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         accessibilityRole="button"
         accessibilityLabel="Close"
-        style={[styles.closeButton, { backgroundColor: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.15)" }]}
+        style={[
+          styles.closeButton,
+          { backgroundColor: colors.inputBg, borderColor: colors.cardBorder },
+        ]}
       >
-        <X size={16} color={TEXT_MUTED} strokeWidth={2.5} />
+        <X size={16} color={colors.textSecondary} strokeWidth={2.5} />
       </TouchableOpacity>
 
       {/* Confirmed real failure, reported directly by a user: on a
@@ -206,11 +229,20 @@ export default function ProSubscriptionModal() {
           contentContainerStyle={styles.scrollContent}
         >
         <View style={styles.header}>
-          <View style={styles.crownBadge}>
-            <Crown size={20} color={AMBER} fill={AMBER_LIGHT} />
+          <View
+            style={[
+              styles.crownBadge,
+              { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
+            ]}
+          >
+            <Crown size={20} color={colors.accentAmber} fill={AMBER_LIGHT_FILL} />
           </View>
-          <Text style={styles.title}>{t("pro.unlockTitle")}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>
+            {t("pro.unlockTitle")}
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            {subtitle}
+          </Text>
         </View>
 
         <View style={styles.planRow}>
@@ -224,13 +256,13 @@ export default function ProSubscriptionModal() {
                 style={[
                   styles.planCard,
                   {
-                    borderColor: selected ? AMBER : SLATE_BORDER,
-                    backgroundColor: selected ? "rgba(245,158,11,0.10)" : SLATE_ROW,
+                    borderColor: selected ? colors.accentAmber : colors.cardBorder,
+                    backgroundColor: selected ? AMBER_TINT_SOFT : colors.card,
                   },
                 ]}
               >
                 {p.badgeKey ? (
-                  <View style={styles.planBadge}>
+                  <View style={[styles.planBadge, { backgroundColor: colors.accentAmber }]}>
                     <Text style={styles.planBadgeText}>{t(p.badgeKey)}</Text>
                   </View>
                 ) : null}
@@ -244,28 +276,36 @@ export default function ProSubscriptionModal() {
                     never occupy the same space regardless of script,
                     direction, or how long the translated label is. */}
                 <View style={styles.planLabelRow}>
-                  <Text style={styles.planLabel}>{t(p.labelKey)}</Text>
+                  <Text style={[styles.planLabel, { color: colors.textSecondary }]}>
+                    {t(p.labelKey)}
+                  </Text>
                   <View
                     style={[
                       styles.radioOuter,
-                      { borderColor: selected ? AMBER : SLATE_BORDER },
+                      { borderColor: selected ? colors.accentAmber : colors.cardBorder },
                     ]}
                   >
-                    {selected ? <View style={styles.radioInner} /> : null}
+                    {selected ? (
+                      <View style={[styles.radioInner, { backgroundColor: colors.accentAmber }]} />
+                    ) : null}
                   </View>
                 </View>
                 <View style={styles.planPriceRow}>
-                  <Text style={styles.planPrice}>
+                  <Text style={[styles.planPrice, { color: colors.textPrimary }]}>
                     {p.price}
-                    <Text style={styles.planPeriod}>
+                    <Text style={[styles.planPeriod, { color: colors.textSecondary }]}>
                       {t(PERIOD_SUFFIX_KEY[p.periodUnit])}
                     </Text>
                   </Text>
                   {p.anchorPrice ? (
-                    <Text style={styles.planAnchorPrice}>{p.anchorPrice}</Text>
+                    <Text style={[styles.planAnchorPrice, { color: colors.textSecondary }]}>
+                      {p.anchorPrice}
+                    </Text>
                   ) : null}
                 </View>
-                <Text style={styles.planSub}>{t(p.perMonthKey)}</Text>
+                <Text style={[styles.planSub, { color: colors.textSecondary }]}>
+                  {t(p.perMonthKey)}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -277,25 +317,27 @@ export default function ProSubscriptionModal() {
             what you GET, with no "locked"/limit framing anywhere, no
             bordered card wrapper (floats straight on the sheet so there's
             one fewer box competing for attention), and its own green
-            accent (GREEN, matching the app's own logo/success color)
-            instead of reusing amber for yet another signal — amber here
-            was diluted across 8+ elements before being brought back down
-            to its 3 real focal points (badge, selected plan, CTA), and
-            this list deliberately doesn't become a 4th. */}
+            accent (colors.accentGreen, matching the app's own logo/success
+            color) instead of reusing amber for yet another signal — amber
+            here was diluted across 8+ elements before being brought back
+            down to its 3 real focal points (badge, selected plan, CTA),
+            and this list deliberately doesn't become a 4th. */}
         <View style={styles.benefitsList}>
           {PRO_BENEFIT_KEYS.map((key) => (
             <View key={key} style={styles.benefitRow}>
-              <View style={styles.benefitCheckCircle}>
-                <Check size={13} color={SLATE} strokeWidth={3.5} />
+              <View style={[styles.benefitCheckCircle, { backgroundColor: colors.accentGreen }]}>
+                <Check size={13} color="#FFFFFF" strokeWidth={3.5} />
               </View>
-              <Text style={styles.benefitText}>{t(key)}</Text>
+              <Text style={[styles.benefitText, { color: colors.textPrimary }]}>
+                {t(key)}
+              </Text>
             </View>
           ))}
         </View>
 
         {/* NOTE: placeholder copy on purpose — swap in a real usage stat or
             rating once one exists, don't ship a fabricated number here. */}
-        <Text style={styles.socialProof}>
+        <Text style={[styles.socialProof, { color: colors.textSecondary }]}>
           {t("pro.socialProof")}
         </Text>
         </ScrollView>
@@ -318,12 +360,12 @@ export default function ProSubscriptionModal() {
               {TRIAL_STEP_KEYS.map((key, i) => (
                 <View key={key} style={styles.trialStepRow}>
                   <View style={styles.trialStepIndicator}>
-                    <View style={styles.trialDot} />
+                    <View style={[styles.trialDot, { backgroundColor: colors.accentAmber }]} />
                     {i < TRIAL_STEP_KEYS.length - 1 ? (
-                      <View style={styles.trialLine} />
+                      <View style={[styles.trialLine, { backgroundColor: colors.cardBorder }]} />
                     ) : null}
                   </View>
-                  <Text style={styles.trialStepText}>
+                  <Text style={[styles.trialStepText, { color: colors.textPrimary }]}>
                     {key === "pro.trialDayCharge"
                       ? t(key, { price: plan.price, period: planPeriod })
                       : t(key)}
@@ -333,23 +375,27 @@ export default function ProSubscriptionModal() {
             </View>
           ) : (
             <View style={styles.guaranteeRow}>
-              <Check size={12} color={TEXT_MUTED} strokeWidth={3} />
-              <Text style={styles.guaranteeText}>
+              <Check size={12} color={colors.textSecondary} strokeWidth={3} />
+              <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
                 {t("pro.cancelAnytimeGuarantee")}
               </Text>
             </View>
           )}
-          <TouchableOpacity onPress={handleSubscribe} activeOpacity={0.88} style={styles.ctaButton}>
-            <Sparkles size={18} color="#0F172A" />
+          <TouchableOpacity
+            onPress={handleSubscribe}
+            activeOpacity={0.88}
+            style={[styles.ctaButton, { backgroundColor: colors.accentAmber }]}
+          >
+            <Sparkles size={18} color={ON_AMBER} />
             <Text style={styles.ctaButtonText}>
               {plan.trial
                 ? t("pro.startTrial")
                 : t("pro.subscribeCta", { price: plan.price, period: planPeriod })}
             </Text>
-            <ChevronRight size={18} color="#0F172A" />
+            <ChevronRight size={18} color={ON_AMBER} />
           </TouchableOpacity>
 
-          <Text style={styles.priceSubtext}>
+          <Text style={[styles.priceSubtext, { color: colors.textSecondary }]}>
             {plan.trial
               ? t("pro.thenPriceCancelAnytime", {
                   price: plan.price,
@@ -398,22 +444,18 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(245,158,11,0.14)",
     borderWidth: 1,
-    borderColor: "rgba(245,158,11,0.35)",
     marginBottom: 5,
   },
   title: {
     fontSize: 19,
     fontWeight: "800",
     letterSpacing: -0.4,
-    color: TEXT_PRIMARY,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 12,
     fontWeight: "500",
-    color: TEXT_MUTED,
     marginTop: 2,
     textAlign: "center",
   },
@@ -433,7 +475,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -9,
     left: 10,
-    backgroundColor: AMBER,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 20,
@@ -441,7 +482,7 @@ const styles = StyleSheet.create({
   planBadgeText: {
     fontSize: 9,
     fontWeight: "900",
-    color: "#0F172A",
+    color: ON_AMBER,
     letterSpacing: 0.3,
   },
   planLabelRow: {
@@ -450,20 +491,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 5,
   },
-  planLabel: { fontSize: 12, fontWeight: "700", color: TEXT_MUTED, flexShrink: 1 },
+  planLabel: { fontSize: 12, fontWeight: "700", flexShrink: 1 },
   // Side-by-side with the struck-through anchor price — gives the "SAVE
   // 58%" badge a concrete number to back it up instead of being an
   // abstract claim nothing on the card actually shows.
   planPriceRow: { flexDirection: "row", alignItems: "baseline", flexWrap: "wrap", columnGap: 6 },
-  planPrice: { fontSize: 19.5, fontWeight: "800", color: TEXT_PRIMARY },
+  planPrice: { fontSize: 19.5, fontWeight: "800" },
   planAnchorPrice: {
     fontSize: 11.5,
     fontWeight: "600",
-    color: TEXT_MUTED,
     textDecorationLine: "line-through",
   },
-  planPeriod: { fontSize: 12, fontWeight: "600", color: TEXT_MUTED },
-  planSub: { fontSize: 11, fontWeight: "500", color: TEXT_MUTED, marginTop: 3 },
+  planPeriod: { fontSize: 12, fontWeight: "600" },
+  planSub: { fontSize: 11, fontWeight: "500", marginTop: 3 },
   radioOuter: {
     flexShrink: 0,
     marginLeft: 6,
@@ -474,7 +514,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  radioInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: AMBER },
+  radioInner: { width: 10, height: 10, borderRadius: 5 },
   benefitsList: { marginBottom: 4 },
   benefitRow: {
     flexDirection: "row",
@@ -486,7 +526,6 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: GREEN,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -495,14 +534,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13.5,
     fontWeight: "600",
-    color: TEXT_PRIMARY,
     lineHeight: 18,
   },
   socialProof: {
     textAlign: "center",
     fontSize: 11,
     fontWeight: "600",
-    color: TEXT_MUTED,
     marginBottom: 3,
     lineHeight: 14,
   },
@@ -516,7 +553,7 @@ const styles = StyleSheet.create({
     gap: 5,
     marginBottom: 4,
   },
-  guaranteeText: { fontSize: 11, fontWeight: "600", color: TEXT_MUTED },
+  guaranteeText: { fontSize: 11, fontWeight: "600" },
   trialTimeline: { marginBottom: 6 },
   trialStepRow: { flexDirection: "row", alignItems: "flex-start" },
   trialStepIndicator: { width: 14, alignItems: "center" },
@@ -524,26 +561,22 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 3.5,
-    backgroundColor: AMBER,
     marginTop: 3,
   },
   trialLine: {
     width: 1.5,
     flex: 1,
     minHeight: 7,
-    backgroundColor: SLATE_BORDER,
     marginVertical: 1,
   },
   trialStepText: {
     flex: 1,
     fontSize: 11.5,
     fontWeight: "600",
-    color: TEXT_PRIMARY,
     marginLeft: 8,
     marginBottom: 3,
   },
   ctaButton: {
-    backgroundColor: AMBER,
     borderRadius: 14,
     minHeight: 44,
     paddingVertical: 9,
@@ -561,7 +594,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   ctaButtonText: {
-    color: "#0F172A",
+    color: ON_AMBER,
     fontSize: 15,
     fontWeight: "900",
     letterSpacing: -0.2,
@@ -574,7 +607,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 11,
     fontWeight: "600",
-    color: TEXT_MUTED,
     marginTop: 6,
   },
 });
