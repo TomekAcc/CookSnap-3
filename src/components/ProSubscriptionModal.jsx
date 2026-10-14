@@ -58,7 +58,10 @@ const PERIOD_SUFFIX_KEY = { year: "pro.yearSuffix", month: "pro.monthSuffix" };
 // Each key states what PRO actually gets you, not what the free tier
 // lacks; the underlying capabilities are unchanged from the old
 // COMPARISON_ROWS, just reframed as reasons to upgrade instead of a spec
-// sheet to parse.
+// sheet to parse. Each string starts with its own topic emoji (added at
+// the i18n layer, not here) — that emoji IS the row's visual marker now;
+// see benefitRow below for why the green check-circle that used to sit
+// next to it got removed rather than kept alongside it.
 const PRO_BENEFIT_KEYS = [
   "pro.benefitUnlimitedScans",
   "pro.benefitFiveRecipes",
@@ -83,18 +86,27 @@ const PRO_BENEFIT_KEYS = [
  * for the same "sheet + fixed CTA footer" split every other full-height
  * modal in the app uses. Previously hardcoded a one-off dark navy/amber
  * "luxury" skin regardless of the user's actual theme setting — the ONLY
- * screen in the app that did this, confirmed real complaint ("not sure
- * about the colors... something feels off") that survived several rounds
- * of spacing/color-balance fixes within that dark skin, because the real
- * issue wasn't the balance, it was that this screen didn't match anything
- * else in CookSnap. Now pulls from useTheme() like every other modal
- * (RecipeDetailModal, etc.) — light or dark, it follows the same setting
- * the rest of the app does instead of overriding it. Dismiss is
- * backdrop-tap or the built-in drag gesture only, no close-X ambiguity —
- * wait, there IS a close-X here (unlike RecipeDetailModal's sheets),
- * kept from the original design since this is the one sheet where an
- * accidental backdrop-tap dismiss of a purchase decision screen is worth
- * guarding against with an explicit, deliberate close action.
+ * screen in the app that did this; now pulls from useTheme() like every
+ * other modal. Dismiss is backdrop-tap or the built-in drag gesture, plus
+ * an explicit close-X — kept from the original design since this is the
+ * one sheet where an accidental backdrop-tap dismiss of a purchase
+ * decision is worth guarding against.
+ *
+ * Spacing philosophy, changed after repeated "overcrowded, things feel
+ * mixed up" feedback that survived several rounds of trimming individual
+ * margins down toward zero: this component used to treat "fits without
+ * ever scrolling" as a hard requirement, inherited from a real old bug
+ * where the CTA button could end up pushed off-screen and unreachable.
+ * That bug is now solved structurally and independently — the CTA lives
+ * outside the ScrollView in a fixed footer (see the View split below), so
+ * it's reachable no matter how tall the scrollable content above it gets.
+ * Once that's true, fighting to keep everything above it inside one
+ * screen with no scroll stops being a real constraint and becomes the
+ * thing CAUSING the crowding: every round of "make it fit" meant cutting
+ * margins toward zero instead of giving sections real room. Real premium
+ * paywalls (Calm, Headspace) commonly scroll — that's unremarkable to a
+ * user. Generous spacing now; a short scroll on a small phone/long
+ * language is an accepted, normal outcome, not a bug to engineer around.
  */
 export default function ProSubscriptionModal() {
   const { proModalOpen, setProModalOpen } = useModalState();
@@ -138,25 +150,11 @@ export default function ProSubscriptionModal() {
   };
 
   return (
-    // The default 75% sheet cap fit every row before the "Recipes per
-    // generation" comparison row was added — that pushed content past it,
-    // introducing a real scroll where there wasn't one, right where a
-    // paywall should feel like one clean, glanceable screen, not a list to
-    // scroll through. maxHeight is a generous explicit numeric cap (not a
-    // % of an already-constrained parent) so the inner `flex: 1` scroll
-    // region has real bounds to work with once content actually reaches
-    // that cap — but it's a CAP, not a forced size: contentStyle no longer
-    // sets an explicit `height` here (it used to, which forced the sheet
-    // to always BE maxHeight regardless of actual content — confirmed real
-    // bug, reported directly by a user: on a shorter language/plan
-    // combination the content didn't reach that height at all, leaving a
-    // large dead gap between the social-proof line and the CTA). Without a
-    // forced height, the sheet now shrinks to fit short content and only
-    // engages the scroll+fixed-footer split once content genuinely
-    // exceeds maxHeight — both the original overflow fix and this gap fix
-    // hold at the same time. No custom contentStyle background here
-    // anymore — StandardModal's own default (colors.card) matches every
-    // other sheet in the app.
+    // maxHeight is a generous cap (92% of screen), not a forced size — the
+    // sheet shrinks to fit short content and only scrolls once content
+    // genuinely exceeds it. See this component's own top comment for why
+    // hitting that cap and scrolling is now an accepted outcome rather
+    // than something fought with ever-smaller margins.
     <StandardModal
       visible={!!proModalOpen}
       onClose={close}
@@ -186,41 +184,23 @@ export default function ProSubscriptionModal() {
         <X size={16} color={colors.textSecondary} strokeWidth={2.5} />
       </TouchableOpacity>
 
-      {/* Confirmed real failure, reported directly by a user: on a
-          smaller phone (measured live at iPhone-SE-class 375×667) with a
-          longer language active (Polish, German), the comparison table
-          alone pushed content roughly 250px past the visible area — which
-          used to include the Subscribe button itself, since everything
-          from the header through the CTA lived inside one ScrollView.
-          That's a real, silent conversion loss: the one button this
-          screen exists to get tapped could require scrolling to even
-          find. A comparison table's height scales with row count AND
-          language length, so no amount of spacing-only tuning can
-          promise it always fits — the CTA needs to be structurally safe
-          from that, not just usually safe. Split into a ScrollView
-          (header/plans/comparison/social proof) plus a fixed section
-          below (unaffected by scroll position) for the CTA + price
-          subtext, mirroring OnboardingProScreen's identical, verified
-          fix.
-
-          maxHeight here, NOT flex: 1 — confirmed real regression from the
-          very next fix (the dead-space gap below): once StandardModal's
-          sheet stopped forcing an explicit `height` and switched to
-          content-based auto-sizing capped by `maxHeight`, this wrapper's
-          `flex: 1` sat inside a parent with no definite size. That's fine
-          in CSS/react-native-web (an unbounded flex:1 just behaves like
-          the child isn't flexing), but React Native's actual Yoga layout
-          engine is stricter: flex:1 with no bounded ancestor can resolve
-          to a height of 0, collapsing this whole wrapper — ScrollView AND
-          the CTA button both invisible, which is exactly what "the PRO
-          button doesn't open anything" looks like from the outside (the
-          modal WAS opening, just rendering at ~0 height). An explicit
-          maxHeight gives this wrapper its own genuine bound regardless of
-          the parent's resolved size, so ScrollView's flexShrink below
-          still has something real to shrink against once content exceeds
-          it. minHeight: 0 stays for the same reason as before — without
-          it a flex/shrink child in a column can refuse to shrink below
-          its content size on web. */}
+      {/* ScrollView (header/plans/benefits/social proof) + a fixed section
+          below (CTA + disclosure), unaffected by scroll position — see
+          this file's top comment for why a scroll here is fine now.
+          maxHeight on this wrapper (not flex: 1) still matters for a
+          different, structural reason: once StandardModal's sheet stopped
+          forcing an explicit `height` and switched to content-based
+          auto-sizing capped by `maxHeight`, a `flex: 1` wrapper here would
+          sit inside a parent with no definite size. That's harmless in
+          CSS/react-native-web, but React Native's real Yoga layout engine
+          is stricter — flex:1 with no bounded ancestor can resolve to 0
+          height, collapsing this whole wrapper (confirmed real
+          regression: "the PRO button doesn't open anything" turned out to
+          be the modal opening at ~0 height, not failing to open at all).
+          An explicit maxHeight gives this wrapper its own genuine bound
+          regardless of the parent's resolved size. minHeight: 0 stays for
+          the same reason as always — without it a flex/shrink child in a
+          column can refuse to shrink below its content size on web. */}
       <View style={{ maxHeight: sheetHeight, minHeight: 0 }}>
         <ScrollView
           style={{ flexShrink: 1 }}
@@ -234,7 +214,7 @@ export default function ProSubscriptionModal() {
               { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
             ]}
           >
-            <Crown size={20} color={colors.accentAmber} fill={AMBER_LIGHT_FILL} />
+            <Crown size={22} color={colors.accentAmber} fill={AMBER_LIGHT_FILL} />
           </View>
           <Text style={[styles.title, { color: colors.textPrimary }]}>
             {t("pro.unlockTitle")}
@@ -315,18 +295,15 @@ export default function ProSubscriptionModal() {
             reads as restrictive, not encouraging. Every line here states
             what you GET, with no "locked"/limit framing anywhere, no
             bordered card wrapper (floats straight on the sheet so there's
-            one fewer box competing for attention), and its own green
-            accent (colors.accentGreen, matching the app's own logo/success
-            color) instead of reusing amber for yet another signal — amber
-            here was diluted across 8+ elements before being brought back
-            down to its 3 real focal points (badge, selected plan, CTA),
-            and this list deliberately doesn't become a 4th. */}
+            one fewer box competing for attention). No green check-circle
+            icon here either anymore — each benefit string now carries its
+            own topic emoji (camera/plate/target/chart/calendar) added at
+            the i18n layer, and having both a circle AND an emoji on the
+            same short line was genuinely two icons doing one job,
+            confirmed by the user looking at a real screenshot. */}
         <View style={styles.benefitsList}>
           {PRO_BENEFIT_KEYS.map((key) => (
             <View key={key} style={styles.benefitRow}>
-              <View style={[styles.benefitCheckCircle, { backgroundColor: colors.accentGreen }]}>
-                <Check size={13} color="#FFFFFF" strokeWidth={3.5} />
-              </View>
               <Text style={[styles.benefitText, { color: colors.textPrimary }]}>
                 {t(key)}
               </Text>
@@ -341,19 +318,16 @@ export default function ProSubscriptionModal() {
         </Text>
         </ScrollView>
 
-        {/* Fixed, outside the ScrollView on purpose — see the comment
-            above this section's opening View for why.
-
-            One line, not a 3-step timeline (see the comment on the old
-            TRIAL_STEP_KEYS array above for why that version got cut) —
-            still swaps copy based on whether a trial is active, same
-            Bell-vs-Check icon distinction either way. */}
+        {/* Fixed, outside the ScrollView on purpose — see this file's top
+            comment for why. One line, not a 3-step timeline — still swaps
+            copy based on whether a trial is active, same Bell-vs-Check
+            icon distinction either way. */}
         <View style={styles.ctaSection}>
           <View style={styles.guaranteeRow}>
             {plan.trial ? (
-              <Bell size={12} color={colors.textSecondary} strokeWidth={2.5} />
+              <Bell size={13} color={colors.textSecondary} strokeWidth={2.5} />
             ) : (
-              <Check size={12} color={colors.textSecondary} strokeWidth={3} />
+              <Check size={13} color={colors.textSecondary} strokeWidth={3} />
             )}
             <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
               {plan.trial
@@ -416,40 +390,41 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     zIndex: 10,
   },
-  scrollContent: { paddingTop: 0, paddingBottom: 4 },
-  header: { alignItems: "center", marginBottom: 10 },
+  scrollContent: { paddingTop: 2, paddingBottom: 6 },
+  header: { alignItems: "center", marginBottom: 22 },
   crownBadge: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    marginBottom: 5,
+    marginBottom: 12,
   },
   title: {
-    fontSize: 19,
+    fontSize: 21,
     fontWeight: "800",
     letterSpacing: -0.4,
     textAlign: "center",
+    lineHeight: 26,
   },
   subtitle: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "500",
-    marginTop: 2,
+    marginTop: 8,
     textAlign: "center",
+    lineHeight: 18,
   },
-  planRow: { flexDirection: "row", gap: 9, marginBottom: 4 },
+  planRow: { flexDirection: "row", gap: 10, marginBottom: 24 },
   planCard: {
     flex: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1.5,
-    padding: 9,
-    // Was 10 — too close to the badge-bearing card's "SAVE 58%" pill,
-    // which straddles the card's top border (top: -9 below) and left
-    // almost no clearance before the "Roczna" label underneath it.
-    // Confirmed real complaint, visible on a real device.
-    paddingTop: 15,
+    padding: 14,
+    // Needs real clearance from the badge-bearing card's "SAVE 58%" pill,
+    // which straddles the card's top border (top: -9 below) — confirmed
+    // real complaint when this was too tight, visible on a real device.
+    paddingTop: 22,
   },
   planBadge: {
     position: "absolute",
@@ -469,75 +444,62 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 5,
+    marginBottom: 8,
   },
-  planLabel: { fontSize: 12, fontWeight: "700", flexShrink: 1 },
+  planLabel: { fontSize: 12.5, fontWeight: "700", flexShrink: 1 },
   // Side-by-side with the struck-through anchor price — gives the "SAVE
   // 58%" badge a concrete number to back it up instead of being an
   // abstract claim nothing on the card actually shows.
   planPriceRow: { flexDirection: "row", alignItems: "baseline", flexWrap: "wrap", columnGap: 6 },
-  planPrice: { fontSize: 19.5, fontWeight: "800" },
+  planPrice: { fontSize: 21, fontWeight: "800" },
   planAnchorPrice: {
-    fontSize: 11.5,
+    fontSize: 12,
     fontWeight: "600",
     textDecorationLine: "line-through",
   },
-  planPeriod: { fontSize: 12, fontWeight: "600" },
-  planSub: { fontSize: 11, fontWeight: "500", marginTop: 3 },
+  planPeriod: { fontSize: 12.5, fontWeight: "600" },
+  planSub: { fontSize: 11.5, fontWeight: "500", marginTop: 5 },
   radioOuter: {
     flexShrink: 0,
     marginLeft: 6,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 19,
+    height: 19,
+    borderRadius: 9.5,
     borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",
   },
-  radioInner: { width: 10, height: 10, borderRadius: 5 },
-  benefitsList: { marginBottom: 4 },
+  radioInner: { width: 11, height: 11, borderRadius: 5.5 },
+  benefitsList: { marginBottom: 20, gap: 4 },
   benefitRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingVertical: 4,
-  },
-  benefitCheckCircle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
+    paddingVertical: 7,
   },
   benefitText: {
-    flex: 1,
-    fontSize: 13.5,
+    fontSize: 14.5,
     fontWeight: "600",
-    lineHeight: 18,
+    lineHeight: 21,
   },
   socialProof: {
     textAlign: "center",
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "600",
-    marginBottom: 3,
-    lineHeight: 14,
+    lineHeight: 16,
   },
   ctaSection: {
-    paddingTop: 1,
+    paddingTop: 16,
   },
   guaranteeRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 5,
-    marginBottom: 4,
+    gap: 6,
+    marginBottom: 10,
   },
-  guaranteeText: { fontSize: 11, fontWeight: "600" },
+  guaranteeText: { fontSize: 12, fontWeight: "600" },
   ctaButton: {
-    borderRadius: 14,
-    minHeight: 44,
-    paddingVertical: 9,
+    borderRadius: 16,
+    minHeight: 50,
+    paddingVertical: 13,
     // Confirmed real failure, reported by a first-time tester: no
     // horizontal padding here meant a long translated CTA (e.g. German's
     // "7-tägige kostenlose Testphase starten") had nothing keeping it off
@@ -545,15 +507,15 @@ const styles = StyleSheet.create({
     // lets a Text sibling in a flex row overflow its container instead of
     // wrapping — so long strings could visually run past/into the corners
     // rather than dropping to a second line.
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
+    gap: 7,
   },
   ctaButtonText: {
     color: ON_AMBER,
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "900",
     letterSpacing: -0.2,
     textAlign: "center",
@@ -563,8 +525,8 @@ const styles = StyleSheet.create({
   },
   priceSubtext: {
     textAlign: "center",
-    fontSize: 11,
+    fontSize: 11.5,
     fontWeight: "600",
-    marginTop: 6,
+    marginTop: 10,
   },
 });
