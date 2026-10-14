@@ -104,6 +104,36 @@ export default function PantryScannerHero({ onManualAdd }) {
   const rawScanStage = resolveScanStage(hasPantryScanned, isPantryScanning);
   const [holdingAtComplete, setHoldingAtComplete] = useState(false);
   const completionHandledRef = useRef(false);
+  // Confirmed real failure, caught via live instrumentation: the OLD code
+  // called setHoldingAtComplete(true) from inside the useEffect below, in
+  // response to rawScanStage becoming "completed". That leaves exactly one
+  // render in between — rawScanStage has already flipped, but
+  // holdingAtComplete's effect-driven update hasn't landed yet — where
+  // `scanStage` (derived from both) reads "completed" a full hold-duration
+  // too early. That one stray render was enough for the shrink/reveal
+  // effect further down to fire its completion branch prematurely (marking
+  // shrinkStartedRef "started" and kicking off the badge/button reveal
+  // spring), only for the VERY NEXT render — once holdingAtComplete's real
+  // update landed — to revert scanStage back to "scanning" and hard-reset
+  // those same Animated.Values via the scanning branch, interrupting the
+  // spring mid-flight. Because shrinkStartedRef was already consumed, the
+  // real completion 500ms later never restarted it, leaving the badge
+  // permanently stuck invisible — confirmed via a direct trace showing the
+  // spring's own callback reporting `finished: false` at ~0.1% progress.
+  //
+  // Fixed with React's documented "adjust state during render" pattern:
+  // comparing against the previous rawScanStage and calling
+  // setHoldingAtComplete synchronously in the render body (not inside an
+  // effect) folds the correction into the SAME commit, so scanStage can
+  // never be derived as "completed" early — the flicker, and the stuck
+  // animation it caused, can't happen.
+  const prevRawScanStageRef = useRef(rawScanStage);
+  if (prevRawScanStageRef.current !== rawScanStage) {
+    prevRawScanStageRef.current = rawScanStage;
+    if (rawScanStage === "completed" && !holdingAtComplete) {
+      setHoldingAtComplete(true);
+    }
+  }
   const scanStage = holdingAtComplete ? "scanning" : rawScanStage;
   // Confirmed real failure, caught while testing the persistence fix
   // itself: leaving the Pantry tab AFTER a scan finished, then coming
@@ -158,8 +188,10 @@ export default function PantryScannerHero({ onManualAdd }) {
       return undefined;
     }
 
-    setHoldingAtComplete(true);
-
+    // holdingAtComplete is already true by now — set synchronously during
+    // render (see the comment above prevRawScanStageRef) the instant
+    // rawScanStage became "completed", not here. This effect only owns the
+    // actual fill animation + hold timer + eventual release.
     let cancelled = false;
     Animated.timing(progressBarAnim, {
       toValue: 1,
@@ -588,6 +620,18 @@ export default function PantryScannerHero({ onManualAdd }) {
                   alignItems: "center",
                   borderWidth: 1,
                   borderColor: "rgba(226, 232, 240, 0.95)",
+                  // Same fade/rise as the "X items found" badge above it —
+                  // it already uses badgeOpacity/badgeTranslate, but this
+                  // button and the close button below were still plain,
+                  // un-animated elements that snapped into existence on the
+                  // exact frame the scan completed, while the badge right
+                  // next to them was fading in smoothly — a mismatch that
+                  // read as the whole completion moment feeling instant.
+                  // Only rendered when scanStage === "completed" (never
+                  // during "scanning"), so reusing badgeOpacity here can't
+                  // hide it at a time it's supposed to be visible.
+                  opacity: badgeOpacity,
+                  transform: [{ translateY: badgeTranslate }],
                 }}
               >
                 <Text
@@ -609,6 +653,10 @@ export default function PantryScannerHero({ onManualAdd }) {
                 corner="left"
                 onPress={resetPantryPhoto}
                 accessibilityLabel={t("a11y.dismissPantryPhoto")}
+                // Same reasoning as the Scan More button just above — only
+                // rendered in the "completed" branch, so this can't hide it
+                // during scanning.
+                style={{ opacity: badgeOpacity, transform: [{ translateY: badgeTranslate }] }}
               />
             ) : null}
           </Animated.View>

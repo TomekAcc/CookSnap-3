@@ -133,6 +133,38 @@ export default function FridgeScannerHero() {
   const rawScanStage = resolveScanStage(hasScanned, isScanning);
   const [holdingAtComplete, setHoldingAtComplete] = useState(false);
   const completionHandledRef = useRef(false);
+  // Confirmed real failure, caught via live instrumentation on
+  // PantryScannerHero's identical setup (same bug here, same fix):
+  // setHoldingAtComplete(true) used to be called from inside the
+  // fill-to-100% effect below, in response to rawScanStage becoming
+  // "completed". That leaves exactly one render in between — rawScanStage
+  // has already flipped, but holdingAtComplete's effect-driven update
+  // hasn't landed yet — where `scanStage` (derived from both) reads
+  // "completed" a full hold-duration too early. That one stray render was
+  // enough for the shrink/reveal effect further down to fire its
+  // completion branch prematurely (marking shrinkStartedRef "started" and
+  // kicking off the badge/ingredients reveal spring), only for the VERY
+  // NEXT render — once holdingAtComplete's real update landed — to revert
+  // scanStage back to "scanning" and hard-reset those same Animated.Values
+  // via the scanning branch, interrupting the spring mid-flight. Because
+  // shrinkStartedRef was already consumed, the real completion 500ms later
+  // never restarted it, leaving the reveal permanently stuck — confirmed on
+  // Pantry via a direct trace showing the spring's own callback reporting
+  // `finished: false` at ~0.1% progress, never recovering.
+  //
+  // Fixed with React's documented "adjust state during render" pattern:
+  // comparing against the previous rawScanStage and calling
+  // setHoldingAtComplete synchronously in the render body (not inside an
+  // effect) folds the correction into the SAME commit, so scanStage can
+  // never be derived as "completed" early — the flicker, and the stuck
+  // animation it caused, can't happen.
+  const prevRawScanStageRef = useRef(rawScanStage);
+  if (prevRawScanStageRef.current !== rawScanStage) {
+    prevRawScanStageRef.current = rawScanStage;
+    if (rawScanStage === "completed" && !holdingAtComplete) {
+      setHoldingAtComplete(true);
+    }
+  }
   const scanStage = holdingAtComplete ? "scanning" : rawScanStage;
   // Confirmed real failure, found while verifying the identical fix on
   // PantryScannerHero: leaving this tab AFTER a scan finished, then coming
@@ -242,8 +274,10 @@ export default function FridgeScannerHero() {
       return undefined;
     }
 
-    setHoldingAtComplete(true);
-
+    // holdingAtComplete is already true by now — set synchronously during
+    // render (see the comment above prevRawScanStageRef) the instant
+    // rawScanStage became "completed", not here. This effect only owns the
+    // actual fill animation + hold timer + eventual release.
     let cancelled = false;
     Animated.timing(progressBarAnim, {
       toValue: 1,
@@ -976,7 +1010,18 @@ export default function FridgeScannerHero() {
                 // important confirmation on this screen — so it gets a
                 // solid brand-green badge with real weight, not a quiet
                 // translucent chip that reads the same as any other label.
-                <View
+                //
+                // Fades/rises in with the same ingredientsOpacity/
+                // ingredientsTranslate values driving the ingredient-pill
+                // card below, instead of popping in instantly. Confirmed
+                // real complaint: this badge used to be a plain View with
+                // no animation at all, so it snapped into existence on the
+                // exact same frame the photo was mid-shrink — while the
+                // ingredient list beneath it was already fading in smoothly
+                // — and that mismatch is what read as "instant/too fast"
+                // right after a scan, even though the actual shrink/reveal
+                // motion itself takes a few hundred ms.
+                <Animated.View
                   style={{
                     position: "absolute",
                     bottom: 12,
@@ -989,6 +1034,8 @@ export default function FridgeScannerHero() {
                     flexDirection: "row",
                     alignItems: "center",
                     maxWidth: "60%",
+                    opacity: ingredientsOpacity,
+                    transform: [{ translateY: ingredientsTranslate }],
                   }}
                 >
                   <CheckCircle2 size={12} color="#FFFFFF" />
@@ -1009,7 +1056,7 @@ export default function FridgeScannerHero() {
                           fallback: "scanner.itemsFoundOther",
                         })}
                   </Text>
-                </View>
+                </Animated.View>
               ) : null}
 
               {scanStage === "completed" ? (
@@ -1031,6 +1078,12 @@ export default function FridgeScannerHero() {
                     alignItems: "center",
                     borderWidth: 1,
                     borderColor: "rgba(226, 232, 240, 0.95)",
+                    // Same fade/rise as the badge above — see its comment.
+                    // TouchableOpacity renders its own Animated.View under
+                    // the hood, so an Animated.Value here animates exactly
+                    // like it would on a plain Animated.View.
+                    opacity: ingredientsOpacity,
+                    transform: [{ translateY: ingredientsTranslate }],
                   }}
                 >
                   <Text
