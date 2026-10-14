@@ -25,6 +25,10 @@ export const PLANS = {
     labelKey: "pro.annual",
     badgeKey: "pro.saveBadge",
     price: "$24.99",
+    // What the same $4.99/mo would cost paid monthly for a year ($59.88) —
+    // shown struck through next to the real price so "SAVE 58%" has a
+    // concrete number behind it instead of being an abstract badge claim.
+    anchorPrice: "$59.88",
     periodUnit: "year",
     perMonthKey: "pro.annualPerMonth",
     perMonthPrice: "$2.08",
@@ -230,12 +234,17 @@ export default function ProSubscriptionModal() {
                     {selected ? <View style={styles.radioInner} /> : null}
                   </View>
                 </View>
-                <Text style={styles.planPrice}>
-                  {p.price}
-                  <Text style={styles.planPeriod}>
-                    {t(PERIOD_SUFFIX_KEY[p.periodUnit])}
+                <View style={styles.planPriceRow}>
+                  <Text style={styles.planPrice}>
+                    {p.price}
+                    <Text style={styles.planPeriod}>
+                      {t(PERIOD_SUFFIX_KEY[p.periodUnit])}
+                    </Text>
                   </Text>
-                </Text>
+                  {p.anchorPrice ? (
+                    <Text style={styles.planAnchorPrice}>{p.anchorPrice}</Text>
+                  ) : null}
+                </View>
                 <Text style={styles.planSub}>{t(p.perMonthKey)}</Text>
               </TouchableOpacity>
             );
@@ -283,11 +292,26 @@ export default function ProSubscriptionModal() {
         </ScrollView>
 
         {/* Fixed, outside the ScrollView on purpose — see the comment
-            above this section's opening View for why. guaranteeRow was
-            dropped entirely rather than moved here: its "cancel anytime"
-            message is already covered by priceSubtext directly below,
-            same redundancy fixed in OnboardingProScreen. */}
+            above this section's opening View for why.
+
+            guaranteeRow (this cancelAnytimeGuarantee line) was previously
+            dropped as redundant with priceSubtext below. Re-added, placed
+            BEFORE the button instead: priceSubtext is the required full
+            disclosure (price, period, per-month breakdown) read AFTER
+            deciding, while this is the one-line reassurance that actually
+            needs to land BEFORE the tap — burying "cancel anytime" in
+            11px text after the CTA means it can only ever reduce buyer's
+            remorse, never actually influence the decision itself. The two
+            aren't true duplicates: this one carries zero pricing detail on
+            purpose, it's pure risk-reversal, so showing both isn't
+            repeating the same information twice. */}
         <View style={styles.ctaSection}>
+          <View style={styles.guaranteeRow}>
+            <Check size={12} color={TEXT_MUTED} strokeWidth={3} />
+            <Text style={styles.guaranteeText}>
+              {t("pro.cancelAnytimeGuarantee")}
+            </Text>
+          </View>
           <TouchableOpacity onPress={handleSubscribe} activeOpacity={0.88} style={styles.ctaButton}>
             <Sparkles size={18} color="#0F172A" />
             <Text style={styles.ctaButtonText}>
@@ -339,17 +363,17 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   scrollContent: { paddingTop: 0, paddingBottom: 4 },
-  header: { alignItems: "center", marginBottom: 7 },
+  header: { alignItems: "center", marginBottom: 5 },
   crownBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(245,158,11,0.14)",
     borderWidth: 1,
     borderColor: "rgba(245,158,11,0.35)",
-    marginBottom: 7,
+    marginBottom: 5,
   },
   title: {
     fontSize: 19,
@@ -362,7 +386,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
     color: TEXT_MUTED,
-    marginTop: 4,
+    marginTop: 2,
     textAlign: "center",
   },
   planRow: { flexDirection: "row", gap: 9, marginBottom: 6 },
@@ -371,7 +395,11 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1.5,
     padding: 9,
-    paddingTop: 10,
+    // Was 10 — too close to the badge-bearing card's "SAVE 58%" pill,
+    // which straddles the card's top border (top: -9 below) and left
+    // almost no clearance before the "Roczna" label underneath it.
+    // Confirmed real complaint, visible on a real device.
+    paddingTop: 15,
   },
   planBadge: {
     position: "absolute",
@@ -395,7 +423,17 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   planLabel: { fontSize: 12, fontWeight: "700", color: TEXT_MUTED, flexShrink: 1 },
+  // Side-by-side with the struck-through anchor price — gives the "SAVE
+  // 58%" badge a concrete number to back it up instead of being an
+  // abstract claim nothing on the card actually shows.
+  planPriceRow: { flexDirection: "row", alignItems: "baseline", flexWrap: "wrap", columnGap: 6 },
   planPrice: { fontSize: 19.5, fontWeight: "800", color: TEXT_PRIMARY },
+  planAnchorPrice: {
+    fontSize: 11.5,
+    fontWeight: "600",
+    color: TEXT_MUTED,
+    textDecorationLine: "line-through",
+  },
   planPeriod: { fontSize: 12, fontWeight: "600", color: TEXT_MUTED },
   planSub: { fontSize: 11, fontWeight: "500", color: TEXT_MUTED, marginTop: 3 },
   radioOuter: {
@@ -415,7 +453,7 @@ const styles = StyleSheet.create({
     borderColor: SLATE_BORDER,
     backgroundColor: SLATE_ROW,
     paddingHorizontal: 13,
-    marginBottom: 6,
+    marginBottom: 4,
     overflow: "hidden",
   },
   compareHeaderRow: {
@@ -452,13 +490,21 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   ctaSection: {
-    paddingTop: 6,
+    paddingTop: 3,
   },
+  guaranteeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    marginBottom: 4,
+  },
+  guaranteeText: { fontSize: 11, fontWeight: "600", color: TEXT_MUTED },
   ctaButton: {
     backgroundColor: AMBER,
     borderRadius: 14,
-    minHeight: 50,
-    paddingVertical: 12,
+    minHeight: 46,
+    paddingVertical: 10,
     // Confirmed real failure, reported by a first-time tester: no
     // horizontal padding here meant a long translated CTA (e.g. German's
     // "7-tägige kostenlose Testphase starten") had nothing keeping it off
@@ -487,6 +533,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "600",
     color: TEXT_MUTED,
-    marginTop: 8,
+    marginTop: 6,
   },
 });
