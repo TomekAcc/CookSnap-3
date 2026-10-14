@@ -1848,6 +1848,11 @@ function looksLikeInstructionNotIngredient(entry) {
   if (!trimmed) return true;
   if (/\.\s*$/.test(trimmed)) return true;
   if (/\bpreheat\b|\bthe oven\b|\bdegrees\b/i.test(trimmed)) return true;
+  // Language-independent: no ingredient carries an oven temperature —
+  // confirmed live, a Polish batch listed "Rozgrzej piekarnik do 200°C"
+  // (preheat the oven to 200°C) as an ingredient, which the English-only
+  // checks above can't recognise.
+  if (/\d{2,3}\s*°\s*[CF]?\b/.test(trimmed)) return true;
   if (trimmed.split(/\s+/).length > 10) return true;
   return false;
 }
@@ -2018,6 +2023,166 @@ function buildCandidateUrls(apiKey) {
 // fridge/pantry scanner in geminiVision.js). gemini-flash-lite-latest is
 // deliberately absent from this set for that reason.
 const THINKING_CAPABLE_RECIPE_MODELS = new Set(["gemini-flash-latest"]);
+
+/**
+ * RECIPE QA PASS (generate -> verify -> repair) — a second, much narrower
+ * model call that reads the freshly generated batch the way an editor
+ * would and fixes the specific mistakes prompt wording alone could not make
+ * go away. Real tester feedback and live measurement (see commit history)
+ * showed the generator still sometimes (a) finishes raw meat/fish with only
+ * "until cooked", (b) writes "boil in salted water" with no amount, and
+ * (c) pairs ingredients no home cook would — and the code-level checkers
+ * above can only read English, so for the other 30 languages nothing
+ * stood between those slips and the user. An editor call works in every
+ * language and returns language-independent verdicts.
+ *
+ * Contract: never throws, never blocks the batch. On any failure (timeout,
+ * HTTP error, bad JSON, an edit that fails validation) the recipe goes
+ * through exactly as generated. Edits are small and validated: step/ingredient
+ * counts stay sane, and the unit system is never mixed. "reject" removes a
+ * recipe so the existing top-up machinery regenerates a replacement.
+ * EXPO_PUBLIC_RECIPE_QA=0 turns the whole pass off.
+ */
+const RECIPE_QA_ENABLED = process.env.EXPO_PUBLIC_RECIPE_QA !== "0";
+const RECIPE_QA_MODEL = "gemini-flash-lite-latest";
+const RECIPE_QA_TIMEOUT_MS = 12000;
+const RECIPE_QA_MAX_REJECTS = 2;
+
+export const RECIPE_QA_SYSTEM_PROMPT = `
+You are a meticulous recipe editor. AI-written recipes reach paying users only after you check them. You receive a JSON array of recipes (id, title, ingredientsList, steps), the recipe LANGUAGE, the UNIT SYSTEM, the user's AVAILABLE INVENTORY and any DIET restrictions. Check every recipe against ALL rules below and fix each violation with the smallest possible edit. Never rewrite a recipe that already complies.
+
+RULES
+1. DONENESS: every step that finishes cooking RAW meat, poultry, fish or seafood must give a checkable doneness cue — an internal temperature (poultry and ground meat 74°C / 165°F; other whole meat, fish and seafood 63°C / 145°F — use ONLY the UNIT SYSTEM's unit) and/or a visual cue (no pink remains inside, juices run clear, fish is opaque and flakes easily). "Until cooked", "until browned" or a time on its own is NOT enough: add the cue to that step. Canned, smoked, cured or already-cooked protein (canned tuna, ham, deli slices, cooked sausage) is not raw: it needs no cue, and a step that "cooks it through" should just warm it.
+2. SALT IN WATER: a step that salts cooking water (pasta, rice, potatoes, vegetables, eggs) must say how much salt for how much water — about 10 g per litre (US units: 1 tablespoon per 2 quarts). "Salted water" on its own is a violation: add the amount and the water volume.
+3. COMPLETE INGREDIENT LIST: every ingredient a step uses — including oil, butter, salt, pepper, spices, herbs, sugar and cooking water or stock — must appear in ingredientsList with an amount, in the same "<amount> <name> <emoji>" format and language as the other entries. Add what is missing. Amounts must add up: the salt entry covers all the salt the steps use (water salt included). An entry that is an instruction (e.g. "preheat the oven to 200°C") is not an ingredient: remove it.
+4. ONLY WHAT THE USER HAS: every ingredient must come from the AVAILABLE INVENTORY (water is always available). If a recipe uses something that is not available, remove it from ingredientsList and from every step; if the dish cannot work without it, verdict "reject". Never add anything that breaks a DIET restriction.
+5. A COMPLETE, WORKING METHOD: the steps must really make the dish in the title. Every ingredient in the list is used in a step. Raw potatoes, rice, pasta and dough are actually cooked before serving. A bake, gratin or casserole has an oven step with a temperature and a time. A stuffed dish is actually stuffed. No step is cut off mid-sentence. Fix gaps by completing or extending an existing step (never more than 5 steps in total); if small edits cannot fix it, verdict "reject".
+6. CLASSIC DISH: every recipe must be a recognizable, tried-and-tested dish a home cook would make. Odd pairings are a violation — a condiment that does not belong (e.g. Worcestershire sauce in a creamy tuna sauce), cream or sauce poured over a raw-vegetable "salad", black pepper or other savory seasoning in a sweet dish (jam, desserts, sweet pancakes), sweet-and-savory clashes. First try removing the odd ingredient from ingredientsList AND every step that mentions it, if the dish is still a complete classic without it. If it is fundamentally not a real dish, verdict "reject".
+7. Change nothing else. Keep the recipe's language, wording, units, capitalization conventions (German nouns capitalized; other ingredient names lowercase) and step style. Steps stay 3-5 complete sentences ending with a period. Never translate, shorten or restyle what is already correct.
+
+OUTPUT: a raw JSON array with one object per input recipe, same order: {"id": <same id>, "verdict": "ok" | "fixed" | "reject", "steps": [...] (only when changed — the complete corrected array), "ingredientsList": [...] (only when changed — the complete corrected array), "reason": "<= 12 words, English"}. For a compliant recipe return just {"id", "verdict": "ok"}.
+`.trim();
+
+function isSaneQaEdit(original, edited, unitSystem) {
+  if (!Array.isArray(edited) || edited.length === 0) return false;
+  if (!edited.every((x) => typeof x === "string" && x.trim().length >= 8 && x.length <= 600)) {
+    return false;
+  }
+  if (
+    edited.length < Math.max(STEP_COUNT_MIN, original.length - 1) ||
+    edited.length > Math.min(STEP_COUNT_MAX, original.length + 1)
+  ) {
+    return false;
+  }
+  const text = edited.join(" ");
+  if (unitSystem === "metric" && /°\s*F\b/.test(text)) return false;
+  if (unitSystem !== "metric" && /°\s*C\b/.test(text)) return false;
+  return true;
+}
+
+export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
+  const {
+    apiKey,
+    language = "English",
+    unitSystem = "us",
+    inventoryText = "",
+    dietText = "",
+    model = RECIPE_QA_MODEL,
+    thinkingBudget = 0,
+  } = options;
+  if (!RECIPE_QA_ENABLED || !apiKey) return rawRecipes;
+  if (!Array.isArray(rawRecipes) || rawRecipes.length === 0) return rawRecipes;
+
+  const payload = rawRecipes.map((r, i) => ({
+    id: i + 1,
+    title: r?.title,
+    ingredientsList: Array.isArray(r?.ingredientsList) ? r.ingredientsList : [],
+    steps: Array.isArray(r?.steps) ? r.steps : [],
+  }));
+
+  try {
+    const generationConfig = { temperature: 0, responseMimeType: "application/json" };
+    if (THINKING_CAPABLE_RECIPE_MODELS.has(model)) {
+      generationConfig.thinkingConfig = { thinkingBudget };
+    }
+    const response = await fetchWithTimeout(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: RECIPE_QA_SYSTEM_PROMPT }] },
+          contents: [
+            {
+              parts: [
+                {
+                  text: `LANGUAGE: ${language}\nUNIT SYSTEM: ${unitSystem === "metric" ? "metric (Celsius, grams, ml)" : "US customary (Fahrenheit, cups, tbsp)"}\nAVAILABLE INVENTORY: ${inventoryText || "not provided — skip rule 4"}\nDIET: ${dietText || "none"}\n\nRECIPES:\n${JSON.stringify(payload)}`,
+                },
+              ],
+            },
+          ],
+          generationConfig,
+        }),
+      },
+      RECIPE_QA_TIMEOUT_MS
+    );
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    text = text.replace(/```json/gi, "").replace(/```/g, "").trim();
+    const verdicts = JSON.parse(text);
+    if (!Array.isArray(verdicts)) throw new Error("not an array");
+
+    let fixed = 0;
+    let rejected = 0;
+    const result = [];
+    rawRecipes.forEach((recipe, i) => {
+      const v = verdicts.find((x) => Number(x?.id) === i + 1);
+      if (!v || v.verdict === "ok" || !recipe) {
+        result.push(recipe);
+        return;
+      }
+      if (v.verdict === "reject") {
+        if (rejected < RECIPE_QA_MAX_REJECTS) {
+          rejected += 1;
+          console.log(`[Cook AI] Recipe QA rejected "${recipe.title}": ${v.reason || "no reason given"}`);
+          return;
+        }
+        result.push(recipe);
+        return;
+      }
+      if (v.verdict === "fixed") {
+        const next = { ...recipe };
+        let changed = false;
+        if (v.steps !== undefined && isSaneQaEdit(payload[i].steps, v.steps, unitSystem)) {
+          next.steps = v.steps;
+          changed = true;
+        }
+        if (
+          v.ingredientsList !== undefined &&
+          Array.isArray(v.ingredientsList) &&
+          v.ingredientsList.length >= Math.max(1, payload[i].ingredientsList.length - 2) &&
+          v.ingredientsList.length <= payload[i].ingredientsList.length + 6 &&
+          v.ingredientsList.every((x) => typeof x === "string" && x.trim().length > 0)
+        ) {
+          next.ingredientsList = v.ingredientsList;
+          changed = true;
+        }
+        if (changed) fixed += 1;
+        result.push(next);
+        return;
+      }
+      result.push(recipe);
+    });
+    if (fixed || rejected) {
+      console.log(`[Cook AI] Recipe QA: fixed ${fixed}, rejected ${rejected} of ${rawRecipes.length}.`);
+    }
+    return result;
+  } catch (err) {
+    console.warn(`[Cook AI] Recipe QA skipped (${err?.message}) — using the batch as generated.`);
+    return rawRecipes;
+  }
+}
 
 /**
  * Build 5 tailored fallback recipes from detected fridge + pantry items.
@@ -2415,6 +2580,17 @@ export async function generateRecipesWithGemini(
     .filter(Boolean)
     .join(", ");
 
+  // Plain-language diet summary for the QA editor (rule 4) — names of the
+  // active restrictions plus any user-typed exclusions.
+  const qaDietText = [
+    ...FULL_DIETARY_OPTIONS.filter((d) => dietaryRestrictions && dietaryRestrictions[d.id]).map(
+      (d) => d.name
+    ),
+    ...(Array.isArray(dietaryRestrictions?.customAvoid) && dietaryRestrictions.customAvoid.length
+      ? [`no ${dietaryRestrictions.customAvoid.join(", ")}`]
+      : []),
+  ].join("; ");
+
   const buildPromptTextFor = (count, excludeForCall, usedDishTypesForCall = []) =>
     `${GEMINI_RECIPE_SYSTEM_PROMPT.trim()}\n\n${buildPrompt(
       fridgeList,
@@ -2479,11 +2655,22 @@ export async function generateRecipesWithGemini(
     const data = await response.json();
     let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
     rawText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
+    let parsed;
     try {
-      return JSON.parse(rawText);
+      parsed = JSON.parse(rawText);
     } catch {
       throw new GeminiRecipeError("Failed to process the AI response.");
     }
+    // Editor pass (see reviewRecipesWithGemini) — fixes missing doneness
+    // cues, unmeasured salted water and odd pairings in ANY language before
+    // the code-level checkers below decide what survives. Never throws.
+    return reviewRecipesWithGemini(parsed, {
+      apiKey,
+      language,
+      unitSystem,
+      inventoryText: `${fridgeList}${pantryListText ? `, ${pantryListText}` : ""}`,
+      dietText: qaDietText,
+    });
   }
 
   // Runs every code-level safety net (dishType diversity, cut/technique
