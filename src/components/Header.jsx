@@ -1,6 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Crown } from "lucide-react-native";
 import { useTheme } from "../context/ThemeContext";
+import { useModalState } from "../context/ModalContext";
+import { useCookAI } from "../context/CookAIContext";
+
+// Same amber accent as the PRO paywall's own crown badge
+// (ProSubscriptionModal.jsx) — kept as local literals here rather than a
+// shared import since that file doesn't export them, same pattern that
+// file itself uses for its own constants.
+const AMBER_TINT_BADGE = "rgba(255,159,10,0.14)";
+const AMBER_TINT_BADGE_BORDER = "rgba(255,159,10,0.35)";
 
 /**
  * Absolute chrome kill — use on Header AND any host wrapper above content
@@ -39,6 +49,8 @@ export const HEADER_SHADOW_KILL = Object.freeze({
  */
 export default function Header() {
   const { colors, isDark } = useTheme();
+  const { setProModalOpen } = useModalState();
+  const { isPro, t } = useCookAI();
 
   const headerStyle = [
     styles.base,
@@ -57,9 +69,17 @@ export default function Header() {
           hamburger button and a spacer bracketed the wordmark on both
           sides. The hamburger drawer is gone now — everything it held
           (Meal Planner, Scan History, Saved, PRO, Settings, Help) already
-          has a home on the Profile tab or the bottom nav — so this is the
-          only thing left in the header, and a left-aligned brand mark
-          reads as placed rather than centered for lack of anything else. */}
+          has a home on the Profile tab or the bottom nav — so the wordmark
+          stayed left-aligned rather than centered, which would've read as
+          accidental with nothing to balance it.
+
+          Direct feedback, later: that left the top-right corner — prime,
+          always-visible space on the home screen — doing nothing. Rather
+          than center the wordmark now that there's something on the right
+          again, left-aligned-plus-a-deliberate-right-side-element reads
+          as a normal app bar (brand mark one side, a single utility
+          action the other), which is a more common and more intentional-
+          looking pattern than centering would be here. */}
       <View style={styles.brandChrome}>
         <Text style={styles.wordmark}>
           <Text
@@ -73,6 +93,28 @@ export default function Header() {
           <Text style={[styles.brandText, styles.brandTextAccent]}>Snap</Text>
         </Text>
       </View>
+
+      {/* A quiet, persistent upgrade entry point — not shown to someone
+          who's already subscribed, since at that point this space would
+          have nothing left to offer them. Reuses profile.upgradeToPro for
+          its accessibility label rather than adding a new translation key
+          across all 31 languages for one icon button that already has an
+          established, identically-meant string elsewhere. */}
+      {!isPro ? (
+        <TouchableOpacity
+          onPress={() => setProModalOpen(true)}
+          activeOpacity={0.8}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityRole="button"
+          accessibilityLabel={t("profile.upgradeToPro")}
+          style={[
+            styles.proButton,
+            { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
+          ]}
+        >
+          <Crown size={18} color={colors.accentAmber} fill={colors.accentAmber} />
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 }
@@ -85,6 +127,7 @@ const styles = StyleSheet.create({
   base: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     zIndex: 10,
     paddingHorizontal: 16,
     paddingTop: 6,
@@ -119,5 +162,13 @@ const styles = StyleSheet.create({
   },
   brandTextAccent: {
     color: "#10B981",
+  },
+  proButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
