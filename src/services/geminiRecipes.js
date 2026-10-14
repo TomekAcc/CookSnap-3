@@ -664,6 +664,9 @@ function significantTitleWords(title) {
       .toLowerCase()
       .split(/[^a-z0-9]+/)
       .filter((w) => w.length > 2 && !TITLE_STOP_WORDS.has(w))
+      // Singular/plural count as the same word — "Beef Stuffed Peppers" and
+      // "Cheesy Beef Stuffed Pepper" landed in the same live batch.
+      .map((w) => (w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w))
   );
 }
 
@@ -691,6 +694,29 @@ function isNearDuplicateOfExcluded(title, excludeTitles) {
 }
 
 /**
+ * Stricter sibling of isNearDuplicateOfExcluded, for comparing a top-up
+ * candidate against recipes ALREADY KEPT in the same batch. Confirmed live:
+ * using the 2-shared-words rule there threw away every top-up candidate for
+ * a shrimp/garlic inventory ("Tomato Garlic Shrimp Rice" vs "Creamy Garlic
+ * Shrimp Pasta" share "garlic" + "shrimp" but are different dishes), so all
+ * 3 top-up rounds were wasted (~20 s) and the batch shipped with 3 recipes.
+ * Within one batch, dishType dedupe already keeps formats apart; this only
+ * catches a genuine rename — nearly all of the shorter title's words shared.
+ */
+function isRenameOfKeptTitle(title, keptTitles) {
+  const words = significantTitleWords(title);
+  if (words.size === 0) return false;
+  return (keptTitles || []).some((kept) => {
+    const keptWords = significantTitleWords(kept);
+    let overlap = 0;
+    for (const w of keptWords) {
+      if (words.has(w)) overlap++;
+    }
+    return overlap >= 2 && overlap / Math.min(words.size, keptWords.size) >= 0.75;
+  });
+}
+
+/**
  * Cook AI Engine recipe generator.
  * Sends fridge scan (scannedIngredients) + pantry staples to Cook AI Vision Engine and ALWAYS
  * asks for exactly 5 distinct creative recipes (never 3 or 4).
@@ -711,23 +737,15 @@ export const STEP_COUNT_MAX = 5;
 /** Soft floor — short imperative lines are fine; pad only if empty/tiny. */
 export const GOLDILOCKS_STEP_MIN = 55;
 /**
- * Confirmed real failure, not a hypothetical: padStepToGoldilocks used
- * GOLDILOCKS_STEP_MIN (55) as the trigger for gluing a generic filler
- * clause onto a step — but a real, complete, correct instruction like
- * "Cube tofu and slice red bell pepper into strips." is only 50 characters
- * and got "Taste and adjust seasoning as you go." appended to it, a
- * non-sequitur since nothing is being seasoned while just cutting
- * vegetables. This affected EVERY recipe source that runs through this
- * function — Gemini output, the static curated FALLBACK_RECIPES, and the
- * local ingredient-matching templates alike, not just AI generations.
- * GOLDILOCKS_STEP_MIN's own comment already said "short imperative lines
- * are fine; pad only if empty/tiny" — this constant makes the code actually
- * match that stated intent: only steps this short are genuine fragments
- * that benefit from a completion nudge; anything above it is left alone.
+ * Soft ceiling, only ever applied at a sentence boundary. Raised from 220:
+ * a judged live evaluation found steps cut mid-sentence with a period glued
+ * on ("...until the cheese is melted and.", "...eine Kerntemperatur von.")
+ * — the old cap fell back to cutting at the last space when a long step had
+ * no sentence break, and dropping trailing sentences can also drop the very
+ * doneness cue or salt amount a step exists to give. A long step is a
+ * smaller problem than a broken or incomplete one.
  */
-const STEP_PAD_TRIGGER_MIN = 25;
-/** Soft ceiling — prefer full sentences over mid-word cuts. */
-export const GOLDILOCKS_STEP_MAX = 220;
+export const GOLDILOCKS_STEP_MAX = 420;
 
 export const GEMINI_RECIPE_SYSTEM_PROMPT = `
 You are an experienced home cook who loves to create delicious, well-rounded recipes. Your cooking is practical enough for a weekday dinner but thoughtful enough to impress — you stick to dishes people have actually cooked and loved, know how to build layers of flavor, and know which techniques make a real difference without being fussy.
@@ -1325,118 +1343,6 @@ ${
 }`;
 }
 
-// Temperature/context-neutral on purpose — these get appended to whatever
-// step needs padding regardless of the dish, and a heat/warmth-specific
-// phrase (the old "Keep the heat steady." / "Serve while still warm.")
-// could land on a cold, no-cook step and produce a direct contradiction
-// (confirmed: "...serve chilled. Serve while still warm.").
-//
-// Split by narrative position: plating/serving phrases only make sense on
-// the actual last step. Picking a phrase by the step's index alone (the
-// old behavior) could land "Plate carefully for each serving." on step 2
-// of 4, before the dish was even cooked — confirmed from a live "Corn Egg
-// Pancakes" recipe where step 2 said "...into the batter. Plate carefully
-// for each serving." and step 3 said "...medium-high heat. Wipe the board
-// and finish plating." MID phrases are safe at any position; FINAL
-// phrases are reserved for the last step only.
-// Keyed by the same englishName values as LANGUAGE_OPTIONS. These are
-// POST-PROCESSING filler text — applied after the model responds, not
-// part of the prompt — so a hardcoded English version silently mixed
-// languages into an otherwise-translated step (confirmed live: a Polish
-// step came back as "Nałóż gęsty jogurt grecki do dwóch głębokich misek.
-// Taste and adjust seasoning as you go." — English tacked onto Polish).
-// Every supported language needs its own real translation here, not a
-// fallback to English, or the bug just reappears for that language.
-const MID_STEP_PAD_PHRASES_BY_LANG = {
-  English: [
-    " Taste and adjust seasoning as you go.",
-    " Stir occasionally so nothing sticks or burns.",
-    " Keep an eye on it and adjust the heat as needed.",
-    " Make sure everything is evenly combined.",
-  ],
-  Polish: [
-    " Smakuj i dopraw w trakcie gotowania.",
-    " Mieszaj od czasu do czasu, aby nic się nie przypaliło.",
-    " Obserwuj i w razie potrzeby dostosuj temperaturę.",
-    " Upewnij się, że wszystko jest równomiernie wymieszane.",
-  ],
-  Spanish: [
-    " Prueba y ajusta el sazón mientras cocinas.",
-    " Remueve de vez en cuando para que no se pegue ni se queme.",
-    " Vigílalo y ajusta el fuego según sea necesario.",
-    " Asegúrate de que todo esté bien combinado.",
-  ],
-  French: [
-    " Goûtez et ajustez l'assaisonnement au fur et à mesure.",
-    " Remuez de temps en temps pour que rien n'attache ou ne brûle.",
-    " Surveillez et ajustez la chaleur si nécessaire.",
-    " Assurez-vous que tout est bien mélangé.",
-  ],
-  German: [
-    " Abschmecken und die Würzung nach Bedarf anpassen.",
-    " Gelegentlich umrühren, damit nichts anbrennt.",
-    " Im Auge behalten und die Hitze bei Bedarf anpassen.",
-    " Sicherstellen, dass alles gleichmäßig vermischt ist.",
-  ],
-  Italian: [
-    " Assaggia e regola il condimento durante la cottura.",
-    " Mescola di tanto in tanto per evitare che si attacchi o bruci.",
-    " Controlla e regola il calore se necessario.",
-    " Assicurati che tutto sia ben amalgamato.",
-  ],
-  Portuguese: [
-    " Prove e ajuste o tempero conforme necessário.",
-    " Mexa de vez em quando para não grudar nem queimar.",
-    " Fique de olho e ajuste o fogo conforme necessário.",
-    " Certifique-se de que tudo esteja bem combinado.",
-  ],
-};
-
-const FINAL_STEP_PAD_PHRASES_BY_LANG = {
-  English: [
-    " Plate carefully for each serving.",
-    " Wipe the board and finish plating.",
-    " Arrange everything neatly before serving.",
-    " Double-check the portions look even.",
-  ],
-  Polish: [
-    " Nałóż starannie na talerze.",
-    " Wytrzyj deskę i wykończ podanie.",
-    " Ułóż wszystko starannie przed podaniem.",
-    " Sprawdź, czy porcje są równe.",
-  ],
-  Spanish: [
-    " Sirve con cuidado en cada plato.",
-    " Limpia la tabla y termina de emplatar.",
-    " Coloca todo con cuidado antes de servir.",
-    " Verifica que las porciones sean parejas.",
-  ],
-  French: [
-    " Dressez soigneusement chaque assiette.",
-    " Essuyez le plan de travail et terminez le dressage.",
-    " Disposez soigneusement le tout avant de servir.",
-    " Vérifiez que les portions sont égales.",
-  ],
-  German: [
-    " Sorgfältig auf den Tellern anrichten.",
-    " Das Brett abwischen und das Anrichten abschließen.",
-    " Alles ordentlich anrichten, bevor serviert wird.",
-    " Kontrollieren, dass die Portionen gleich groß sind.",
-  ],
-  Italian: [
-    " Impiatta con cura ogni porzione.",
-    " Pulisci il tagliere e completa l'impiattamento.",
-    " Disponi tutto con cura prima di servire.",
-    " Controlla che le porzioni siano uguali.",
-  ],
-  Portuguese: [
-    " Sirva com cuidado em cada prato.",
-    " Limpe a tábua e finalize o empratamento.",
-    " Organize tudo com cuidado antes de servir.",
-    " Verifique se as porções estão parecidas.",
-  ],
-};
-
 const DEFAULT_GOLDILOCKS_STEPS_BY_LANG = {
   English: [
     "Prep and portion every ingredient on a clean board.",
@@ -1666,8 +1572,7 @@ export function formatIngredientsList(lines) {
 }
 
 /**
- * Normalize one step: complete sentence, imperative-friendly length.
- * NEVER hard-slices mid-word — prefers last sentence or last space.
+ * Normalize one step: complete sentence, never cut mid-sentence.
  */
 // Returns null when a step is unsalvageable AND no curated default exists
 // for the language, so the caller can drop that slot instead of splicing
@@ -1675,7 +1580,7 @@ export function formatIngredientsList(lines) {
 // the model produced a step that was 100% English — "Prep and portion
 // every ingredient on a clean board." — inside an otherwise-Japanese
 // recipe). Fewer real steps beats one wrong-language step.
-function padStepToGoldilocks(step, idx, isLastStep, language = "English") {
+function padStepToGoldilocks(step, idx, language = "English") {
   const defaultSteps = padPhrasesForStrict(DEFAULT_GOLDILOCKS_STEPS_BY_LANG, language);
   let s = ensureSentenceComplete(step);
   if (!s) {
@@ -1683,36 +1588,14 @@ function padStepToGoldilocks(step, idx, isLastStep, language = "English") {
     s = defaultSteps[idx % defaultSteps.length];
   }
 
-  // A preheat-oven step is already a complete, correct instruction at
-  // ~35 chars — padding it toward GOLDILOCKS_STEP_MIN with a generic MID
-  // phrase produces a non-sequitur (confirmed live: "Preheat the oven to
-  // 375°F (190°C). Taste and adjust seasoning as you go." — there's
-  // nothing to season while just setting a temperature). Skip padding
-  // for these on purpose; short-and-correct beats long-and-nonsensical.
-  // Keyword check covers "preheat" and its stem in each supported
-  // language, not just English, so the exemption still applies to a
-  // translated recipe's preheat step.
-  const isPreheatOnly =
-    /preheat|rozgrzej|nagrzej|precalient|préchauff|vorheiz|preriscald|preaquec/i.test(
-      s
-    ) && /°|degrees/i.test(s);
+  // Real steps are never padded with generic filler any more. Every padding
+  // rule tried (by length, by position, exempting preheat steps) still
+  // produced non-sequiturs live — most recently "Mince the garlic. Stir
+  // occasionally so nothing sticks or burns." before any pan was heated,
+  // flagged by an independent recipe review. A short correct step is fine.
 
-  const pool = padPhrasesForStrict(
-    isLastStep ? FINAL_STEP_PAD_PHRASES_BY_LANG : MID_STEP_PAD_PHRASES_BY_LANG,
-    language
-  );
-  let guard = 0;
-  while (pool && !isPreheatOnly && s.length < STEP_PAD_TRIGGER_MIN && guard < 4) {
-    const pad = pool[(idx + guard) % pool.length];
-    // `s` already ends with sentence punctuation (ensureSentenceComplete
-    // guarantees it) and `pad` already starts with a leading space —
-    // stripping s's own trailing period before concatenating (the old
-    // behavior) merged the two sentences with no punctuation between them
-    // ("...the yogurt Taste and adjust seasoning."). Just append directly.
-    s = ensureSentenceComplete(`${s}${pad}`);
-    guard += 1;
-  }
-
+  // Never cut mid-sentence (see GOLDILOCKS_STEP_MAX): only trim a runaway
+  // step back to its last complete sentence, otherwise keep it whole.
   if (s.length > GOLDILOCKS_STEP_MAX) {
     const window = s.slice(0, GOLDILOCKS_STEP_MAX);
     const lastPeriod = Math.max(
@@ -1722,21 +1605,15 @@ function padStepToGoldilocks(step, idx, isLastStep, language = "English") {
     );
     if (lastPeriod >= GOLDILOCKS_STEP_MIN - 10) {
       s = window.slice(0, lastPeriod + 1).trim();
-    } else {
-      const lastSpace = window.lastIndexOf(" ");
-      s =
-        lastSpace > 40
-          ? window.slice(0, lastSpace).trim()
-          : window.trim();
-      s = ensureSentenceComplete(s);
     }
   }
 
   s = ensureSentenceComplete(s);
-  // A too-short-but-real translated step is still better than swapping in
-  // an unrelated English default — only substitute when we actually have
-  // a curated default for this language.
-  if (s.length < 20 && defaultSteps) {
+  // Only a fragment with no real instruction in it gets a curated default —
+  // "Mince the garlic." (17 chars) is a complete, correct step and used to
+  // be swapped for a generic "Prep and portion every ingredient..." line at
+  // the old 20-char threshold.
+  if (s.length < 6 && defaultSteps) {
     s = defaultSteps[idx % defaultSteps.length];
   }
   return s;
@@ -1762,7 +1639,7 @@ export function enforceGoldilocksSteps(steps, language = "English") {
   const out = [];
   for (let i = 0; i < targetCount; i += 1) {
     const raw = list[i] || (defaultSteps ? defaultSteps[i % defaultSteps.length] : "");
-    out.push(padStepToGoldilocks(raw, i, i === targetCount - 1, language));
+    out.push(padStepToGoldilocks(raw, i, language));
   }
   // A dropped (null) slot only happens when the model returned nothing
   // for that step AND the language has no curated default to fall back
@@ -2044,7 +1921,10 @@ const THINKING_CAPABLE_RECIPE_MODELS = new Set(["gemini-flash-latest"]);
  * EXPO_PUBLIC_RECIPE_QA=0 turns the whole pass off.
  */
 const RECIPE_QA_ENABLED = process.env.EXPO_PUBLIC_RECIPE_QA !== "0";
-const RECIPE_QA_MODEL = "gemini-flash-lite-latest";
+// gemini-flash-latest (thinking off) measured far better than flash-lite
+// as an editor on the same recipes: ~7% vs ~24% of recipes still carrying
+// an issue, at a median ~3.6 s vs ~1.5 s.
+const RECIPE_QA_MODEL = "gemini-flash-latest";
 const RECIPE_QA_TIMEOUT_MS = 12000;
 const RECIPE_QA_MAX_REJECTS = 2;
 
@@ -2055,8 +1935,8 @@ RULES
 1. DONENESS: every step that finishes cooking RAW meat, poultry, fish or seafood must give a checkable doneness cue — an internal temperature (poultry and ground meat 74°C / 165°F; other whole meat, fish and seafood 63°C / 145°F — use ONLY the UNIT SYSTEM's unit) and/or a visual cue (no pink remains inside, juices run clear, fish is opaque and flakes easily). "Until cooked", "until browned" or a time on its own is NOT enough: add the cue to that step. Canned, smoked, cured or already-cooked protein (canned tuna, ham, deli slices, cooked sausage) is not raw: it needs no cue, and a step that "cooks it through" should just warm it.
 2. SALT IN WATER: a step that salts cooking water (pasta, rice, potatoes, vegetables, eggs) must say how much salt for how much water — about 10 g per litre (US units: 1 tablespoon per 2 quarts). "Salted water" on its own is a violation: add the amount and the water volume.
 3. COMPLETE INGREDIENT LIST: every ingredient a step uses — including oil, butter, salt, pepper, spices, herbs, sugar and cooking water or stock — must appear in ingredientsList with an amount, in the same "<amount> <name> <emoji>" format and language as the other entries. Add what is missing. Amounts must add up: the salt entry covers all the salt the steps use (water salt included). An entry that is an instruction (e.g. "preheat the oven to 200°C") is not an ingredient: remove it.
-4. ONLY WHAT THE USER HAS: every ingredient must come from the AVAILABLE INVENTORY (water is always available). If a recipe uses something that is not available, remove it from ingredientsList and from every step; if the dish cannot work without it, verdict "reject". Never add anything that breaks a DIET restriction.
-5. A COMPLETE, WORKING METHOD: the steps must really make the dish in the title. Every ingredient in the list is used in a step. Raw potatoes, rice, pasta and dough are actually cooked before serving. A bake, gratin or casserole has an oven step with a temperature and a time. A stuffed dish is actually stuffed. No step is cut off mid-sentence. Fix gaps by completing or extending an existing step (never more than 5 steps in total); if small edits cannot fix it, verdict "reject".
+4. ONLY WHAT THE USER HAS: every ingredient must come from the AVAILABLE INVENTORY or the ALWAYS-AVAILABLE BASICS. If a recipe uses something that is not available, remove it from ingredientsList and from every step; if the dish cannot work without it, verdict "reject". Never turn an inventory item into a different one: a generic item such as "diced meat" stays diced meat in the list and the steps (it is not minced meat, and not specifically beef or pork). Never add anything that breaks a DIET restriction.
+5. A COMPLETE, WORKING METHOD: the steps must really make the dish in the title. Every ingredient in the list is used in a step, and every ingredient a step uses — garnish and serving included — is in the list. If the oven is preheated, a later step actually puts the dish in the oven with a time. Raw potatoes, rice, pasta and dough are actually cooked before serving. A bake, gratin or casserole has an oven step with a temperature and a time, and a baking dish, pan or tin named in a step states its size (e.g. 20×20 cm / 8×8 inch, in the UNIT SYSTEM). A stuffed dish is actually stuffed. No step is cut off mid-sentence. Fix gaps by completing or extending an existing step (never more than 5 steps in total); if small edits cannot fix it, verdict "reject".
 6. CLASSIC DISH: every recipe must be a recognizable, tried-and-tested dish a home cook would make. Odd pairings are a violation — a condiment that does not belong (e.g. Worcestershire sauce in a creamy tuna sauce), cream or sauce poured over a raw-vegetable "salad", black pepper or other savory seasoning in a sweet dish (jam, desserts, sweet pancakes), sweet-and-savory clashes. First try removing the odd ingredient from ingredientsList AND every step that mentions it, if the dish is still a complete classic without it. If it is fundamentally not a real dish, verdict "reject".
 7. Change nothing else. Keep the recipe's language, wording, units, capitalization conventions (German nouns capitalized; other ingredient names lowercase) and step style. Steps stay 3-5 complete sentences ending with a period. Never translate, shorten or restyle what is already correct.
 
@@ -2116,7 +1996,7 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
             {
               parts: [
                 {
-                  text: `LANGUAGE: ${language}\nUNIT SYSTEM: ${unitSystem === "metric" ? "metric (Celsius, grams, ml)" : "US customary (Fahrenheit, cups, tbsp)"}\nAVAILABLE INVENTORY: ${inventoryText || "not provided — skip rule 4"}\nDIET: ${dietText || "none"}\n\nRECIPES:\n${JSON.stringify(payload)}`,
+                  text: `LANGUAGE: ${language}\nUNIT SYSTEM: ${unitSystem === "metric" ? "metric (Celsius, grams, ml)" : "US customary (Fahrenheit, cups, tbsp)"}\nAVAILABLE INVENTORY: ${inventoryText || "not provided — skip rule 4"}\nALWAYS-AVAILABLE BASICS: water, cooking oil, butter, salt, black pepper, plain sugar, basic dried spices\nDIET: ${dietText || "none"}\n\nRECIPES:\n${JSON.stringify(payload)}`,
                 },
               ],
             },
@@ -2694,6 +2574,18 @@ export async function generateRecipesWithGemini(
       );
     }
 
+    // Same dish twice under two names inside one batch — dedupeDishType
+    // exempts "other", so two "other" stuffed-pepper recipes both survived.
+    const beforeRenameDedupe = normalized.length;
+    normalized = normalized.filter(
+      (r, i) => !isRenameOfKeptTitle(r.title, normalized.slice(0, i).map((n) => n.title))
+    );
+    if (normalized.length < beforeRenameDedupe) {
+      console.warn(
+        `[Cook AI] ${label} returned ${beforeRenameDedupe - normalized.length} recipe(s) that repeat an earlier recipe in the same batch under a new name.`
+      );
+    }
+
     const beforeCutTechniqueFilter = normalized.length;
     normalized = normalized.filter((r) => !hasCutTechniqueMismatch(r));
     if (normalized.length < beforeCutTechniqueFilter) {
@@ -2789,9 +2681,16 @@ export async function generateRecipesWithGemini(
 
     try {
       console.log(`[Cook AI] Generating recipes: ${apiVersion} -> ${modelName}`);
+      // Ask for one spare recipe up front. Measured live: the most common
+      // reason a batch ran short was a single recipe dropped by the safety
+      // filters (usually a repeated dishType), and each top-up round to
+      // replace it costs a full generation + QA round trip (~8 s). One extra
+      // recipe in the first call costs about a second and usually covers it;
+      // enforceExactlyFive trims the batch back to recipeCount.
+      const mainRequestCount = recipeCount + 1;
       let rawRecipes;
       try {
-        rawRecipes = await fetchRawRecipes(url, recipeCount, excludeTitles);
+        rawRecipes = await fetchRawRecipes(url, mainRequestCount, excludeTitles);
       } catch (firstErr) {
         // One immediate retry of the SAME model before moving on — confirmed
         // real failure on an actual device, not a hypothetical: a user's own
@@ -2808,16 +2707,19 @@ export async function generateRecipesWithGemini(
         console.warn(
           `[Cook AI] ${modelName} failed once (${firstErr?.message}) — retrying the same model once before moving on.`
         );
-        rawRecipes = await fetchRawRecipes(url, recipeCount, excludeTitles);
+        rawRecipes = await fetchRawRecipes(url, mainRequestCount, excludeTitles);
       }
 
       if (Array.isArray(rawRecipes) && rawRecipes.length > 0) {
-        if (rawRecipes.length !== recipeCount) {
+        if (rawRecipes.length !== mainRequestCount) {
           console.warn(
-            `[Cook AI] Expected ${recipeCount} recipes, got ${rawRecipes.length} from ${modelName} — padding/trimming to ${recipeCount}`
+            `[Cook AI] Expected ${mainRequestCount} recipes, got ${rawRecipes.length} from ${modelName} — padding/trimming to ${recipeCount}`
           );
         }
-        let normalized = normalizeAndFilter(rawRecipes, recipeCount, excludeTitles, modelName);
+        let normalized = normalizeAndFilter(rawRecipes, mainRequestCount, excludeTitles, modelName).slice(
+          0,
+          recipeCount
+        );
 
         // Confirmed real failure, not a hypothetical: before this retry
         // existed, any recipe dropped by the safety nets above (dishType
@@ -2888,15 +2790,20 @@ export async function generateRecipesWithGemini(
               .map((r, i) => normalizeRecipe(r, i, mealType, servings, language).title)
               .filter(Boolean);
             cumulativeExclude.push(...retryTitlesThisAttempt);
+            // The prompt still gets retryExclude (so the model steers away
+            // from everything seen this round), but the hard near-duplicate
+            // filter only uses the user's own Regenerate list — see
+            // isRenameOfKeptTitle for why the kept titles get a stricter test.
             const retryNormalized = normalizeAndFilter(
               retryRaw,
               requestCount,
-              retryExclude,
+              excludeTitles,
               `${modelName} (top-up attempt ${attempt})`
             );
             for (const r of retryNormalized) {
               if (normalized.length >= recipeCount) break;
               if (normalized.some((n) => n.title === r.title)) continue;
+              if (isRenameOfKeptTitle(r.title, normalized.map((n) => n.title))) continue;
               // Confirmed real failure, live-verified: normalizeAndFilter's
               // dishType dedup only checks a batch against itself, so a
               // retry batch was never checked against dishTypes the MAIN

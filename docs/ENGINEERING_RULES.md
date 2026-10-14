@@ -383,4 +383,13 @@ touched (gesture handling, `BlurView`) are the ones most likely to diverge.
   with a real generation against a real API key — prompt wording changes
   are easy to get subtly wrong and only show up in actual output, not in
   code review.
+- Recipe batches also pass through an editor call
+  (`reviewRecipesWithGemini`) that fixes doneness cues, salted-water
+  amounts, incomplete ingredient lists, unavailable ingredients, broken
+  methods and odd pairings in any language. The code-level checkers above
+  only read English; the editor is what covers the other 30 languages.
+  Judge quality changes with an independent model over a fixed set of
+  inventories and languages, not by eyeballing one batch, and test with a
+  key that has its own spending cap — a long evaluation once drained the
+  app's production credits.
 
