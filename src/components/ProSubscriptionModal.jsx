@@ -26,9 +26,6 @@ import StandardModal from "./StandardModal";
 // text/icons for contrast — that's true regardless of which theme is
 // active, so ON_AMBER is also a fixed value, not a `colors.*` lookup.
 const AMBER_TINT_SOFT = "rgba(255,159,10,0.10)";
-const AMBER_TINT_BADGE = "rgba(255,159,10,0.14)";
-const AMBER_TINT_BADGE_BORDER = "rgba(255,159,10,0.35)";
-const AMBER_LIGHT_FILL = "#FFC877";
 const ON_AMBER = "#1D1D1F";
 // Distance from the sheet's true top edge to where the ScrollView's content
 // (and so the hero block) begins: StandardModal's sheet paddingTop (6) +
@@ -174,7 +171,16 @@ export default function ProSubscriptionModal() {
     freeDailyRecipeGenerations,
     t,
   } = useCookAI();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
+  // The app's own pastel-emerald icon-badge tokens — the same fill/border/
+  // glyph colors used for the Profile, Pantry and Saved header badges and
+  // the scan-card icon (see FridgeScannerHero), so the benefit icons here
+  // read as part of the same system rather than a one-off.
+  const benefitChipStyle = {
+    backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+    borderColor: isDark ? "#065F46" : "#A7F3D0",
+  };
+  const benefitIconColor = isDark ? "#34D399" : "#059669";
   const [selectedPlanId, setSelectedPlanId] = useState("annual");
   const [heroHeight, setHeroHeight] = useState(HERO_WASH_FALLBACK_HEIGHT);
   const close = () => setProModalOpen(false);
@@ -330,10 +336,10 @@ export default function ProSubscriptionModal() {
           <View
             style={[
               styles.crownBadge,
-              { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
+              { backgroundColor: colors.accentAmber },
             ]}
           >
-            <Crown size={22} color={colors.accentAmber} fill={AMBER_LIGHT_FILL} />
+            <Crown size={22} color="#FFFFFF" fill="#FFFFFF" />
           </View>
           <Text style={[styles.title, { color: colors.textPrimary }]}>
             {t("pro.unlockTitle")}
@@ -416,20 +422,24 @@ export default function ProSubscriptionModal() {
             bordered card wrapper (floats straight on the sheet so there's
             one fewer box competing for attention).
 
-            Each row's own topic icon sits in a small amber-tinted chip
-            (same tokens as the crown badge above, so the whole sheet reads
-            as one consistent accent family) instead of floating as a bare
-            character on white — confirmed real feedback that the page
-            felt flat/monochrome with color only on the CTA and the
-            selected plan card. This is still only ONE icon per row — a
-            previous round already confirmed a check-circle ALONGSIDE an
-            icon read as two icons doing one job. The icon itself is a
-            lucide vector icon now, not the emoji the translated string
-            still carries (stripped via splitLeadingEmoji) — every OTHER
-            icon on this sheet (Crown, Sparkles, Bell, the close X) is
-            already a lucide icon the app fully controls; emoji were the
-            one icon language left that renders differently per platform
-            instead of looking like a single, designed system. */}
+            Each row's topic icon sits in a small pastel-EMERALD chip, the
+            app's own icon-badge colors. That's deliberate: the sheet's
+            amber is PRO's identity (crown, hero wash, selected plan, CTA),
+            and with the benefit chips amber too, everything was the same
+            pale peach — direct feedback that it read as monocolor. Pale
+            amber chips also carried very little contrast (thin amber
+            strokes on an amber tint), so the icons looked washed out.
+            Emerald is the app's brand color and appears nowhere else on
+            this sheet, so it gives the list real contrast and ties the
+            paywall back to the rest of the app, while the CTA stays the
+            only large saturated block. Rendered four variants side by
+            side (current; emerald chips; emerald chips + solid crown;
+            deeper amber chips + solid crown) and picked the third.
+            Still ONE icon per row — a previous round confirmed a
+            check-circle ALONGSIDE an icon read as two icons doing one
+            job. The icon is a lucide vector icon, not the emoji the
+            translated string still carries (stripped via
+            splitLeadingEmoji), matching every other icon on this sheet. */}
         <View style={styles.benefitsList}>
           {PRO_BENEFIT_KEYS.map((key) => {
             const { text } = splitLeadingEmoji(t(key));
@@ -439,10 +449,10 @@ export default function ProSubscriptionModal() {
                 <View
                   style={[
                     styles.benefitIconChip,
-                    { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
+                    benefitChipStyle,
                   ]}
                 >
-                  <BenefitIcon size={15} color={colors.accentAmber} strokeWidth={2.25} />
+                  <BenefitIcon size={15} color={benefitIconColor} strokeWidth={2.25} />
                 </View>
                 <Text style={[styles.benefitText, { color: colors.textPrimary }]}>
                   {text}
@@ -561,6 +571,11 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     paddingHorizontal: 10,
   },
+  // Solid amber disc with a white crown and a soft amber glow — the one
+  // saturated focal point at the top of the sheet (it used to be a pale
+  // outline, so nothing up there drew the eye). backgroundColor comes from
+  // colors.accentAmber at render time. The glow sits inside the ScrollView's
+  // frame (12px margin + title below), so it isn't clipped.
   crownBadge: {
     width: 44,
     height: 44,
@@ -568,6 +583,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.55)",
+    shadowColor: "#FF9F0A",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.38,
+    shadowRadius: 10,
+    elevation: 5,
     marginBottom: 12,
   },
   title: {
