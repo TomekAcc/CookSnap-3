@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Crown,
   Check,
@@ -188,7 +189,37 @@ export default function ProSubscriptionModal() {
   const planPeriod = t(PERIOD_SUFFIX_KEY[plan.periodUnit]);
   const planPerMonthValue = `${plan.perMonthPrice}${t("pro.moSuffix")}`;
   const screenHeight = Dimensions.get("window").height;
-  const sheetHeight = screenHeight * 0.92 - 40;
+  const insets = useSafeAreaInsets();
+  // Cap = everything below the status bar / notch / Dynamic Island, minus a
+  // small gap — not an arbitrary fraction of the screen. This used to be
+  // `screenHeight * 0.92 - 40` (736px on a 390×844 phone), which clipped the
+  // Polish sheet — its content needs ~742px — by 5px on the exact phone size
+  // the user tests on, and by 34px on 375×812 phones (X / 11 Pro / 12-13
+  // mini). A real 5px scroll is what they described as "it's still
+  // scrollable even though everything fits" (the earlier bounces={false}
+  // only removed the elastic give, not the real 5px). The sheet is
+  // content-sized, so raising the CAP doesn't make it taller on a roomy
+  // phone; it only stops the cap from clipping content that would fit.
+  // Genuinely small screens (iPhone SE) still scroll, which is correct.
+  const sheetHeight = Math.round(screenHeight - Math.max(insets.top, 20) - 12);
+  // The scroll+CTA wrapper below must be capped by what's LEFT of the sheet
+  // after its own chrome, not by the sheet's full cap. Capping both at the
+  // same number meant the sheet clamped but the wrapper (flexShrink 0, so it
+  // never gives way) kept its natural height and spilled past the sheet's
+  // bottom — through the safe-area padding and off-screen — instead of the
+  // ScrollView shrinking and scrolling. That's why the price disclosure sat
+  // against the home indicator on a real phone. Mirrors StandardModal's own
+  // numbers: sheet paddingTop 6, bottom paddingBottom
+  // max(insets.bottom + 16, 24), 1px top border, plus this file's grab handle
+  // (4.5 height + 4 + 4 margins).
+  const sheetBottomPad = Math.max(insets.bottom + 16, 24);
+  const bodyMaxHeight = sheetHeight - (6 + 1 + 12.5 + sheetBottomPad);
+  // Scroll only when the content truly overflows. A fixed `scrollEnabled`
+  // would let a sub-pixel or few-px native text-metric difference turn into
+  // a pointless nudge-scroll on a sheet that visually fits.
+  const [scrollViewH, setScrollViewH] = useState(0);
+  const [scrollContentH, setScrollContentH] = useState(0);
+  const contentOverflows = scrollContentH > scrollViewH + 1;
 
   // Real usage beats a generic tagline — someone who just hit their daily
   // generation cap is a much warmer lead than someone who hasn't generated
@@ -305,7 +336,7 @@ export default function ProSubscriptionModal() {
           regardless of the parent's resolved size. minHeight: 0 stays for
           the same reason as always — without it a flex/shrink child in a
           column can refuse to shrink below its content size on web. */}
-      <View style={{ maxHeight: sheetHeight, minHeight: 0 }}>
+      <View style={{ maxHeight: bodyMaxHeight, minHeight: 0 }}>
         <ScrollView
           style={{ flexShrink: 1 }}
           showsVerticalScrollIndicator={false}
@@ -321,6 +352,9 @@ export default function ProSubscriptionModal() {
           // language where content genuinely does overflow.
           bounces={false}
           overScrollMode="never"
+          scrollEnabled={contentOverflows}
+          onLayout={(e) => setScrollViewH(e.nativeEvent.layout.height)}
+          onContentSizeChange={(_w, h) => setScrollContentH(h)}
         >
         {/* Hero block — transparent on purpose, the amber wash behind it is
             the sibling layer at the top of this sheet (see the comment
