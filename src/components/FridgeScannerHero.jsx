@@ -269,9 +269,16 @@ export default function FridgeScannerHero() {
       // Hold the genuinely-full bar on screen for a beat before letting
       // the shrink/reveal effect below swap the view away — long enough
       // to actually register as "done", short enough not to feel laggy.
+      //
+      // Bumped from 380ms per direct feedback: even with the badge/button
+      // pop-in bug fixed, the whole hold+shrink+reveal sequence settling
+      // in well under a second still read as "instant" rather than a
+      // deliberate, felt transition — there wasn't enough of a pause at
+      // "done" for the eye to register it before everything was already
+      // moving again.
       setTimeout(() => {
         if (!cancelled) setScanRevealActive(false);
-      }, 380);
+      }, 480);
     });
 
     return () => {
@@ -500,10 +507,13 @@ export default function FridgeScannerHero() {
       // gating this whole block on real completion), not the overlap
       // between these two animations. Waiting for the shrink to finish
       // before starting the reveal made the transition read as two steps
-      // with a dead gap in between instead of one smooth motion.
+      // with a dead gap in between instead of one smooth motion — so these
+      // stay simultaneous; per further direct feedback, what actually
+      // needed to change was the PACE of the motion itself (both duration
+      // and spring softness bumped below), not its sequencing.
       Animated.timing(photoHeightAnim, {
         toValue: COMPACT_HEIGHT,
-        duration: 320,
+        duration: 420,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
       }).start();
@@ -511,14 +521,14 @@ export default function FridgeScannerHero() {
       Animated.parallel([
         Animated.spring(ingredientsOpacity, {
           toValue: 1,
-          friction: 8,
-          tension: 60,
+          friction: 9,
+          tension: 45,
           useNativeDriver: true,
         }),
         Animated.spring(ingredientsTranslate, {
           toValue: 0,
-          friction: 8,
-          tension: 60,
+          friction: 9,
+          tension: 45,
           useNativeDriver: true,
         }),
       ]).start();

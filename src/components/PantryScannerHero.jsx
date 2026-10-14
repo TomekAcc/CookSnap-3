@@ -202,9 +202,11 @@ export default function PantryScannerHero({ onManualAdd }) {
       if (cancelled) return;
       setProgressPct(100);
       setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
+      // Bumped from 380ms — see the identical change (and its reasoning)
+      // in FridgeScannerHero's own hold timer.
       setTimeout(() => {
         if (!cancelled) setHoldingAtComplete(false);
-      }, 380);
+      }, 480);
     });
 
     return () => {
@@ -370,9 +372,11 @@ export default function PantryScannerHero({ onManualAdd }) {
       // because that fill + visible hold finished. Shrink and reveal
       // together for one smooth motion instead of two steps with a dead
       // gap in between.
+      // Duration + spring softness bumped — see the identical change (and
+      // its reasoning) in FridgeScannerHero's own shrink/reveal block.
       Animated.timing(photoHeightAnim, {
         toValue: COMPACT_HEIGHT,
-        duration: 320,
+        duration: 420,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
       }).start();
@@ -380,14 +384,14 @@ export default function PantryScannerHero({ onManualAdd }) {
       Animated.parallel([
         Animated.spring(badgeOpacity, {
           toValue: 1,
-          friction: 8,
-          tension: 60,
+          friction: 9,
+          tension: 45,
           useNativeDriver: true,
         }),
         Animated.spring(badgeTranslate, {
           toValue: 0,
-          friction: 8,
-          tension: 60,
+          friction: 9,
+          tension: 45,
           useNativeDriver: true,
         }),
       ]).start();
