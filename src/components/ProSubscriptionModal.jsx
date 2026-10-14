@@ -30,6 +30,11 @@ const AMBER_TINT_BADGE = "rgba(255,159,10,0.14)";
 const AMBER_TINT_BADGE_BORDER = "rgba(255,159,10,0.35)";
 const AMBER_LIGHT_FILL = "#FFC877";
 const ON_AMBER = "#1D1D1F";
+// Must stay identical to the header gradient's own first color stop (see
+// the LinearGradient below) — this is a flat fill for the fixed-height
+// strip directly above where that gradient starts, so the two need to
+// meet at the exact same color for the seam between them to be invisible.
+const AMBER_TINT_BADGE_TOP = "rgba(255,159,10,0.20)";
 
 // periodUnit/perMonthPrice drive translated display text at render time
 // (see PERIOD_SUFFIX_KEY below) — a plain "/year"/"/mo" literal here was a
@@ -210,6 +215,29 @@ export default function ProSubscriptionModal() {
       maxHeight={sheetHeight}
       dragZoneRightInset={60}
     >
+      {/* Confirmed real feedback, on a screenshot: the header gradient
+          below (styles.header) already bleeds full-width via its own
+          negative margin, but it only starts where the ScrollView's
+          content does — a short strip above it (StandardModal's own
+          paddingTop + this grab handle's own height/margins + the
+          ScrollView's small top padding) stayed plain white, right where
+          the sheet's actual rounded top corners are. Over that short a
+          distance the mismatch between the gradient card's own corner
+          radius (22, deliberately smaller — see styles.header) and the
+          sheet's real one (30) was visible as a white sliver right in the
+          corners, exactly where the eye lands first. This fills that
+          specific, fixed-height gap (NOT the variable-height hero text
+          below it, which the existing gradient already handles safely
+          across every language) with the same color the gradient itself
+          starts at, so the two meet with no visible seam — and matches
+          the sheet's own 30 corner radius exactly, since nothing is
+          layered on top of IT to make a smaller radius look nested. */}
+      <View
+        style={[
+          styles.headerTopFiller,
+          { backgroundColor: AMBER_TINT_BADGE_TOP },
+        ]}
+      />
       <View
         style={[
           styles.grabHandle,
@@ -462,6 +490,25 @@ export function ProModal(props) {
 }
 
 const styles = StyleSheet.create({
+  // See its own render-site comment — fills the fixed-height gap between
+  // the sheet's true top edge and where the header gradient itself
+  // starts. left/right: -20 cancels StandardModal's sheet
+  // paddingHorizontal (20), same trick as the gradient's own
+  // marginHorizontal below, since position:"absolute" is relative to the
+  // padding box by default, not the sheet's actual outer edge.
+  // borderTopLeftRadius/Right match the sheet's own (30) exactly, not a
+  // smaller "nested" radius — nothing sits on top of this one corner to
+  // make a smaller radius read as intentional the way it does for the
+  // gradient further down.
+  headerTopFiller: {
+    position: "absolute",
+    top: 0,
+    left: -20,
+    right: -20,
+    height: 36,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
   grabHandle: {
     width: 40,
     height: 4.5,
