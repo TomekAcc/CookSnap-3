@@ -255,7 +255,7 @@ export default function ProSubscriptionModal() {
           <View style={styles.compareHeaderRow}>
             <Text style={[styles.compareHeaderCell, { flex: 1.4, textAlign: "left" }]}> </Text>
             <Text style={styles.compareHeaderCell}>{t("pro.freeColumnHeader")}</Text>
-            <Text style={[styles.compareHeaderCell, { color: AMBER }]}>{t("menu.proBadge")}</Text>
+            <Text style={[styles.compareHeaderCell, { color: TEXT_PRIMARY }]}>{t("menu.proBadge")}</Text>
           </View>
           {COMPARISON_ROWS.map((row, i) => (
             <View
@@ -277,7 +277,7 @@ export default function ProSubscriptionModal() {
                 {row.proKey ? (
                   <Text style={styles.compareProText}>{t(row.proKey)}</Text>
                 ) : (
-                  <Check size={16} color={AMBER} strokeWidth={2.5} />
+                  <Check size={16} color={TEXT_PRIMARY} strokeWidth={2.5} />
                 )}
               </View>
             </View>
@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
   compareLabel: { fontSize: 12, fontWeight: "600", color: TEXT_PRIMARY, lineHeight: 15 },
   compareCell: { flex: 1, alignItems: "center", justifyContent: "center" },
   compareFreeText: { fontSize: 11, fontWeight: "600", color: TEXT_MUTED },
-  compareProText: { fontSize: 11, fontWeight: "700", color: AMBER },
+  compareProText: { fontSize: 11, fontWeight: "700", color: TEXT_PRIMARY },
   socialProof: {
     textAlign: "center",
     fontSize: 11,
