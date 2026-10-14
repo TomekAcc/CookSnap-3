@@ -210,7 +210,26 @@ export default function ProSubscriptionModal() {
                     <Text style={styles.planBadgeText}>{t(p.badgeKey)}</Text>
                   </View>
                 ) : null}
-                <Text style={styles.planLabel}>{t(p.labelKey)}</Text>
+                {/* Label + radio laid out as a real flex row rather than the
+                    radio being position: "absolute" pinned to a fixed
+                    physical edge — confirmed real bug in Arabic: RN
+                    right-aligns short label text inside RTL content, which
+                    put the radio circle (hardcoded right: 12) directly on
+                    top of the Arabic label instead of beside it. A flex
+                    row sizes both by their actual content, so they can
+                    never occupy the same space regardless of script,
+                    direction, or how long the translated label is. */}
+                <View style={styles.planLabelRow}>
+                  <Text style={styles.planLabel}>{t(p.labelKey)}</Text>
+                  <View
+                    style={[
+                      styles.radioOuter,
+                      { borderColor: selected ? AMBER : SLATE_BORDER },
+                    ]}
+                  >
+                    {selected ? <View style={styles.radioInner} /> : null}
+                  </View>
+                </View>
                 <Text style={styles.planPrice}>
                   {p.price}
                   <Text style={styles.planPeriod}>
@@ -218,14 +237,6 @@ export default function ProSubscriptionModal() {
                   </Text>
                 </Text>
                 <Text style={styles.planSub}>{t(p.perMonthKey)}</Text>
-                <View
-                  style={[
-                    styles.radioOuter,
-                    { borderColor: selected ? AMBER : SLATE_BORDER },
-                  ]}
-                >
-                  {selected ? <View style={styles.radioInner} /> : null}
-                </View>
               </TouchableOpacity>
             );
           })}
@@ -377,14 +388,19 @@ const styles = StyleSheet.create({
     color: "#0F172A",
     letterSpacing: 0.3,
   },
-  planLabel: { fontSize: 12, fontWeight: "700", color: TEXT_MUTED, marginBottom: 4 },
+  planLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
+  planLabel: { fontSize: 12, fontWeight: "700", color: TEXT_MUTED, flexShrink: 1 },
   planPrice: { fontSize: 19, fontWeight: "800", color: TEXT_PRIMARY },
   planPeriod: { fontSize: 12, fontWeight: "600", color: TEXT_MUTED },
   planSub: { fontSize: 11, fontWeight: "500", color: TEXT_MUTED, marginTop: 2 },
   radioOuter: {
-    position: "absolute",
-    top: 12,
-    right: 12,
+    flexShrink: 0,
+    marginLeft: 6,
     width: 18,
     height: 18,
     borderRadius: 9,
