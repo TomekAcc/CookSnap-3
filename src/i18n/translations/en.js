@@ -341,6 +341,9 @@ export default {
   "pro.thenPriceCancelAnytime": "Then {price}{period} ({perMonthValue}) — cancel anytime",
   "pro.billedMonthlyCancelAnytime": "Billed monthly — cancel anytime",
   "pro.cancelAnytimeGuarantee": "Cancel anytime with 1 tap in the App Store",
+  "pro.trialDayZero": "Today: Start your free trial",
+  "pro.trialDayReminder": "Day 5: We remind you before charging",
+  "pro.trialDayCharge": "Day 7: {price}{period} unless cancelled",
   "pro.trialStartedToast": "🎉 Trial started — welcome to CookSnap PRO!",
   "pro.welcomeToast": "🎉 Welcome to CookSnap PRO!",
 

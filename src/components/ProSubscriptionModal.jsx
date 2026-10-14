@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
-import { Crown, Check, Sparkles, X } from "lucide-react-native";
+import { Crown, Check, Sparkles, X, ChevronRight } from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
 import StandardModal from "./StandardModal";
@@ -64,6 +64,18 @@ const PRO_BENEFIT_KEYS = [
   "pro.benefitAiModifier",
   "pro.benefitMacros",
   "pro.benefitAutoPlan",
+];
+
+// Blinkist's real case study (user-sourced): replacing a vague free-trial
+// disclaimer with a concrete step-by-step "here's exactly what happens and
+// when" timeline measurably reduced trial-cancellation complaints and
+// increased signups — the fear isn't the trial, it's not knowing when
+// you'll be charged or whether you'll remember to cancel. Only the last
+// step needs the live price/period, interpolated at render time.
+const TRIAL_STEP_KEYS = [
+  "pro.trialDayZero",
+  "pro.trialDayReminder",
+  "pro.trialDayCharge",
 ];
 
 /**
@@ -291,24 +303,42 @@ export default function ProSubscriptionModal() {
         {/* Fixed, outside the ScrollView on purpose — see the comment
             above this section's opening View for why.
 
-            guaranteeRow (this cancelAnytimeGuarantee line) was previously
-            dropped as redundant with priceSubtext below. Re-added, placed
-            BEFORE the button instead: priceSubtext is the required full
-            disclosure (price, period, per-month breakdown) read AFTER
-            deciding, while this is the one-line reassurance that actually
-            needs to land BEFORE the tap — burying "cancel anytime" in
-            11px text after the CTA means it can only ever reduce buyer's
-            remorse, never actually influence the decision itself. The two
-            aren't true duplicates: this one carries zero pricing detail on
-            purpose, it's pure risk-reversal, so showing both isn't
-            repeating the same information twice. */}
+            Trial timeline replaces the old single-line "cancel anytime"
+            guarantee when a trial is active (annual plan) — a concrete
+            today/reminder/charge-date timeline is a stronger, more
+            specific version of the same risk-reversal message (Blinkist's
+            real case study: this exact swap measurably cut trial-cancel
+            complaints and raised signups), so showing both would be
+            redundant rather than additive. The monthly plan has no trial,
+            so it keeps the plain guarantee line — a 3-step "timeline" with
+            nothing time-based to show on day 5/7 wouldn't make sense. */}
         <View style={styles.ctaSection}>
-          <View style={styles.guaranteeRow}>
-            <Check size={12} color={TEXT_MUTED} strokeWidth={3} />
-            <Text style={styles.guaranteeText}>
-              {t("pro.cancelAnytimeGuarantee")}
-            </Text>
-          </View>
+          {plan.trial ? (
+            <View style={styles.trialTimeline}>
+              {TRIAL_STEP_KEYS.map((key, i) => (
+                <View key={key} style={styles.trialStepRow}>
+                  <View style={styles.trialStepIndicator}>
+                    <View style={styles.trialDot} />
+                    {i < TRIAL_STEP_KEYS.length - 1 ? (
+                      <View style={styles.trialLine} />
+                    ) : null}
+                  </View>
+                  <Text style={styles.trialStepText}>
+                    {key === "pro.trialDayCharge"
+                      ? t(key, { price: plan.price, period: planPeriod })
+                      : t(key)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.guaranteeRow}>
+              <Check size={12} color={TEXT_MUTED} strokeWidth={3} />
+              <Text style={styles.guaranteeText}>
+                {t("pro.cancelAnytimeGuarantee")}
+              </Text>
+            </View>
+          )}
           <TouchableOpacity onPress={handleSubscribe} activeOpacity={0.88} style={styles.ctaButton}>
             <Sparkles size={18} color="#0F172A" />
             <Text style={styles.ctaButtonText}>
@@ -316,6 +346,7 @@ export default function ProSubscriptionModal() {
                 ? t("pro.startTrial")
                 : t("pro.subscribeCta", { price: plan.price, period: planPeriod })}
             </Text>
+            <ChevronRight size={18} color="#0F172A" />
           </TouchableOpacity>
 
           <Text style={styles.priceSubtext}>
@@ -360,7 +391,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   scrollContent: { paddingTop: 0, paddingBottom: 4 },
-  header: { alignItems: "center", marginBottom: 14 },
+  header: { alignItems: "center", marginBottom: 10 },
   crownBadge: {
     width: 34,
     height: 34,
@@ -386,7 +417,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     textAlign: "center",
   },
-  planRow: { flexDirection: "row", gap: 9, marginBottom: 6 },
+  planRow: { flexDirection: "row", gap: 9, marginBottom: 4 },
   planCard: {
     flex: 1,
     borderRadius: 14,
@@ -444,12 +475,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   radioInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: AMBER },
-  benefitsList: { marginBottom: 6 },
+  benefitsList: { marginBottom: 4 },
   benefitRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   benefitCheckCircle: {
     width: 22,
@@ -476,7 +507,7 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   ctaSection: {
-    paddingTop: 3,
+    paddingTop: 1,
   },
   guaranteeRow: {
     flexDirection: "row",
@@ -486,11 +517,36 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   guaranteeText: { fontSize: 11, fontWeight: "600", color: TEXT_MUTED },
+  trialTimeline: { marginBottom: 6 },
+  trialStepRow: { flexDirection: "row", alignItems: "flex-start" },
+  trialStepIndicator: { width: 14, alignItems: "center" },
+  trialDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: AMBER,
+    marginTop: 3,
+  },
+  trialLine: {
+    width: 1.5,
+    flex: 1,
+    minHeight: 7,
+    backgroundColor: SLATE_BORDER,
+    marginVertical: 1,
+  },
+  trialStepText: {
+    flex: 1,
+    fontSize: 11.5,
+    fontWeight: "600",
+    color: TEXT_PRIMARY,
+    marginLeft: 8,
+    marginBottom: 3,
+  },
   ctaButton: {
     backgroundColor: AMBER,
     borderRadius: 14,
-    minHeight: 46,
-    paddingVertical: 10,
+    minHeight: 44,
+    paddingVertical: 9,
     // Confirmed real failure, reported by a first-time tester: no
     // horizontal padding here meant a long translated CTA (e.g. German's
     // "7-tägige kostenlose Testphase starten") had nothing keeping it off
