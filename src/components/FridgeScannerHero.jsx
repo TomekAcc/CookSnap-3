@@ -270,15 +270,15 @@ export default function FridgeScannerHero() {
       // the shrink/reveal effect below swap the view away — long enough
       // to actually register as "done", short enough not to feel laggy.
       //
-      // Bumped from 380ms per direct feedback: even with the badge/button
-      // pop-in bug fixed, the whole hold+shrink+reveal sequence settling
-      // in well under a second still read as "instant" rather than a
-      // deliberate, felt transition — there wasn't enough of a pause at
-      // "done" for the eye to register it before everything was already
-      // moving again.
+      // Bumped twice now on direct feedback (380ms, then 480ms) — both
+      // still read as "instant"/"rapid" rather than smooth and intentional.
+      // 650ms is a deliberately bigger jump rather than another timid
+      // increment: a pause under ~500ms doesn't give the eye enough time to
+      // register "done" as its own distinct moment before the next motion
+      // starts, no matter how smooth that next motion is.
       setTimeout(() => {
         if (!cancelled) setScanRevealActive(false);
-      }, 480);
+      }, 650);
     });
 
     return () => {
@@ -508,27 +508,33 @@ export default function FridgeScannerHero() {
       // between these two animations. Waiting for the shrink to finish
       // before starting the reveal made the transition read as two steps
       // with a dead gap in between instead of one smooth motion — so these
-      // stay simultaneous; per further direct feedback, what actually
-      // needed to change was the PACE of the motion itself (both duration
-      // and spring softness bumped below), not its sequencing.
+      // stay simultaneous; per further direct feedback (twice now — 320ms/
+      // friction8-tension60, then 420ms/friction9-tension45 — both still
+      // "too fast"), what actually needed to change was the PACE of the
+      // motion itself, pushed further this round: duration 420ms -> 600ms,
+      // and Easing.out swapped for Easing.inOut so the shrink itself eases
+      // in gently at the start too, instead of snapping into motion and
+      // only decelerating at the end. The reveal springs are softened
+      // further as well (friction 9/tension 45 -> 10/tension 30) for a
+      // slower, more fluid settle.
       Animated.timing(photoHeightAnim, {
         toValue: COMPACT_HEIGHT,
-        duration: 420,
-        easing: Easing.out(Easing.cubic),
+        duration: 600,
+        easing: Easing.inOut(Easing.cubic),
         useNativeDriver: false,
       }).start();
 
       Animated.parallel([
         Animated.spring(ingredientsOpacity, {
           toValue: 1,
-          friction: 9,
-          tension: 45,
+          friction: 10,
+          tension: 30,
           useNativeDriver: true,
         }),
         Animated.spring(ingredientsTranslate, {
           toValue: 0,
-          friction: 9,
-          tension: 45,
+          friction: 10,
+          tension: 30,
           useNativeDriver: true,
         }),
       ]).start();
