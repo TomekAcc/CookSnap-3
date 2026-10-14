@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { Crown, Check, Sparkles, X, ChevronRight, Bell } from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
@@ -223,8 +224,36 @@ export default function ProSubscriptionModal() {
           style={{ flexShrink: 1 }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
+          // Confirmed real feedback, on a device where the content now
+          // genuinely fits with no overflow: it still FELT scrollable —
+          // iOS's elastic rubber-band bounce gives a little on any drag
+          // regardless of whether there's anything to actually scroll to,
+          // which reads as "huh, is there more below?" on a screen that's
+          // supposed to feel complete. bounces/overScrollMode off removes
+          // that give entirely when there's nothing to scroll, while real
+          // dragging still works normally on a smaller screen or longer
+          // language where content genuinely does overflow.
+          bounces={false}
+          overScrollMode="never"
         >
-        <View style={styles.header}>
+        {/* Soft warm wash behind the hero (crown/title/subtitle) — direct
+            feedback that the page read as flat/monochrome even after the
+            benefit icon chips (those are pale by design, meant to sit
+            quietly next to full-color emoji glyphs rather than compete
+            with them — fine on their own, but not enough color on their
+            own to read as "attractive, makes me want to buy"). Rather than
+            pushing MORE color into every row (this sheet already went
+            through — and recovered from — a "too much color, messy"
+            complaint earlier), this is ONE confident, contained move: a
+            gradient card at the top, the same accent amber already used
+            everywhere else on the sheet, fading to fully transparent so it
+            composites correctly over either theme's card background
+            without a hardcoded end color. */}
+        <LinearGradient
+          colors={["rgba(255,159,10,0.20)", "rgba(255,159,10,0.05)", "rgba(255,159,10,0)"]}
+          locations={[0, 0.55, 1]}
+          style={styles.header}
+        >
           <View
             style={[
               styles.crownBadge,
@@ -239,7 +268,7 @@ export default function ProSubscriptionModal() {
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             {subtitle}
           </Text>
-        </View>
+        </LinearGradient>
 
         <View style={styles.planRow}>
           {[PLANS.annual, PLANS.monthly].map((p) => {
@@ -430,7 +459,19 @@ const styles = StyleSheet.create({
   // confirmed by measurement (measure-pro-overflow.js) that this was
   // real, substantial overflow (235px in Polish on a 375×667 screen), not
   // a cosmetic nitpick.
-  header: { alignItems: "center", marginBottom: 18 },
+  // marginBottom/paddingBottom trimmed to offset the paddingTop/Bottom this
+  // gradient card adds (it used to be a plain, unpadded View) — re-measured
+  // with measure-pro-overflow.js after adding it (12px of overflow crept
+  // back in at a standard phone size) and trimmed until back to the
+  // zero-scroll result.
+  header: {
+    alignItems: "center",
+    marginBottom: 10,
+    borderRadius: 24,
+    paddingTop: 18,
+    paddingBottom: 12,
+    paddingHorizontal: 10,
+  },
   crownBadge: {
     width: 44,
     height: 44,
@@ -540,7 +581,7 @@ const styles = StyleSheet.create({
     lineHeight: 18.5,
   },
   ctaSection: {
-    paddingTop: 16,
+    paddingTop: 13,
   },
   guaranteeRow: {
     flexDirection: "row",
