@@ -287,6 +287,7 @@ export default {
   "pro.monthSuffix": "/miesiąc",
   "pro.moSuffix": "/mies.",
   "pro.freeColumnHeader": "Darmowy",
+  "pro.scansAndGenerations": "Skanowanie i generowanie przepisów",
   "pro.fridgeScans": "Skanowanie lodówki",
   "pro.pantryScans": "Skanowanie spiżarni",
   "pro.recipeGenerations": "Generowanie przepisów",

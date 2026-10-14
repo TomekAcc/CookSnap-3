@@ -318,6 +318,7 @@ export default {
   "pro.monthSuffix": "/month",
   "pro.moSuffix": "/mo",
   "pro.freeColumnHeader": "Free",
+  "pro.scansAndGenerations": "Scans & recipe generations",
   "pro.fridgeScans": "Fridge scans",
   "pro.pantryScans": "Pantry scans",
   "pro.recipeGenerations": "Recipe generations",

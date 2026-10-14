@@ -48,10 +48,15 @@ export const PLANS = {
 
 const PERIOD_SUFFIX_KEY = { year: "pro.yearSuffix", month: "pro.monthSuffix" };
 
+// Confirmed real feedback: the first three rows (fridge scans, pantry
+// scans, recipe generations) all showed the exact same "2 / day →
+// Unlimited" comparison separately — three rows repeating one message,
+// not three distinct value props, which padded out the table and made
+// the whole screen read as more cluttered than it actually was. Merged
+// into one row; nothing informational is lost, since all three really do
+// share the same free-vs-PRO story.
 const COMPARISON_ROWS = [
-  { labelKey: "pro.fridgeScans", freeKey: "pro.perDayLimit", proKey: "pro.unlimited" },
-  { labelKey: "pro.pantryScans", freeKey: "pro.perDayLimit", proKey: "pro.unlimited" },
-  { labelKey: "pro.recipeGenerations", freeKey: "pro.perDayLimit", proKey: "pro.unlimited" },
+  { labelKey: "pro.scansAndGenerations", freeKey: "pro.perDayLimit", proKey: "pro.unlimited" },
   { labelKey: "pro.recipesPerGeneration", freeKey: "pro.threeRecipes", proKey: "pro.fiveRecipes" },
   { labelKey: "pro.aiRecipeModifier", free: false, pro: true },
   { labelKey: "pro.fullMacroBreakdown", free: false, pro: true },
@@ -363,7 +368,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   scrollContent: { paddingTop: 0, paddingBottom: 4 },
-  header: { alignItems: "center", marginBottom: 5 },
+  header: { alignItems: "center", marginBottom: 14 },
   crownBadge: {
     width: 34,
     height: 34,

@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/godina",
   "pro.monthSuffix": "/mjesec",
   "pro.moSuffix": "/mj.",
-  "pro.freeColumnHeader": "Besplatno",
+  "pro.freeColumnHeader": "Besplatno",  "pro.scansAndGenerations": "Skeniranja i generiranja recepata",
+
   "pro.fridgeScans": "Skeniranja hladnjaka",
   "pro.pantryScans": "Skeniranja smočnice",
   "pro.recipeGenerations": "Generiranje recepata",

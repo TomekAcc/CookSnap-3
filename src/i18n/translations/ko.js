@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/년",
   "pro.monthSuffix": "/월",
   "pro.moSuffix": "/월",
-  "pro.freeColumnHeader": "무료",
+  "pro.freeColumnHeader": "무료",  "pro.scansAndGenerations": "스캔 및 레시피 생성",
+
   "pro.fridgeScans": "냉장고 스캔",
   "pro.pantryScans": "팬트리 스캔",
   "pro.recipeGenerations": "레시피 생성",

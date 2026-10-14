@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/év",
   "pro.monthSuffix": "/hónap",
   "pro.moSuffix": "/hó",
-  "pro.freeColumnHeader": "Ingyenes",
+  "pro.freeColumnHeader": "Ingyenes",  "pro.scansAndGenerations": "Szkennelések és receptgenerálások",
+
   "pro.fridgeScans": "Hűtő beolvasása",
   "pro.pantryScans": "Kamra beolvasása",
   "pro.recipeGenerations": "Receptgenerálások",

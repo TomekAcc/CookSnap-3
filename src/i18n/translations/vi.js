@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/năm",
   "pro.monthSuffix": "/tháng",
   "pro.moSuffix": "/tháng",
-  "pro.freeColumnHeader": "Miễn phí",
+  "pro.freeColumnHeader": "Miễn phí",  "pro.scansAndGenerations": "Quét và tạo công thức",
+
   "pro.fridgeScans": "Quét tủ lạnh",
   "pro.pantryScans": "Quét tủ đựng thức ăn",
   "pro.recipeGenerations": "Lần tạo công thức",

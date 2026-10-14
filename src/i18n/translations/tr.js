@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/yıl",
   "pro.monthSuffix": "/ay",
   "pro.moSuffix": "/ay",
-  "pro.freeColumnHeader": "Ücretsiz",
+  "pro.freeColumnHeader": "Ücretsiz",  "pro.scansAndGenerations": "Taramalar ve tarif oluşturma",
+
   "pro.fridgeScans": "Buzdolabı taramaları",
   "pro.pantryScans": "Kiler taramaları",
   "pro.recipeGenerations": "Tarif oluşturma hakkı",

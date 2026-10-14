@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/年",
   "pro.monthSuffix": "/月",
   "pro.moSuffix": "/月",
-  "pro.freeColumnHeader": "免费版",
+  "pro.freeColumnHeader": "免费版",  "pro.scansAndGenerations": "扫描与食谱生成",
+
   "pro.fridgeScans": "冰箱扫描",
   "pro.pantryScans": "储藏室扫描",
   "pro.recipeGenerations": "菜谱生成额度",

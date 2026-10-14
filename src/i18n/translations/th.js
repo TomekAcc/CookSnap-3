@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/ปี",
   "pro.monthSuffix": "/เดือน",
   "pro.moSuffix": "/เดือน",
-  "pro.freeColumnHeader": "ฟรี",
+  "pro.freeColumnHeader": "ฟรี",  "pro.scansAndGenerations": "การสแกนและการสร้างสูตรอาหาร",
+
   "pro.fridgeScans": "สแกนตู้เย็น",
   "pro.pantryScans": "สแกนตู้กับข้าว",
   "pro.recipeGenerations": "การสร้างสูตรอาหาร",

@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/έτος",
   "pro.monthSuffix": "/μήνα",
   "pro.moSuffix": "/μήνα",
-  "pro.freeColumnHeader": "Δωρεάν",
+  "pro.freeColumnHeader": "Δωρεάν",  "pro.scansAndGenerations": "Σαρώσεις και δημιουργίες συνταγών",
+
   "pro.fridgeScans": "Σαρώσεις ψυγείου",
   "pro.pantryScans": "Σαρώσεις ντουλαπιού",
   "pro.recipeGenerations": "Δημιουργίες συνταγών",

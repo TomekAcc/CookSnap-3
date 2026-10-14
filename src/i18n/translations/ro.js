@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/an",
   "pro.monthSuffix": "/lună",
   "pro.moSuffix": "/lună",
-  "pro.freeColumnHeader": "Gratuit",
+  "pro.freeColumnHeader": "Gratuit",  "pro.scansAndGenerations": "Scanări și generări de rețete",
+
   "pro.fridgeScans": "Scanări frigider",
   "pro.pantryScans": "Scanări cămară",
   "pro.recipeGenerations": "Generări de rețete",

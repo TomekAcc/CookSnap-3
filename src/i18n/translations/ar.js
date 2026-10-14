@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/سنة",
   "pro.monthSuffix": "/شهر",
   "pro.moSuffix": "/شهر",
-  "pro.freeColumnHeader": "المجاني",
+  "pro.freeColumnHeader": "المجاني",  "pro.scansAndGenerations": "عمليات المسح وتوليد الوصفات",
+
   "pro.fridgeScans": "مسح الثلاجة",
   "pro.pantryScans": "مسح المخزن",
   "pro.recipeGenerations": "توليدات الوصفات",

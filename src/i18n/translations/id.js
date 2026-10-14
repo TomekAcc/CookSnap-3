@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/tahun",
   "pro.monthSuffix": "/bulan",
   "pro.moSuffix": "/bln",
-  "pro.freeColumnHeader": "Gratis",
+  "pro.freeColumnHeader": "Gratis",  "pro.scansAndGenerations": "Pemindaian & pembuatan resep",
+
   "pro.fridgeScans": "Pemindaian kulkas",
   "pro.pantryScans": "Pemindaian lemari dapur",
   "pro.recipeGenerations": "Pembuatan resep",

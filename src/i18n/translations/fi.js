@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/vuosi",
   "pro.monthSuffix": "/kuukausi",
   "pro.moSuffix": "/kk",
-  "pro.freeColumnHeader": "Ilmainen",
+  "pro.freeColumnHeader": "Ilmainen",  "pro.scansAndGenerations": "Skannaukset ja reseptien luonnit",
+
   "pro.fridgeScans": "Jääkaappiskannaukset",
   "pro.pantryScans": "Ruokakomeroskannaukset",
   "pro.recipeGenerations": "Reseptiluonnit",

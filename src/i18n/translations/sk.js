@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/rok",
   "pro.monthSuffix": "/mesiac",
   "pro.moSuffix": "/mes.",
-  "pro.freeColumnHeader": "Zadarmo",
+  "pro.freeColumnHeader": "Zadarmo",  "pro.scansAndGenerations": "Skenovania a generovania receptov",
+
   "pro.fridgeScans": "Skeny chladničky",
   "pro.pantryScans": "Skeny špajze",
   "pro.recipeGenerations": "Generovanie receptov",

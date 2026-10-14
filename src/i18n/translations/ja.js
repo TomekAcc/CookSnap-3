@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/年",
   "pro.monthSuffix": "/月",
   "pro.moSuffix": "/月",
-  "pro.freeColumnHeader": "無料プラン",
+  "pro.freeColumnHeader": "無料プラン",  "pro.scansAndGenerations": "スキャンとレシピ生成",
+
   "pro.fridgeScans": "冷蔵庫スキャン",
   "pro.pantryScans": "パントリースキャン",
   "pro.recipeGenerations": "レシピ生成回数",

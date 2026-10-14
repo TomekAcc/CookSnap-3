@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/Jahr",
   "pro.monthSuffix": "/Monat",
   "pro.moSuffix": "/Mon.",
-  "pro.freeColumnHeader": "Kostenlos",
+  "pro.freeColumnHeader": "Kostenlos",  "pro.scansAndGenerations": "Scans & Rezeptgenerierungen",
+
   "pro.fridgeScans": "Kühlschrank-Scans",
   "pro.pantryScans": "Vorratskammer-Scans",
   "pro.recipeGenerations": "Rezeptgenerierungen",

@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/वर्ष",
   "pro.monthSuffix": "/माह",
   "pro.moSuffix": "/माह",
-  "pro.freeColumnHeader": "मुफ़्त",
+  "pro.freeColumnHeader": "मुफ़्त",  "pro.scansAndGenerations": "स्कैन और रेसिपी जनरेशन",
+
   "pro.fridgeScans": "फ्रिज स्कैन",
   "pro.pantryScans": "पैंट्री स्कैन",
   "pro.recipeGenerations": "रेसिपी जनरेशन",

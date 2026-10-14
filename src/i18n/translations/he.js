@@ -280,7 +280,8 @@ export default {
   "pro.yearSuffix": "/שנה",
   "pro.monthSuffix": "/חודש",
   "pro.moSuffix": "/חודש",
-  "pro.freeColumnHeader": "חינם",
+  "pro.freeColumnHeader": "חינם",  "pro.scansAndGenerations": "סריקות ויצירת מתכונים",
+
   "pro.fridgeScans": "סריקות מקרר",
   "pro.pantryScans": "סריקות מזווה",
   "pro.recipeGenerations": "יצירות מתכונים",
