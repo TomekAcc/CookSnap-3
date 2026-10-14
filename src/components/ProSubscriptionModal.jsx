@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
-import { Crown, Check, Lock, Sparkles, X } from "lucide-react-native";
+import { Crown, Check, Sparkles, X } from "lucide-react-native";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
 import StandardModal from "./StandardModal";
@@ -10,6 +10,10 @@ const SLATE_ROW = "#1E293B";
 const SLATE_BORDER = "#334155";
 const AMBER = "#F59E0B";
 const AMBER_LIGHT = "#FBBF24";
+// Matches ThemeContext's accentGreen / tokens.js's GREEN — the app's own
+// logo/success color, reused here so the benefit checklist's checkmarks
+// read as "included" without adding a 4th amber signal to the screen.
+const GREEN = "#10B981";
 const TEXT_PRIMARY = "#F8FAFC";
 const TEXT_MUTED = "#94A3B8";
 
@@ -48,19 +52,18 @@ export const PLANS = {
 
 const PERIOD_SUFFIX_KEY = { year: "pro.yearSuffix", month: "pro.monthSuffix" };
 
-// Confirmed real feedback: the first three rows (fridge scans, pantry
-// scans, recipe generations) all showed the exact same "2 / day →
-// Unlimited" comparison separately — three rows repeating one message,
-// not three distinct value props, which padded out the table and made
-// the whole screen read as more cluttered than it actually was. Merged
-// into one row; nothing informational is lost, since all three really do
-// share the same free-vs-PRO story.
-const COMPARISON_ROWS = [
-  { labelKey: "pro.scansAndGenerations", freeKey: "pro.perDayLimit", proKey: "pro.unlimited" },
-  { labelKey: "pro.recipesPerGeneration", freeKey: "pro.threeRecipes", proKey: "pro.fiveRecipes" },
-  { labelKey: "pro.aiRecipeModifier", free: false, pro: true },
-  { labelKey: "pro.fullMacroBreakdown", free: false, pro: true },
-  { labelKey: "pro.aiAutoFillWeeklyPlan", free: false, pro: true },
+// Benefit-led copy, not feature/limit labels — replaced the Free-vs-PRO
+// comparison table entirely (see the render site's own comment for why).
+// Each key states what PRO actually gets you, not what the free tier
+// lacks; the underlying capabilities are unchanged from the old
+// COMPARISON_ROWS, just reframed as reasons to upgrade instead of a spec
+// sheet to parse.
+const PRO_BENEFIT_KEYS = [
+  "pro.benefitUnlimitedScans",
+  "pro.benefitFiveRecipes",
+  "pro.benefitAiModifier",
+  "pro.benefitMacros",
+  "pro.benefitAutoPlan",
 ];
 
 /**
@@ -256,35 +259,24 @@ export default function ProSubscriptionModal() {
           })}
         </View>
 
-        <View style={styles.compareCard}>
-          <View style={styles.compareHeaderRow}>
-            <Text style={[styles.compareHeaderCell, { flex: 1.4, textAlign: "left" }]}> </Text>
-            <Text style={styles.compareHeaderCell}>{t("pro.freeColumnHeader")}</Text>
-            <Text style={[styles.compareHeaderCell, { color: TEXT_PRIMARY }]}>{t("menu.proBadge")}</Text>
-          </View>
-          {COMPARISON_ROWS.map((row, i) => (
-            <View
-              key={row.labelKey}
-              style={[
-                styles.compareRow,
-                i === COMPARISON_ROWS.length - 1 ? { borderBottomWidth: 0 } : null,
-              ]}
-            >
-              <Text style={[styles.compareLabel, { flex: 1.4 }]}>{t(row.labelKey)}</Text>
-              <View style={styles.compareCell}>
-                {row.freeKey ? (
-                  <Text style={styles.compareFreeText}>{t(row.freeKey)}</Text>
-                ) : (
-                  <Lock size={14} color={TEXT_MUTED} />
-                )}
+        {/* Benefit checklist, not a Free-vs-PRO spec table — a comparison
+            grid with lock icons sells by showing what you're denied, which
+            reads as restrictive, not encouraging. Every line here states
+            what you GET, with no "locked"/limit framing anywhere, no
+            bordered card wrapper (floats straight on the sheet so there's
+            one fewer box competing for attention), and its own green
+            accent (GREEN, matching the app's own logo/success color)
+            instead of reusing amber for yet another signal — amber here
+            was diluted across 8+ elements before being brought back down
+            to its 3 real focal points (badge, selected plan, CTA), and
+            this list deliberately doesn't become a 4th. */}
+        <View style={styles.benefitsList}>
+          {PRO_BENEFIT_KEYS.map((key) => (
+            <View key={key} style={styles.benefitRow}>
+              <View style={styles.benefitCheckCircle}>
+                <Check size={13} color={SLATE} strokeWidth={3.5} />
               </View>
-              <View style={styles.compareCell}>
-                {row.proKey ? (
-                  <Text style={styles.compareProText}>{t(row.proKey)}</Text>
-                ) : (
-                  <Check size={16} color={TEXT_PRIMARY} strokeWidth={2.5} />
-                )}
-              </View>
+              <Text style={styles.benefitText}>{t(key)}</Text>
             </View>
           ))}
         </View>
@@ -452,40 +444,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   radioInner: { width: 10, height: 10, borderRadius: 5, backgroundColor: AMBER },
-  compareCard: {
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: SLATE_BORDER,
-    backgroundColor: SLATE_ROW,
-    paddingHorizontal: 13,
-    marginBottom: 4,
-    overflow: "hidden",
-  },
-  compareHeaderRow: {
+  benefitsList: { marginBottom: 6 },
+  benefitRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 4,
-    paddingBottom: 2,
+    gap: 10,
+    paddingVertical: 6,
   },
-  compareHeaderCell: {
+  benefitCheckCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: GREEN,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  benefitText: {
     flex: 1,
-    fontSize: 10,
-    fontWeight: "800",
-    color: TEXT_MUTED,
-    textAlign: "center",
-    letterSpacing: 0.4,
+    fontSize: 13.5,
+    fontWeight: "600",
+    color: TEXT_PRIMARY,
+    lineHeight: 18,
   },
-  compareRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 2,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: SLATE_BORDER,
-  },
-  compareLabel: { fontSize: 12, fontWeight: "600", color: TEXT_PRIMARY, lineHeight: 15 },
-  compareCell: { flex: 1, alignItems: "center", justifyContent: "center" },
-  compareFreeText: { fontSize: 11, fontWeight: "600", color: TEXT_MUTED },
-  compareProText: { fontSize: 11, fontWeight: "700", color: TEXT_PRIMARY },
   socialProof: {
     textAlign: "center",
     fontSize: 11,
