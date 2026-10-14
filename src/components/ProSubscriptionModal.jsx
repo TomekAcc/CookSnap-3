@@ -53,6 +53,23 @@ export const PLANS = {
 
 const PERIOD_SUFFIX_KEY = { year: "pro.yearSuffix", month: "pro.monthSuffix" };
 
+// Each benefit string carries its own leading emoji baked in at the i18n
+// layer (see PRO_BENEFIT_KEYS below) — this pulls just that leading emoji
+// back out so it can render as a proper colored icon chip instead of a
+// bare character floating on white. Matches ONLY the fixed, known emoji
+// set this app's i18n layer actually prepends (📸🍽️🎯📊🗓️, each either a
+// plain surrogate-pair emoji or one followed by the U+FE0F variation
+// selector) — same surrogate-pair-based matching already proven
+// Hermes-safe elsewhere in this app (see stripInlineEmojis in
+// FridgeScannerHero.jsx), not the \p{Extended_Pictographic} Unicode
+// property syntax Hermes doesn't reliably support.
+function splitLeadingEmoji(str) {
+  const s = String(str || "").trim();
+  const match = s.match(/^([\uD800-\uDBFF][\uDC00-\uDFFF]️?)\s*/);
+  if (!match) return { emoji: null, text: s };
+  return { emoji: match[1], text: s.slice(match[0].length) };
+}
+
 // Benefit-led copy, not feature/limit labels — replaced the Free-vs-PRO
 // comparison table entirely (see the render site's own comment for why).
 // Each key states what PRO actually gets you, not what the free tier
@@ -295,27 +312,41 @@ export default function ProSubscriptionModal() {
             reads as restrictive, not encouraging. Every line here states
             what you GET, with no "locked"/limit framing anywhere, no
             bordered card wrapper (floats straight on the sheet so there's
-            one fewer box competing for attention). No green check-circle
-            icon here either anymore — each benefit string now carries its
-            own topic emoji (camera/plate/target/chart/calendar) added at
-            the i18n layer, and having both a circle AND an emoji on the
-            same short line was genuinely two icons doing one job,
-            confirmed by the user looking at a real screenshot. */}
-        <View style={styles.benefitsList}>
-          {PRO_BENEFIT_KEYS.map((key) => (
-            <View key={key} style={styles.benefitRow}>
-              <Text style={[styles.benefitText, { color: colors.textPrimary }]}>
-                {t(key)}
-              </Text>
-            </View>
-          ))}
-        </View>
+            one fewer box competing for attention).
 
-        {/* NOTE: placeholder copy on purpose — swap in a real usage stat or
-            rating once one exists, don't ship a fabricated number here. */}
-        <Text style={[styles.socialProof, { color: colors.textSecondary }]}>
-          {t("pro.socialProof")}
-        </Text>
+            Each benefit's own topic emoji now sits in a small amber-tinted
+            chip (same tokens as the crown badge above, so the whole sheet
+            reads as one consistent accent family) instead of floating as a
+            bare character on white — confirmed real feedback that the page
+            felt flat/monochrome with color only on the CTA and the
+            selected plan card. This is still only ONE icon per row (the
+            emoji moved into the chip, it didn't gain a sibling) — a
+            previous round already confirmed a check-circle ALONGSIDE the
+            emoji read as two icons doing one job; a chip framing the same
+            emoji isn't a second icon, just a better frame for the first
+            one. */}
+        <View style={styles.benefitsList}>
+          {PRO_BENEFIT_KEYS.map((key) => {
+            const { emoji, text } = splitLeadingEmoji(t(key));
+            return (
+              <View key={key} style={styles.benefitRow}>
+                {emoji ? (
+                  <View
+                    style={[
+                      styles.benefitIconChip,
+                      { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
+                    ]}
+                  >
+                    <Text style={styles.benefitIconEmoji}>{emoji}</Text>
+                  </View>
+                ) : null}
+                <Text style={[styles.benefitText, { color: colors.textPrimary }]}>
+                  {text}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
         </ScrollView>
 
         {/* Fixed, outside the ScrollView on purpose — see this file's top
@@ -390,8 +421,16 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     zIndex: 10,
   },
-  scrollContent: { paddingTop: 2, paddingBottom: 6 },
-  header: { alignItems: "center", marginBottom: 22 },
+  scrollContent: { paddingTop: 2, paddingBottom: 4 },
+  // Trimmed from 22 — a real translated benefit list (Polish, German,
+  // etc.) routinely wraps every line to 2 lines on a normal phone width,
+  // which this fixed English-authored spacing never had to absorb.
+  // Several small, considered trims across the sheet (here, planRow,
+  // benefitsList below) do that job instead of one large cut anywhere —
+  // confirmed by measurement (measure-pro-overflow.js) that this was
+  // real, substantial overflow (235px in Polish on a 375×667 screen), not
+  // a cosmetic nitpick.
+  header: { alignItems: "center", marginBottom: 18 },
   crownBadge: {
     width: 44,
     height: 44,
@@ -415,7 +454,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 18,
   },
-  planRow: { flexDirection: "row", gap: 10, marginBottom: 24 },
+  planRow: { flexDirection: "row", gap: 10, marginBottom: 20 },
   planCard: {
     flex: 1,
     borderRadius: 16,
@@ -470,20 +509,35 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   radioInner: { width: 11, height: 11, borderRadius: 5.5 },
-  benefitsList: { marginBottom: 20, gap: 4 },
+  // Social proof line removed — it was deliberately non-numeric placeholder
+  // copy ("Loved by home cooks who hate wasting food") with no concrete
+  // stat behind it, the single weakest element on the page by actual
+  // persuasive weight, and a full line + its own spacing for a claim that
+  // reads as vague rather than convincing. Swap in a REAL stat/rating here
+  // if one exists — don't bring back an unverifiable one just to fill the
+  // space back in.
+  benefitsList: { marginBottom: 16, gap: 2 },
   benefitRow: {
-    paddingVertical: 7,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingVertical: 5,
   },
+  benefitIconChip: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  benefitIconEmoji: { fontSize: 14 },
   benefitText: {
-    fontSize: 14.5,
+    flex: 1,
+    fontSize: 13.5,
     fontWeight: "600",
-    lineHeight: 21,
-  },
-  socialProof: {
-    textAlign: "center",
-    fontSize: 12,
-    fontWeight: "600",
-    lineHeight: 16,
+    lineHeight: 18.5,
   },
   ctaSection: {
     paddingTop: 16,
