@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Ingrediente detectate",
   "scanner.add": "Adaugă",
   "scanner.addItemPlaceholder": "ex. Mozzarella, Usturoi...",
+  "scanner.verifyHint": "O fotografie nu arată tot (de exemplu, bucata exactă de carne) — verifică lista și adaugă sau elimină ingrediente.",
   "scanner.pointAtFridge": "Îndreaptă camera spre frigiderul deschis",
   "a11y.viewFridgePhoto": "Vezi poza completă a frigiderului",
   "a11y.dismissFridgePhoto": "Închide poza frigiderului",

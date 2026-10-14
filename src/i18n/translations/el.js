@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Εντοπισμένα υλικά",
   "scanner.add": "Προσθήκη",
   "scanner.addItemPlaceholder": "π.χ. Μοτσαρέλα, Σκόρδο...",
+  "scanner.verifyHint": "Μια φωτογραφία δεν δείχνει τα πάντα (π.χ. το ακριβές κομμάτι του κρέατος) — ελέγξτε τη λίστα και προσθέστε ή αφαιρέστε υλικά.",
   "scanner.pointAtFridge": "Στρέψτε την κάμερα στο ανοιχτό ψυγείο σας",
   "a11y.viewFridgePhoto": "Προβολή ολόκληρης της φωτογραφίας του ψυγείου",
   "a11y.dismissFridgePhoto": "Κλείσιμο φωτογραφίας ψυγείου",

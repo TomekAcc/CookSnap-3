@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "検出された食材",
   "scanner.add": "追加",
   "scanner.addItemPlaceholder": "例: モッツァレラ、ニンニク...",
+  "scanner.verifyHint": "写真ではすべてを判別できません（肉の部位など）。リストを確認し、食材を追加または削除してください。",
   "scanner.pointAtFridge": "冷蔵庫を開けてカメラを向けてください",
   "a11y.viewFridgePhoto": "冷蔵庫の写真全体を表示",
   "a11y.dismissFridgePhoto": "冷蔵庫の写真を閉じる",

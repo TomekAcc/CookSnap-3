@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "المكونات المكتشفة",
   "scanner.add": "إضافة",
   "scanner.addItemPlaceholder": "مثل: موتزاريلا، ثوم...",
+  "scanner.verifyHint": "لا تُظهر الصورة كل شيء (مثل نوع قطعة اللحم بالضبط) — راجع القائمة وأضف المكونات أو احذفها.",
   "scanner.pointAtFridge": "وجه الكاميرا نحو ثلاجتك المفتوحة",
   "a11y.viewFridgePhoto": "عرض صورة الثلاجة بالكامل",
   "a11y.dismissFridgePhoto": "إغلاق صورة الثلاجة",

@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Felismert hozzávalók",
   "scanner.add": "Hozzáadás",
   "scanner.addItemPlaceholder": "pl. mozzarella, fokhagyma...",
+  "scanner.verifyHint": "Egy fotó nem mutat meg mindent (például a hús pontos részét) — ellenőrizd a listát, és adj hozzá vagy távolíts el hozzávalókat.",
   "scanner.pointAtFridge": "Irányítsd a nyitott hűtőre",
   "a11y.viewFridgePhoto": "Hűtőfotó megtekintése teljes méretben",
   "a11y.dismissFridgePhoto": "Hűtőfotó bezárása",

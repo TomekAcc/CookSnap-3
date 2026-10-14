@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Знайдені інгредієнти",
   "scanner.add": "Додати",
   "scanner.addItemPlaceholder": "напр. моцарела, часник...",
+  "scanner.verifyHint": "На фото видно не все (наприклад, точну частину м'яса) — перевірте список і додайте або видаліть продукти.",
   "scanner.pointAtFridge": "Наведіть на відкритий холодильник",
   "a11y.viewFridgePhoto": "Переглянути фото холодильника повністю",
   "a11y.dismissFridgePhoto": "Закрити фото холодильника",

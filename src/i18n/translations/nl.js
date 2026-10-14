@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Gedetecteerde ingrediënten",
   "scanner.add": "Toevoegen",
   "scanner.addItemPlaceholder": "bijv. mozzarella, knoflook...",
+  "scanner.verifyHint": "Een foto laat niet alles zien (bijvoorbeeld het exacte stuk vlees) — controleer de lijst en voeg ingrediënten toe of verwijder ze.",
   "scanner.pointAtFridge": "Richt op je open koelkast",
   "a11y.viewFridgePhoto": "Bekijk volledige koelkastfoto",
   "a11y.dismissFridgePhoto": "Sluit koelkastfoto",

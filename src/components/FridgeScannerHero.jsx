@@ -1482,6 +1482,22 @@ export default function FridgeScannerHero() {
                         );
                       })}
                     </View>
+                    {/* Real tester feedback: a top-down photo can't show an
+                        exact cut of meat or a label facing away, and the
+                        scan can't know that — so say it plainly, once,
+                        right where the list can be fixed (× removes, Add
+                        adds). Quiet caption, not a warning. */}
+                    <Text
+                      style={{
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                        fontWeight: "500",
+                        lineHeight: 17,
+                        marginTop: 12,
+                      }}
+                    >
+                      {t("scanner.verifyHint")}
+                    </Text>
                   </View>
                 )}
               </Animated.View>

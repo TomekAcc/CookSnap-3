@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Ingredientes detectados",
   "scanner.add": "Añadir",
   "scanner.addItemPlaceholder": "ej. Mozzarella, ajo...",
+  "scanner.verifyHint": "Una foto no lo muestra todo (por ejemplo, el corte exacto de la carne): revisa la lista y añade o quita ingredientes.",
   "scanner.pointAtFridge": "Apunta hacia el interior de tu nevera abierta",
   "a11y.viewFridgePhoto": "Ver foto completa de la nevera",
   "a11y.dismissFridgePhoto": "Ocultar foto de la nevera",

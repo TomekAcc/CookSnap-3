@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Bahan Terdeteksi",
   "scanner.add": "Tambah",
   "scanner.addItemPlaceholder": "cth. Mozzarella, Bawang Putih...",
+  "scanner.verifyHint": "Foto tidak bisa menunjukkan semuanya (misalnya potongan daging yang tepat) — periksa daftar lalu tambah atau hapus bahan.",
   "scanner.pointAtFridge": "Arahkan ke kulkas Anda yang terbuka",
   "a11y.viewFridgePhoto": "Lihat foto kulkas secara penuh",
   "a11y.dismissFridgePhoto": "Tutup foto kulkas",

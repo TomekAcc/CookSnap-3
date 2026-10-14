@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Распознанные ингредиенты",
   "scanner.add": "Добавить",
   "scanner.addItemPlaceholder": "напр. моцарелла, чеснок...",
+  "scanner.verifyHint": "По фото видно не всё (например, точный отруб мяса) — проверьте список и добавьте или удалите продукты.",
   "scanner.pointAtFridge": "Наведите камеру на открытый холодильник",
   "a11y.viewFridgePhoto": "Посмотреть фото холодильника",
   "a11y.dismissFridgePhoto": "Закрыть фото холодильника",

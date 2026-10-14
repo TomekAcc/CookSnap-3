@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Oppdagede ingredienser",
   "scanner.add": "Legg til",
   "scanner.addItemPlaceholder": "f.eks. mozzarella, hvitløk...",
+  "scanner.verifyHint": "Et bilde viser ikke alt (for eksempel det nøyaktige kjøttstykket) — sjekk listen og legg til eller fjern ingredienser.",
   "scanner.pointAtFridge": "Rett kameraet mot det åpne kjøleskapet",
   "a11y.viewFridgePhoto": "Vis hele kjøleskapsbildet",
   "a11y.dismissFridgePhoto": "Lukk kjøleskapsbilde",

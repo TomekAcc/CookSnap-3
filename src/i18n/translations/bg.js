@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Открити съставки",
   "scanner.add": "Добави",
   "scanner.addItemPlaceholder": "напр. моцарела, чесън...",
+  "scanner.verifyHint": "Снимката не показва всичко (например точната част на месото) — проверете списъка и добавете или премахнете продукти.",
   "scanner.pointAtFridge": "Насочете към отворения си хладилник",
   "a11y.viewFridgePhoto": "Преглед на цялата снимка на хладилника",
   "a11y.dismissFridgePhoto": "Затвори снимката на хладилника",

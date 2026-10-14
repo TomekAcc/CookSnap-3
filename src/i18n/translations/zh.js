@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "已识别的食材",
   "scanner.add": "添加",
   "scanner.addItemPlaceholder": "例如：马苏里拉奶酪、大蒜...",
+  "scanner.verifyHint": "照片无法呈现所有细节（例如肉的具体部位）——请检查清单，并添加或删除食材。",
   "scanner.pointAtFridge": "对准打开的冰箱",
   "a11y.viewFridgePhoto": "查看冰箱全景照片",
   "a11y.dismissFridgePhoto": "关闭冰箱照片",

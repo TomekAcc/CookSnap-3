@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Zistené ingrediencie",
   "scanner.add": "Pridať",
   "scanner.addItemPlaceholder": "napr. mozzarella, cesnak...",
+  "scanner.verifyHint": "Fotka neukáže všetko (napríklad presný druh mäsa) — skontrolujte zoznam a pridajte alebo odstráňte suroviny.",
   "scanner.pointAtFridge": "Namierte na otvorenú chladničku",
   "a11y.viewFridgePhoto": "Zobraziť celú fotku chladničky",
   "a11y.dismissFridgePhoto": "Zavrieť fotku chladničky",

@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Algılanan Malzemeler",
   "scanner.add": "Ekle",
   "scanner.addItemPlaceholder": "örn. Mozzarella, Sarımsak...",
+  "scanner.verifyHint": "Bir fotoğraf her şeyi göstermez (örneğin etin tam kesimi) — listeyi kontrol edin, malzeme ekleyin veya çıkarın.",
   "scanner.pointAtFridge": "Açık buzdolabınıza doğrultun",
   "a11y.viewFridgePhoto": "Buzdolabı fotoğrafını tam boy görüntüle",
   "a11y.dismissFridgePhoto": "Buzdolabı fotoğrafını kapat",

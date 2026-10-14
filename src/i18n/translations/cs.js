@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Rozpoznané ingredience",
   "scanner.add": "Přidat",
   "scanner.addItemPlaceholder": "např. mozzarella, česnek...",
+  "scanner.verifyHint": "Fotka neukáže všechno (třeba přesný druh masa) — zkontrolujte seznam a přidejte nebo odeberte suroviny.",
   "scanner.pointAtFridge": "Namířit na otevřenou lednici",
   "a11y.viewFridgePhoto": "Zobrazit celou fotku lednice",
   "a11y.dismissFridgePhoto": "Zavřít fotku lednice",

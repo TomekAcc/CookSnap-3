@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Prepoznati sastojci",
   "scanner.add": "Dodaj",
   "scanner.addItemPlaceholder": "npr. mozzarella, češnjak...",
+  "scanner.verifyHint": "Fotografija ne pokazuje sve (npr. točan komad mesa) — provjerite popis te dodajte ili uklonite sastojke.",
   "scanner.pointAtFridge": "Usmjeri u otvoreni hladnjak",
   "a11y.viewFridgePhoto": "Pogledaj cijelu fotografiju hladnjaka",
   "a11y.dismissFridgePhoto": "Zatvori fotografiju hladnjaka",

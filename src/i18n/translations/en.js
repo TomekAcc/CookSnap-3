@@ -132,6 +132,7 @@ export default {
   "scanner.detectedIngredients": "Detected Ingredients",
   "scanner.add": "Add",
   "scanner.addItemPlaceholder": "e.g. Mozzarella, Garlic...",
+  "scanner.verifyHint": "A photo can't show everything (like the exact cut of meat) — check the list and add or remove items.",
   "scanner.pointAtFridge": "Point at your open fridge",
   "scanner.pantryCtaTitle": "Scan your pantry",
   "scanner.pantryCtaBody": "Take a photo of your kitchen shelves — CookSnap adds every item to your pantry and includes them in future recipes automatically.",

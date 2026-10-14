@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Nguyên liệu đã phát hiện",
   "scanner.add": "Thêm",
   "scanner.addItemPlaceholder": "vd: Phô mai Mozzarella, Tỏi...",
+  "scanner.verifyHint": "Ảnh không thể hiện hết mọi thứ (ví dụ phần thịt chính xác) — hãy kiểm tra danh sách rồi thêm hoặc xóa nguyên liệu.",
   "scanner.pointAtFridge": "Hướng camera vào tủ lạnh đang mở",
   "a11y.viewFridgePhoto": "Xem ảnh tủ lạnh đầy đủ",
   "a11y.dismissFridgePhoto": "Đóng ảnh tủ lạnh",

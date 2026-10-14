@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Erkannte Zutaten",
   "scanner.add": "Hinzufügen",
   "scanner.addItemPlaceholder": "z. B. Mozzarella, Knoblauch...",
+  "scanner.verifyHint": "Ein Foto zeigt nicht alles (z. B. den genauen Fleischschnitt) – prüfe die Liste und füge Zutaten hinzu oder entferne sie.",
   "scanner.pointAtFridge": "Auf den geöffneten Kühlschrank richten",
   "a11y.viewFridgePhoto": "Vollständiges Kühlschrankfoto anzeigen",
   "a11y.dismissFridgePhoto": "Kühlschrankfoto verwerfen",

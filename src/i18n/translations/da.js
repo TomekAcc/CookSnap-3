@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Genkendte ingredienser",
   "scanner.add": "Tilføj",
   "scanner.addItemPlaceholder": "f.eks. mozzarella, hvidløg...",
+  "scanner.verifyHint": "Et foto viser ikke alt (f.eks. det præcise stykke kød) — tjek listen og tilføj eller fjern ingredienser.",
   "scanner.pointAtFridge": "Ret kameraet mod det åbne køleskab",
   "a11y.viewFridgePhoto": "Vis køleskabsbillede i fuld størrelse",
   "a11y.dismissFridgePhoto": "Luk køleskabsbillede",

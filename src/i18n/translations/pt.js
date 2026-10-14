@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Ingredientes Detectados",
   "scanner.add": "Adicionar",
   "scanner.addItemPlaceholder": "ex: Mussarela, Alho...",
+  "scanner.verifyHint": "Uma foto não mostra tudo (por exemplo, o corte exato da carne) — confira a lista e adicione ou remova ingredientes.",
   "scanner.pointAtFridge": "Aponte para a sua geladeira aberta",
   "a11y.viewFridgePhoto": "Ver foto completa da geladeira",
   "a11y.dismissFridgePhoto": "Dispensar foto da geladeira",

@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Wykryte składniki",
   "scanner.add": "Dodaj",
   "scanner.addItemPlaceholder": "np. mozzarella, czosnek...",
+  "scanner.verifyHint": "Zdjęcie nie pokaże wszystkiego (np. dokładnego rodzaju mięsa) — sprawdź listę i dodaj lub usuń składniki.",
   "scanner.pointAtFridge": "Skieruj aparat na otwartą lodówkę",
   "scanner.pantryCtaTitle": "Zeskanuj swoją spiżarnię",
   "scanner.pantryCtaBody": "Zrób zdjęcie półek w swojej kuchni — CookSnap doda wszystkie produkty do spiżarni i automatycznie uwzględni je w przyszłych przepisach.",

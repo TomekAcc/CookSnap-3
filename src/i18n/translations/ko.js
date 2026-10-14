@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "감지된 재료",
   "scanner.add": "추가",
   "scanner.addItemPlaceholder": "예: 모차렐라, 마늘...",
+  "scanner.verifyHint": "사진으로는 모든 것을 알 수 없어요(예: 고기의 정확한 부위). 목록을 확인하고 재료를 추가하거나 삭제하세요.",
   "scanner.pointAtFridge": "열린 냉장고 내부를 비춰주세요",
   "a11y.viewFridgePhoto": "냉장고 전체 사진 보기",
   "a11y.dismissFridgePhoto": "냉장고 사진 닫기",

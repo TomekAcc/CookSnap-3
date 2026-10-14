@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "पहचानी गई सामग्रियां",
   "scanner.add": "जोड़ें",
   "scanner.addItemPlaceholder": "जैसे मोज़ेरेला, लहसुन...",
+  "scanner.verifyHint": "एक फ़ोटो से सब कुछ नहीं दिखता (जैसे मांस का सही कट) — सूची जाँचें और सामग्री जोड़ें या हटाएँ।",
   "scanner.pointAtFridge": "अपने खुले फ्रिज की ओर कैमरा करें",
   "a11y.viewFridgePhoto": "फ्रिज की पूरी फोटो देखें",
   "a11y.dismissFridgePhoto": "फ्रिज की फोटो बंद करें",

@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Upptäckta ingredienser",
   "scanner.add": "Lägg till",
   "scanner.addItemPlaceholder": "t.ex. mozzarella, vitlök...",
+  "scanner.verifyHint": "Ett foto visar inte allt (till exempel exakt styckdetalj på köttet) — kontrollera listan och lägg till eller ta bort ingredienser.",
   "scanner.pointAtFridge": "Rikta mot ditt öppna kylskåp",
   "a11y.viewFridgePhoto": "Visa hela kylskåpsfotot",
   "a11y.dismissFridgePhoto": "Stäng kylskåpsfoto",

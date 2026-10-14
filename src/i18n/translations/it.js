@@ -120,6 +120,7 @@ export default {
   "scanner.detectedIngredients": "Ingredienti rilevati",
   "scanner.add": "Aggiungi",
   "scanner.addItemPlaceholder": "es. Mozzarella, Aglio...",
+  "scanner.verifyHint": "Una foto non mostra tutto (ad esempio il taglio esatto della carne): controlla l'elenco e aggiungi o rimuovi ingredienti.",
   "scanner.pointAtFridge": "Inquadra il frigo aperto",
   "a11y.viewFridgePhoto": "Visualizza foto intera del frigo",
   "a11y.dismissFridgePhoto": "Chiudi foto del frigo",
