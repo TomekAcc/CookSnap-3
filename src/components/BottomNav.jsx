@@ -39,7 +39,7 @@ const ACTIVE_DARK = "#34D399";
 const INACTIVE = "#8E8E93";
 
 export default function BottomNav() {
-  const { activeTab, setActiveTab, isScanning, t } = useCookAI();
+  const { activeTab, setActiveTab, isScanning, scanRevealActive, t } = useCookAI();
   const { isAnyModalOpen } = useModalState();
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
@@ -53,7 +53,11 @@ export default function BottomNav() {
     setFlattened(false);
   }, [isAnyModalOpen]);
 
-  if (isScanning) return null;
+  // Stay hidden through FridgeScannerHero's post-scan reveal hold too, not
+  // just the raw API call — see scanRevealActive's comment in
+  // CookAIContext. Otherwise the nav could reappear (letting the user tab
+  // away) a few hundred ms before the scan card actually finishes revealing.
+  if (isScanning || scanRevealActive) return null;
 
   const activeColor = isDark ? ACTIVE_DARK : ACTIVE;
   const bottomPad = Math.max(insets.bottom, 8);

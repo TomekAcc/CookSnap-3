@@ -99,6 +99,8 @@ export default function FridgeScannerHero() {
     removeIngredient,
     addIngredient,
     isScanning,
+    scanRevealActive,
+    setScanRevealActive,
     scanningLabel,
     cameraOpen,
     setCameraOpen,
@@ -127,57 +129,33 @@ export default function FridgeScannerHero() {
   // SAME render — which unmounts the entire progress-bar block below
   // (everything gated on scanStage === "scanning") before the fill-to-100%
   // animation, or even the final "100%" text, ever gets a frame on screen.
-  // holdingAtComplete keeps the displayed scanStage pinned at "scanning"
-  // for one deliberate beat after real completion, so the fill + hold
-  // effect further down actually has a mounted bar to animate.
-  const rawScanStage = resolveScanStage(hasScanned, isScanning);
-  const [holdingAtComplete, setHoldingAtComplete] = useState(false);
-  const completionHandledRef = useRef(false);
-  // Confirmed real failure, caught via live instrumentation on
-  // PantryScannerHero's identical setup (same bug here, same fix):
-  // setHoldingAtComplete(true) used to be called from inside the
-  // fill-to-100% effect below, in response to rawScanStage becoming
-  // "completed". That leaves exactly one render in between — rawScanStage
-  // has already flipped, but holdingAtComplete's effect-driven update
-  // hasn't landed yet — where `scanStage` (derived from both) reads
-  // "completed" a full hold-duration too early. That one stray render was
-  // enough for the shrink/reveal effect further down to fire its
-  // completion branch prematurely (marking shrinkStartedRef "started" and
-  // kicking off the badge/ingredients reveal spring), only for the VERY
-  // NEXT render — once holdingAtComplete's real update landed — to revert
-  // scanStage back to "scanning" and hard-reset those same Animated.Values
-  // via the scanning branch, interrupting the spring mid-flight. Because
-  // shrinkStartedRef was already consumed, the real completion 500ms later
-  // never restarted it, leaving the reveal permanently stuck — confirmed on
-  // Pantry via a direct trace showing the spring's own callback reporting
-  // `finished: false` at ~0.1% progress, never recovering.
+  // scanRevealActive keeps the displayed scanStage pinned at "scanning" for
+  // one deliberate beat after real completion, so the fill + hold effect
+  // further down actually has a mounted bar to animate.
   //
-  // Fixed with React's documented "adjust state during render" pattern:
-  // comparing against the previous rawScanStage and calling
-  // setHoldingAtComplete synchronously in the render body (not inside an
-  // effect) folds the correction into the SAME commit, so scanStage can
-  // never be derived as "completed" early — the flicker, and the stuck
-  // animation it caused, can't happen.
-  const prevRawScanStageRef = useRef(rawScanStage);
-  if (prevRawScanStageRef.current !== rawScanStage) {
-    prevRawScanStageRef.current = rawScanStage;
-    if (rawScanStage === "completed" && !holdingAtComplete) {
-      setHoldingAtComplete(true);
-    }
-  }
-  const scanStage = holdingAtComplete ? "scanning" : rawScanStage;
+  // scanRevealActive itself (and the render-phase correction that computes
+  // it with no one-render gap) now lives in CookAIContext, not here — see
+  // its own long comment there for why: this used to be local state
+  // (holdingAtComplete) mirrored out to context for ScannerScreen's
+  // benefit, but mirroring between two separately-updated states always
+  // left a one-render gap somewhere (first inside this component, then,
+  // once that was fixed, one level up between this component and its
+  // ScannerScreen parent). Reading the SAME context value both components
+  // already share removes the relay — and the gap — entirely.
+  const rawScanStage = resolveScanStage(hasScanned, isScanning);
+  const completionHandledRef = useRef(false);
+  const scanStage = scanRevealActive ? "scanning" : rawScanStage;
   // Confirmed real failure, found while verifying the identical fix on
   // PantryScannerHero: leaving this tab AFTER a scan finished, then coming
-  // back, remounts this component fresh — completionHandledRef and
-  // holdingAtComplete both reset, so the effect below saw an already-
-  // "completed" rawScanStage and (wrongly) replayed the whole
-  // fill+hold+reveal choreography as if it had just finished: the
-  // completed photo/pills briefly vanished, the card re-grew, and the
-  // laser overlay's scanning veil flashed back over the photo, before
-  // settling back to "completed" a moment later. Captured once (useRef's
-  // initializer only runs on first render) so the effect can tell "the
-  // scan finished during THIS mount, play the reveal" apart from "we
-  // mounted straight into an already-finished scan, just show it".
+  // back, remounts this component fresh — completionHandledRef resets, so
+  // the effect below saw an already-"completed" rawScanStage and (wrongly)
+  // replayed the whole fill+hold+reveal choreography as if it had just
+  // finished: the completed photo/pills briefly vanished, the card
+  // re-grew, and the laser overlay's scanning veil flashed back over the
+  // photo, before settling back to "completed" a moment later. Captured
+  // once (useRef's initializer only runs on first render) so the effect
+  // can tell "the scan finished during THIS mount, play the reveal" apart
+  // from "we mounted straight into an already-finished scan, just show it".
   const mountedAlreadyCompleteRef = useRef(rawScanStage === "completed");
   const scanHeight = useMemo(() => getScanHeight(), []);
   const hasFood = Array.isArray(ingredients) && ingredients.length > 0;
@@ -254,8 +232,9 @@ export default function FridgeScannerHero() {
   // (unheld) stage so it fires exactly once on true completion, independent
   // of the deliberately-delayed display `scanStage` above. Without this
   // being separate from the shrink/reveal effect below, the fill animation
-  // and the view that unmounts it would land in the same tick — see the
-  // comment on holdingAtComplete above for the full failure this fixes.
+  // and the view that unmounts it would land in the same tick — see
+  // scanRevealActive's comment in CookAIContext for the full failure this
+  // fixes.
   useEffect(() => {
     if (rawScanStage !== "completed") {
       completionHandledRef.current = false;
@@ -274,10 +253,10 @@ export default function FridgeScannerHero() {
       return undefined;
     }
 
-    // holdingAtComplete is already true by now — set synchronously during
-    // render (see the comment above prevRawScanStageRef) the instant
-    // rawScanStage became "completed", not here. This effect only owns the
-    // actual fill animation + hold timer + eventual release.
+    // scanRevealActive is already true by now — set synchronously in
+    // CookAIContext's own render the instant rawScanStage became
+    // "completed", not here. This effect only owns the actual fill
+    // animation + hold timer + eventual release.
     let cancelled = false;
     Animated.timing(progressBarAnim, {
       toValue: 1,
@@ -291,7 +270,7 @@ export default function FridgeScannerHero() {
       // the shrink/reveal effect below swap the view away — long enough
       // to actually register as "done", short enough not to feel laggy.
       setTimeout(() => {
-        if (!cancelled) setHoldingAtComplete(false);
+        if (!cancelled) setScanRevealActive(false);
       }, 380);
     });
 
@@ -318,8 +297,8 @@ export default function FridgeScannerHero() {
     // above: this effect also depends on endScanChoreography, whose
     // identity from context changes as a side effect of committing the
     // scanned ingredients — which fires DURING the post-completion hold
-    // (scanStage still reads "scanning" on purpose, see holdingAtComplete
-    // above). Without this guard, that spurious re-run wiped
+    // (scanStage still reads "scanning" on purpose, see scanRevealActive's
+    // comment in CookAIContext). Without this guard, that spurious re-run wiped
     // progressBarAnim back to 0 and restarted the whole 3.2s phase1 climb
     // from scratch, so the bar visibly dropped from 100% down to ~3%
     // before the completed view took over — worse than the original bug.
@@ -512,7 +491,7 @@ export default function FridgeScannerHero() {
     if (!shrinkStartedRef.current) {
       shrinkStartedRef.current = true;
       // The fill-to-100% itself now happens earlier, in the effect above
-      // keyed on rawScanStage — by the time this branch runs, holdingAtComplete
+      // keyed on rawScanStage — by the time this branch runs, scanRevealActive
       // has already flipped back to false specifically because that fill +
       // visible hold finished, so progressBarAnim/progressPct are already at
       // their real 100% here. Shrink and reveal together — the earlier

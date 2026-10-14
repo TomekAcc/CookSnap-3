@@ -28,6 +28,7 @@ export default function ScannerScreen() {
     setRecipesSectionY,
     hasScanned,
     isScanning,
+    scanRevealActive,
     isGeneratingRecipes,
     generatedRecipes,
     generateRecipes,
@@ -63,16 +64,28 @@ export default function ScannerScreen() {
     generateRecipes();
   };
 
-  const showPreferences = !isScanning;
+  // Confirmed real failure, reported directly by a user: right as a scan
+  // finished, this screen's Generate Recipes button (and the recipe feed /
+  // meal preferences) were already showing while FridgeScannerHero's own
+  // card was still visually mid-reveal underneath — laser fading, progress
+  // bar holding at 100%, pills not faded in yet. isScanning alone flips
+  // false the instant the real result lands, but FridgeScannerHero
+  // deliberately holds its own display a few hundred ms longer so that
+  // moment is actually visible to the user — see scanRevealActive's own
+  // comment in CookAIContext for the full story. Gating on both means this
+  // screen only treats the scan as "done" once the user has actually seen
+  // it finish, not the instant the API result lands.
+  const stillScanning = isScanning || scanRevealActive;
+  const showPreferences = !stillScanning;
   // RecipeFeed always mounts once scanning is done — it owns its own
   // empty / skeleton / populated states internally.
-  const showRecipes = !isScanning;
+  const showRecipes = !stillScanning;
   const foodCount = Array.isArray(ingredients) ? ingredients.length : 0;
   const hasFood = foodCount > 0;
   // Fully hidden (not just greyed) until a fridge photo has actually been
   // scanned AND it detected something — never rendered as a locked/disabled
   // placeholder. It slides into view the instant both are true.
-  const showFloatingCta = hasScanned && hasFood && !isScanning;
+  const showFloatingCta = hasScanned && hasFood && !stillScanning;
   // generatedRecipes stays null until generateRecipes() has run at least
   // once — same "never generated" signal RecipeFeed uses.
   const hasGeneratedOnce = generatedRecipes != null;
@@ -119,7 +132,7 @@ export default function ScannerScreen() {
           // source of the recurring gray strip (empty space inside the
           // ScrollView showing the page background, not the button's own
           // wrapper).
-          paddingBottom: isScanning
+          paddingBottom: stillScanning
             ? insets.bottom + 40
             : showFloatingCta
               ? insets.bottom + 140
@@ -127,8 +140,8 @@ export default function ScannerScreen() {
         }}
         keyboardShouldPersistTaps="handled"
         nestedScrollEnabled
-        scrollEnabled={!isScanning}
-        bounces={!isScanning}
+        scrollEnabled={!stillScanning}
+        bounces={!stillScanning}
         enableOnAndroid
         extraScrollHeight={20}
         // Confirmed real feedback: the library's 250ms default here waits
@@ -234,7 +247,7 @@ export default function ScannerScreen() {
         >
           <TouchableOpacity
             onPress={handleGeneratePress}
-            disabled={isGeneratingRecipes || isScanning}
+            disabled={isGeneratingRecipes || stillScanning}
             activeOpacity={0.9}
             style={styles.ctaPrimary}
           >

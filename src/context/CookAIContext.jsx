@@ -750,12 +750,59 @@ export function CookAIProvider({ children }) {
   // (this becomes true) — never a fabricated batch dressed up as real.
   const [recipeGenerationFailed, setRecipeGenerationFailed] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  // Confirmed real failure, reported directly by a user: right as a scan
+  // finished, the Generate Recipes button (and the recipe feed / meal
+  // preferences below it) would already be showing on ScannerScreen while
+  // FridgeScannerHero's own card was still visually mid-reveal — laser
+  // overlay fading, progress bar holding at 100%, ingredient pills not
+  // faded in yet. Root cause: isScanning flips false the INSTANT the real
+  // Vision result is committed (see endScanChoreography below), but
+  // FridgeScannerHero deliberately keeps its own displayed scanStage pinned
+  // at "scanning" for a few hundred ms longer after that — a hold so the
+  // progress bar visibly reaches 100% and the shrink/reveal motion has time
+  // to play, instead of snapping straight to the finished state.
+  // ScannerScreen's gating was never told about that hold — it only ever
+  // watched raw isScanning — so for that whole window, two screens
+  // disagreed about whether the scan was "done".
+  //
+  // First fix attempt kept the hold flag local to FridgeScannerHero and
+  // mirrored it out to a second context state via a render-phase update
+  // (the same trick used below for computing the hold itself). That still
+  // left a one-render flicker: ScannerScreen is FridgeScannerHero's PARENT
+  // and renders first in any commit, so by the time a CHILD's render-phase
+  // update corrects an ancestor's/context's state, the parent has already
+  // rendered once in this same pass using the stale value — React's
+  // "immediate retry, no visible gap" guarantee covers a component
+  // correcting its OWN state (or a not-yet-rendered ancestor's), not
+  // patching a parent's already-produced output. Confirmed live: the
+  // Generate Recipes button and bottom nav flickered back into view for a
+  // single frame before disappearing again, roughly 1 run in 3.
+  //
+  // Fixed by computing the hold itself here — the one place both
+  // FridgeScannerHero and ScannerScreen read it from, in the same render
+  // pass, with no relay between two separately-updated states at all.
+  const [scanRevealActive, setScanRevealActive] = useState(false);
   // null until an append-mode ("Scan More") scan sets an explicit label —
   // the render side falls back to the translated default/step text so
   // this never needs a value baked in before `t` exists.
   const [scanningLabel, setScanningLabel] = useState(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [fridgePhoto, setFridgePhoto] = useState(null);
+  // See the comment on scanRevealActive above: this is the single place
+  // that decides "the real scan just finished, hold the completed state
+  // for a beat before anything outside the scan card treats it as done."
+  // A render-phase conditional update (not a useEffect) so the correction
+  // always lands in the SAME commit that flipped isScanning false — no
+  // consumer of scanRevealActive, however deep, can ever observe a stale
+  // "not holding" value for even one frame.
+  const rawScanStageForHold = !fridgePhoto ? "idle" : isScanning ? "scanning" : "completed";
+  const prevRawScanStageForHoldRef = useRef(rawScanStageForHold);
+  if (prevRawScanStageForHoldRef.current !== rawScanStageForHold) {
+    prevRawScanStageForHoldRef.current = rawScanStageForHold;
+    if (rawScanStageForHold === "completed" && !scanRevealActive) {
+      setScanRevealActive(true);
+    }
+  }
   /** Next capture appends to existing ingredients (Scan More) instead of replacing. */
   const scanAppendModeRef = useRef(false);
 
@@ -2389,6 +2436,8 @@ export function CookAIProvider({ children }) {
       recipesSectionY,
       scrollToRecipesTop,
       isScanning,
+      scanRevealActive,
+      setScanRevealActive,
       scanningLabel,
       scanStartedAt,
       cameraOpen,
@@ -2495,6 +2544,8 @@ export function CookAIProvider({ children }) {
       recipesSectionY,
       scrollToRecipesTop,
       isScanning,
+      scanRevealActive,
+      setScanRevealActive,
       scanningLabel,
       scanStartedAt,
       cameraOpen,
