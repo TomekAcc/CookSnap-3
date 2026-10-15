@@ -177,14 +177,17 @@ const styles = StyleSheet.create({
     gap: SPACE.md + 2,
     borderRadius: RADIUS.card,
     borderWidth: 1,
-    padding: SPACE.lg,
+    // 18 (was 16): the text block needs more air around it than the tile
+    // and rail do, since a wrapped title plus a wrapped meta line is up to
+    // four stacked lines.
+    padding: SPACE.lg + 2,
     // 16px between cards. This was 32px (SPACE.xxxl) after an earlier "cards
     // blend together" complaint, but that fixed the wrong thing: the gap was
     // twice the card's own inner padding, so the list read as loose floating
     // islands and each screen showed fewer recipes. The cards are already
     // clearly separate surfaces (own background, border and radius), so a gap
     // equal to the inner padding keeps them distinct and groups them as one list.
-    marginBottom: SPACE.lg,
+    marginBottom: SPACE.lg + 2,
   },
   tile: {
     width: 76,
@@ -206,14 +209,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: TYPE.title,
     fontWeight: WEIGHT.bold,
-    lineHeight: 24,
+    lineHeight: 25,
     letterSpacing: -0.3,
   },
+  // Looser than the title's ratio on purpose: the meta line is small,
+  // lighter text that often wraps onto a second line right under a
+  // two-line title, and at 18 those three lines read as one cramped block.
   meta: {
     fontSize: TYPE.small,
     fontWeight: WEIGHT.medium,
-    marginTop: SPACE.sm,
-    lineHeight: 18,
+    marginTop: SPACE.sm + 3,
+    lineHeight: 20,
   },
   metaStrong: {
     fontWeight: WEIGHT.bold,
