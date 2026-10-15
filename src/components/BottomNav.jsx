@@ -40,7 +40,26 @@ const ACTIVE_DARK = "#34D399";
 const INACTIVE = "#8E8E93";
 
 export default function BottomNav() {
-  const { activeTab, setActiveTab, isScanning, scanRevealActive, t } = useCookAI();
+  const {
+    activeTab,
+    setActiveTab,
+    isScanning,
+    scanRevealActive,
+    generatedRecipes,
+    hasPantryScanned,
+    t,
+  } = useCookAI();
+  // The Scanner used to show a whole "Scan your pantry" card under the
+  // recipes to make sure people found this tab (they scan the fridge, get
+  // recipes, and never notice Pantry exists). A card duplicating a tab that is
+  // already on screen was clutter; a small dot on the tab does the same job
+  // quietly. Shown after the first generation until the pantry has been
+  // scanned or the tab opened this session.
+  const [pantrySeen, setPantrySeen] = React.useState(false);
+  React.useEffect(() => {
+    if (activeTab === "pantry") setPantrySeen(true);
+  }, [activeTab]);
+  const showPantryDot = generatedRecipes != null && !hasPantryScanned && !pantrySeen;
   const { isAnyModalOpen } = useModalState();
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
@@ -115,11 +134,29 @@ export default function BottomNav() {
               accessibilityState={{ selected: isActive }}
               style={styles.tab}
             >
-              <Icon
-                size={ICON_SIZE}
-                color={isActive ? activeColor : INACTIVE}
-                strokeWidth={isActive ? 2.4 : 1.8}
-              />
+              <View>
+                <Icon
+                  size={ICON_SIZE}
+                  color={isActive ? activeColor : INACTIVE}
+                  strokeWidth={isActive ? 2.4 : 1.8}
+                />
+                {tab.id === "pantry" && showPantryDot ? (
+                  <View
+                    pointerEvents="none"
+                    style={{
+                      position: "absolute",
+                      top: -2,
+                      right: -4,
+                      width: 9,
+                      height: 9,
+                      borderRadius: 4.5,
+                      backgroundColor: "#10B981",
+                      borderWidth: 1.5,
+                      borderColor: colors.card,
+                    }}
+                  />
+                ) : null}
+              </View>
               {/* The clipping guarantee lives on THIS plain View, not on the
                   Text's own numberOfLines/ellipsizeMode — on web, a Text
                   that's a column-flex child only shrinks to trigger its

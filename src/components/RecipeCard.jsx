@@ -178,18 +178,13 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.card,
     borderWidth: 1,
     padding: SPACE.lg,
-    // Confirmed real feedback: titles no longer get truncated to one line
-    // (see "Unrestrict recipe title lines"), so a normal 2-3 word title
-    // routinely wraps to 2 lines now, making each card taller — at the old
-    // SPACE.lg (16px) gap, one card's wrapped title sat close enough to the
-    // next card's title that consecutive recipes read as blending together
-    // rather than as clearly separate cards. First bumped to SPACE.xxl
-    // (24px) — confirmed on a real device that still wasn't enough (the
-    // app's real custom font/real device text metrics render visibly
-    // denser than the web preview this was first checked against), so
-    // moved to SPACE.xxxl (32px), the top of the spacing scale, for an
-    // unambiguous gap this time.
-    marginBottom: SPACE.xxxl,
+    // 16px between cards. This was 32px (SPACE.xxxl) after an earlier "cards
+    // blend together" complaint, but that fixed the wrong thing: the gap was
+    // twice the card's own inner padding, so the list read as loose floating
+    // islands and each screen showed fewer recipes. The cards are already
+    // clearly separate surfaces (own background, border and radius), so a gap
+    // equal to the inner padding keeps them distinct and groups them as one list.
+    marginBottom: SPACE.lg,
   },
   tile: {
     width: 76,
