@@ -11,6 +11,17 @@ import { useTheme } from "../context/ThemeContext";
 import RecipeCard from "../components/RecipeCard";
 import IconBadge from "../components/IconBadge";
 
+// "420 kcal · Dla 2 osób" — only the parts the recipe actually has. Calories
+// are stored as a string and read "—" when the model gave none; that and an
+// empty value are skipped rather than shown.
+function savedDetailLine(recipe) {
+  const clean = (v) => {
+    const s = String(v == null ? "" : v).trim();
+    return s && s !== "—" && !/^0\s*kcal$/i.test(s) ? s : "";
+  };
+  return [clean(recipe?.calories), clean(recipe?.servings)].filter(Boolean).join("  ·  ");
+}
+
 export default function SavedScreen() {
   const tabScroll = useTabScroll("saved");
   const insets = useSafeAreaInsets();
@@ -119,6 +130,9 @@ export default function SavedScreen() {
               recipe={recipe}
               isFavorite
               showFridgeMatch={false}
+              showClock
+              showChevron={false}
+              secondaryLine={savedDetailLine(recipe)}
               onToggleFavorite={() => toggleSaveRecipe(recipe)}
               onSelect={(r) => setSelectedRecipe(r)}
             />

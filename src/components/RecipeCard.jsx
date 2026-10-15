@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
-import { Heart, ChevronRight } from "lucide-react-native";
+import { Heart, ChevronRight, Clock } from "lucide-react-native";
 import {
   getDishEmojiAndColor,
   resolveCategoryBadgeColors,
@@ -51,6 +51,12 @@ export default function RecipeCard({
   // list shows the same card without it (a saved recipe is no longer tied to
   // today's fridge), leaving just the cooking time.
   showFridgeMatch = true,
+  // Saved-list layout: a clock icon in front of the time, an optional quiet
+  // second line (calories, servings…) and no chevron — the heart is already
+  // the card's one control, and the whole card is obviously tappable.
+  showClock = false,
+  secondaryLine = "",
+  showChevron = true,
 }) {
   const { colors, isDark } = useTheme();
   const { t } = useCookAI();
@@ -113,22 +119,39 @@ export default function RecipeCard({
             scan for, so it carries the weight and the full ink; the fridge
             match trails behind it lighter. Both halves at the same weight
             is what read as messy. */}
-        <Text
-          style={[styles.meta, { color: colors.textSecondary }]}
-          numberOfLines={2}
-        >
-          <Text style={[styles.metaStrong, { color: colors.textPrimary }]}>
-            {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
+        {showClock ? (
+          <View style={styles.timeRow}>
+            <Clock size={14} color={colors.textSecondary} strokeWidth={2.2} />
+            <Text style={[styles.timeText, { color: colors.textPrimary }]}>
+              {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
+            </Text>
+          </View>
+        ) : (
+          <Text
+            style={[styles.meta, { color: colors.textSecondary }]}
+            numberOfLines={2}
+          >
+            <Text style={[styles.metaStrong, { color: colors.textPrimary }]}>
+              {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
+            </Text>
+            {showFridgeMatch ? (
+              <>
+                <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
+                  {"  ·  "}
+                </Text>
+                {t("recipeCard.usesFridgeItems", { count: matchCount })}
+              </>
+            ) : null}
           </Text>
-          {showFridgeMatch ? (
-            <>
-              <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
-                {"  ·  "}
-              </Text>
-              {t("recipeCard.usesFridgeItems", { count: matchCount })}
-            </>
-          ) : null}
-        </Text>
+        )}
+        {secondaryLine ? (
+          <Text
+            style={[styles.secondary, { color: colors.textSecondary }]}
+            numberOfLines={2}
+          >
+            {secondaryLine}
+          </Text>
+        ) : null}
       </View>
 
       <View style={styles.rail}>
@@ -168,11 +191,11 @@ export default function RecipeCard({
 
         {/* Decorative: the card itself is the button, so this must not be
             its own tap target competing with the heart beside it. */}
-        <ChevronRight
+        {showChevron ? <ChevronRight
           size={ICON.md}
           color={colors.textTertiary || "#CBD5E1"}
           strokeWidth={ICON.stroke}
-        />
+        /> : null}
       </View>
     </TouchableOpacity>
   );
@@ -228,6 +251,23 @@ const styles = StyleSheet.create({
     fontWeight: WEIGHT.medium,
     marginTop: SPACE.sm + 3,
     lineHeight: 20,
+  },
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: SPACE.sm + 3,
+  },
+  timeText: {
+    fontSize: TYPE.small,
+    fontWeight: WEIGHT.bold,
+    lineHeight: 20,
+  },
+  secondary: {
+    fontSize: TYPE.small,
+    fontWeight: WEIGHT.medium,
+    lineHeight: 20,
+    marginTop: 1,
   },
   metaStrong: {
     fontWeight: WEIGHT.bold,
