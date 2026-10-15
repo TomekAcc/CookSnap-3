@@ -27,8 +27,7 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
-import { FULL_DIETARY_OPTIONS } from "../data/dietaryOptions";
-import DietIcon from "../components/DietIcon";
+import DietList from "../components/DietList";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
 import IconBadge from "../components/IconBadge";
 import StandardModal from "../components/StandardModal";
@@ -169,89 +168,7 @@ export default function SettingsScreen() {
             {t("settings.dietaryRestrictions")}
           </Text>
 
-          <View
-            style={{
-              backgroundColor: colors.card,
-              borderRadius: 18,
-              padding: 6,
-              borderWidth: 1,
-              borderColor: colors.cardBorder,
-            }}
-          >
-            {FULL_DIETARY_OPTIONS.map((item, index) => {
-              const isEnabled = !!dietaryRestrictions[item.id];
-              const isLast = index === FULL_DIETARY_OPTIONS.length - 1;
-
-              return (
-                // Confirmed real failure, not a hypothetical: this used to
-                // be a plain View with only the Switch itself interactive —
-                // tapping the label text (which looks exactly as tappable
-                // as the theme/units buttons elsewhere on this screen) did
-                // nothing at all. The whole row is now the touch target,
-                // same as the theme/units rows; the Switch's own
-                // onValueChange stays as a second path for anyone who taps
-                // precisely on it, and pointerEvents="none" keeps that tap
-                // from also bubbling up and double-toggling the row.
-                <TouchableOpacity
-                  key={item.id}
-                  onPress={() => toggleDietaryRestriction(item.id)}
-                  activeOpacity={0.7}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    paddingVertical: 14,
-                    paddingHorizontal: 12,
-                    borderBottomWidth: isLast ? 0 : 1,
-                    borderBottomColor: colors.cardBorder,
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 12,
-                      flex: 1,
-                      paddingRight: 8,
-                    }}
-                  >
-                    <DietIcon id={item.id} size={36} active={isEnabled} />
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        style={{
-                          fontSize: 15,
-                          fontWeight: "800",
-                          color: colors.textPrimary,
-                        }}
-                      >
-                        {t(`diet.${item.id}.name`)}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          color: colors.textSecondary,
-                          marginTop: 2,
-                        }}
-                      >
-                        {t(`diet.${item.id}.desc`)}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <Switch
-                    value={isEnabled}
-                    onValueChange={() => toggleDietaryRestriction(item.id)}
-                    pointerEvents="none"
-                    trackColor={{
-                      false: isDark ? "#334155" : "#E2E8F0",
-                      true: "#10B981",
-                    }}
-                    thumbColor="#FFFFFF"
-                  />
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          <DietList />
         </View>
 
         {/* Custom Diet — PRO only. Two free-text lists rather than an
