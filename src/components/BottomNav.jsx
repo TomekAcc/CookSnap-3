@@ -7,6 +7,7 @@ import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { animateLayout } from "../utils/layoutMotion";
+import { scrollTabToTop } from "../hooks/useTabScroll";
 import { breakLigatures } from "../utils/textLigatures";
 
 // Same delayed-flatten pattern as Header.jsx: a live BlurView is one of the
@@ -102,7 +103,10 @@ export default function BottomNav() {
             <TouchableOpacity
               key={tab.id}
               onPress={() => {
-                if (tab.id === activeTab) return;
+                if (tab.id === activeTab) {
+                  scrollTabToTop(tab.id);
+                  return;
+                }
                 animateLayout();
                 setActiveTab(tab.id);
               }}

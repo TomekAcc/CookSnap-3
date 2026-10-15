@@ -1,3 +1,4 @@
+import { useTabScroll } from "../hooks/useTabScroll";
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -32,6 +33,7 @@ import IconBadge from "../components/IconBadge";
 import StandardModal from "../components/StandardModal";
 
 export default function SettingsScreen() {
+  const tabScroll = useTabScroll("settings");
   const insets = useSafeAreaInsets();
   const { theme, toggleTheme, isDark, colors } = useTheme();
   const {
@@ -76,6 +78,11 @@ export default function SettingsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView
+        ref={tabScroll.setRef}
+        onScroll={tabScroll.onScroll}
+        onContentSizeChange={tabScroll.onContentSizeChange}
+        onScrollBeginDrag={tabScroll.onScrollBeginDrag}
+        scrollEventThrottle={tabScroll.scrollEventThrottle}
         contentContainerStyle={{
           paddingHorizontal: 20,
           paddingTop: 16,

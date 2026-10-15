@@ -1,3 +1,4 @@
+import { useTabScroll } from "../hooks/useTabScroll";
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,6 +21,7 @@ import Header from "../components/Header";
 import { breakLigatures } from "../utils/textLigatures";
 
 export default function ProfileScreen() {
+  const tabScroll = useTabScroll("profile");
   const insets = useSafeAreaInsets();
   const {
     dietaryRestrictions,
@@ -95,6 +97,11 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView
+      ref={tabScroll.setRef}
+      onScroll={tabScroll.onScroll}
+      onContentSizeChange={tabScroll.onContentSizeChange}
+      onScrollBeginDrag={tabScroll.onScrollBeginDrag}
+      scrollEventThrottle={tabScroll.scrollEventThrottle}
       style={{ flex: 1, backgroundColor: colors.bg }}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{

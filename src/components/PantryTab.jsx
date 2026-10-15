@@ -1,3 +1,4 @@
+import { useTabScroll } from "../hooks/useTabScroll";
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import {
   View,
@@ -49,6 +50,7 @@ const CATEGORY_LABEL_KEYS = {
 };
 
 export default function PantryTab() {
+  const tabScroll = useTabScroll("pantry");
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const {
@@ -201,6 +203,9 @@ export default function PantryTab() {
   return (
     <>
       <ScrollView
+        ref={tabScroll.setRef}
+        onScroll={tabScroll.onScroll}
+        onContentSizeChange={tabScroll.onContentSizeChange}
         className="flex-1"
         style={{ backgroundColor: colors.bg }}
         showsVerticalScrollIndicator={false}
@@ -208,7 +213,11 @@ export default function PantryTab() {
           paddingBottom: insets.bottom + 120,
         }}
         keyboardShouldPersistTaps="handled"
-        onScrollBeginDrag={() => setOpenSwipeId(null)}
+        scrollEventThrottle={tabScroll.scrollEventThrottle}
+        onScrollBeginDrag={() => {
+          tabScroll.onScrollBeginDrag();
+          setOpenSwipeId(null);
+        }}
       >
         <Header />
 

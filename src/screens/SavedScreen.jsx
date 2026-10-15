@@ -1,3 +1,4 @@
+import { useTabScroll } from "../hooks/useTabScroll";
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -42,6 +43,7 @@ function SavedRecipeThumb({ dishTitle, dishType }) {
 }
 
 export default function SavedScreen() {
+  const tabScroll = useTabScroll("saved");
   const insets = useSafeAreaInsets();
   const { savedRecipes, toggleSaveRecipe, t } = useCookAI();
   const { setSelectedRecipe } = useModalState();
@@ -49,6 +51,11 @@ export default function SavedScreen() {
 
   return (
     <ScrollView
+      ref={tabScroll.setRef}
+      onScroll={tabScroll.onScroll}
+      onContentSizeChange={tabScroll.onContentSizeChange}
+      onScrollBeginDrag={tabScroll.onScrollBeginDrag}
+      scrollEventThrottle={tabScroll.scrollEventThrottle}
       style={{ flex: 1, backgroundColor: colors.bg }}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{

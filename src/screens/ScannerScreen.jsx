@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
+import { useTabScroll } from "../hooks/useTabScroll";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sparkles, RefreshCw, X } from "lucide-react-native";
@@ -40,6 +41,7 @@ export default function ScannerScreen() {
     setActiveTab,
     t,
   } = useCookAI();
+  const tabScroll = useTabScroll("scanner", scrollViewRef);
   const { setProModalOpen } = useModalState();
 
   // Shown right on the CTA so a free user sees how many they have left
@@ -119,9 +121,11 @@ export default function ScannerScreen() {
           already sits at a fixed offset from the bottom regardless of
           keyboard state, same as before this change. */}
       <KeyboardAwareScrollView
-        innerRef={(ref) => {
-          scrollViewRef.current = ref;
-        }}
+        innerRef={tabScroll.setRef}
+        onScroll={tabScroll.onScroll}
+        onContentSizeChange={tabScroll.onContentSizeChange}
+        onScrollBeginDrag={tabScroll.onScrollBeginDrag}
+        scrollEventThrottle={tabScroll.scrollEventThrottle}
         style={[styles.flex, { overflow: "hidden" }]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
