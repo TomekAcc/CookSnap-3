@@ -1464,6 +1464,12 @@ export function CookAIProvider({ children }) {
     toastTimerRef.current = setTimeout(() => setToast(null), duration);
   }, []);
 
+  // Tap / swipe-up dismiss from the Toast component.
+  const hideToast = useCallback(() => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setToast(null);
+  }, []);
+
   // Removing a vision-detected ingredient (as opposed to one the user typed
   // in themselves via AddIngredientModal) is the user telling us the scan
   // got it wrong — the same "wasn't actually there" signal
@@ -2514,6 +2520,7 @@ export function CookAIProvider({ children }) {
       markFirstScanHintShown,
       toast,
       showToast,
+      hideToast,
     }),
     [
       activeTab,
@@ -2621,6 +2628,7 @@ export function CookAIProvider({ children }) {
       markFirstScanHintShown,
       toast,
       showToast,
+      hideToast,
     ]
   );
 

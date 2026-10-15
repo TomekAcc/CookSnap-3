@@ -282,7 +282,8 @@ export default function ProSubscriptionModal() {
     close();
     showToast(
       plan.trial ? t("pro.trialStartedToast") : t("pro.welcomeToast"),
-      "success"
+      "pro",
+      4200
     );
   };
 

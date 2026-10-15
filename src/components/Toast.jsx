@@ -1,69 +1,94 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, Text } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, PanResponder, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Check, AlertTriangle, Info, Crown } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 
-// Light tinted card + colored border + colored text, matching the pattern
-// already used everywhere else in the app (Pantry's "+ Add" button, the
-// favorited-recipe state, selected preference tiles) — not the solid
-// dark-navy fill this used to be. That fill predates the whole light/green
-// redesign and never got touched, so it was the one surface left clashing
-// with everything around it; it also never adapted to dark mode at all,
-// same colors either way.
-const VARIANT_STYLE = {
-  success: {
-    bgLight: "#ECFDF5",
-    bgDark: "rgba(6, 78, 59, 0.94)",
-    border: "#10B981",
-    textLight: "#065F46",
-    textDark: "#6EE7B7",
-    icon: "✅",
-  },
-  error: {
-    bgLight: "#FEF2F2",
-    bgDark: "rgba(127, 29, 29, 0.94)",
-    border: "#EF4444",
-    textLight: "#991B1B",
-    textDark: "#FCA5A5",
-    icon: "⚠️",
-  },
-  info: {
-    bgLight: "#FFFBEB",
-    bgDark: "rgba(120, 53, 15, 0.94)",
-    border: "#F59E0B",
-    textLight: "#92400E",
-    textDark: "#FCD34D",
-    icon: "ℹ️",
-  },
+// A solid card on the app's normal surface, with a small vector icon in a
+// tinted disc carrying the variant colour. It used to be a see-through mint /
+// red / amber box with a thick coloured outline and an emoji icon next to an
+// emoji inside the message — the cards behind showed through it, and emoji
+// glyphs are drawn differently by Apple and Google, unlike every other icon
+// in the app. "pro" is the brand moment (trial started / PRO activated) and
+// gets the amber crown instead of a generic check.
+const VARIANTS = {
+  success: { Icon: Check, color: "#059669", tint: "rgba(16,185,129,0.14)", fill: false },
+  error: { Icon: AlertTriangle, color: "#DC2626", tint: "rgba(239,68,68,0.14)", fill: false },
+  info: { Icon: Info, color: "#D97706", tint: "rgba(245,158,11,0.16)", fill: false },
+  pro: { Icon: Crown, color: "#FF9F0A", tint: "rgba(255,159,10,0.16)", fill: true },
 };
 
+// Messages carry a leading emoji from the i18n layer ("🎉 Trial started…").
+// The icon disc replaces it. Surrogate-pair match (Hermes-safe, same approach
+// as ProSubscriptionModal) plus the BMP symbol block (✅ ⚠️ ℹ️).
+function stripLeadingEmoji(text) {
+  return String(text || "")
+    .replace(/^(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[☀-➿])️?\s*/, "")
+    .trim();
+}
+
+const HIDDEN_OFFSET = -28;
+
 export default function Toast() {
-  const { toast } = useCookAI();
-  const { isDark } = useTheme();
+  const { toast, hideToast } = useCookAI();
+  const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(HIDDEN_OFFSET)).current;
+  // Keeps the last toast on screen while it animates out.
+  const [shown, setShown] = useState(null);
+  const hideRef = useRef(hideToast);
+  hideRef.current = hideToast;
 
   useEffect(() => {
     if (toast) {
-      Animated.sequence([
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 200,
+      setShown(toast);
+      opacity.setValue(0);
+      translateY.setValue(HIDDEN_OFFSET);
+      Animated.parallel([
+        Animated.timing(opacity, { toValue: 1, duration: 180, useNativeDriver: true }),
+        Animated.spring(translateY, {
+          toValue: 0,
+          friction: 9,
+          tension: 70,
           useNativeDriver: true,
         }),
       ]).start();
-    } else {
-      opacity.setValue(0);
+    } else if (shown) {
+      Animated.parallel([
+        Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: true }),
+        Animated.timing(translateY, {
+          toValue: HIDDEN_OFFSET,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+      ]).start(({ finished }) => {
+        if (finished) setShown(null);
+      });
     }
-  }, [toast, opacity]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toast]);
 
-  if (!toast) return null;
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_e, g) => g.dy < -6 && Math.abs(g.dy) > Math.abs(g.dx),
+      onPanResponderRelease: (_e, g) => {
+        if (g.dy < -14 || g.vy < -0.4) hideRef.current?.();
+      },
+    })
+  ).current;
 
-  const style = VARIANT_STYLE[toast.type] || VARIANT_STYLE.info;
+  if (!shown) return null;
+
+  const v = VARIANTS[shown.type] || VARIANTS.info;
+  const Icon = v.Icon;
 
   return (
     <Animated.View
+      {...panResponder.panHandlers}
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
       style={{
         position: "absolute",
         // Sit below notch / Dynamic Island — never at y=0
@@ -72,34 +97,56 @@ export default function Toast() {
         right: 16,
         zIndex: 999,
         opacity,
-        backgroundColor: isDark ? style.bgDark : style.bgLight,
-        borderColor: style.border,
-        borderWidth: 1.5,
-        borderRadius: 18,
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        flexDirection: "row",
-        alignItems: "center",
-        shadowColor: "#0F172A",
-        shadowOpacity: isDark ? 0.3 : 0.1,
-        shadowRadius: 12,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 4,
+        transform: [{ translateY }],
       }}
     >
-      <Text style={{ fontSize: 16, marginRight: 8 }}>{style.icon}</Text>
-      <Text
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={() => hideToast?.()}
         style={{
-          color: isDark ? style.textDark : style.textLight,
-          fontWeight: "700",
-          fontSize: 13,
-          flex: 1,
+          backgroundColor: colors.card,
+          borderColor: colors.cardBorder,
+          borderWidth: 1,
+          borderRadius: 18,
+          paddingVertical: 12,
+          paddingLeft: 12,
+          paddingRight: 16,
+          flexDirection: "row",
+          alignItems: "center",
+          shadowColor: "#0F172A",
+          shadowOpacity: isDark ? 0.45 : 0.14,
+          shadowRadius: 16,
+          shadowOffset: { width: 0, height: 6 },
+          elevation: 6,
         }}
-        numberOfLines={2}
-        ellipsizeMode="tail"
       >
-        {toast.message}
-      </Text>
+        <View
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 16,
+            backgroundColor: v.tint,
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 12,
+          }}
+        >
+          <Icon size={17} color={v.color} fill={v.fill ? v.color : "none"} strokeWidth={2.6} />
+        </View>
+        <Text
+          style={{
+            color: colors.textPrimary,
+            fontWeight: "700",
+            fontSize: 14,
+            lineHeight: 19,
+            flex: 1,
+          }}
+          numberOfLines={3}
+          ellipsizeMode="tail"
+        >
+          {stripLeadingEmoji(shown.message)}
+        </Text>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
