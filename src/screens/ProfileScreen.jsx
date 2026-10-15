@@ -1,6 +1,7 @@
 import { useTabScroll } from "../hooks/useTabScroll";
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   UserRound,
@@ -10,6 +11,7 @@ import {
   History,
   MessageCircleQuestion,
   ChevronRight,
+  Check,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
@@ -196,34 +198,91 @@ export default function ProfileScreen() {
           // this banner used to render unconditionally regardless of isPro.
           // Swapped for a status confirmation instead of hiding it outright,
           // since disappearing entirely reads as "did my purchase not work?"
-          <TouchableOpacity
-            onPress={() => setProModalOpen(true)}
+          // Same warm amber identity as the paywall and the upsell card: amber
+          // wash on the normal card surface, solid crown disc with a small
+          // green "active" tick. Not tappable on purpose — it used to open the
+          // buy sheet for someone who already owns PRO; a manage-subscription
+          // action belongs here once real billing exists.
+          <View
+            accessibilityRole="summary"
             style={{
-              backgroundColor: "#1E293B",
+              backgroundColor: colors.card,
+              borderColor: "rgba(255,159,10,0.35)",
+              borderWidth: 1,
               borderRadius: 24,
-              padding: 20,
+              padding: 18,
               marginBottom: 24,
               flexDirection: "row",
               alignItems: "center",
+              overflow: "hidden",
             }}
-            activeOpacity={0.85}
           >
-            <Crown size={28} color="#F59E0B" />
-            <View style={{ flex: 1, marginLeft: 12 }}>
-              <Text style={{ color: "#FFFFFF", fontWeight: "900", fontSize: 16 }}>
+            <LinearGradient
+              pointerEvents="none"
+              colors={["rgba(255,159,10,0.16)", "rgba(255,159,10,0.04)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+            <View>
+              <View
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  backgroundColor: colors.accentAmber,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  shadowColor: "#FF9F0A",
+                  shadowOpacity: 0.35,
+                  shadowRadius: 10,
+                  shadowOffset: { width: 0, height: 4 },
+                }}
+              >
+                <Crown size={24} color="#FFFFFF" fill="#FFFFFF" />
+              </View>
+              <View
+                style={{
+                  position: "absolute",
+                  right: -3,
+                  bottom: -3,
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  backgroundColor: "#10B981",
+                  borderWidth: 2,
+                  borderColor: colors.card,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Check size={11} color="#FFFFFF" strokeWidth={3.5} />
+              </View>
+            </View>
+            <View style={{ flex: 1, marginLeft: 16 }}>
+              <Text
+                style={{
+                  color: colors.textPrimary,
+                  fontWeight: "900",
+                  fontSize: 17,
+                  letterSpacing: -0.3,
+                }}
+              >
                 {t("profile.proActiveTitle")}
               </Text>
               <Text
                 style={{
-                  color: "rgba(255, 255, 255, 0.6)",
-                  fontSize: 14,
+                  color: colors.textSecondary,
+                  fontSize: 13,
                   fontWeight: "500",
+                  lineHeight: 18,
+                  marginTop: 2,
                 }}
               >
                 {t("profile.proActiveSubtitle")}
               </Text>
             </View>
-          </TouchableOpacity>
+          </View>
         ) : (
           <TouchableOpacity
             onPress={() => setProModalOpen(true)}
