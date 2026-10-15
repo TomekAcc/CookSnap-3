@@ -22,14 +22,6 @@ const CARD_SHADOW = Platform.select({
   android: { elevation: 1 },
 });
 
-// Polish (and Czech/Slovak) typography never leaves a one-letter word ("z",
-// "w", "i", "o", "u", "a") hanging at the end of a line — "Sałatka z /
-// Awokado" should wrap as "Sałatka / z Awokado". A no-break space after such
-// a word keeps it with the next one. Harmless in other languages.
-function keepShortWordsTogether(text) {
-  return String(text || "").replace(/(^|\s)([zwiouaZWIOUA])\s+/g, "$1$2\u00A0");
-}
-
 /**
  * Recipe card — one row: dish tile, title, a single meta line, and a rail
  * carrying the heart and a chevron. The whole card is the tap target.
@@ -110,7 +102,7 @@ export default function RecipeCard({
           // Usunięto limit numberOfLines oraz skalowanie
           // Tytuły ułożą się naturalnie, a ich zwięzłość zapewni prompt Gemini
         >
-          {keepShortWordsTogether(safeRecipe.title)}
+          {safeRecipe.title}
         </Text>
 
         {/* One line, with a hierarchy inside it: the time is the fact you
