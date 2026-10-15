@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
-import { Heart, ChevronRight, Clock } from "lucide-react-native";
+import { Heart, ChevronRight } from "lucide-react-native";
 import {
   getDishEmojiAndColor,
   resolveCategoryBadgeColors,
@@ -51,12 +51,9 @@ export default function RecipeCard({
   // list shows the same card without it (a saved recipe is no longer tied to
   // today's fridge), leaving just the cooking time.
   showFridgeMatch = true,
-  // Saved-list layout: a clock icon in front of the time, an optional quiet
-  // second line (calories, servings…) and no chevron — the heart is already
-  // the card's one control, and the whole card is obviously tappable.
-  showClock = false,
-  secondaryLine = "",
-  showChevron = true,
+  // Text after the cooking time instead of the fridge match — the Saved list
+  // passes "420 kcal · Dla 2 osób" so it keeps the exact same card.
+  metaSuffix = "",
 }) {
   const { colors, isDark } = useTheme();
   const { t } = useCookAI();
@@ -75,6 +72,10 @@ export default function RecipeCard({
       : Array.isArray(safeRecipe.ingredients)
         ? safeRecipe.ingredients.length
         : 3);
+
+  const trailingMeta = showFridgeMatch
+    ? t("recipeCard.usesFridgeItems", { count: matchCount })
+    : metaSuffix;
 
   return (
     <TouchableOpacity
@@ -119,39 +120,22 @@ export default function RecipeCard({
             scan for, so it carries the weight and the full ink; the fridge
             match trails behind it lighter. Both halves at the same weight
             is what read as messy. */}
-        {showClock ? (
-          <View style={styles.timeRow}>
-            <Clock size={14} color={colors.textSecondary} strokeWidth={2.2} />
-            <Text style={[styles.timeText, { color: colors.textPrimary }]}>
-              {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
-            </Text>
-          </View>
-        ) : (
-          <Text
-            style={[styles.meta, { color: colors.textSecondary }]}
-            numberOfLines={2}
-          >
-            <Text style={[styles.metaStrong, { color: colors.textPrimary }]}>
-              {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
-            </Text>
-            {showFridgeMatch ? (
-              <>
-                <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
-                  {"  ·  "}
-                </Text>
-                {t("recipeCard.usesFridgeItems", { count: matchCount })}
-              </>
-            ) : null}
+        <Text
+          style={[styles.meta, { color: colors.textSecondary }]}
+          numberOfLines={2}
+        >
+          <Text style={[styles.metaStrong, { color: colors.textPrimary }]}>
+            {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
           </Text>
-        )}
-        {secondaryLine ? (
-          <Text
-            style={[styles.secondary, { color: colors.textSecondary }]}
-            numberOfLines={2}
-          >
-            {secondaryLine}
-          </Text>
-        ) : null}
+          {trailingMeta ? (
+            <>
+              <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
+                {"  ·  "}
+              </Text>
+              {trailingMeta}
+            </>
+          ) : null}
+        </Text>
       </View>
 
       <View style={styles.rail}>
@@ -191,11 +175,11 @@ export default function RecipeCard({
 
         {/* Decorative: the card itself is the button, so this must not be
             its own tap target competing with the heart beside it. */}
-        {showChevron ? <ChevronRight
+        <ChevronRight
           size={ICON.md}
           color={colors.textTertiary || "#CBD5E1"}
           strokeWidth={ICON.stroke}
-        /> : null}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -242,6 +226,13 @@ const styles = StyleSheet.create({
     fontWeight: WEIGHT.bold,
     lineHeight: 25,
     letterSpacing: -0.3,
+    // A few px of slack on the right. Reported on a real iPhone: "Omlet z
+    // pesto i serem" drew its last letters past the text column and was
+    // clipped ("...i sere"), leaving an empty second line — the native text
+    // engine measured the line narrower than it rendered (tight negative
+    // letter-spacing on a custom font). With slack the line breaks earlier
+    // instead of overflowing.
+    paddingRight: 6,
   },
   // Looser than the title's ratio on purpose: the meta line is small,
   // lighter text that often wraps onto a second line right under a
@@ -251,23 +242,6 @@ const styles = StyleSheet.create({
     fontWeight: WEIGHT.medium,
     marginTop: SPACE.sm + 3,
     lineHeight: 20,
-  },
-  timeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginTop: SPACE.sm + 3,
-  },
-  timeText: {
-    fontSize: TYPE.small,
-    fontWeight: WEIGHT.bold,
-    lineHeight: 20,
-  },
-  secondary: {
-    fontSize: TYPE.small,
-    fontWeight: WEIGHT.medium,
-    lineHeight: 20,
-    marginTop: 1,
   },
   metaStrong: {
     fontWeight: WEIGHT.bold,

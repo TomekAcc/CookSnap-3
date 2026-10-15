@@ -11,15 +11,13 @@ import { useTheme } from "../context/ThemeContext";
 import RecipeCard from "../components/RecipeCard";
 import IconBadge from "../components/IconBadge";
 
-// "420 kcal · Dla 2 osób" — only the parts the recipe actually has. Calories
-// are stored as a string and read "—" when the model gave none; that and an
-// empty value are skipped rather than shown.
+// "420 kcal" after the time, like the fridge-match text on the Scanner cards.
+// Calories are stored as a string and read "—" (or 0 kcal) when the model gave
+// none; that is skipped rather than shown. Servings are left out on purpose —
+// "10 min · 420 kcal · Dla 2 osób" wrapped mid-phrase on a phone.
 function savedDetailLine(recipe) {
-  const clean = (v) => {
-    const s = String(v == null ? "" : v).trim();
-    return s && s !== "—" && !/^0\s*kcal$/i.test(s) ? s : "";
-  };
-  return [clean(recipe?.calories), clean(recipe?.servings)].filter(Boolean).join("  ·  ");
+  const s = String(recipe?.calories == null ? "" : recipe.calories).trim();
+  return s && s !== "—" && !/^0\s*kcal$/i.test(s) ? s : "";
 }
 
 export default function SavedScreen() {
@@ -130,9 +128,7 @@ export default function SavedScreen() {
               recipe={recipe}
               isFavorite
               showFridgeMatch={false}
-              showClock
-              showChevron={false}
-              secondaryLine={savedDetailLine(recipe)}
+              metaSuffix={savedDetailLine(recipe)}
               onToggleFavorite={() => toggleSaveRecipe(recipe)}
               onSelect={(r) => setSelectedRecipe(r)}
             />
