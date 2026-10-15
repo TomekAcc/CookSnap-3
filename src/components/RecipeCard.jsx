@@ -55,13 +55,6 @@ export default function RecipeCard({
   isFavorite = false,
   onToggleFavorite,
   onSelect,
-  // "Uses N fridge items" only means something right after a scan. The Saved
-  // list shows the same card without it (a saved recipe is no longer tied to
-  // today's fridge), leaving just the cooking time.
-  showFridgeMatch = true,
-  // Text after the cooking time instead of the fridge match — the Saved list
-  // passes "420 kcal · Dla 2 osób" so it keeps the exact same card.
-  metaSuffix = "",
 }) {
   const { colors, isDark } = useTheme();
   const { t } = useCookAI();
@@ -80,10 +73,6 @@ export default function RecipeCard({
       : Array.isArray(safeRecipe.ingredients)
         ? safeRecipe.ingredients.length
         : 3);
-
-  const trailingMeta = showFridgeMatch
-    ? t("recipeCard.usesFridgeItems", { count: matchCount })
-    : metaSuffix;
 
   return (
     <TouchableOpacity
@@ -135,14 +124,10 @@ export default function RecipeCard({
           <Text style={[styles.metaStrong, { color: colors.textPrimary }]}>
             {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
           </Text>
-          {trailingMeta ? (
-            <>
-              <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
-                {"  ·  "}
-              </Text>
-              {trailingMeta}
-            </>
-          ) : null}
+          <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
+            {"  ·  "}
+          </Text>
+          {t("recipeCard.usesFridgeItems", { count: matchCount })}
         </Text>
       </View>
 

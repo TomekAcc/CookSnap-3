@@ -11,15 +11,6 @@ import { useTheme } from "../context/ThemeContext";
 import RecipeCard from "../components/RecipeCard";
 import IconBadge from "../components/IconBadge";
 
-// "420 kcal" after the time, like the fridge-match text on the Scanner cards.
-// Calories are stored as a string and read "—" (or 0 kcal) when the model gave
-// none; that is skipped rather than shown. Servings are left out on purpose —
-// "10 min · 420 kcal · Dla 2 osób" wrapped mid-phrase on a phone.
-function savedDetailLine(recipe) {
-  const s = String(recipe?.calories == null ? "" : recipe.calories).trim();
-  return s && s !== "—" && !/^0\s*kcal$/i.test(s) ? s : "";
-}
-
 export default function SavedScreen() {
   const tabScroll = useTabScroll("saved");
   const insets = useSafeAreaInsets();
@@ -127,8 +118,6 @@ export default function SavedScreen() {
               key={recipe.id}
               recipe={recipe}
               isFavorite
-              showFridgeMatch={false}
-              metaSuffix={savedDetailLine(recipe)}
               onToggleFavorite={() => toggleSaveRecipe(recipe)}
               onSelect={(r) => setSelectedRecipe(r)}
             />
