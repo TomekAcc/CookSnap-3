@@ -17,7 +17,7 @@ import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { FULL_DIETARY_OPTIONS } from "../data/dietaryOptions";
-import PillTag from "../components/PillTag";
+import DietIcon from "../components/DietIcon";
 import IconBadge from "../components/IconBadge";
 import Header from "../components/Header";
 import { breakLigatures } from "../utils/textLigatures";
@@ -368,20 +368,58 @@ export default function ProfileScreen() {
           style={{
             flexDirection: "row",
             flexWrap: "wrap",
-            gap: 8,
+            justifyContent: "space-between",
+            rowGap: 10,
             marginBottom: 24,
           }}
         >
           {FULL_DIETARY_OPTIONS.map((diet) => {
             const isActive = !!dietaryRestrictions[diet.id];
             return (
-              <PillTag
+              <TouchableOpacity
                 key={diet.id}
-                emoji={diet.icon}
-                label={t(`diet.${diet.id}.name`)}
-                selected={isActive}
                 onPress={() => toggleDietaryRestriction(diet.id)}
-              />
+                activeOpacity={0.8}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isActive }}
+                // Icon above the label (not beside it): the label then gets the
+                // tile's full width, which "niskowęglowodanowa" (one 18-letter
+                // word) needs — beside the icon it ran off the tile's edge.
+                style={{
+                  width: "48.5%",
+                  minHeight: 88,
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                  gap: 10,
+                  padding: 12,
+                  borderRadius: 18,
+                  borderWidth: 1.5,
+                  borderColor: isActive ? "#10B981" : colors.cardBorder,
+                  backgroundColor: isActive
+                    ? isDark
+                      ? "rgba(16,185,129,0.14)"
+                      : "#ECFDF5"
+                    : colors.card,
+                }}
+              >
+                <DietIcon id={diet.id} size={34} active={isActive} />
+                <Text
+                  style={{
+                    alignSelf: "stretch",
+                    color: colors.textPrimary,
+                    fontWeight: "700",
+                    fontSize: 13,
+                    lineHeight: 17,
+                    letterSpacing: -0.1,
+                  }}
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.85}
+                >
+                  {t(`diet.${diet.id}.name`)}
+                </Text>
+              </TouchableOpacity>
             );
           })}
         </View>
@@ -414,7 +452,7 @@ export default function ProfileScreen() {
           }}
         >
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: "#059669", fontWeight: "900", fontSize: 22 }}>
+            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "900", fontSize: 22 }}>
               {savedCount}
             </Text>
             <Text
@@ -437,7 +475,7 @@ export default function ProfileScreen() {
             }}
           />
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: "#D97706", fontWeight: "900", fontSize: 22 }}>
+            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "900", fontSize: 22 }}>
               {pantryItems.length}
             </Text>
             <Text
@@ -460,7 +498,7 @@ export default function ProfileScreen() {
             }}
           />
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: "#0284C7", fontWeight: "900", fontSize: 22 }}>
+            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "900", fontSize: 22 }}>
               {scanHistory.length}
             </Text>
             <Text

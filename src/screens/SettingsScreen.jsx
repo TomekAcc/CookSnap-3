@@ -28,6 +28,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { FULL_DIETARY_OPTIONS } from "../data/dietaryOptions";
+import DietIcon from "../components/DietIcon";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
 import IconBadge from "../components/IconBadge";
 import StandardModal from "../components/StandardModal";
@@ -214,7 +215,7 @@ export default function SettingsScreen() {
                       paddingRight: 8,
                     }}
                   >
-                    <Text style={{ fontSize: 22 }}>{item.icon}</Text>
+                    <DietIcon id={item.id} size={36} active={isEnabled} />
                     <View style={{ flex: 1 }}>
                       <Text
                         style={{
