@@ -186,8 +186,50 @@ export default function ProSubscriptionModal() {
   const [heroHeight, setHeroHeight] = useState(HERO_WASH_FALLBACK_HEIGHT);
   const close = () => setProModalOpen(false);
   const plan = PLANS[selectedPlanId];
-  const planPeriod = t(PERIOD_SUFFIX_KEY[plan.periodUnit]);
-  const planPerMonthValue = `${plan.perMonthPrice}${t("pro.moSuffix")}`;
+  // One plan's pricing block: guarantee line, CTA, price disclosure. Rendered
+  // for BOTH plans inside StableSwap so switching plans can never resize the
+  // sheet — the trial vs. monthly copy wraps to different line counts.
+  const renderCtaSection = (p) => {
+    const period = t(PERIOD_SUFFIX_KEY[p.periodUnit]);
+    const perMonthValue = `${p.perMonthPrice}${t("pro.moSuffix")}`;
+    return (
+      <View key={p.id} style={styles.ctaSection}>
+        <View style={styles.guaranteeRow}>
+          {p.trial ? (
+            <Bell size={13} color={colors.textSecondary} strokeWidth={2.5} />
+          ) : (
+            <Check size={13} color={colors.textSecondary} strokeWidth={3} />
+          )}
+          <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
+            {p.trial ? t("pro.trialReminderGuarantee") : t("pro.cancelAnytimeGuarantee")}
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={handleSubscribe}
+          activeOpacity={0.88}
+          style={[styles.ctaButton, { backgroundColor: colors.accentAmber }]}
+        >
+          <Sparkles size={18} color={ON_AMBER} />
+          <Text style={styles.ctaButtonText}>
+            {p.trial
+              ? t("pro.startTrial")
+              : t("pro.subscribeCta", { price: p.price, period })}
+          </Text>
+          <ChevronRight size={18} color={ON_AMBER} />
+        </TouchableOpacity>
+
+        <Text style={[styles.priceSubtext, { color: colors.textSecondary }]}>
+          {p.trial
+            ? t("pro.thenPriceCancelAnytime", {
+                price: p.price,
+                period,
+                perMonthValue,
+              })
+            : t("pro.billedMonthlyCancelAnytime")}
+        </Text>
+      </View>
+    );
+  };
   const screenHeight = Dimensions.get("window").height;
   const insets = useSafeAreaInsets();
   // Cap = everything below the status bar / notch / Dynamic Island, minus a
@@ -501,45 +543,49 @@ export default function ProSubscriptionModal() {
             comment for why. One line, not a 3-step timeline — still swaps
             copy based on whether a trial is active, same Bell-vs-Check
             icon distinction either way. */}
-        <View style={styles.ctaSection}>
-          <View style={styles.guaranteeRow}>
-            {plan.trial ? (
-              <Bell size={13} color={colors.textSecondary} strokeWidth={2.5} />
-            ) : (
-              <Check size={13} color={colors.textSecondary} strokeWidth={3} />
-            )}
-            <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
-              {plan.trial
-                ? t("pro.trialReminderGuarantee")
-                : t("pro.cancelAnytimeGuarantee")}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={handleSubscribe}
-            activeOpacity={0.88}
-            style={[styles.ctaButton, { backgroundColor: colors.accentAmber }]}
-          >
-            <Sparkles size={18} color={ON_AMBER} />
-            <Text style={styles.ctaButtonText}>
-              {plan.trial
-                ? t("pro.startTrial")
-                : t("pro.subscribeCta", { price: plan.price, period: planPeriod })}
-            </Text>
-            <ChevronRight size={18} color={ON_AMBER} />
-          </TouchableOpacity>
-
-          <Text style={[styles.priceSubtext, { color: colors.textSecondary }]}>
-            {plan.trial
-              ? t("pro.thenPriceCancelAnytime", {
-                  price: plan.price,
-                  period: planPeriod,
-                  perMonthValue: planPerMonthValue,
-                })
-              : t("pro.billedMonthlyCancelAnytime")}
-          </Text>
-        </View>
+        <StableSwap index={selectedPlanId === "annual" ? 0 : 1}>
+          {[PLANS.annual, PLANS.monthly].map((p) => renderCtaSection(p))}
+        </StableSwap>
       </View>
     </StandardModal>
+  );
+}
+
+/**
+ * Shows children[index] but reserves the height of the TALLEST child, so
+ * swapping between variants never changes the layout around it. Every
+ * variant is also rendered once, invisible and non-interactive, purely to
+ * measure it at the real width — the swap itself is instant, no animation.
+ * Reported: switching the plan in the paywall resized the whole sheet
+ * (the trial copy and the monthly copy wrap to different line counts).
+ */
+function StableSwap({ index, children }) {
+  const variants = React.Children.toArray(children);
+  const [heights, setHeights] = useState({});
+  const maxHeight = Math.max(0, ...Object.values(heights));
+  return (
+    <View style={{ minHeight: maxHeight }}>
+      <View
+        pointerEvents="none"
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+        style={{ position: "absolute", left: 0, right: 0, top: 0, opacity: 0 }}
+      >
+        {variants.map((node, i) => (
+          <View
+            key={i}
+            style={{ position: "absolute", left: 0, right: 0, top: 0 }}
+            onLayout={(e) => {
+              const h = Math.ceil(e.nativeEvent.layout.height);
+              setHeights((prev) => (prev[i] === h ? prev : { ...prev, [i]: h }));
+            }}
+          >
+            {node}
+          </View>
+        ))}
+      </View>
+      {variants[index]}
+    </View>
   );
 }
 
