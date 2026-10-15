@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Hulp & feedback",
   "menu.proBadge": "PRO",
   "settings.title": "Instellingen",
-  "settings.subtitle": "Pas dieetwensen, thema en AI-gedrag aan",
+  "settings.subtitle": "Pas thema, eenheden en AI-gedrag aan",
   "settings.dietaryRestrictions": "Dieetwensen",
   "settings.customDiet": "Aangepast dieet",
   "settings.customDietTitle": "Aangepast dieet (PRO)",

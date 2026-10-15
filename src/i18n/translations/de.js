@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Hilfe & Feedback",
   "menu.proBadge": "PRO",
   "settings.title": "Einstellungen",
-  "settings.subtitle": "Ernährungspräferenzen, Design und KI-Verhalten anpassen",
+  "settings.subtitle": "Design, Einheiten und KI-Verhalten anpassen",
   "settings.dietaryRestrictions": "Ernährungseinschränkungen",
   "settings.customDiet": "Individuelle Ernährung",
   "settings.customDietTitle": "Individuelle Ernährung (PRO)",

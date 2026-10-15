@@ -34,7 +34,7 @@ export default {
   "menu.proBadge": "PRO",
 
   "settings.title": "Settings",
-  "settings.subtitle": "Customize dietary needs, theme, and AI behavior",
+  "settings.subtitle": "Customize theme, units, and AI behavior",
   "settings.dietaryRestrictions": "Dietary Restrictions",
   "settings.customDiet": "Custom Diet",
   "settings.customDietTitle": "Custom Diet (PRO)",

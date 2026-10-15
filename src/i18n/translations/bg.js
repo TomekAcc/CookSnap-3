@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Помощ и обратна връзка",
   "menu.proBadge": "PRO",
   "settings.title": "Настройки",
-  "settings.subtitle": "Персонализирайте хранителни предпочитания, тема и поведение на AI",
+  "settings.subtitle": "Персонализирайте тема, мерни единици и поведение на AI",
   "settings.dietaryRestrictions": "Хранителни ограничения",
   "settings.customDiet": "Персонализирана диета",
   "settings.customDietTitle": "Персонализирана диета (PRO)",

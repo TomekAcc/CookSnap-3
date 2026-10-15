@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "帮助与反馈",
   "menu.proBadge": "PRO",
   "settings.title": "设置",
-  "settings.subtitle": "自定义饮食需求、主题和 AI 行为",
+  "settings.subtitle": "自定义主题、单位和 AI 行为",
   "settings.dietaryRestrictions": "饮食禁忌",
   "settings.customDiet": "自定义饮食",
   "settings.customDietTitle": "自定义饮食（PRO）",

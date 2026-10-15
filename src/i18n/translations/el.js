@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Βοήθεια & σχόλια",
   "menu.proBadge": "PRO",
   "settings.title": "Ρυθμίσεις",
-  "settings.subtitle": "Προσαρμογή διατροφικών αναγκών, θέματος και συμπεριφοράς AI",
+  "settings.subtitle": "Προσαρμογή θέματος, μονάδων μέτρησης και συμπεριφοράς AI",
   "settings.dietaryRestrictions": "Διατροφικοί περιορισμοί",
   "settings.customDiet": "Προσαρμοσμένη διατροφή",
   "settings.customDietTitle": "Προσαρμοσμένη διατροφή (PRO)",

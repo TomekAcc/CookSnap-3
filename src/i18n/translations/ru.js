@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Помощь и отзыв",
   "menu.proBadge": "PRO",
   "settings.title": "Настройки",
-  "settings.subtitle": "Диета, тема и поведение ИИ",
+  "settings.subtitle": "Тема, единицы измерения и поведение ИИ",
   "settings.dietaryRestrictions": "Ограничения в питании",
   "settings.customDiet": "Своя диета",
   "settings.customDietTitle": "Своя диета (PRO)",

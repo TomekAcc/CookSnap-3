@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Nápověda a zpětná vazba",
   "menu.proBadge": "PRO",
   "settings.title": "Nastavení",
-  "settings.subtitle": "Přizpůsobení stravy, vzhledu a chování AI",
+  "settings.subtitle": "Přizpůsobení vzhledu, jednotek a chování AI",
   "settings.dietaryRestrictions": "Dietní omezení",
   "settings.customDiet": "Vlastní dieta",
   "settings.customDietTitle": "Vlastní dieta (PRO)",

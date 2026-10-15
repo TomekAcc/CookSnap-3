@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Ohjeet ja palaute",
   "menu.proBadge": "PRO",
   "settings.title": "Asetukset",
-  "settings.subtitle": "Muokkaa ruokavalioasetuksia, teemaa ja tekoälyn toimintaa",
+  "settings.subtitle": "Muokkaa teemaa, yksiköitä ja tekoälyn toimintaa",
   "settings.dietaryRestrictions": "Ruokavaliot ja allergiat",
   "settings.customDiet": "Oma ruokavalio",
   "settings.customDietTitle": "Oma ruokavalio (PRO)",

@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Súgó és visszajelzés",
   "menu.proBadge": "PRO",
   "settings.title": "Beállítások",
-  "settings.subtitle": "Étrendi igények, téma és mesterséges intelligencia testreszabása",
+  "settings.subtitle": "Téma, mértékegységek és mesterséges intelligencia testreszabása",
   "settings.dietaryRestrictions": "Étrendi megkötések",
   "settings.customDiet": "Egyéni étrend",
   "settings.customDietTitle": "Egyéni étrend (PRO)",

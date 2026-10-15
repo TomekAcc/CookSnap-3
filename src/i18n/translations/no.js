@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Hjelp og tilbakemelding",
   "menu.proBadge": "PRO",
   "settings.title": "Innstillinger",
-  "settings.subtitle": "Tilpass kostholdsbehov, tema og AI-oppførsel",
+  "settings.subtitle": "Tilpass tema, enheter og AI-oppførsel",
   "settings.dietaryRestrictions": "Kosthensyn",
   "settings.customDiet": "Tilpasset kosthold",
   "settings.customDietTitle": "Tilpasset kosthold (PRO)",

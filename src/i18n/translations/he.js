@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "עזרה ומשוב",
   "menu.proBadge": "PRO",
   "settings.title": "הגדרות",
-  "settings.subtitle": "התאמת צרכים תזונתיים, ערכת נושא והתנהגות הבינה המלאכותית",
+  "settings.subtitle": "התאמת ערכת נושא, יחידות מידה והתנהגות הבינה המלאכותית",
   "settings.dietaryRestrictions": "הגבלות תזונתיות",
   "settings.customDiet": "תזונה מותאמת אישית",
   "settings.customDietTitle": "תזונה מותאמת אישית (PRO)",

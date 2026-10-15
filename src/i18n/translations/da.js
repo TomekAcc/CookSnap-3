@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Hjælp og feedback",
   "menu.proBadge": "PRO",
   "settings.title": "Indstillinger",
-  "settings.subtitle": "Tilpas diætbehov, tema og AI-adfærd",
+  "settings.subtitle": "Tilpas tema, enheder og AI-adfærd",
   "settings.dietaryRestrictions": "Kosthensyn",
   "settings.customDiet": "Tilpasset kost",
   "settings.customDietTitle": "Tilpasset kost (PRO)",

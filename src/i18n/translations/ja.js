@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "ヘルプとフィードバック",
   "menu.proBadge": "PRO",
   "settings.title": "設定",
-  "settings.subtitle": "食事制限、テーマ、AIの動作をカスタマイズ",
+  "settings.subtitle": "テーマ、単位、AIの動作をカスタマイズ",
   "settings.dietaryRestrictions": "食事制限",
   "settings.customDiet": "カスタム食事制限",
   "settings.customDietTitle": "カスタム食事制限（PRO）",

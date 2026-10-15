@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Aide et retours",
   "menu.proBadge": "PRO",
   "settings.title": "Paramètres",
-  "settings.subtitle": "Personnalisez vos besoins alimentaires, le thème et le comportement de l'IA",
+  "settings.subtitle": "Personnalisez le thème, les unités et le comportement de l'IA",
   "settings.dietaryRestrictions": "Restrictions alimentaires",
   "settings.customDiet": "Régime personnalisé",
   "settings.customDietTitle": "Régime personnalisé (PRO)",

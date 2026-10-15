@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Pomoć i povratne informacije",
   "menu.proBadge": "PRO",
   "settings.title": "Postavke",
-  "settings.subtitle": "Prilagodite prehrambene potrebe, temu i ponašanje umjetne inteligencije",
+  "settings.subtitle": "Prilagodite temu, mjerne jedinice i ponašanje umjetne inteligencije",
   "settings.dietaryRestrictions": "Prehrambena ograničenja",
   "settings.customDiet": "Prilagođena prehrana",
   "settings.customDietTitle": "Prilagođena prehrana (PRO)",

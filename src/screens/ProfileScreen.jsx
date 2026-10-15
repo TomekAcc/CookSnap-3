@@ -17,6 +17,7 @@ import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import DietList from "../components/DietList";
+import CustomDietSection from "../components/CustomDietSection";
 import IconBadge from "../components/IconBadge";
 import Header from "../components/Header";
 import { breakLigatures } from "../utils/textLigatures";
@@ -341,17 +342,6 @@ export default function ProfileScreen() {
           >
             {t("profile.dietPreferences")}
           </Text>
-          <TouchableOpacity onPress={() => setActiveTab("settings")}>
-            <Text
-              style={{
-                color: "#10B981",
-                fontWeight: "700",
-                fontSize: 12,
-              }}
-            >
-              {t("profile.manageAll")}
-            </Text>
-          </TouchableOpacity>
         </View>
 
         {/* Directly tappable — a quick-toggle shortcut on top of Settings'
@@ -363,8 +353,12 @@ export default function ProfileScreen() {
             regardless of which control was tapped. Selected fill uses the
             app's standard green (not PillTag's default dark navy) so it
             doesn't visually echo the PRO banner directly above. */}
-        <View style={{ marginBottom: 24 }}>
+        <View style={{ marginBottom: 18 }}>
           <DietList showDescriptions={false} />
+        </View>
+
+        <View style={{ marginBottom: 10 }}>
+          <CustomDietSection />
         </View>
 
         {/* Real usage, not filler — same "personalize with actual numbers"

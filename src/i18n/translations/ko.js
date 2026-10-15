@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "도움말 및 피드백",
   "menu.proBadge": "PRO",
   "settings.title": "설정",
-  "settings.subtitle": "식이 요법, 테마 및 AI 동작 맞춤설정",
+  "settings.subtitle": "테마, 단위 및 AI 동작 맞춤설정",
   "settings.dietaryRestrictions": "식이 제한",
   "settings.customDiet": "맞춤 식단",
   "settings.customDietTitle": "맞춤 식단 (PRO)",

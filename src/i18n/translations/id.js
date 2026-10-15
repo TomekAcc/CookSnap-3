@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Bantuan & Masukan",
   "menu.proBadge": "PRO",
   "settings.title": "Pengaturan",
-  "settings.subtitle": "Sesuaikan kebutuhan diet, tema, dan perilaku AI",
+  "settings.subtitle": "Sesuaikan tema, satuan, dan perilaku AI",
   "settings.dietaryRestrictions": "Batasan Diet",
   "settings.customDiet": "Diet Kustom",
   "settings.customDietTitle": "Diet Kustom (PRO)",

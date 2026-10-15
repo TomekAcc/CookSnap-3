@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Pomoc i opinie",
   "menu.proBadge": "PRO",
   "settings.title": "Ustawienia",
-  "settings.subtitle": "Dostosuj preferencje dietetyczne, motyw i działanie AI",
+  "settings.subtitle": "Dostosuj motyw, jednostki i działanie AI",
   "settings.dietaryRestrictions": "Ograniczenia dietetyczne",
   "settings.customDiet": "Dieta niestandardowa",
   "settings.customDietTitle": "Dieta niestandardowa (PRO)",

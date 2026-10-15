@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Допомога та відгуки",
   "menu.proBadge": "PRO",
   "settings.title": "Налаштування",
-  "settings.subtitle": "Змініть дієтичні потреби, тему та поведінку штучного інтелекту",
+  "settings.subtitle": "Змініть тему, одиниці виміру та поведінку штучного інтелекту",
   "settings.dietaryRestrictions": "Дієтичні обмеження",
   "settings.customDiet": "Власна дієта",
   "settings.customDietTitle": "Власна дієта (PRO)",

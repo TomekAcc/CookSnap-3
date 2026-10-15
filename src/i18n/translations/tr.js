@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Yardım ve Geri Bildirim",
   "menu.proBadge": "PRO",
   "settings.title": "Ayarlar",
-  "settings.subtitle": "Diyet kısıtlamalarını, temayı ve yapay zeka davranışını özelleştirin",
+  "settings.subtitle": "Temayı, birimleri ve yapay zeka davranışını özelleştirin",
   "settings.dietaryRestrictions": "Diyet Kısıtlamaları",
   "settings.customDiet": "Özel Diyet",
   "settings.customDietTitle": "Özel Diyet (PRO)",

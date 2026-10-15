@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "المساعدة والتعليقات",
   "menu.proBadge": "PRO",
   "settings.title": "الإعدادات",
-  "settings.subtitle": "تخصيص الاحتياجات الغذائية، المظهر، وسلوك الذكاء الاصطناعي",
+  "settings.subtitle": "تخصيص المظهر ووحدات القياس وسلوك الذكاء الاصطناعي",
   "settings.dietaryRestrictions": "القيود الغذائية",
   "settings.customDiet": "نظام غذائي مخصص",
   "settings.customDietTitle": "نظام غذائي مخصص (PRO)",

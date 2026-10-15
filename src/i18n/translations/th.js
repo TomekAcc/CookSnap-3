@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "ช่วยเหลือและข้อเสนอแนะ",
   "menu.proBadge": "PRO",
   "settings.title": "ตั้งค่า",
-  "settings.subtitle": "ปรับแต่งความต้องการด้านอาหาร ธีม และพฤติกรรม AI",
+  "settings.subtitle": "ปรับแต่งธีม หน่วย และพฤติกรรม AI",
   "settings.dietaryRestrictions": "ข้อจำกัดด้านอาหาร",
   "settings.customDiet": "อาหารตามที่กำหนดเอง",
   "settings.customDietTitle": "อาหารตามที่กำหนดเอง (PRO)",

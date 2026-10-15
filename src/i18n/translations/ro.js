@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Ajutor și feedback",
   "menu.proBadge": "PRO",
   "settings.title": "Setări",
-  "settings.subtitle": "Personalizează preferințele alimentare, tema și comportamentul AI",
+  "settings.subtitle": "Personalizează tema, unitățile de măsură și comportamentul AI",
   "settings.dietaryRestrictions": "Restricții alimentare",
   "settings.customDiet": "Dietă personalizată",
   "settings.customDietTitle": "Dietă personalizată (PRO)",

@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "Trợ giúp & Phản hồi",
   "menu.proBadge": "PRO",
   "settings.title": "Cài đặt",
-  "settings.subtitle": "Tùy chỉnh chế độ ăn, giao diện và AI",
+  "settings.subtitle": "Tùy chỉnh giao diện, đơn vị và AI",
   "settings.dietaryRestrictions": "Hạn chế ăn uống",
   "settings.customDiet": "Chế độ ăn tùy chỉnh",
   "settings.customDietTitle": "Chế độ ăn tùy chỉnh (PRO)",

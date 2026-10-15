@@ -26,7 +26,7 @@ export default {
   "menu.helpFeedback": "सहायता और फ़ीडबैक",
   "menu.proBadge": "PRO",
   "settings.title": "सेटिंग्स",
-  "settings.subtitle": "आहार संबंधी जरूरतें, थीम और AI व्यवहार कस्टमाइज़ करें",
+  "settings.subtitle": "थीम, इकाइयाँ और AI व्यवहार कस्टमाइज़ करें",
   "settings.dietaryRestrictions": "आहार संबंधी प्रतिबंध",
   "settings.customDiet": "कस्टम डाइट",
   "settings.customDietTitle": "कस्टम डाइट (PRO)",
