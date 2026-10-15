@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Ужин",
   "mealType.dessert": "Десерт",
   "mealPrefs.title": "Предпочтения в еде",
+  "mealPrefs.mealTypeTitle": "Тип приёма пищи",
   "mealPrefs.includeStaples": "Учитывать продукты из кладовой",
   "mealPrefs.staplesDesc": "Ингредиенты, отмеченные как имеющиеся в вашей кладовой",
   "mealPrefs.servings": "Порции",

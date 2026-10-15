@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Abendessen",
   "mealType.dessert": "Dessert",
   "mealPrefs.title": "Mahlzeit-Präferenzen",
+  "mealPrefs.mealTypeTitle": "Mahlzeit",
   "mealPrefs.includeStaples": "Vorratskammer-Artikel einbeziehen",
   "mealPrefs.staplesDesc": "Zutaten, die in deiner Vorratskammer als vorrätig markiert sind",
   "mealPrefs.servings": "Portionen",

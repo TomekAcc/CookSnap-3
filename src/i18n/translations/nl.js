@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Diner",
   "mealType.dessert": "Dessert",
   "mealPrefs.title": "Maaltijdvoorkeuren",
+  "mealPrefs.mealTypeTitle": "Soort maaltijd",
   "mealPrefs.includeStaples": "Voorraadkastitems opnemen",
   "mealPrefs.staplesDesc": "Ingrediënten die als op voorraad zijn gemarkeerd in je voorraadkast",
   "mealPrefs.servings": "Porties",

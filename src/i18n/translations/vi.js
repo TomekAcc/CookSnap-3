@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Bữa tối",
   "mealType.dessert": "Tráng miệng",
   "mealPrefs.title": "Sở thích bữa ăn",
+  "mealPrefs.mealTypeTitle": "Loại bữa ăn",
   "mealPrefs.includeStaples": "Bao gồm nguyên liệu trong tủ đựng thức ăn",
   "mealPrefs.staplesDesc": "Nguyên liệu được đánh dấu còn hàng trong tủ đựng thức ăn của bạn",
   "mealPrefs.servings": "Khẩu phần",

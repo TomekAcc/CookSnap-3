@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Cena",
   "mealType.dessert": "Dessert",
   "mealPrefs.title": "Preferenze pasto",
+  "mealPrefs.mealTypeTitle": "Tipo di pasto",
   "mealPrefs.includeStaples": "Includi articoli della dispensa",
   "mealPrefs.staplesDesc": "Ingredienti contrassegnati come disponibili nella tua dispensa",
   "mealPrefs.servings": "Porzioni",

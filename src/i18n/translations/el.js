@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Βραδινό",
   "mealType.dessert": "Επιδόρπιο",
   "mealPrefs.title": "Προτιμήσεις γευμάτων",
+  "mealPrefs.mealTypeTitle": "Είδος γεύματος",
   "mealPrefs.includeStaples": "Συμπερίληψη ειδών ντουλαπιού",
   "mealPrefs.staplesDesc": "Υλικά επισημασμένα ως διαθέσιμα στο ντουλάπι σας",
   "mealPrefs.servings": "Μερίδες",

@@ -150,6 +150,7 @@ export default {
   "mealType.dinner": "Kolacja",
   "mealType.dessert": "Deser",
   "mealPrefs.title": "Preferencje posiłków",
+  "mealPrefs.mealTypeTitle": "Typ posiłku",
   "mealPrefs.includeStaples": "Uwzględnij produkty ze spiżarni",
   "mealPrefs.staplesDesc": "Składniki oznaczone jako dostępne w twojej spiżarni",
   "mealPrefs.servings": "Porcje",

@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Päivällinen",
   "mealType.dessert": "Jälkiruoka",
   "mealPrefs.title": "Ateriatoiveet",
+  "mealPrefs.mealTypeTitle": "Aterian tyyppi",
   "mealPrefs.includeStaples": "Sisällytä ruokakomeron tuotteet",
   "mealPrefs.staplesDesc": "Ainesosat, jotka on merkitty varastossa oleviksi ruokakomerossasi",
   "mealPrefs.servings": "Annokset",

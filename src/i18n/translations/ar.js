@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "عشاء",
   "mealType.dessert": "حلويات",
   "mealPrefs.title": "تفضيلات الوجبات",
+  "mealPrefs.mealTypeTitle": "نوع الوجبة",
   "mealPrefs.includeStaples": "تضمين عناصر المخزن",
   "mealPrefs.staplesDesc": "المكونات المحددة كمتوفرة في مخزنك",
   "mealPrefs.servings": "الحصص",

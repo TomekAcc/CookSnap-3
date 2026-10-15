@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "มื้อเย็น",
   "mealType.dessert": "ของหวาน",
   "mealPrefs.title": "ความต้องการด้านอาหาร",
+  "mealPrefs.mealTypeTitle": "ประเภทมื้ออาหาร",
   "mealPrefs.includeStaples": "รวมรายการในตู้กับข้าว",
   "mealPrefs.staplesDesc": "วัตถุดิบที่ทำเครื่องหมายว่ามีอยู่ในตู้กับข้าวของคุณ",
   "mealPrefs.servings": "จำนวนเสิร์ฟ",

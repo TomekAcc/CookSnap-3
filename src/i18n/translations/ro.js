@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Cină",
   "mealType.dessert": "Desert",
   "mealPrefs.title": "Preferințe masă",
+  "mealPrefs.mealTypeTitle": "Tipul mesei",
   "mealPrefs.includeStaples": "Include articolele din cămară",
   "mealPrefs.staplesDesc": "Ingrediente marcate ca disponibile în cămara ta",
   "mealPrefs.servings": "Porții",

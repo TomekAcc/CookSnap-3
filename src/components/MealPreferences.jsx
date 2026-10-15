@@ -4,40 +4,59 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   Switch,
   StyleSheet,
 } from "react-native";
-import { Sparkles } from "lucide-react-native";
+import {
+  Sparkles,
+  Utensils,
+  Croissant,
+  Sandwich,
+  Moon,
+  CakeSlice,
+  Feather,
+  CookingPot,
+  Soup,
+  Waves,
+  Flame,
+  Candy,
+  Beef,
+  Leaf,
+  Minus,
+  Plus,
+} from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
-import PillTag from "./PillTag";
 import { translateCount } from "../i18n";
-import { RADIUS, GREEN, emojiLine } from "../theme/tokens";
+import { RADIUS, GREEN } from "../theme/tokens";
 
+// Vector icons instead of emoji for every CONTROL on this screen. Emoji are
+// drawn differently by Apple and Google and never matched the app's icon
+// language; they stay only where they are content (the detected-ingredient
+// chips, where the scan picks the emoji for the real item).
 const MEAL_CATEGORIES = [
-  { id: "all", labelKey: "mealType.all", icon: "🍽️" },
-  { id: "breakfast", labelKey: "mealType.breakfast", icon: "🥐" },
-  { id: "lunch", labelKey: "mealType.lunch", icon: "🥗" },
-  { id: "dinner", labelKey: "mealType.dinner", icon: "🌙" },
-  { id: "dessert", labelKey: "mealType.dessert", icon: "🍰" },
+  { id: "all", labelKey: "mealType.all", Icon: Utensils },
+  { id: "breakfast", labelKey: "mealType.breakfast", Icon: Croissant },
+  { id: "lunch", labelKey: "mealType.lunch", Icon: Sandwich },
+  { id: "dinner", labelKey: "mealType.dinner", Icon: Moon },
+  { id: "dessert", labelKey: "mealType.dessert", Icon: CakeSlice },
 ];
 
 const HUNGER_OPTIONS = [
-  { id: "light", labelKey: "hunger.light", icon: "🥗" },
-  { id: "normal", labelKey: "hunger.normal", icon: "🍝" },
-  { id: "hungry", labelKey: "mealPrefs.hungerHearty", icon: "🥘" },
+  { id: "light", labelKey: "hunger.light", Icon: Feather },
+  { id: "normal", labelKey: "hunger.normal", Icon: Utensils },
+  { id: "hungry", labelKey: "mealPrefs.hungerHearty", Icon: CookingPot },
 ];
 
 // ids here must match CRAVING_PROMPT_TEXT in CookAIContext.jsx — that's
 // where these get translated into the actual prompt phrasing.
 const CRAVING_TAGS = [
-  { id: "salty", labelKey: "mealPrefs.cravingSalty", emoji: "🧂" },
-  { id: "spicy", labelKey: "mealPrefs.cravingSpicy", emoji: "🌶️" },
-  { id: "sweet", labelKey: "mealPrefs.cravingSweet", emoji: "🍯" },
-  { id: "savory", labelKey: "mealPrefs.cravingSavory", emoji: "🔥" },
-  { id: "light", labelKey: "mealPrefs.cravingLight", emoji: "🍃" },
-  { id: "comfort", labelKey: "mealPrefs.cravingComfort", emoji: "🍲" },
+  { id: "salty", labelKey: "mealPrefs.cravingSalty", Icon: Waves },
+  { id: "spicy", labelKey: "mealPrefs.cravingSpicy", Icon: Flame },
+  { id: "sweet", labelKey: "mealPrefs.cravingSweet", Icon: Candy },
+  { id: "savory", labelKey: "mealPrefs.cravingSavory", Icon: Beef },
+  { id: "light", labelKey: "mealPrefs.cravingLight", Icon: Leaf },
+  { id: "comfort", labelKey: "mealPrefs.cravingComfort", Icon: Soup },
 ];
 
 function cardStyle(isDark, colors) {
@@ -48,6 +67,58 @@ function cardStyle(isDark, colors) {
     borderColor: isDark ? colors.cardBorder : "#E5E7EB",
     padding: 14,
   };
+}
+
+// One "selected" language for every choice on this screen: pale emerald fill,
+// emerald border, emerald label and icon. Unselected keeps a transparent 2px
+// border so selecting never nudges anything by a pixel.
+function useChoiceColors() {
+  const { colors, isDark } = useTheme();
+  return {
+    selectedBg: isDark ? colors.accentGreenSoft : "rgba(236, 253, 245, 0.9)",
+    selectedBorder: isDark ? colors.accentGreen : GREEN.primary,
+    selectedInk: isDark ? "#6EE7B7" : "#047857",
+    idleBg: isDark ? colors.inputBg : "#F8FAFC",
+    idleInk: isDark ? colors.textPrimary : "#1E293B",
+    idleIcon: isDark ? colors.textSecondary : "#64748B",
+  };
+}
+
+function ChoiceChip({ Icon, label, selected, onPress }) {
+  const c = useChoiceColors();
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      style={[
+        styles.chip,
+        {
+          backgroundColor: selected ? c.selectedBg : c.idleBg,
+          borderColor: selected ? c.selectedBorder : "transparent",
+        },
+      ]}
+    >
+      <Icon size={16} color={selected ? c.selectedInk : c.idleIcon} strokeWidth={2.2} />
+      <Text
+        numberOfLines={1}
+        style={[styles.chipLabel, { color: selected ? c.selectedInk : c.idleInk }]}
+      >
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+function SectionLabel({ children }) {
+  const { colors } = useTheme();
+  return <Text style={[styles.groupLabel, { color: colors.textPrimary }]}>{children}</Text>;
+}
+
+function Divider() {
+  const { colors } = useTheme();
+  return <View style={[styles.divider, { backgroundColor: colors.cardBorder }]} />;
 }
 
 /**
@@ -74,6 +145,7 @@ export default function MealPreferences() {
   } = useCookAI();
   const { colors, isDark } = useTheme();
   const card = cardStyle(isDark, colors);
+  const choice = useChoiceColors();
 
   return (
     <View style={styles.root}>
@@ -124,198 +196,110 @@ export default function MealPreferences() {
         />
       </TouchableOpacity>
 
-      {/* Larger meal-type pills */}
+      {/* One card, five labelled groups. This used to be five separate cards
+          with five different treatments (and headings on only two of them),
+          which read as unrelated widgets. The craving tags are free and
+          reset on restart ("what do I want right now"), deliberately apart
+          from the persisted Custom Diet on Profile. */}
       <View style={card}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.pillsRow}
-        >
-          {MEAL_CATEGORIES.map((cat) => {
-            const selected = mealType === cat.id;
-            return (
-              <TouchableOpacity
-                key={cat.id}
-                onPress={() => setMealType(cat.id)}
-                activeOpacity={0.85}
-                style={[
-                  styles.mealPill,
-                  selected
-                    ? {
-                        // Static rgba(236,253,245,0.9) — a near-opaque pale
-                        // mint — read as a glaring bright patch on a pure
-                        // black dark-mode canvas. accentGreenSoft/accentGreen
-                        // are the same muted-dark-emerald-bg + crisp-border
-                        // tokens ThemeContext already defines for exactly
-                        // this "selected" treatment in dark mode.
-                        backgroundColor: isDark
-                          ? colors.accentGreenSoft
-                          : "rgba(236, 253, 245, 0.9)",
-                        borderColor: isDark ? colors.accentGreen : "#10B981",
-                        borderWidth: 2,
-                      }
-                    : {
-                        // Soft fill + transparent border, identical to the
-                        // hunger tiles below, so both groups say "selected"
-                        // the same way. Width stays 2 in both states: this
-                        // was 1 unselected vs 2 selected, which nudged the
-                        // pill a pixel on every tap — the same shift already
-                        // reported and fixed once in PillTag, still living
-                        // in this hand-rolled copy of it.
-                        backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
-                        borderColor: "transparent",
-                        borderWidth: 2,
-                      },
-                ]}
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
-              >
-                <Text style={styles.mealPillEmoji}>{cat.icon}</Text>
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    styles.mealPillLabel,
-                    {
-                      color: selected
-                        ? isDark
-                          ? "#6EE7B7"
-                          : "#047857"
-                        : isDark
-                          ? colors.textPrimary
-                          : "#1E293B",
-                    },
-                  ]}
-                >
-                  {t(cat.labelKey)}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      <View style={[card, styles.servingsCard]}>
-        {/* Indigo badge removed for the same reason — indigo appears
-            nowhere else in the app, so it carried no meaning at all. */}
-        <View style={styles.servingsLeft}>
-          <View style={{ flex: 1, minWidth: 0 }}>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
-              {t("mealPrefs.servings")}
-            </Text>
-          </View>
+        <SectionLabel>{t("mealPrefs.mealTypeTitle")}</SectionLabel>
+        <View style={styles.wrapRow}>
+          {MEAL_CATEGORIES.map((cat) => (
+            <ChoiceChip
+              key={cat.id}
+              Icon={cat.Icon}
+              label={t(cat.labelKey)}
+              selected={mealType === cat.id}
+              onPress={() => setMealType(cat.id)}
+            />
+          ))}
         </View>
 
-        <View style={styles.stepper}>
-          <TouchableOpacity
-            onPress={() => setServings(Math.max(1, servings - 1))}
-            activeOpacity={0.85}
-            style={[
-              styles.stepBtn,
-              {
-                backgroundColor: isDark ? colors.inputBg : "#F1F5F9",
-                borderColor: colors.cardBorder,
-              },
-            ]}
-            accessibilityLabel={t("a11y.decreaseServings")}
-          >
-            <Text style={[styles.stepBtnText, { color: colors.textPrimary }]}>−</Text>
-          </TouchableOpacity>
+        <Divider />
 
-          <View style={styles.servingsCenter}>
-            <Text
-              style={[styles.servingsNumber, { color: colors.textPrimary }]}
+        <View style={styles.servingsRow}>
+          <SectionLabel>{t("mealPrefs.servings")}</SectionLabel>
+          <View style={styles.stepper}>
+            <TouchableOpacity
+              onPress={() => setServings(Math.max(1, servings - 1))}
+              activeOpacity={0.85}
+              style={[
+                styles.stepBtn,
+                {
+                  backgroundColor: isDark ? colors.inputBg : "#F1F5F9",
+                  borderColor: colors.cardBorder,
+                },
+              ]}
+              accessibilityLabel={t("a11y.decreaseServings")}
             >
-              {servings}
-            </Text>
-            <Text style={styles.servingsUnit}>
-              {servings === 1
-                ? t("mealPrefs.personUnit")
-                : translateCount(recipeLanguageId, servings, {
-                    few: "mealPrefs.peopleUnitFew",
-                    many: "mealPrefs.peopleUnitMany",
-                    fallback: "mealPrefs.peopleUnit",
-                  })}
-            </Text>
+              <Minus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+            </TouchableOpacity>
+
+            <View style={styles.servingsCenter}>
+              <Text style={[styles.servingsNumber, { color: colors.textPrimary }]}>
+                {servings}
+              </Text>
+              <Text style={styles.servingsUnit}>
+                {servings === 1
+                  ? t("mealPrefs.personUnit")
+                  : translateCount(recipeLanguageId, servings, {
+                      few: "mealPrefs.peopleUnitFew",
+                      many: "mealPrefs.peopleUnitMany",
+                      fallback: "mealPrefs.peopleUnit",
+                    })}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => setServings(Math.min(12, servings + 1))}
+              activeOpacity={0.85}
+              style={[
+                styles.stepBtn,
+                {
+                  backgroundColor: isDark ? colors.inputBg : "#F1F5F9",
+                  borderColor: colors.cardBorder,
+                },
+              ]}
+              accessibilityLabel={t("a11y.increaseServings")}
+            >
+              <Plus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+            </TouchableOpacity>
           </View>
-
-          <TouchableOpacity
-            onPress={() => setServings(Math.min(12, servings + 1))}
-            activeOpacity={0.85}
-            style={[
-              styles.stepBtn,
-              {
-                backgroundColor: isDark ? colors.inputBg : "#F1F5F9",
-                borderColor: colors.cardBorder,
-              },
-            ]}
-            accessibilityLabel={t("a11y.increaseServings")}
-          >
-            <Text style={[styles.stepBtnText, { color: colors.textPrimary }]}>+</Text>
-          </TouchableOpacity>
         </View>
-      </View>
 
-      {/* Hunger — squarish tiles, large emojis, emerald selected. Header
-          lives outside the card in its own paddingHorizontal:4 wrapper —
-          exactly like "Meal Preferences" above — so both section titles
-          sit at the identical horizontal position instead of "Hunger
-          Level" inheriting the card's own 14px inner padding. */}
-      <View style={{ paddingHorizontal: 4 }}>
-        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-          {t("profile.hungerLevel")}
-        </Text>
-      </View>
-      <View style={card}>
+        <Divider />
+
+        <SectionLabel>{t("profile.hungerLevel")}</SectionLabel>
         <View style={styles.hungerRow}>
           {HUNGER_OPTIONS.map((item) => {
             const selected = hungerLevel === item.id;
+            const Icon = item.Icon;
             return (
               <TouchableOpacity
                 key={item.id}
                 onPress={() => setHungerLevel(item.id)}
                 activeOpacity={0.88}
-                style={[
-                  styles.hungerTile,
-                  // Unselected tiles are a soft fill with a TRANSPARENT
-                  // border rather than a visible outline: these already sit
-                  // inside a bordered card, so outlining each one made a box
-                  // inside a box. Border width stays 2 in both states — the
-                  // exact 1-vs-2 mismatch that used to shift pills sideways
-                  // on selection elsewhere in this app.
-                  selected
-                    ? {
-                        backgroundColor: isDark
-                          ? colors.accentGreenSoft
-                          : "rgba(236, 253, 245, 0.9)",
-                        borderColor: isDark ? colors.accentGreen : GREEN.primary,
-                        borderWidth: 2,
-                      }
-                    : {
-                        backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
-                        borderColor: "transparent",
-                        borderWidth: 2,
-                      },
-                ]}
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
+                style={[
+                  styles.hungerTile,
+                  {
+                    backgroundColor: selected ? choice.selectedBg : choice.idleBg,
+                    borderColor: selected ? choice.selectedBorder : "transparent",
+                  },
+                ]}
               >
-                <Text style={styles.hungerEmoji} allowFontScaling={false}>
-                  {item.icon}
-                </Text>
+                <Icon
+                  size={22}
+                  color={selected ? choice.selectedInk : choice.idleIcon}
+                  strokeWidth={2}
+                />
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   style={[
                     styles.hungerLabel,
-                    {
-                      color: selected
-                        ? isDark
-                          ? "#6EE7B7"
-                          : "#047857"
-                        : isDark
-                          ? colors.textPrimary
-                          : "#334155",
-                    },
+                    { color: selected ? choice.selectedInk : choice.idleInk },
                   ]}
                 >
                   {t(item.labelKey)}
@@ -324,29 +308,15 @@ export default function MealPreferences() {
             );
           })}
         </View>
-      </View>
 
-      {/* Craving quick-tags + one-off batch exclusion — real feedback from
-          a live tester: no way to nudge a generation toward a mood
-          ("something salty", "bold and savory") or drop one ingredient
-          just for this batch without it being a whole standing diet rule.
-          Deliberately separate from Custom Diet (Settings, PRO, persisted,
-          hard-enforced allergy-grade exclusions) — this is free for
-          everyone and resets when the app restarts, since it's "what do I
-          want right now," not a standing preference. Multi-select, same
-          as Dietary Restrictions, since wanting both "spicy" and "comfort
-          food" at once is entirely reasonable. */}
-      <View style={{ paddingHorizontal: 4 }}>
-        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-          {t("mealPrefs.cravingTitle")}
-        </Text>
-      </View>
-      <View style={card}>
-        <View style={styles.cravingRow}>
+        <Divider />
+
+        <SectionLabel>{t("mealPrefs.cravingTitle")}</SectionLabel>
+        <View style={styles.wrapRow}>
           {CRAVING_TAGS.map((tag) => (
-            <PillTag
+            <ChoiceChip
               key={tag.id}
-              emoji={tag.emoji}
+              Icon={tag.Icon}
               label={t(tag.labelKey)}
               selected={cravingTags.includes(tag.id)}
               onPress={() => toggleCravingTag(tag.id)}
@@ -361,10 +331,7 @@ export default function MealPreferences() {
             onChangeText={setExcludeThisBatch}
             placeholder={t("mealPrefs.excludeThisBatchPlaceholder")}
             placeholderTextColor={colors.textSecondary}
-            style={[
-              styles.excludeInput,
-              { color: colors.textPrimary },
-            ]}
+            style={[styles.excludeInput, { color: colors.textPrimary }]}
             returnKeyType="done"
           />
         </View>
@@ -386,23 +353,42 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
     marginBottom: 2,
   },
-  pillsRow: {
-    gap: 8,
-    paddingRight: 4,
-    alignItems: "center",
+  groupLabel: {
+    fontWeight: "800",
+    fontSize: 13,
+    letterSpacing: -0.1,
+    marginBottom: 10,
   },
-  cravingRow: {
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginVertical: 14,
+  },
+  wrapRow: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+  },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: RADIUS.pill,
+    borderWidth: 2,
+  },
+  chipLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    letterSpacing: -0.1,
   },
   excludeRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginTop: 12,
+    marginTop: 14,
     paddingTop: 12,
-    borderTopWidth: 1,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   excludeInput: {
     flex: 1,
@@ -410,39 +396,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     paddingVertical: 2,
   },
-  mealPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: RADIUS.pill,
-    borderWidth: 2,
-  },
-  // 18, matching PillTag's emoji. These two pill rows sit two blocks apart
-  // on the same screen and were 22 vs 15 — the same decorative food emoji
-  // at noticeably different sizes.
-  mealPillEmoji: {
-    fontSize: 18,
-    lineHeight: emojiLine(18),
-    marginRight: 8,
-  },
-  mealPillLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    letterSpacing: -0.1,
-  },
-  servingsCard: {
+  servingsRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  servingsLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    paddingRight: 10,
-    gap: 10,
-    minWidth: 0,
   },
   cardTitle: {
     fontWeight: "700",
@@ -456,28 +413,21 @@ const styles = StyleSheet.create({
   stepper: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 6,
   },
-  // Neutral chip, not the near-black primary-button fill this used to be.
-  // A −/+ stepper is a minor adjustment; spending the app's loudest colour
-  // on it put two heavy dark blocks directly above the actual primary
-  // action ("Generate AI Recipes") and made them compete. Colour comes in
-  // inline at the call site so it can be theme-aware.
+  // Neutral chip, not the near-black primary-button fill this used to be —
+  // a -/+ stepper is a minor adjustment and must not compete with the
+  // actual primary action ("Generate AI Recipes").
   stepBtn: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     borderRadius: RADIUS.control,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  stepBtnText: {
-    fontWeight: "700",
-    fontSize: 18,
-    lineHeight: 20,
-  },
   servingsCenter: {
-    minWidth: 56,
+    minWidth: 64,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -498,40 +448,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
   },
+  // Compact tiles: icon over label. They were square 96px tiles with a 36px
+  // emoji — a lot of padding for three choices. A translated label longer
+  // than the tile is wide ends in an ellipsis instead of spilling into the
+  // next tile (overflow hidden is the hard guarantee).
   hungerTile: {
     flex: 1,
-    aspectRatio: 1,
-    maxHeight: 96,
+    minHeight: 68,
     borderRadius: RADIUS.tile,
+    borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
-    // Confirmed real failure, not a hypothetical: the contents used to add
-    // up to ~104px inside this 96px cap — emoji 59 (emojiLine(42)) + 6
-    // margin + ~15 label + 20 padding + 4 border — so `overflow: "hidden"`
-    // below silently sliced the bottom off every hunger label. Sizes here
-    // and on hungerEmoji/hungerLabel are now chosen to total 90, leaving
-    // real headroom under the cap.
-    paddingVertical: 8,
+    gap: 6,
+    paddingVertical: 10,
     paddingHorizontal: 6,
-    // Same "text can bleed past its own box on web" issue fixed in
-    // BottomNav — a translated hunger-level word longer than the tile is
-    // wide must never spill into the gap toward the next tile. This is the
-    // hard guarantee; hungerLabel's own numberOfLines/width:100% below is
-    // what lets it end in "…" instead of just getting clipped at the edge.
     overflow: "hidden",
-  },
-  hungerEmoji: {
-    fontSize: 36,
-    lineHeight: emojiLine(36),
-    marginBottom: 4,
   },
   hungerLabel: {
     fontSize: 12,
     fontWeight: "600",
     letterSpacing: -0.1,
-    // Explicit, not the platform default — the default differs across
-    // iOS/Android/web, so leaving it unset is what made the overflow above
-    // depend on which platform you happened to look at.
     lineHeight: 15,
     width: "100%",
     minWidth: 0,
@@ -541,5 +477,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  servingsLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    paddingRight: 10,
+    gap: 10,
+    minWidth: 0,
   },
 });

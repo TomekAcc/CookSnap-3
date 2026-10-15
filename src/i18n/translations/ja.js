@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "夕食",
   "mealType.dessert": "デザート",
   "mealPrefs.title": "食事の好み",
+  "mealPrefs.mealTypeTitle": "食事の種類",
   "mealPrefs.includeStaples": "パントリーのアイテムを含める",
   "mealPrefs.staplesDesc": "パントリーで在庫ありとしてマークされた材料",
   "mealPrefs.servings": "分量",

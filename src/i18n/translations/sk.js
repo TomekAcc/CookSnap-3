@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Večera",
   "mealType.dessert": "Dezert",
   "mealPrefs.title": "Preferencie jedla",
+  "mealPrefs.mealTypeTitle": "Typ jedla",
   "mealPrefs.includeStaples": "Zahrnúť položky zo špajze",
   "mealPrefs.staplesDesc": "Suroviny označené ako dostupné vo vašej špajzi",
   "mealPrefs.servings": "Porcie",

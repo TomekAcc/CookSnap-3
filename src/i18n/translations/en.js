@@ -167,6 +167,7 @@ export default {
   "mealType.dessert": "Dessert",
 
   "mealPrefs.title": "Meal Preferences",
+  "mealPrefs.mealTypeTitle": "Meal type",
   "mealPrefs.includeStaples": "Include Pantry Items",
   "mealPrefs.staplesDesc": "Ingredients marked in stock in your Pantry",
   "mealPrefs.servings": "Servings",

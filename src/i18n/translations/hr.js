@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Večera",
   "mealType.dessert": "Desert",
   "mealPrefs.title": "Prehrambene postavke",
+  "mealPrefs.mealTypeTitle": "Vrsta obroka",
   "mealPrefs.includeStaples": "Uključi artikle iz smočnice",
   "mealPrefs.staplesDesc": "Sastojci označeni kao dostupni u vašoj smočnici",
   "mealPrefs.servings": "Porcije",

@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Dîner",
   "mealType.dessert": "Dessert",
   "mealPrefs.title": "Préférences de repas",
+  "mealPrefs.mealTypeTitle": "Type de repas",
   "mealPrefs.includeStaples": "Inclure les articles du garde-manger",
   "mealPrefs.staplesDesc": "Ingrédients marqués comme disponibles dans votre garde-manger",
   "mealPrefs.servings": "Portions",

@@ -144,6 +144,7 @@ export default {
   "mealType.dinner": "Akşam Yemeği",
   "mealType.dessert": "Tatlı",
   "mealPrefs.title": "Yemek Tercihleri",
+  "mealPrefs.mealTypeTitle": "Öğün türü",
   "mealPrefs.includeStaples": "Kiler ürünlerini dahil et",
   "mealPrefs.staplesDesc": "Kilerinizde stokta olarak işaretlenen malzemeler",
   "mealPrefs.servings": "Porsiyon",
