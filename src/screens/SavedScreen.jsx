@@ -1,6 +1,6 @@
 import { useTabScroll } from "../hooks/useTabScroll";
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Bookmark, Heart } from "lucide-react-native";
 import EmptyStateSparkle from "../components/EmptyStateSparkle";
@@ -8,39 +8,8 @@ import Header from "../components/Header";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
-import {
-  getDishEmojiAndColor,
-  resolveCategoryBadgeColors,
-} from "../utils/imageUtils";
-import CookingTimeDisplay from "../components/CookingTimeDisplay";
-import { TYPE, WEIGHT } from "../theme/tokens";
+import RecipeCard from "../components/RecipeCard";
 import IconBadge from "../components/IconBadge";
-import { DS } from "../utils/designSystem";
-
-function SavedRecipeThumb({ dishTitle, dishType }) {
-  const { isDark } = useTheme();
-  const style = getDishEmojiAndColor(dishTitle, dishType);
-  const badge = resolveCategoryBadgeColors(style, isDark);
-
-  return (
-    <View
-      style={{
-        width: 64,
-        height: 64,
-        borderRadius: 16,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: badge.backgroundColor,
-        borderWidth: 1,
-        borderColor: badge.borderColor || "#F1F5F9",
-      }}
-    >
-      <Text style={{ fontSize: 36, lineHeight: 40 }} allowFontScaling={false}>
-        {style.emoji || "🥘"}
-      </Text>
-    </View>
-  );
-}
 
 export default function SavedScreen() {
   const tabScroll = useTabScroll("saved");
@@ -139,58 +108,20 @@ export default function SavedScreen() {
             </Text>
           </View>
         ) : (
+          // The same card as the recipe list on the Scanner, so the two
+          // can't drift apart again (they used to be separate
+          // implementations with different tiles, hearts, spacing and a
+          // wrapping prep/cook line). Always favorited here; tapping the
+          // heart un-saves.
           savedRecipes.map((recipe) => (
-            <TouchableOpacity
+            <RecipeCard
               key={recipe.id}
-              onPress={() => setSelectedRecipe(recipe)}
-              activeOpacity={0.9}
-              style={[
-                styles.card,
-                DS.shadow.card,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: colors.cardBorder,
-                },
-              ]}
-            >
-              <SavedRecipeThumb dishTitle={recipe.title} dishType={recipe.dishType} />
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Text
-                  style={{
-                    fontSize: TYPE.title,
-                    fontWeight: WEIGHT.bold,
-                    color: colors.textPrimary,
-                    lineHeight: 22,
-                    letterSpacing: -0.3,
-                  }}
-                  numberOfLines={2}
-                >
-                  {recipe.title}
-                </Text>
-                <View style={{ marginTop: 8 }}>
-                  <CookingTimeDisplay
-                    prepTime={recipe.prepTime}
-                    cookTime={recipe.cookTime}
-                    totalTime={recipe.totalTime}
-                    variant="compact"
-                  />
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() => toggleSaveRecipe(recipe)}
-                hitSlop={12}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 14,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: colors.dangerSoft || "#FFECEA",
-                }}
-              >
-                <Heart size={18} color="#FF3B30" fill="#FF3B30" />
-              </TouchableOpacity>
-            </TouchableOpacity>
+              recipe={recipe}
+              isFavorite
+              showFridgeMatch={false}
+              onToggleFavorite={() => toggleSaveRecipe(recipe)}
+              onSelect={(r) => setSelectedRecipe(r)}
+            />
           ))
         )}
       </View>
@@ -231,14 +162,5 @@ const styles = StyleSheet.create({
     marginTop: 10,
     lineHeight: 22,
     maxWidth: 300,
-  },
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    padding: 20,
-    borderRadius: 24,
-    borderWidth: StyleSheet.hairlineWidth,
-    marginBottom: 16,
   },
 });

@@ -47,6 +47,10 @@ export default function RecipeCard({
   isFavorite = false,
   onToggleFavorite,
   onSelect,
+  // "Uses N fridge items" only means something right after a scan. The Saved
+  // list shows the same card without it (a saved recipe is no longer tied to
+  // today's fridge), leaving just the cooking time.
+  showFridgeMatch = true,
 }) {
   const { colors, isDark } = useTheme();
   const { t } = useCookAI();
@@ -116,10 +120,14 @@ export default function RecipeCard({
           <Text style={[styles.metaStrong, { color: colors.textPrimary }]}>
             {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
           </Text>
-          <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
-            {"  ·  "}
-          </Text>
-          {t("recipeCard.usesFridgeItems", { count: matchCount })}
+          {showFridgeMatch ? (
+            <>
+              <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
+                {"  ·  "}
+              </Text>
+              {t("recipeCard.usesFridgeItems", { count: matchCount })}
+            </>
+          ) : null}
         </Text>
       </View>
 
