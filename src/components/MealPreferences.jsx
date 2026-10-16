@@ -124,55 +124,50 @@ function Segmented({ options, value, onChange, t }) {
   const [width, setWidth] = useState(0);
   const labels = options.map((o) => t(o.labelKey));
   const needed = labels.reduce((sum, l) => sum + l.length * CHAR_W + SEGMENT_PAD, 0);
-  // Until measured, assume it fits (avoids a flash of wrapped chips).
+  // Until measured, assume it fits (avoids a flash of wrapped segments).
   const fits = width === 0 || needed <= width - 6;
+  // Selected = raised white pill on the grey track (dark mode: a lighter
+  // grey), dark bold label. Green stays reserved for the primary button and
+  // for multi-select tags, so the CTA is the only solid green block here.
+  const thumb = p.isDark ? "#4A4A4D" : "#FFFFFF";
 
   return (
-    <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-      {fits ? (
-        <View style={[styles.segmented, { backgroundColor: p.idleBg }]}>
-          {options.map((o, i) => {
-            const selected = value === o.id;
-            return (
-              <TouchableOpacity
-                key={o.id}
-                onPress={() => onChange(o.id)}
-                activeOpacity={0.85}
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
-                style={[
-                  styles.segment,
-                  { flex: options.length <= 3 ? 1 : Math.max(labels[i].length, 4) + 3 },
-                  selected && { backgroundColor: EMERALD },
-                ]}
-              >
-                <Text
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.8}
-                  style={[
-                    styles.segmentLabel,
-                    { color: selected ? "#FFFFFF" : p.idleInk },
-                  ]}
-                >
-                  {labels[i]}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      ) : (
-        <View style={styles.wrapRow}>
-          {options.map((o, i) => (
-            <ChoiceChip
-              key={o.id}
-              label={labels[i]}
-              selected={value === o.id}
-              onPress={() => onChange(o.id)}
-            />
-          ))}
-        </View>
-      )}
+    <View
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      style={[styles.segmented, !fits && styles.segmentedWrap, { backgroundColor: p.idleBg }]}
+    >
+      {options.map((o, i) => {
+        const selected = value === o.id;
+        return (
+          <TouchableOpacity
+            key={o.id}
+            onPress={() => onChange(o.id)}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityState={{ selected }}
+            style={[
+              styles.segment,
+              fits
+                ? { flex: options.length <= 3 ? 1 : Math.max(labels[i].length, 4) + 3 }
+                : { paddingHorizontal: 14 },
+              selected && [styles.segmentOn, { backgroundColor: thumb }],
+            ]}
+          >
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit={fits}
+              minimumFontScale={0.8}
+              style={[
+                styles.segmentLabel,
+                { color: selected ? p.colors.textPrimary : p.muted, fontWeight: selected ? "700" : "600" },
+                selected && !p.isDark && { color: "#0F172A" },
+              ]}
+            >
+              {labels[i]}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
@@ -420,7 +415,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    marginVertical: 14,
+    marginVertical: 18,
   },
   wrapRow: {
     flexDirection: "row",
@@ -455,7 +450,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     paddingHorizontal: 4,
-    overflow: "hidden",
+  },
+  segmentedWrap: {
+    flexWrap: "wrap",
+  },
+  segmentOn: {
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
   },
   segmentLabel: {
     flexShrink: 1,
