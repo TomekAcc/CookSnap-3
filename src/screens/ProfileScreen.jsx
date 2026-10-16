@@ -283,41 +283,7 @@ export default function ProfileScreen() {
               </Text>
             </View>
           </View>
-        ) : (
-          <TouchableOpacity
-            onPress={() => setProModalOpen(true)}
-            style={{
-              backgroundColor: "#F59E0B",
-              borderRadius: 24,
-              padding: 20,
-              marginBottom: 24,
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-            activeOpacity={0.85}
-          >
-            <Crown size={28} color="#0F172A" />
-            <View style={{ flex: 1, marginLeft: 12 }}>
-              <Text
-                style={{ color: "#0F172A", fontWeight: "900", fontSize: 16 }}
-              >
-                {t("profile.upgradeToPro")}
-              </Text>
-              <Text
-                style={{
-                  color: "rgba(15, 23, 42, 0.7)",
-                  fontSize: 14,
-                  fontWeight: "500",
-                }}
-              >
-                {proBannerSubtitle}
-              </Text>
-            </View>
-            <Text style={{ color: "#0F172A", fontWeight: "900", fontSize: 14 }}>
-              →
-            </Text>
-          </TouchableOpacity>
-        )}
+        ) : null}
 
         <View
           style={{
@@ -360,6 +326,74 @@ export default function ProfileScreen() {
         <View style={{ marginBottom: 10 }}>
           <CustomDietSection />
         </View>
+
+        {/* Free users: the upsell sits BELOW their diet settings, not above
+            them — the first thing on Profile should be the thing they came
+            to set, and the header already carries a crown button. Same amber
+            identity as the PRO-active card, the recipe-list card and the
+            paywall. */}
+        {!isPro ? (
+          <TouchableOpacity
+            onPress={() => setProModalOpen(true)}
+            activeOpacity={0.9}
+            accessibilityRole="button"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: "rgba(255,159,10,0.35)",
+              borderWidth: 1,
+              borderRadius: 24,
+              padding: 16,
+              marginBottom: 24,
+              flexDirection: "row",
+              alignItems: "center",
+              overflow: "hidden",
+            }}
+          >
+            <LinearGradient
+              pointerEvents="none"
+              colors={["rgba(255,159,10,0.16)", "rgba(255,159,10,0.04)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+            <View
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: colors.accentAmber,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Crown size={22} color="#FFFFFF" fill="#FFFFFF" />
+            </View>
+            <View style={{ flex: 1, marginLeft: 14 }}>
+              <Text
+                style={{
+                  color: colors.textPrimary,
+                  fontWeight: "900",
+                  fontSize: 16,
+                  letterSpacing: -0.2,
+                }}
+              >
+                {t("profile.upgradeToPro")}
+              </Text>
+              <Text
+                style={{
+                  color: colors.textSecondary,
+                  fontSize: 13,
+                  fontWeight: "500",
+                  lineHeight: 18,
+                  marginTop: 2,
+                }}
+              >
+                {proBannerSubtitle}
+              </Text>
+            </View>
+            <ChevronRight size={20} color={colors.accentAmber} strokeWidth={2.6} />
+          </TouchableOpacity>
+        ) : null}
 
         {/* Real usage, not filler — same "personalize with actual numbers"
             principle already used for the PRO banner above. Three columns

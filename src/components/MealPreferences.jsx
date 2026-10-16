@@ -178,14 +178,13 @@ function Segmented({ options, value, onChange, t }) {
   );
 }
 
-function SectionLabel({ children, noMargin = false }) {
+function SectionLabel({ children }) {
   const { colors } = useTheme();
   return (
     <Text
       style={[
         styles.groupLabel,
         { color: colors.textSecondary },
-        noMargin && { marginBottom: 0 },
       ]}
     >
       {children}
@@ -294,42 +293,56 @@ export default function MealPreferences() {
 
         <Divider />
 
-        <View style={styles.servingsRow}>
-          <SectionLabel noMargin>{t("mealPrefs.servings")}</SectionLabel>
-          <View style={styles.stepper}>
-            <TouchableOpacity
-              onPress={() => setServings(Math.max(1, servings - 1))}
-              activeOpacity={0.85}
-              style={[styles.stepBtn, { backgroundColor: palette.idleBg }]}
-              accessibilityLabel={t("a11y.decreaseServings")}
-            >
-              <Minus size={15} color={colors.textPrimary} strokeWidth={2.6} />
-            </TouchableOpacity>
+        <SectionLabel>{t("mealPrefs.servings")}</SectionLabel>
+        {/* Same shape as the segmented bars above and below (label on top, one
+            40px rounded bar underneath) instead of a stepper hanging off the
+            right edge with its own tiny caption: the - and + sit inside the
+            bar as raised buttons and the count reads as one phrase. The unit
+            strings are stored in capitals for the old small-caps caption; here
+            they read as a normal lowercase word. */}
+        <View style={[styles.servingsBar, { backgroundColor: palette.idleBg }]}>
+          <TouchableOpacity
+            onPress={() => setServings(Math.max(1, servings - 1))}
+            disabled={servings <= 1}
+            activeOpacity={0.85}
+            style={[
+              styles.servingsBtn,
+              { backgroundColor: isDark ? colors.card : "#FFFFFF", opacity: servings <= 1 ? 0.4 : 1 },
+            ]}
+            accessibilityLabel={t("a11y.decreaseServings")}
+          >
+            <Minus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+          </TouchableOpacity>
 
-            <View style={styles.servingsCenter}>
-              <Text style={[styles.servingsNumber, { color: colors.textPrimary }]}>
-                {servings}
-              </Text>
-              <Text style={styles.servingsUnit}>
-                {servings === 1
-                  ? t("mealPrefs.personUnit")
-                  : translateCount(recipeLanguageId, servings, {
-                      few: "mealPrefs.peopleUnitFew",
-                      many: "mealPrefs.peopleUnitMany",
-                      fallback: "mealPrefs.peopleUnit",
-                    })}
-              </Text>
-            </View>
+          <Text style={styles.servingsText} numberOfLines={1}>
+            <Text style={{ color: colors.textPrimary, fontWeight: "800", fontSize: 17 }}>
+              {servings}
+            </Text>
+            <Text style={{ color: colors.textSecondary, fontWeight: "600" }}>
+              {"  "}
+              {(servings === 1
+                ? t("mealPrefs.personUnit")
+                : translateCount(recipeLanguageId, servings, {
+                    few: "mealPrefs.peopleUnitFew",
+                    many: "mealPrefs.peopleUnitMany",
+                    fallback: "mealPrefs.peopleUnit",
+                  })
+              ).toLowerCase()}
+            </Text>
+          </Text>
 
-            <TouchableOpacity
-              onPress={() => setServings(Math.min(12, servings + 1))}
-              activeOpacity={0.85}
-              style={[styles.stepBtn, { backgroundColor: palette.idleBg }]}
-              accessibilityLabel={t("a11y.increaseServings")}
-            >
-              <Plus size={15} color={colors.textPrimary} strokeWidth={2.6} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            onPress={() => setServings(Math.min(12, servings + 1))}
+            disabled={servings >= 12}
+            activeOpacity={0.85}
+            style={[
+              styles.servingsBtn,
+              { backgroundColor: isDark ? colors.card : "#FFFFFF", opacity: servings >= 12 ? 0.4 : 1 },
+            ]}
+            accessibilityLabel={t("a11y.increaseServings")}
+          >
+            <Plus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+          </TouchableOpacity>
         </View>
 
         <Divider />
@@ -515,10 +528,20 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     paddingVertical: 2,
   },
-  servingsRow: {
+  servingsBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    borderRadius: 14,
+    padding: 3,
+    height: 46,
+  },
+  servingsBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 11,
+    alignItems: "center",
+    justifyContent: "center",
   },
   cardTitle: {
     fontWeight: "700",
@@ -529,37 +552,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 1,
   },
-  stepper: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  // Neutral chip, not a primary-button fill — a -/+ stepper is a minor
-  // adjustment and must not compete with "Generate AI Recipes".
-  stepBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: RADIUS.control,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  servingsCenter: {
-    minWidth: 64,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  servingsNumber: {
-    fontSize: 18,
-    fontWeight: "700",
-    lineHeight: 22,
-    letterSpacing: -0.3,
-  },
-  servingsUnit: {
-    fontSize: 10,
-    fontWeight: "500",
-    color: "#6B7280",
-    letterSpacing: 0.6,
-    marginTop: 1,
+  servingsText: {
+    flex: 1,
+    textAlign: "center",
+    fontSize: 14,
   },
   staplesCard: {
     flexDirection: "row",
