@@ -22,7 +22,6 @@ import {
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import { animateLayout } from "../utils/layoutMotion";
-import { translateCount } from "../i18n";
 import { RADIUS } from "../theme/tokens";
 
 // Vector icons instead of emoji for every CONTROL on this screen (emoji are
@@ -178,13 +177,6 @@ function Segmented({ options, value, onChange, t }) {
   );
 }
 
-// Unit strings are stored in capitals (old small-caps caption). Here they read
-// as a normal word: lowercase, except German, whose nouns keep a capital.
-function softCase(text, lang) {
-  const lower = text.toLowerCase();
-  return lang === "de" ? lower.charAt(0).toUpperCase() + lower.slice(1) : lower;
-}
-
 function SectionLabel({ children }) {
   const { colors } = useTheme();
   return (
@@ -224,7 +216,6 @@ export default function MealPreferences() {
     includePantryStaples,
     setIncludePantryStaples,
     t,
-    recipeLanguageId,
   } = useCookAI();
   const { colors, isDark } = useTheme();
   const card = cardStyle(isDark, colors);
@@ -283,23 +274,10 @@ export default function MealPreferences() {
               <Minus size={16} color={colors.textPrimary} strokeWidth={2.6} />
             </TouchableOpacity>
 
-            <Text style={styles.servingsText} numberOfLines={1}>
-              <Text style={{ color: colors.textPrimary, fontWeight: "800", fontSize: 16 }}>
-                {servings}
-              </Text>
-              <Text style={{ color: colors.textSecondary, fontWeight: "600" }}>
-                {" "}
-                {softCase(
-                  servings === 1
-                    ? t("mealPrefs.personUnit")
-                    : translateCount(recipeLanguageId, servings, {
-                        few: "mealPrefs.peopleUnitFew",
-                        many: "mealPrefs.peopleUnitMany",
-                        fallback: "mealPrefs.peopleUnit",
-                      }),
-                  recipeLanguageId
-                )}
-              </Text>
+            {/* Number only, fixed width: the caption already says "servings",
+                and a unit word made the bar resize between 1 and 2. */}
+            <Text style={[styles.servingsText, { color: colors.textPrimary }]} numberOfLines={1}>
+              {servings}
             </Text>
 
             <TouchableOpacity
@@ -563,9 +541,9 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   servingsText: {
-    minWidth: 92,
-    paddingHorizontal: 6,
+    width: 52,
     textAlign: "center",
-    fontSize: 14,
+    fontSize: 18,
+    fontWeight: "800",
   },
 });
