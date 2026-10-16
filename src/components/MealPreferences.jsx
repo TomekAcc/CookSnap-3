@@ -17,7 +17,7 @@ import {
   Leaf,
   Minus,
   Plus,
-  ChevronDown,
+  ChevronDown, ChevronUp,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
@@ -143,7 +143,7 @@ function Segmented({ options, value, onChange, t }) {
                 accessibilityState={{ selected }}
                 style={[
                   styles.segment,
-                  { flex: Math.max(labels[i].length, 4) + 3 },
+                  { flex: options.length <= 3 ? 1 : Math.max(labels[i].length, 4) + 3 },
                   selected && { backgroundColor: EMERALD },
                 ]}
               >
@@ -176,6 +176,13 @@ function Segmented({ options, value, onChange, t }) {
       )}
     </View>
   );
+}
+
+// Unit strings are stored in capitals (old small-caps caption). Here they read
+// as a normal word: lowercase, except German, whose nouns keep a capital.
+function softCase(text, lang) {
+  const lower = text.toLowerCase();
+  return lang === "de" ? lower.charAt(0).toUpperCase() + lower.slice(1) : lower;
 }
 
 function SectionLabel({ children }) {
@@ -235,47 +242,6 @@ export default function MealPreferences() {
         </Text>
       </View>
 
-      {/* Include Pantry Staples — sits first, directly under the detected
-          ingredients grid, so every input that affects recipe generation is
-          grouped together before the meal-type / servings / hunger tuning.
-          Confirmed real failure, not a hypothetical: this used to be a
-          plain View with only the Switch itself interactive — tapping the
-          label text did nothing. Whole row is now the touch target, same
-          fix as the Settings dietary rows; pointerEvents="none" on the
-          Switch stops a direct tap on it from double-toggling via bubbling. */}
-      <TouchableOpacity
-        onPress={() => setIncludePantryStaples((prev) => !prev)}
-        activeOpacity={0.7}
-        style={[card, styles.staplesCard]}
-      >
-        {/* The amber badge that used to sit here is gone. Amber means
-            PRO/premium everywhere else in this app, so spending it on a
-            pantry toggle actively misled; and it was one of only two rows
-            on this screen carrying a badge at all, which made the device
-            read as arbitrary rather than structural. */}
-        <View style={styles.servingsLeft}>
-          <View style={{ flex: 1, minWidth: 0 }}>
-            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
-              {t("mealPrefs.includeStaples")}
-            </Text>
-            <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
-              {t("mealPrefs.staplesDesc")}
-            </Text>
-          </View>
-        </View>
-
-        <Switch
-          value={includePantryStaples}
-          onValueChange={setIncludePantryStaples}
-          pointerEvents="none"
-          trackColor={{
-            false: "#E5E7EB",
-            true: "#10B981",
-          }}
-          thumbColor="#FFFFFF"
-        />
-      </TouchableOpacity>
-
       {/* One card. Meal type, servings and hunger are the three questions that
           matter every time; cravings and the one-off exclusion are optional,
           so they sit behind "More options" (opened automatically when
@@ -293,56 +259,62 @@ export default function MealPreferences() {
 
         <Divider />
 
-        <SectionLabel>{t("mealPrefs.servings")}</SectionLabel>
-        {/* Same shape as the segmented bars above and below (label on top, one
-            40px rounded bar underneath) instead of a stepper hanging off the
-            right edge with its own tiny caption: the - and + sit inside the
-            bar as raised buttons and the count reads as one phrase. The unit
-            strings are stored in capitals for the old small-caps caption; here
-            they read as a normal lowercase word. */}
-        <View style={[styles.servingsBar, { backgroundColor: palette.idleBg }]}>
-          <TouchableOpacity
-            onPress={() => setServings(Math.max(1, servings - 1))}
-            disabled={servings <= 1}
-            activeOpacity={0.85}
-            style={[
-              styles.servingsBtn,
-              { backgroundColor: isDark ? colors.card : "#FFFFFF", opacity: servings <= 1 ? 0.4 : 1 },
-            ]}
-            accessibilityLabel={t("a11y.decreaseServings")}
+        {/* One line: caption left, compact stepper right. A full-width bar just
+            to show "1 osoba" wasted a whole row and looked unlike its
+            neighbours; the stepper is a control, not a question with options. */}
+        <View style={styles.servingsRow}>
+          <Text
+            numberOfLines={1}
+            style={[styles.groupLabel, { color: colors.textSecondary, marginBottom: 0, flexShrink: 1 }]}
           >
-            <Minus size={16} color={colors.textPrimary} strokeWidth={2.6} />
-          </TouchableOpacity>
-
-          <Text style={styles.servingsText} numberOfLines={1}>
-            <Text style={{ color: colors.textPrimary, fontWeight: "800", fontSize: 17 }}>
-              {servings}
-            </Text>
-            <Text style={{ color: colors.textSecondary, fontWeight: "600" }}>
-              {"  "}
-              {(servings === 1
-                ? t("mealPrefs.personUnit")
-                : translateCount(recipeLanguageId, servings, {
-                    few: "mealPrefs.peopleUnitFew",
-                    many: "mealPrefs.peopleUnitMany",
-                    fallback: "mealPrefs.peopleUnit",
-                  })
-              ).toLowerCase()}
-            </Text>
+            {t("mealPrefs.servings")}
           </Text>
+          <View style={[styles.servingsBar, { backgroundColor: palette.idleBg }]}>
+            <TouchableOpacity
+              onPress={() => setServings(Math.max(1, servings - 1))}
+              disabled={servings <= 1}
+              activeOpacity={0.85}
+              style={[
+                styles.servingsBtn,
+                { backgroundColor: isDark ? colors.card : "#FFFFFF", opacity: servings <= 1 ? 0.4 : 1 },
+              ]}
+              accessibilityLabel={t("a11y.decreaseServings")}
+            >
+              <Minus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => setServings(Math.min(12, servings + 1))}
-            disabled={servings >= 12}
-            activeOpacity={0.85}
-            style={[
-              styles.servingsBtn,
-              { backgroundColor: isDark ? colors.card : "#FFFFFF", opacity: servings >= 12 ? 0.4 : 1 },
-            ]}
-            accessibilityLabel={t("a11y.increaseServings")}
-          >
-            <Plus size={16} color={colors.textPrimary} strokeWidth={2.6} />
-          </TouchableOpacity>
+            <Text style={styles.servingsText} numberOfLines={1}>
+              <Text style={{ color: colors.textPrimary, fontWeight: "800", fontSize: 16 }}>
+                {servings}
+              </Text>
+              <Text style={{ color: colors.textSecondary, fontWeight: "600" }}>
+                {" "}
+                {softCase(
+                  servings === 1
+                    ? t("mealPrefs.personUnit")
+                    : translateCount(recipeLanguageId, servings, {
+                        few: "mealPrefs.peopleUnitFew",
+                        many: "mealPrefs.peopleUnitMany",
+                        fallback: "mealPrefs.peopleUnit",
+                      }),
+                  recipeLanguageId
+                )}
+              </Text>
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => setServings(Math.min(12, servings + 1))}
+              disabled={servings >= 12}
+              activeOpacity={0.85}
+              style={[
+                styles.servingsBtn,
+                { backgroundColor: isDark ? colors.card : "#FFFFFF", opacity: servings >= 12 ? 0.4 : 1 },
+              ]}
+              accessibilityLabel={t("a11y.increaseServings")}
+            >
+              <Plus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <Divider />
@@ -354,6 +326,35 @@ export default function MealPreferences() {
           onChange={setHungerLevel}
           t={t}
         />
+
+        <Divider />
+
+        {/* Pantry staples — whole row is the touch target (tapping the text used
+            to do nothing); pointerEvents="none" on the Switch stops a direct tap
+            from double-toggling via bubbling. No amber badge: amber means PRO. */}
+        <TouchableOpacity
+          onPress={() => setIncludePantryStaples((prev) => !prev)}
+          activeOpacity={0.7}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: includePantryStaples }}
+          style={styles.staplesRow}
+        >
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              {t("mealPrefs.includeStaples")}
+            </Text>
+            <Text style={[styles.cardSub, { color: colors.textSecondary }]}>
+              {t("mealPrefs.staplesDesc")}
+            </Text>
+          </View>
+          <Switch
+            value={includePantryStaples}
+            onValueChange={setIncludePantryStaples}
+            pointerEvents="none"
+            trackColor={{ false: "#E5E7EB", true: "#10B981" }}
+            thumbColor="#FFFFFF"
+          />
+        </TouchableOpacity>
 
         <Divider />
 
@@ -376,12 +377,11 @@ export default function MealPreferences() {
                 <Text style={styles.moreBadgeText}>{activeMore}</Text>
               </View>
             ) : null}
-            <ChevronDown
-              size={18}
-              color={colors.textSecondary}
-              strokeWidth={2.4}
-              style={{ transform: [{ rotate: moreOpen ? "180deg" : "0deg" }] }}
-            />
+            {moreOpen ? (
+              <ChevronUp size={18} color={colors.textSecondary} strokeWidth={2.4} />
+            ) : (
+              <ChevronDown size={18} color={colors.textSecondary} strokeWidth={2.4} />
+            )}
           </View>
         </TouchableOpacity>
 
@@ -435,8 +435,8 @@ const styles = StyleSheet.create({
   // labels only name the group.
   groupLabel: {
     fontWeight: "700",
-    fontSize: 11.5,
-    letterSpacing: 0.6,
+    fontSize: 12,
+    letterSpacing: 0.7,
     textTransform: "uppercase",
     marginBottom: 10,
   },
@@ -528,13 +528,23 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     paddingVertical: 2,
   },
-  servingsBar: {
+  servingsRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 12,
+  },
+  servingsBar: {
+    flexDirection: "row",
+    alignItems: "center",
     borderRadius: 14,
     padding: 3,
     height: 46,
+  },
+  staplesRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
   servingsBtn: {
     width: 40,
@@ -553,21 +563,9 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   servingsText: {
-    flex: 1,
+    minWidth: 92,
+    paddingHorizontal: 6,
     textAlign: "center",
     fontSize: 14,
-  },
-  staplesCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  servingsLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    paddingRight: 10,
-    gap: 10,
-    minWidth: 0,
   },
 });
