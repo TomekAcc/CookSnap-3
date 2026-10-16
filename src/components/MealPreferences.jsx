@@ -58,7 +58,7 @@ function cardStyle(isDark, colors) {
     borderRadius: 20,
     borderWidth: 1,
     borderColor: isDark ? colors.cardBorder : "#E5E7EB",
-    padding: 14,
+    padding: 18,
   };
 }
 
@@ -339,7 +339,7 @@ export default function MealPreferences() {
         </TouchableOpacity>
 
         {moreOpen ? (
-          <View style={{ marginTop: 14 }}>
+          <View style={{ marginTop: 20 }}>
             <SectionLabel>{t("mealPrefs.cravingTitle")}</SectionLabel>
             <View style={styles.wrapRow}>
               {CRAVING_TAGS.map((tag) => (
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 8,
     marginBottom: 12,
-    gap: 14,
+    gap: 16,
   },
   sectionTitle: {
     fontWeight: "800",
@@ -390,16 +390,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     letterSpacing: 0.7,
     textTransform: "uppercase",
-    marginBottom: 10,
+    marginBottom: 12,
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    marginVertical: 18,
+    marginVertical: 24,
   },
   wrapRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: 10,
   },
   chip: {
     flexDirection: "row",
