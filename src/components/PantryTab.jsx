@@ -252,32 +252,6 @@ export default function PantryTab() {
                 {t("pantry.title")}
               </Text>
             </View>
-            {/* Same chip treatment as the Settings gear on Profile (bordered
-                circle on colors.card) so this reads as tappable the same
-                way that established header action does — muted icon color
-                keeps it low-prominence since this is a destructive reset,
-                not a primary action. Only shown once there's something to
-                clear. */}
-            {pantryItems.length > 0 && (
-              <TouchableOpacity
-                onPress={handleClearPantry}
-                activeOpacity={0.75}
-                accessibilityRole="button"
-                accessibilityLabel={t("pantry.clearAllButton")}
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: colors.card,
-                  borderWidth: 1,
-                  borderColor: colors.cardBorder,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Trash2 size={18} color={colors.textSecondary} />
-              </TouchableOpacity>
-            )}
           </View>
           <Text
             style={{
@@ -297,7 +271,7 @@ export default function PantryTab() {
             scanner experience (see PantryScannerHero.jsx). It does NOT also
             render a detected-items list itself: that's the In Stock / Out
             of Stock sections below, already fed by the same scan result. */}
-        <PantryScannerHero onManualAdd={handleOpenAddModal} />
+        <PantryScannerHero />
 
         {/* Confirmed user feedback: people land on Pantry (often from the
             "Scan your pantry" nudge on Scanner — see that screen's own
@@ -365,10 +339,8 @@ export default function PantryTab() {
         </View>
 
         {/* Search */}
-        <View
-          className="mb-3"
-          style={{ position: "relative", justifyContent: "center" }}
-        >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <View style={{ flex: 1, position: "relative", justifyContent: "center" }}>
           <TextInput
             placeholder={t("pantry.searchPlaceholder")}
             placeholderTextColor={colors.textSecondary}
@@ -382,8 +354,11 @@ export default function PantryTab() {
               fontSize: 12,
               color: colors.textPrimary,
               paddingLeft: 40,
-              paddingRight: 40,
-              paddingVertical: 10,
+              // Room for the clear (x) only while there is text; otherwise the
+              // placeholder gets the space (German "Vorratskammer durchsuchen").
+              paddingRight: searchQuery.length > 0 ? 40 : 12,
+              paddingVertical: 0,
+              height: 42,
             }}
           />
           <View style={{ position: "absolute", left: 14 }}>
@@ -398,6 +373,31 @@ export default function PantryTab() {
               <X size={14} color="#94A3B8" />
             </TouchableOpacity>
           )}
+        </View>
+          <TouchableOpacity
+            onPress={handleOpenAddModal}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={t("a11y.addPantryStaple")}
+            style={{
+              height: 42,
+              paddingHorizontal: 14,
+              borderRadius: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+              borderWidth: 1,
+              borderColor: isDark ? "#059669" : "#A7F3D0",
+            }}
+          >
+            <Plus size={16} color={isDark ? "#34D399" : "#059669"} strokeWidth={2.6} />
+            <Text
+              numberOfLines={1}
+              style={{ color: isDark ? "#34D399" : "#047857", fontSize: 13, fontWeight: "700", marginLeft: 5 }}
+            >
+              {t("scanner.add")}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Category pills */}
@@ -867,6 +867,30 @@ export default function PantryTab() {
                 </SwipeToDeleteRow>
               ))}
             </View>
+          )}
+
+          {/* Destructive reset lives here, at the very end of the list: far from
+              the title and the scan controls where a stray tap could reach it,
+              visually quiet, and still behind a confirm dialog. */}
+          {pantryItems.length > 0 && (
+            <TouchableOpacity
+              onPress={handleClearPantry}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              style={{
+                marginTop: 28,
+                paddingVertical: 12,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+              }}
+            >
+              <Trash2 size={14} color={isDark ? "#F87171" : "#DC2626"} />
+              <Text style={{ color: isDark ? "#F87171" : "#DC2626", fontSize: 13, fontWeight: "600" }}>
+                {t("pantry.clearAllButton")}
+              </Text>
+            </TouchableOpacity>
           )}
 
         </View>

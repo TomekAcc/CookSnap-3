@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, Image as ImageIcon, Plus, CheckCircle2 } from "lucide-react-native";
+import { Camera, Image as ImageIcon, CheckCircle2 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
@@ -74,7 +74,7 @@ function resolveScanStage(hasScanned, isScanning) {
  * holdingAtComplete fix included — see FridgeScannerHero's own comments on
  * that for the full reasoning, since it applies here unchanged.
  */
-export default function PantryScannerHero({ onManualAdd }) {
+export default function PantryScannerHero() {
   const {
     pantryItems,
     isPantryScanning,
@@ -471,7 +471,7 @@ export default function PantryScannerHero({ onManualAdd }) {
             onPress={handleOpenCamera}
             activeOpacity={0.85}
             style={{
-              flex: 1.3,
+              flex: 1,
               height: 46,
               // Matches FridgeScannerHero's "Take Photo" button — same
               // primary scan action, was the old dark-navy+amber pairing
@@ -493,47 +493,37 @@ export default function PantryScannerHero({ onManualAdd }) {
             </Text>
           </TouchableOpacity>
 
+          {/* Same pair as the Scanner tab's "Take photo" / "From gallery": two
+              labelled buttons of equal weight class (one filled, one outlined)
+              instead of a lone unlabeled gallery icon. Manual "+ Add" moved
+              next to the search field, where it acts on the list. */}
           <TouchableOpacity
             onPress={handlePickFromGallery}
             activeOpacity={0.85}
             style={{
-              width: 46,
+              flex: 1,
               height: 46,
-              backgroundColor: colors.card,
-              borderRadius: 13,
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 1.5,
-              borderColor: colors.cardBorder,
-            }}
-            accessibilityLabel={t("a11y.pickPantryPhoto")}
-          >
-            <ImageIcon size={18} color="#059669" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={onManualAdd}
-            activeOpacity={0.85}
-            style={{
-              flex: 0.85,
-              height: 46,
-              backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
-              paddingHorizontal: 12,
+              backgroundColor: isDark ? colors.card : "#FFFFFF",
               borderRadius: 13,
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              borderWidth: 1.5,
-              borderColor: isDark ? "#059669" : "#D1FAE5",
+              borderWidth: 1,
+              borderColor: isDark ? colors.cardBorder : "#E2E8F0",
             }}
-            accessibilityLabel={t("a11y.addPantryStaple")}
+            accessibilityLabel={t("a11y.pickPantryPhoto")}
           >
-            <Plus size={18} color={isDark ? "#34D399" : "#059669"} strokeWidth={2.5} />
+            <ImageIcon size={15} color="#059669" />
             <Text
-              style={{ color: isDark ? "#34D399" : "#059669", fontSize: 14, fontWeight: "800", marginLeft: 5 }}
+              style={{
+                color: isDark ? colors.textPrimary : "#0F172A",
+                fontSize: 15,
+                fontWeight: "600",
+                marginLeft: 8,
+              }}
               numberOfLines={1}
             >
-              {t("scanner.add")}
+              {t("scanner.fromGallery")}
             </Text>
           </TouchableOpacity>
         </View>
