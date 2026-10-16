@@ -1,11 +1,11 @@
 import React from "react";
 import { View } from "react-native";
 import {
-  Salad,
-  Sprout,
+  Carrot,
+  Vegan,
   WheatOff,
   MilkOff,
-  Milk,
+  IceCreamBowl,
   Beef,
   NutOff,
   Fish,
@@ -17,12 +17,18 @@ import { useTheme } from "../context/ThemeContext";
 // data/dietaryOptions.js (which stays for any other consumer). Emoji glyphs
 // are drawn differently by Apple and Google and never matched the app's own
 // icon language; these share one stroke weight and take the theme's emerald.
+//
+// Nine shapes that read as nine different things. "Bez laktozy" and "Bez
+// nabiału" used to be a crossed-out milk bottle and a plain one — the plain
+// bottle looked like "contains milk" — and vegetarian/vegan were both
+// plants. Now: carrot / the vegan leaf-V, crossed-out milk for lactose, an
+// ice-cream bowl for dairy products in general.
 const DIET_ICONS = {
-  vegetarian: Salad,
-  vegan: Sprout,
+  vegetarian: Carrot,
+  vegan: Vegan,
   gluten_free: WheatOff,
   lactose_free: MilkOff,
-  dairy_free: Milk,
+  dairy_free: IceCreamBowl,
   keto: Beef,
   nut_free: NutOff,
   pescatarian: Fish,
@@ -35,7 +41,7 @@ const DIET_ICONS = {
  */
 export default function DietIcon({ id, size = 32, active = false }) {
   const { isDark } = useTheme();
-  const Icon = DIET_ICONS[id] || Salad;
+  const Icon = DIET_ICONS[id] || Carrot;
   const tint = isDark ? "#064E3B" : "#ECFDF5";
   const border = isDark ? "#065F46" : "#A7F3D0";
   const ink = isDark ? "#34D399" : "#059669";
