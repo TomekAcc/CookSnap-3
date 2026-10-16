@@ -9,33 +9,22 @@ import {
 } from "react-native";
 import {
   Sparkles,
-  Soup,
-  Waves,
-  Flame,
-  Candy,
-  Beef,
-  Leaf,
   Minus,
   Plus,
-  ChevronDown, ChevronUp,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import { animateLayout } from "../utils/layoutMotion";
 import { RADIUS } from "../theme/tokens";
 
-// Vector icons instead of emoji for every CONTROL on this screen (emoji are
-// drawn differently by Apple and Google and never matched the app's icon
-// language; they stay on the detected-ingredient chips, where they are
-// content picked by the scan). Deliberately quiet: flat neutral chips and one
-// loud thing, the solid emerald of whatever is selected. An earlier pass gave
-// every option its own pastel disc, which read as a rainbow of arbitrary
-// colours, and a still earlier one used big bordered tiles — both busier than
-// five short questions deserve.
-// Meal type and hunger level are pick-ONE questions, so both are segmented
-// bars (not a row of pills next to a bar), and text only: the word already
-// says it, an icon in front of it repeated it. Cravings can be several at
-// once, so those stay chips.
+// Every option on this screen is text only, and every selected option looks
+// the same: solid emerald with a white bold label. (A white "raised pill"
+// selection was tried and read as no selection at all next to the green
+// cravings tags; icons inside the cravings chips clashed with the plain
+// segments above.) Meal type and hunger level are pick-ONE questions, so both
+// are segmented bars; cravings can be several at once, so those are chips.
 const MEAL_CATEGORIES = [
   { id: "all", labelKey: "mealType.all" },
   { id: "breakfast", labelKey: "mealType.breakfast" },
@@ -53,12 +42,12 @@ const HUNGER_OPTIONS = [
 // ids here must match CRAVING_PROMPT_TEXT in CookAIContext.jsx — that's
 // where these get translated into the actual prompt phrasing.
 const CRAVING_TAGS = [
-  { id: "salty", labelKey: "mealPrefs.cravingSalty", Icon: Waves },
-  { id: "spicy", labelKey: "mealPrefs.cravingSpicy", Icon: Flame },
-  { id: "sweet", labelKey: "mealPrefs.cravingSweet", Icon: Candy },
-  { id: "savory", labelKey: "mealPrefs.cravingSavory", Icon: Beef },
-  { id: "light", labelKey: "mealPrefs.cravingLight", Icon: Leaf },
-  { id: "comfort", labelKey: "mealPrefs.cravingComfort", Icon: Soup },
+  { id: "salty", labelKey: "mealPrefs.cravingSalty" },
+  { id: "spicy", labelKey: "mealPrefs.cravingSpicy" },
+  { id: "sweet", labelKey: "mealPrefs.cravingSweet" },
+  { id: "savory", labelKey: "mealPrefs.cravingSavory" },
+  { id: "light", labelKey: "mealPrefs.cravingLight" },
+  { id: "comfort", labelKey: "mealPrefs.cravingComfort" },
 ];
 
 const EMERALD = "#10B981";
@@ -78,16 +67,15 @@ function usePalette() {
   return {
     idleBg: isDark ? colors.inputBg : "#F3F5F8",
     idleInk: isDark ? colors.textPrimary : "#1E293B",
-    idleIcon: isDark ? colors.textSecondary : "#64748B",
     muted: colors.textSecondary,
     isDark,
     colors,
   };
 }
 
-// Flat chip: neutral fill, no border, icon + label. Selected = solid emerald
-// with white icon and label (the same width in both states, so nothing shifts).
-function ChoiceChip({ Icon, label, selected, onPress }) {
+// Flat chip: neutral fill, no border, label only. Selected = solid emerald
+// with white label (the same width in both states, so nothing shifts).
+function ChoiceChip({ label, selected, onPress }) {
   const p = usePalette();
   return (
     <TouchableOpacity
@@ -97,9 +85,6 @@ function ChoiceChip({ Icon, label, selected, onPress }) {
       accessibilityState={{ selected }}
       style={[styles.chip, { backgroundColor: selected ? EMERALD : p.idleBg }]}
     >
-      {Icon ? (
-        <Icon size={15} color={selected ? "#FFFFFF" : p.idleIcon} strokeWidth={2.4} />
-      ) : null}
       <Text
         numberOfLines={1}
         style={[styles.chipLabel, { color: selected ? "#FFFFFF" : p.idleInk }]}
@@ -126,10 +111,6 @@ function Segmented({ options, value, onChange, t }) {
   const needed = labels.reduce((sum, l) => sum + l.length * CHAR_W + SEGMENT_PAD, 0);
   // Until measured, assume it fits (avoids a flash of wrapped segments).
   const fits = width === 0 || needed <= width - 6;
-  // Selected = raised white pill on the grey track (dark mode: a lighter
-  // grey), dark bold label. Green stays reserved for the primary button and
-  // for multi-select tags, so the CTA is the only solid green block here.
-  const thumb = p.isDark ? "#4A4A4D" : "#FFFFFF";
 
   return (
     <View
@@ -150,7 +131,7 @@ function Segmented({ options, value, onChange, t }) {
               fits
                 ? { flex: options.length <= 3 ? 1 : Math.max(labels[i].length, 4) + 3 }
                 : { paddingHorizontal: 14 },
-              selected && [styles.segmentOn, { backgroundColor: thumb }],
+              selected && { backgroundColor: EMERALD },
             ]}
           >
             <Text
@@ -159,8 +140,7 @@ function Segmented({ options, value, onChange, t }) {
               minimumFontScale={0.8}
               style={[
                 styles.segmentLabel,
-                { color: selected ? p.colors.textPrimary : p.muted, fontWeight: selected ? "700" : "600" },
-                selected && !p.isDark && { color: "#0F172A" },
+                { color: selected ? "#FFFFFF" : p.idleInk, fontWeight: selected ? "700" : "600" },
               ]}
             >
               {labels[i]}
@@ -365,7 +345,6 @@ export default function MealPreferences() {
               {CRAVING_TAGS.map((tag) => (
                 <ChoiceChip
                   key={tag.id}
-                  Icon={tag.Icon}
                   label={t(tag.labelKey)}
                   selected={cravingTags.includes(tag.id)}
                   onPress={() => toggleCravingTag(tag.id)}
@@ -453,13 +432,6 @@ const styles = StyleSheet.create({
   },
   segmentedWrap: {
     flexWrap: "wrap",
-  },
-  segmentOn: {
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
   },
   segmentLabel: {
     flexShrink: 1,
