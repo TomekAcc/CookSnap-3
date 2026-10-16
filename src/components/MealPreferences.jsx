@@ -34,29 +34,45 @@ import { RADIUS, GREEN } from "../theme/tokens";
 // drawn differently by Apple and Google and never matched the app's icon
 // language; they stay only where they are content (the detected-ingredient
 // chips, where the scan picks the emoji for the real item).
+// Each choice gets its own soft hue (tinted disc behind the icon) so the card
+// isn't a wall of identical grey chips. Hues are pastel tints in light mode and
+// the same colours at low alpha in dark mode; the selected state is the one
+// loud thing on the card (solid emerald), so what you picked is obvious.
+const HUES = {
+  slate: { rgb: "100,116,139", ink: "#475569", inkDark: "#94A3B8" },
+  amber: { rgb: "245,158,11", ink: "#D97706", inkDark: "#FBBF24" },
+  orange: { rgb: "249,115,22", ink: "#EA580C", inkDark: "#FB923C" },
+  violet: { rgb: "139,92,246", ink: "#7C3AED", inkDark: "#A78BFA" },
+  pink: { rgb: "236,72,153", ink: "#DB2777", inkDark: "#F472B6" },
+  green: { rgb: "16,185,129", ink: "#059669", inkDark: "#34D399" },
+  sky: { rgb: "14,165,233", ink: "#0284C7", inkDark: "#38BDF8" },
+  red: { rgb: "239,68,68", ink: "#DC2626", inkDark: "#F87171" },
+};
+
 const MEAL_CATEGORIES = [
-  { id: "all", labelKey: "mealType.all", Icon: Utensils },
-  { id: "breakfast", labelKey: "mealType.breakfast", Icon: Croissant },
-  { id: "lunch", labelKey: "mealType.lunch", Icon: Sandwich },
-  { id: "dinner", labelKey: "mealType.dinner", Icon: Moon },
-  { id: "dessert", labelKey: "mealType.dessert", Icon: CakeSlice },
+  { id: "all", labelKey: "mealType.all", Icon: Utensils, hue: "slate" },
+  { id: "breakfast", labelKey: "mealType.breakfast", Icon: Croissant, hue: "amber" },
+  { id: "lunch", labelKey: "mealType.lunch", Icon: Sandwich, hue: "orange" },
+  { id: "dinner", labelKey: "mealType.dinner", Icon: Moon, hue: "violet" },
+  { id: "dessert", labelKey: "mealType.dessert", Icon: CakeSlice, hue: "pink" },
 ];
 
+// `level` drives the little fill meter under each tile (1-3 bars).
 const HUNGER_OPTIONS = [
-  { id: "light", labelKey: "hunger.light", Icon: Feather },
-  { id: "normal", labelKey: "hunger.normal", Icon: Utensils },
-  { id: "hungry", labelKey: "mealPrefs.hungerHearty", Icon: CookingPot },
+  { id: "light", labelKey: "hunger.light", Icon: Feather, hue: "green", level: 1 },
+  { id: "normal", labelKey: "hunger.normal", Icon: Utensils, hue: "amber", level: 2 },
+  { id: "hungry", labelKey: "mealPrefs.hungerHearty", Icon: CookingPot, hue: "orange", level: 3 },
 ];
 
 // ids here must match CRAVING_PROMPT_TEXT in CookAIContext.jsx — that's
 // where these get translated into the actual prompt phrasing.
 const CRAVING_TAGS = [
-  { id: "salty", labelKey: "mealPrefs.cravingSalty", Icon: Waves },
-  { id: "spicy", labelKey: "mealPrefs.cravingSpicy", Icon: Flame },
-  { id: "sweet", labelKey: "mealPrefs.cravingSweet", Icon: Candy },
-  { id: "savory", labelKey: "mealPrefs.cravingSavory", Icon: Beef },
-  { id: "light", labelKey: "mealPrefs.cravingLight", Icon: Leaf },
-  { id: "comfort", labelKey: "mealPrefs.cravingComfort", Icon: Soup },
+  { id: "salty", labelKey: "mealPrefs.cravingSalty", Icon: Waves, hue: "sky" },
+  { id: "spicy", labelKey: "mealPrefs.cravingSpicy", Icon: Flame, hue: "red" },
+  { id: "sweet", labelKey: "mealPrefs.cravingSweet", Icon: Candy, hue: "pink" },
+  { id: "savory", labelKey: "mealPrefs.cravingSavory", Icon: Beef, hue: "amber" },
+  { id: "light", labelKey: "mealPrefs.cravingLight", Icon: Leaf, hue: "green" },
+  { id: "comfort", labelKey: "mealPrefs.cravingComfort", Icon: Soup, hue: "orange" },
 ];
 
 function cardStyle(isDark, colors) {
@@ -69,9 +85,31 @@ function cardStyle(isDark, colors) {
   };
 }
 
-// One "selected" language for every choice on this screen: pale emerald fill,
-// emerald border, emerald label and icon. Unselected keeps a transparent 2px
-// border so selecting never nudges anything by a pixel.
+// Round tinted disc behind an icon. `onSolid` is the selected-chip variant:
+// translucent white disc with a white icon on the solid emerald fill.
+function IconDisc({ Icon, hue, size = 26, onSolid = false }) {
+  const { isDark } = useTheme();
+  const h = HUES[hue] || HUES.slate;
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: onSolid ? "rgba(255,255,255,0.24)" : `rgba(${h.rgb},${isDark ? 0.2 : 0.14})`,
+      }}
+    >
+      <Icon
+        size={Math.round(size * 0.58)}
+        color={onSolid ? "#FFFFFF" : isDark ? h.inkDark : h.ink}
+        strokeWidth={2.3}
+      />
+    </View>
+  );
+}
+
 function useChoiceColors() {
   const { colors, isDark } = useTheme();
   return {
@@ -79,12 +117,15 @@ function useChoiceColors() {
     selectedBorder: isDark ? colors.accentGreen : GREEN.primary,
     selectedInk: isDark ? "#6EE7B7" : "#047857",
     idleBg: isDark ? colors.inputBg : "#F8FAFC",
+    idleBorder: isDark ? colors.cardBorder : "#EDF0F4",
     idleInk: isDark ? colors.textPrimary : "#1E293B",
-    idleIcon: isDark ? colors.textSecondary : "#64748B",
   };
 }
 
-function ChoiceChip({ Icon, label, selected, onPress }) {
+// Selected = solid emerald with white label/icon. Unselected keeps a 1.5px
+// border (transparent-ish) at the same width, so selecting never nudges
+// anything by a pixel.
+function ChoiceChip({ Icon, hue, label, selected, onPress }) {
   const c = useChoiceColors();
   return (
     <TouchableOpacity
@@ -95,15 +136,15 @@ function ChoiceChip({ Icon, label, selected, onPress }) {
       style={[
         styles.chip,
         {
-          backgroundColor: selected ? c.selectedBg : c.idleBg,
-          borderColor: selected ? c.selectedBorder : "transparent",
+          backgroundColor: selected ? "#10B981" : c.idleBg,
+          borderColor: selected ? "#10B981" : c.idleBorder,
         },
       ]}
     >
-      <Icon size={16} color={selected ? c.selectedInk : c.idleIcon} strokeWidth={2.2} />
+      <IconDisc Icon={Icon} hue={hue} size={26} onSolid={selected} />
       <Text
         numberOfLines={1}
-        style={[styles.chipLabel, { color: selected ? c.selectedInk : c.idleInk }]}
+        style={[styles.chipLabel, { color: selected ? "#FFFFFF" : c.idleInk }]}
       >
         {label}
       </Text>
@@ -208,6 +249,7 @@ export default function MealPreferences() {
             <ChoiceChip
               key={cat.id}
               Icon={cat.Icon}
+              hue={cat.hue}
               label={t(cat.labelKey)}
               selected={mealType === cat.id}
               onPress={() => setMealType(cat.id)}
@@ -289,11 +331,7 @@ export default function MealPreferences() {
                   },
                 ]}
               >
-                <Icon
-                  size={22}
-                  color={selected ? choice.selectedInk : choice.idleIcon}
-                  strokeWidth={2}
-                />
+                <IconDisc Icon={Icon} hue={item.hue} size={38} />
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -304,6 +342,30 @@ export default function MealPreferences() {
                 >
                   {t(item.labelKey)}
                 </Text>
+                {/* 1-3 bars: how much food, at a glance. */}
+                <View style={styles.meter}>
+                  {[1, 2, 3].map((n) => {
+                    const h = HUES[item.hue];
+                    return (
+                      <View
+                        key={n}
+                        style={{
+                          width: 16,
+                          height: 4,
+                          borderRadius: 2,
+                          backgroundColor:
+                            n <= item.level
+                              ? isDark
+                                ? h.inkDark
+                                : h.ink
+                              : isDark
+                                ? "rgba(148,163,184,0.25)"
+                                : "#E2E8F0",
+                        }}
+                      />
+                    );
+                  })}
+                </View>
               </TouchableOpacity>
             );
           })}
@@ -317,6 +379,7 @@ export default function MealPreferences() {
             <ChoiceChip
               key={tag.id}
               Icon={tag.Icon}
+              hue={tag.hue}
               label={t(tag.labelKey)}
               selected={cravingTags.includes(tag.id)}
               onPress={() => toggleCravingTag(tag.id)}
@@ -372,14 +435,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 9,
+    paddingLeft: 7,
+    paddingRight: 14,
+    paddingVertical: 6,
     borderRadius: RADIUS.pill,
-    borderWidth: 2,
+    borderWidth: 1.5,
   },
   chipLabel: {
-    fontSize: 13,
-    fontWeight: "600",
+    fontSize: 13.5,
+    fontWeight: "700",
     letterSpacing: -0.1,
   },
   excludeRow: {
@@ -454,19 +518,24 @@ const styles = StyleSheet.create({
   // next tile (overflow hidden is the hard guarantee).
   hungerTile: {
     flex: 1,
-    minHeight: 68,
+    minHeight: 104,
     borderRadius: RADIUS.tile,
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
-    paddingVertical: 10,
+    gap: 7,
+    paddingVertical: 12,
     paddingHorizontal: 6,
     overflow: "hidden",
   },
+  meter: {
+    flexDirection: "row",
+    gap: 3,
+    marginTop: 1,
+  },
   hungerLabel: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 12.5,
+    fontWeight: "700",
     letterSpacing: -0.1,
     lineHeight: 15,
     width: "100%",
