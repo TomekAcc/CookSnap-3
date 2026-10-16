@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
+  Animated,
+  Easing,
 } from "react-native";
 import { useTabScroll } from "../hooks/useTabScroll";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -17,6 +19,40 @@ import RecipeFeed from "../components/RecipeFeed";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
+
+// Generation takes ~10-15 s. A spinner alone makes that feel open-ended, so
+// the button also fills left to right: quick at first, easing toward 92% and
+// waiting there for the real result. No text, so nothing to translate.
+const EXPECTED_GENERATION_MS = 14000;
+
+function GenerationProgress({ active }) {
+  const progress = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (active) {
+      progress.setValue(0);
+      const anim = Animated.timing(progress, {
+        toValue: 0.92,
+        duration: EXPECTED_GENERATION_MS,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      });
+      anim.start();
+      return () => anim.stop();
+    }
+    progress.setValue(0);
+    return undefined;
+  }, [active, progress]);
+  if (!active) return null;
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        styles.progressFill,
+        { width: progress.interpolate({ inputRange: [0, 1], outputRange: ["0%", "100%"] }) },
+      ]}
+    />
+  );
+}
 
 /**
  * Clean scanner shell — Scan More lives on the photo; bottom CTA is Generate only.
@@ -200,6 +236,7 @@ export default function ScannerScreen() {
             activeOpacity={0.9}
             style={styles.ctaPrimary}
           >
+            <GenerationProgress active={isGeneratingRecipes} />
             {isGeneratingRecipes ? (
               <>
                 <ActivityIndicator color="#FFFFFF" size="small" />
@@ -265,6 +302,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#059669",
     paddingVertical: 17,
     borderRadius: 18,
+    overflow: "hidden",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -274,6 +312,13 @@ const styles = StyleSheet.create({
     shadowColor: "transparent",
     shadowRadius: 0,
     shadowOffset: { width: 0, height: 0 },
+  },
+  progressFill: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255,255,255,0.22)",
   },
   ctaPrimaryText: {
     color: "#FFFFFF",

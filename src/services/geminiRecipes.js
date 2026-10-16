@@ -1969,6 +1969,7 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
     dietText = "",
     model = RECIPE_QA_MODEL,
     thinkingBudget = 0,
+    maxRejects = RECIPE_QA_MAX_REJECTS,
   } = options;
   if (!RECIPE_QA_ENABLED || !apiKey) return rawRecipes;
   if (!Array.isArray(rawRecipes) || rawRecipes.length === 0) return rawRecipes;
@@ -1985,7 +1986,7 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
     if (THINKING_CAPABLE_RECIPE_MODELS.has(model)) {
       generationConfig.thinkingConfig = { thinkingBudget };
     }
-    const response = await fetchWithTimeout(
+    const sendQa = () => fetchWithTimeout(
       `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
       {
         method: "POST",
@@ -2006,6 +2007,13 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
       },
       RECIPE_QA_TIMEOUT_MS
     );
+    let response = await sendQa();
+    // Google answers 503/429 under load now and then (seen live: a 0.2 s 503
+    // silently skipped the whole editor pass). One short retry is cheap.
+    if (response.status === 503 || response.status === 429) {
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      response = await sendQa();
+    }
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
@@ -2023,7 +2031,7 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
         return;
       }
       if (v.verdict === "reject") {
-        if (rejected < RECIPE_QA_MAX_REJECTS) {
+        if (rejected < maxRejects) {
           rejected += 1;
           console.log(`[Cook AI] Recipe QA rejected "${recipe.title}": ${v.reason || "no reason given"}`);
           return;
@@ -2062,6 +2070,26 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
     console.warn(`[Cook AI] Recipe QA skipped (${err?.message}) — using the batch as generated.`);
     return rawRecipes;
   }
+}
+
+/**
+ * Same editor pass, but the batch is reviewed as two halves in parallel. The
+ * editor's time is almost entirely the model writing out corrected text, so it
+ * scales with the number of recipes: measured live, one call over 6 recipes
+ * took ~6.6 s, which was nearly half of the whole wait. Each recipe is judged
+ * on its own, so splitting changes nothing about the verdicts. At most one
+ * rejection per half keeps the overall cap at two.
+ */
+async function reviewRecipesInParallel(rawRecipes, options) {
+  if (!Array.isArray(rawRecipes) || rawRecipes.length < 4) {
+    return reviewRecipesWithGemini(rawRecipes, options);
+  }
+  const mid = Math.ceil(rawRecipes.length / 2);
+  const halves = await Promise.all([
+    reviewRecipesWithGemini(rawRecipes.slice(0, mid), { ...options, maxRejects: 1 }),
+    reviewRecipesWithGemini(rawRecipes.slice(mid), { ...options, maxRejects: 1 }),
+  ]);
+  return halves.flat();
 }
 
 /**
@@ -2544,7 +2572,7 @@ export async function generateRecipesWithGemini(
     // Editor pass (see reviewRecipesWithGemini) — fixes missing doneness
     // cues, unmeasured salted water and odd pairings in ANY language before
     // the code-level checkers below decide what survives. Never throws.
-    return reviewRecipesWithGemini(parsed, {
+    return reviewRecipesInParallel(parsed, {
       apiKey,
       language,
       unitSystem,
