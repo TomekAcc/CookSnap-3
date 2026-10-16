@@ -17,7 +17,6 @@ import {
   Search,
   X,
   Sparkles,
-  RefreshCw,
   ShoppingCart,
   Package,
   PackageOpen,
@@ -75,7 +74,6 @@ export default function PantryTab() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showShoppingModal, setShowShoppingModal] = useState(false);
   const [newItemName, setNewItemName] = useState("");
-  const [isAIAnalyzing, setIsAIAnalyzing] = useState(false);
   // Which pantry row (if any) currently has its swipe-to-delete action
   // revealed. Only one row stays open at a time, like iOS Mail.
   const [openSwipeId, setOpenSwipeId] = useState(null);
@@ -185,19 +183,42 @@ export default function PantryTab() {
     );
   }, [clearPantry, showToast, t]);
 
-  const handleAddCustomItem = async () => {
+  const handleAddCustomItem = () => {
     const trimmed = newItemName.trim();
     if (!trimmed) return;
-    setIsAIAnalyzing(true);
-    try {
-      await new Promise((r) => setTimeout(r, 450));
-      addPantryItem(trimmed);
-      setNewItemName("");
-      setShowAddModal(false);
-      showToast?.(t("pantry.addedItem", { name: trimmed }), "success");
-    } finally {
-      setIsAIAnalyzing(false);
-    }
+    addPantryItem(trimmed);
+    setNewItemName("");
+    setShowAddModal(false);
+    showToast?.(t("pantry.addedItem", { name: trimmed }), "success");
+  };
+
+  // Suggestions in the user's language, skipping what is already in the
+  // pantry (checked against the localized AND the English name, so items added
+  // before this was localized are still recognised). As items are added the
+  // next ones in the catalog move up, so the list adapts instead of showing the
+  // same dimmed chips forever.
+  const stapleSuggestions = useMemo(() => {
+    const have = new Set(
+      (pantryItems || []).map((p) => String(p.name || "").trim().toLowerCase())
+    );
+    return PANTRY_STAPLES.map((item) => ({ ...item, label: t(`pantryStaple.${item.id}`) }))
+      .filter(
+        (item) =>
+          !have.has(item.label.toLowerCase()) && !have.has(item.name.toLowerCase())
+      )
+      .slice(0, 10);
+  }, [pantryItems, t]);
+
+  const handleAddStaple = (item) => {
+    addPantryItem({
+      id: `pantry-staple-${item.id}-${Date.now()}`,
+      name: item.label,
+      emoji: item.emoji,
+      icon: item.emoji,
+      category: item.category,
+      role: "Essential pantry staple for recipes",
+      inStock: true,
+    });
   };
 
   return (
@@ -912,117 +933,84 @@ export default function PantryTab() {
         onClose={() => setShowAddModal(false)}
         title={t("pantry.addStapleTitle")}
         type="bottom-sheet"
+        scrollProps={{ keyboardShouldPersistTaps: "handled" }}
       >
-        <Text
-          style={{
-            color: colors.textSecondary,
-            fontSize: 12,
-            lineHeight: 18,
-            marginBottom: 12,
-          }}
-        >
-          {t("pantry.addStapleDesc")}
-        </Text>
-
-        <TextInput
-          placeholder={t("pantry.ingredientNamePlaceholder")}
-          placeholderTextColor={colors.textSecondary}
-          value={newItemName}
-          onChangeText={setNewItemName}
-          autoFocus={showAddModal}
-          style={{
-            backgroundColor: colors.inputBg,
-            borderWidth: 1,
-            borderColor: colors.cardBorder,
-            borderRadius: 16,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            fontSize: 14,
-            fontWeight: "700",
-            color: colors.textPrimary,
-            marginBottom: 12,
-          }}
-        />
-
-        <TouchableOpacity
-          onPress={handleAddCustomItem}
-          disabled={!newItemName.trim() || isAIAnalyzing}
-          activeOpacity={0.9}
-          style={{
-            backgroundColor: isDark ? colors.textPrimary : "#0F172A",
-            paddingVertical: 14,
-            borderRadius: 16,
-            alignItems: "center",
-            flexDirection: "row",
-            justifyContent: "center",
-            opacity: !newItemName.trim() || isAIAnalyzing ? 0.6 : 1,
-          }}
-        >
-          {isAIAnalyzing ? (
-            <>
-              <RefreshCw size={18} color="#F59E0B" />
-              <Text
-                style={{
-                  color: isDark ? "#020617" : "#FFFFFF",
-                  fontWeight: "800",
-                  fontSize: 12,
-                  marginLeft: 8,
-                }}
-              >
-                {t("pantry.analyzing")}
-              </Text>
-            </>
-          ) : (
-            <>
-              <Sparkles size={18} color="#F59E0B" />
-              <Text
-                style={{
-                  color: isDark ? "#020617" : "#FFFFFF",
-                  fontWeight: "800",
-                  fontSize: 12,
-                  marginLeft: 8,
-                }}
-              >
-                {t("pantry.analyzeAndAdd")}
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
-
-        {/* Recognition over recall — tapping a familiar staple beats typing
-            it from scratch every time. Same pattern already used in
-            AddIngredientModal (fridge side): dim the ones already in the
-            pantry, tap-to-add instantly for the rest, modal stays open so
-            several can be added in one pass. */}
-        <Text
-          style={{
-            color: colors.textSecondary,
-            fontWeight: "500",
-            fontSize: 12,
-            marginTop: 16,
-            marginBottom: 10,
-          }}
-        >
-          {t("pantry.commonStaplesHint")}
-        </Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-          {PANTRY_STAPLES.map((item) => {
-            const alreadyAdded = pantryItems.some(
-              (p) => p.name?.trim().toLowerCase() === item.name.toLowerCase()
-            );
-            return (
-              <PillTag
-                key={item.id}
-                emoji={item.emoji || "🛒"}
-                label={item.name}
-                onPress={
-                  alreadyAdded ? undefined : () => addPantryItem(item.name)
-                }
-                style={alreadyAdded ? { opacity: 0.45 } : null}
-              />
-            );
-          })}
+        {/* Name field and button share one row so the sheet stays short enough
+            to sit above the keyboard without scrolling (the field used to be
+            pushed under the title). Same emerald as every primary action. */}
+        <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+          <TextInput
+            placeholder={t("pantry.ingredientNamePlaceholder")}
+            placeholderTextColor={colors.textSecondary}
+            value={newItemName}
+            onChangeText={setNewItemName}
+            autoFocus={showAddModal}
+            returnKeyType="done"
+            onSubmitEditing={handleAddCustomItem}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              height: 48,
+              backgroundColor: colors.inputBg,
+              borderWidth: 1,
+              borderColor: colors.cardBorder,
+              borderRadius: 14,
+              paddingHorizontal: 14,
+              paddingVertical: 0,
+              fontSize: 15,
+              fontWeight: "600",
+              color: colors.textPrimary,
+            }}
+          />
+          <TouchableOpacity
+            onPress={handleAddCustomItem}
+            disabled={!newItemName.trim()}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            style={{
+              height: 48,
+              paddingHorizontal: 16,
+              flexShrink: 0,
+              borderRadius: 14,
+              backgroundColor: "#059669",
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: newItemName.trim() ? 1 : 0.45,
+            }}
+          >
+            <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>
+              {t("scanner.add")}
+            </Text>
+          </TouchableOpacity>
         </View>
+
+        {/* Recognition over recall — tap a familiar staple instead of typing it.
+            The sheet stays open so several can be added in one pass. */}
+        {stapleSuggestions.length > 0 ? (
+          <>
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontWeight: "500",
+                fontSize: 12,
+                marginTop: 18,
+                marginBottom: 10,
+              }}
+            >
+              {t("pantry.commonStaplesHint")}
+            </Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              {stapleSuggestions.map((item) => (
+                <PillTag
+                  key={item.id}
+                  emoji={item.emoji}
+                  label={item.label}
+                  onPress={() => handleAddStaple(item)}
+                />
+              ))}
+            </View>
+          </>
+        ) : null}
       </StandardSmoothModal>
     </>
   );

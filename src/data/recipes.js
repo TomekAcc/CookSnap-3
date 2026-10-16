@@ -32,77 +32,33 @@ export const POPULAR_PANTRY = [
   { id: "canned-tomatoes", name: "Canned Tomatoes", emoji: "🥫" },
 ];
 
+// Suggestions for the "add to pantry" sheet, in the order they are offered.
+// `name` is English and only used to recognise an item the user already has;
+// the label shown (and the name stored) comes from `pantryStaple.<id>` in the
+// user's language. `category` is one of the four fixed pantry tokens.
 export const PANTRY_STAPLES = [
-  {
-    id: "olive-oil",
-    name: "Olive Oil",
-    emoji: "🫒",
-    category: "Oils & Sauces",
-    inStock: true,
-  },
-  {
-    id: "salt",
-    name: "Salt",
-    emoji: "🧂",
-    category: "Spices & Herbs",
-    inStock: true,
-  },
-  {
-    id: "pepper",
-    name: "Pepper",
-    emoji: "🧂",
-    category: "Spices & Herbs",
-    inStock: true,
-  },
-  {
-    id: "garlic",
-    name: "Garlic",
-    emoji: "🧄",
-    category: "Spices & Herbs",
-    inStock: true,
-  },
-  {
-    id: "pasta",
-    name: "Pasta",
-    emoji: "🍝",
-    category: "Grains & Baking",
-    inStock: true,
-  },
-  {
-    id: "soy-sauce",
-    name: "Soy Sauce",
-    emoji: "🍾",
-    category: "Oils & Sauces",
-    inStock: true,
-  },
-  {
-    id: "butter",
-    name: "Butter",
-    emoji: "🧈",
-    category: "Oils & Sauces",
-    inStock: true,
-  },
-  {
-    id: "flour",
-    name: "Flour",
-    emoji: "🌾",
-    category: "Grains & Baking",
-    inStock: false,
-  },
-  {
-    id: "honey",
-    name: "Honey",
-    emoji: "🍯",
-    category: "Condiments",
-    inStock: false,
-  },
-  {
-    id: "oregano",
-    name: "Oregano",
-    emoji: "🌿",
-    category: "Spices & Herbs",
-    inStock: false,
-  },
+  { id: "olive-oil", name: "Olive oil", emoji: "🫒", category: "Oils & Sauces" },
+  { id: "salt", name: "Salt", emoji: "🧂", category: "Spices & Herbs" },
+  { id: "pepper", name: "Black pepper", emoji: "🧂", category: "Spices & Herbs" },
+  { id: "garlic", name: "Garlic", emoji: "🧄", category: "Spices & Herbs" },
+  { id: "pasta", name: "Pasta", emoji: "🍝", category: "Grains & Baking" },
+  { id: "rice", name: "Rice", emoji: "🍚", category: "Grains & Baking" },
+  { id: "flour", name: "Flour", emoji: "🌾", category: "Grains & Baking" },
+  { id: "butter", name: "Butter", emoji: "🧈", category: "Oils & Sauces" },
+  { id: "sugar", name: "Sugar", emoji: "🍬", category: "Grains & Baking" },
+  { id: "soy-sauce", name: "Soy sauce", emoji: "🍾", category: "Oils & Sauces" },
+  { id: "canned-tomatoes", name: "Canned tomatoes", emoji: "🥫", category: "Condiments" },
+  { id: "vegetable-oil", name: "Vegetable oil", emoji: "🌻", category: "Oils & Sauces" },
+  { id: "vinegar", name: "Vinegar", emoji: "🍾", category: "Oils & Sauces" },
+  { id: "honey", name: "Honey", emoji: "🍯", category: "Condiments" },
+  { id: "paprika", name: "Paprika", emoji: "🌶️", category: "Spices & Herbs" },
+  { id: "oregano", name: "Oregano", emoji: "🌿", category: "Spices & Herbs" },
+  { id: "cinnamon", name: "Cinnamon", emoji: "🍂", category: "Spices & Herbs" },
+  { id: "baking-powder", name: "Baking powder", emoji: "🧁", category: "Grains & Baking" },
+  { id: "oats", name: "Rolled oats", emoji: "🥣", category: "Grains & Baking" },
+  { id: "ketchup", name: "Ketchup", emoji: "🍅", category: "Condiments" },
+  { id: "mustard", name: "Mustard", emoji: "🫙", category: "Condiments" },
+  { id: "mayonnaise", name: "Mayonnaise", emoji: "🫙", category: "Condiments" },
 ];
 
 export const PANTRY_CATEGORIES = [
