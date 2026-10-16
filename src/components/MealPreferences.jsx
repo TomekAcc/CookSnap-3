@@ -9,13 +9,6 @@ import {
 } from "react-native";
 import {
   Sparkles,
-  Utensils,
-  Croissant,
-  Sandwich,
-  Moon,
-  CakeSlice,
-  Feather,
-  CookingPot,
   Soup,
   Waves,
   Flame,
@@ -40,18 +33,22 @@ import { RADIUS } from "../theme/tokens";
 // every option its own pastel disc, which read as a rainbow of arbitrary
 // colours, and a still earlier one used big bordered tiles — both busier than
 // five short questions deserve.
+// Meal type and hunger level are pick-ONE questions, so both are segmented
+// bars (not a row of pills next to a bar), and text only: the word already
+// says it, an icon in front of it repeated it. Cravings can be several at
+// once, so those stay chips.
 const MEAL_CATEGORIES = [
-  { id: "all", labelKey: "mealType.all", Icon: Utensils },
-  { id: "breakfast", labelKey: "mealType.breakfast", Icon: Croissant },
-  { id: "lunch", labelKey: "mealType.lunch", Icon: Sandwich },
-  { id: "dinner", labelKey: "mealType.dinner", Icon: Moon },
-  { id: "dessert", labelKey: "mealType.dessert", Icon: CakeSlice },
+  { id: "all", labelKey: "mealType.all" },
+  { id: "breakfast", labelKey: "mealType.breakfast" },
+  { id: "lunch", labelKey: "mealType.lunch" },
+  { id: "dinner", labelKey: "mealType.dinner" },
+  { id: "dessert", labelKey: "mealType.dessert" },
 ];
 
 const HUNGER_OPTIONS = [
-  { id: "light", labelKey: "hunger.light", Icon: Feather },
-  { id: "normal", labelKey: "hunger.normal", Icon: Utensils },
-  { id: "hungry", labelKey: "mealPrefs.hungerHearty", Icon: CookingPot },
+  { id: "light", labelKey: "hunger.light" },
+  { id: "normal", labelKey: "hunger.normal" },
+  { id: "hungry", labelKey: "mealPrefs.hungerHearty" },
 ];
 
 // ids here must match CRAVING_PROMPT_TEXT in CookAIContext.jsx — that's
@@ -101,7 +98,9 @@ function ChoiceChip({ Icon, label, selected, onPress }) {
       accessibilityState={{ selected }}
       style={[styles.chip, { backgroundColor: selected ? EMERALD : p.idleBg }]}
     >
-      <Icon size={15} color={selected ? "#FFFFFF" : p.idleIcon} strokeWidth={2.4} />
+      {Icon ? (
+        <Icon size={15} color={selected ? "#FFFFFF" : p.idleIcon} strokeWidth={2.4} />
+      ) : null}
       <Text
         numberOfLines={1}
         style={[styles.chipLabel, { color: selected ? "#FFFFFF" : p.idleInk }]}
@@ -112,35 +111,69 @@ function ChoiceChip({ Icon, label, selected, onPress }) {
   );
 }
 
-// One rounded bar split into equal segments (hunger level). A single control
-// instead of three separate bordered tiles.
+// One rounded bar of segments for a pick-one question. Segment width follows
+// label length (equal segments cut "Wszystkie" to "Wszyst…" in Polish). When
+// the labels cannot fit one row at all — German "Frühstück / Mittagessen /
+// Abendessen", French "Petit-déjeuner", Portuguese, Turkish, Finnish — the
+// same choices wrap as flat chips instead of being cut off. The fit test uses
+// a per-character width estimate for the 12.5px bold label plus padding.
+const CHAR_W = 6.6;
+const SEGMENT_PAD = 16;
+
 function Segmented({ options, value, onChange, t }) {
   const p = usePalette();
+  const [width, setWidth] = useState(0);
+  const labels = options.map((o) => t(o.labelKey));
+  const needed = labels.reduce((sum, l) => sum + l.length * CHAR_W + SEGMENT_PAD, 0);
+  // Until measured, assume it fits (avoids a flash of wrapped chips).
+  const fits = width === 0 || needed <= width - 6;
+
   return (
-    <View style={[styles.segmented, { backgroundColor: p.idleBg }]}>
-      {options.map((o) => {
-        const selected = value === o.id;
-        const Icon = o.Icon;
-        return (
-          <TouchableOpacity
-            key={o.id}
-            onPress={() => onChange(o.id)}
-            activeOpacity={0.85}
-            accessibilityRole="button"
-            accessibilityState={{ selected }}
-            style={[styles.segment, selected && { backgroundColor: EMERALD }]}
-          >
-            <Icon size={16} color={selected ? "#FFFFFF" : p.idleIcon} strokeWidth={2.4} />
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={[styles.segmentLabel, { color: selected ? "#FFFFFF" : p.idleInk }]}
-            >
-              {t(o.labelKey)}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+    <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      {fits ? (
+        <View style={[styles.segmented, { backgroundColor: p.idleBg }]}>
+          {options.map((o, i) => {
+            const selected = value === o.id;
+            return (
+              <TouchableOpacity
+                key={o.id}
+                onPress={() => onChange(o.id)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                style={[
+                  styles.segment,
+                  { flex: Math.max(labels[i].length, 4) + 3 },
+                  selected && { backgroundColor: EMERALD },
+                ]}
+              >
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                  style={[
+                    styles.segmentLabel,
+                    { color: selected ? "#FFFFFF" : p.idleInk },
+                  ]}
+                >
+                  {labels[i]}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      ) : (
+        <View style={styles.wrapRow}>
+          {options.map((o, i) => (
+            <ChoiceChip
+              key={o.id}
+              label={labels[i]}
+              selected={value === o.id}
+              onPress={() => onChange(o.id)}
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
@@ -252,17 +285,12 @@ export default function MealPreferences() {
           persisted Custom Diet on Profile. */}
       <View style={card}>
         <SectionLabel>{t("mealPrefs.mealTypeTitle")}</SectionLabel>
-        <View style={styles.wrapRow}>
-          {MEAL_CATEGORIES.map((cat) => (
-            <ChoiceChip
-              key={cat.id}
-              Icon={cat.Icon}
-              label={t(cat.labelKey)}
-              selected={mealType === cat.id}
-              onPress={() => setMealType(cat.id)}
-            />
-          ))}
-        </View>
+        <Segmented
+          options={MEAL_CATEGORIES}
+          value={mealType}
+          onChange={setMealType}
+          t={t}
+        />
 
         <Divider />
 
@@ -428,19 +456,19 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   segment: {
-    flex: 1,
+    minWidth: 0,
     height: 40,
     borderRadius: 11,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
     overflow: "hidden",
   },
   segmentLabel: {
     flexShrink: 1,
-    fontSize: 13,
+    fontSize: 12.5,
     fontWeight: "600",
     letterSpacing: -0.1,
   },
