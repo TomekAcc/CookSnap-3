@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "Десерт",
   "mealPrefs.title": "Уподобання щодо їжі",
   "mealPrefs.mealTypeTitle": "Тип прийому їжі",
+  "mealPrefs.moreOptions": "Більше опцій",
   "mealPrefs.includeStaples": "Враховувати продукти з комори",
   "mealPrefs.staplesDesc": "Інгредієнти, позначені як наявні у вашій коморі",
   "mealPrefs.servings": "Порції",

@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "Makanan Penutup",
   "mealPrefs.title": "Preferensi Makanan",
   "mealPrefs.mealTypeTitle": "Jenis hidangan",
+  "mealPrefs.moreOptions": "Opsi lainnya",
   "mealPrefs.includeStaples": "Sertakan barang lemari dapur",
   "mealPrefs.staplesDesc": "Bahan yang ditandai tersedia di lemari dapur Anda",
   "mealPrefs.servings": "Porsi",

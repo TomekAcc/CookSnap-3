@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "Desszert",
   "mealPrefs.title": "Étkezési beállítások",
   "mealPrefs.mealTypeTitle": "Étkezés típusa",
+  "mealPrefs.moreOptions": "További opciók",
   "mealPrefs.includeStaples": "Kamra tételeinek belefoglalása",
   "mealPrefs.staplesDesc": "A kamrádban készleten lévőként megjelölt hozzávalók",
   "mealPrefs.servings": "Adagok",

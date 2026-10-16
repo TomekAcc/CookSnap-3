@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "Sobremesa",
   "mealPrefs.title": "Preferências de Refeição",
   "mealPrefs.mealTypeTitle": "Tipo de refeição",
+  "mealPrefs.moreOptions": "Mais opções",
   "mealPrefs.includeStaples": "Incluir itens da despensa",
   "mealPrefs.staplesDesc": "Ingredientes marcados como em stock na sua despensa",
   "mealPrefs.servings": "Porções",

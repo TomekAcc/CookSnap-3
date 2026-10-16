@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "甜点",
   "mealPrefs.title": "用餐偏好",
   "mealPrefs.mealTypeTitle": "餐点类型",
+  "mealPrefs.moreOptions": "更多选项",
   "mealPrefs.includeStaples": "包含储藏室物品",
   "mealPrefs.staplesDesc": "在你的储藏室中标记为有库存的食材",
   "mealPrefs.servings": "用餐人数",

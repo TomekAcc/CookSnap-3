@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "Dezert",
   "mealPrefs.title": "Nastavení jídla",
   "mealPrefs.mealTypeTitle": "Typ jídla",
+  "mealPrefs.moreOptions": "Další možnosti",
   "mealPrefs.includeStaples": "Zahrnout položky ze spíže",
   "mealPrefs.staplesDesc": "Suroviny označené jako dostupné ve vaší spíži",
   "mealPrefs.servings": "Porce",

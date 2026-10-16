@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -24,56 +24,48 @@ import {
   Leaf,
   Minus,
   Plus,
+  ChevronDown,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
+import { animateLayout } from "../utils/layoutMotion";
 import { translateCount } from "../i18n";
-import { RADIUS, GREEN } from "../theme/tokens";
+import { RADIUS } from "../theme/tokens";
 
-// Vector icons instead of emoji for every CONTROL on this screen. Emoji are
+// Vector icons instead of emoji for every CONTROL on this screen (emoji are
 // drawn differently by Apple and Google and never matched the app's icon
-// language; they stay only where they are content (the detected-ingredient
-// chips, where the scan picks the emoji for the real item).
-// Each choice gets its own soft hue (tinted disc behind the icon) so the card
-// isn't a wall of identical grey chips. Hues are pastel tints in light mode and
-// the same colours at low alpha in dark mode; the selected state is the one
-// loud thing on the card (solid emerald), so what you picked is obvious.
-const HUES = {
-  slate: { rgb: "100,116,139", ink: "#475569", inkDark: "#94A3B8" },
-  amber: { rgb: "245,158,11", ink: "#D97706", inkDark: "#FBBF24" },
-  orange: { rgb: "249,115,22", ink: "#EA580C", inkDark: "#FB923C" },
-  violet: { rgb: "139,92,246", ink: "#7C3AED", inkDark: "#A78BFA" },
-  pink: { rgb: "236,72,153", ink: "#DB2777", inkDark: "#F472B6" },
-  green: { rgb: "16,185,129", ink: "#059669", inkDark: "#34D399" },
-  sky: { rgb: "14,165,233", ink: "#0284C7", inkDark: "#38BDF8" },
-  red: { rgb: "239,68,68", ink: "#DC2626", inkDark: "#F87171" },
-};
-
+// language; they stay on the detected-ingredient chips, where they are
+// content picked by the scan). Deliberately quiet: flat neutral chips and one
+// loud thing, the solid emerald of whatever is selected. An earlier pass gave
+// every option its own pastel disc, which read as a rainbow of arbitrary
+// colours, and a still earlier one used big bordered tiles — both busier than
+// five short questions deserve.
 const MEAL_CATEGORIES = [
-  { id: "all", labelKey: "mealType.all", Icon: Utensils, hue: "slate" },
-  { id: "breakfast", labelKey: "mealType.breakfast", Icon: Croissant, hue: "amber" },
-  { id: "lunch", labelKey: "mealType.lunch", Icon: Sandwich, hue: "orange" },
-  { id: "dinner", labelKey: "mealType.dinner", Icon: Moon, hue: "violet" },
-  { id: "dessert", labelKey: "mealType.dessert", Icon: CakeSlice, hue: "pink" },
+  { id: "all", labelKey: "mealType.all", Icon: Utensils },
+  { id: "breakfast", labelKey: "mealType.breakfast", Icon: Croissant },
+  { id: "lunch", labelKey: "mealType.lunch", Icon: Sandwich },
+  { id: "dinner", labelKey: "mealType.dinner", Icon: Moon },
+  { id: "dessert", labelKey: "mealType.dessert", Icon: CakeSlice },
 ];
 
-// `level` drives the little fill meter under each tile (1-3 bars).
 const HUNGER_OPTIONS = [
-  { id: "light", labelKey: "hunger.light", Icon: Feather, hue: "green", level: 1 },
-  { id: "normal", labelKey: "hunger.normal", Icon: Utensils, hue: "amber", level: 2 },
-  { id: "hungry", labelKey: "mealPrefs.hungerHearty", Icon: CookingPot, hue: "orange", level: 3 },
+  { id: "light", labelKey: "hunger.light", Icon: Feather },
+  { id: "normal", labelKey: "hunger.normal", Icon: Utensils },
+  { id: "hungry", labelKey: "mealPrefs.hungerHearty", Icon: CookingPot },
 ];
 
 // ids here must match CRAVING_PROMPT_TEXT in CookAIContext.jsx — that's
 // where these get translated into the actual prompt phrasing.
 const CRAVING_TAGS = [
-  { id: "salty", labelKey: "mealPrefs.cravingSalty", Icon: Waves, hue: "sky" },
-  { id: "spicy", labelKey: "mealPrefs.cravingSpicy", Icon: Flame, hue: "red" },
-  { id: "sweet", labelKey: "mealPrefs.cravingSweet", Icon: Candy, hue: "pink" },
-  { id: "savory", labelKey: "mealPrefs.cravingSavory", Icon: Beef, hue: "amber" },
-  { id: "light", labelKey: "mealPrefs.cravingLight", Icon: Leaf, hue: "green" },
-  { id: "comfort", labelKey: "mealPrefs.cravingComfort", Icon: Soup, hue: "orange" },
+  { id: "salty", labelKey: "mealPrefs.cravingSalty", Icon: Waves },
+  { id: "spicy", labelKey: "mealPrefs.cravingSpicy", Icon: Flame },
+  { id: "sweet", labelKey: "mealPrefs.cravingSweet", Icon: Candy },
+  { id: "savory", labelKey: "mealPrefs.cravingSavory", Icon: Beef },
+  { id: "light", labelKey: "mealPrefs.cravingLight", Icon: Leaf },
+  { id: "comfort", labelKey: "mealPrefs.cravingComfort", Icon: Soup },
 ];
+
+const EMERALD = "#10B981";
 
 function cardStyle(isDark, colors) {
   return {
@@ -85,66 +77,34 @@ function cardStyle(isDark, colors) {
   };
 }
 
-// Round tinted disc behind an icon. `onSolid` is the selected-chip variant:
-// translucent white disc with a white icon on the solid emerald fill.
-function IconDisc({ Icon, hue, size = 26, onSolid = false }) {
-  const { isDark } = useTheme();
-  const h = HUES[hue] || HUES.slate;
-  return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: onSolid ? "rgba(255,255,255,0.24)" : `rgba(${h.rgb},${isDark ? 0.2 : 0.14})`,
-      }}
-    >
-      <Icon
-        size={Math.round(size * 0.58)}
-        color={onSolid ? "#FFFFFF" : isDark ? h.inkDark : h.ink}
-        strokeWidth={2.3}
-      />
-    </View>
-  );
-}
-
-function useChoiceColors() {
+function usePalette() {
   const { colors, isDark } = useTheme();
   return {
-    selectedBg: isDark ? colors.accentGreenSoft : "rgba(236, 253, 245, 0.9)",
-    selectedBorder: isDark ? colors.accentGreen : GREEN.primary,
-    selectedInk: isDark ? "#6EE7B7" : "#047857",
-    idleBg: isDark ? colors.inputBg : "#F8FAFC",
-    idleBorder: isDark ? colors.cardBorder : "#EDF0F4",
+    idleBg: isDark ? colors.inputBg : "#F3F5F8",
     idleInk: isDark ? colors.textPrimary : "#1E293B",
+    idleIcon: isDark ? colors.textSecondary : "#64748B",
+    muted: colors.textSecondary,
+    isDark,
+    colors,
   };
 }
 
-// Selected = solid emerald with white label/icon. Unselected keeps a 1.5px
-// border (transparent-ish) at the same width, so selecting never nudges
-// anything by a pixel.
-function ChoiceChip({ Icon, hue, label, selected, onPress }) {
-  const c = useChoiceColors();
+// Flat chip: neutral fill, no border, icon + label. Selected = solid emerald
+// with white icon and label (the same width in both states, so nothing shifts).
+function ChoiceChip({ Icon, label, selected, onPress }) {
+  const p = usePalette();
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.85}
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      style={[
-        styles.chip,
-        {
-          backgroundColor: selected ? "#10B981" : c.idleBg,
-          borderColor: selected ? "#10B981" : c.idleBorder,
-        },
-      ]}
+      style={[styles.chip, { backgroundColor: selected ? EMERALD : p.idleBg }]}
     >
-      <IconDisc Icon={Icon} hue={hue} size={26} onSolid={selected} />
+      <Icon size={15} color={selected ? "#FFFFFF" : p.idleIcon} strokeWidth={2.4} />
       <Text
         numberOfLines={1}
-        style={[styles.chipLabel, { color: selected ? "#FFFFFF" : c.idleInk }]}
+        style={[styles.chipLabel, { color: selected ? "#FFFFFF" : p.idleInk }]}
       >
         {label}
       </Text>
@@ -152,9 +112,52 @@ function ChoiceChip({ Icon, hue, label, selected, onPress }) {
   );
 }
 
-function SectionLabel({ children }) {
+// One rounded bar split into equal segments (hunger level). A single control
+// instead of three separate bordered tiles.
+function Segmented({ options, value, onChange, t }) {
+  const p = usePalette();
+  return (
+    <View style={[styles.segmented, { backgroundColor: p.idleBg }]}>
+      {options.map((o) => {
+        const selected = value === o.id;
+        const Icon = o.Icon;
+        return (
+          <TouchableOpacity
+            key={o.id}
+            onPress={() => onChange(o.id)}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityState={{ selected }}
+            style={[styles.segment, selected && { backgroundColor: EMERALD }]}
+          >
+            <Icon size={16} color={selected ? "#FFFFFF" : p.idleIcon} strokeWidth={2.4} />
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[styles.segmentLabel, { color: selected ? "#FFFFFF" : p.idleInk }]}
+            >
+              {t(o.labelKey)}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+function SectionLabel({ children, noMargin = false }) {
   const { colors } = useTheme();
-  return <Text style={[styles.groupLabel, { color: colors.textPrimary }]}>{children}</Text>;
+  return (
+    <Text
+      style={[
+        styles.groupLabel,
+        { color: colors.textSecondary },
+        noMargin && { marginBottom: 0 },
+      ]}
+    >
+      {children}
+    </Text>
+  );
 }
 
 function Divider() {
@@ -186,7 +189,11 @@ export default function MealPreferences() {
   } = useCookAI();
   const { colors, isDark } = useTheme();
   const card = cardStyle(isDark, colors);
-  const choice = useChoiceColors();
+  const palette = usePalette();
+  const [moreOpen, setMoreOpen] = useState(
+    () => cravingTags.length > 0 || !!excludeThisBatch
+  );
+  const activeMore = cravingTags.length + (excludeThisBatch ? 1 : 0);
 
   return (
     <View style={styles.root}>
@@ -237,11 +244,12 @@ export default function MealPreferences() {
         />
       </TouchableOpacity>
 
-      {/* One card, five labelled groups. This used to be five separate cards
-          with five different treatments (and headings on only two of them),
-          which read as unrelated widgets. The craving tags are free and
-          reset on restart ("what do I want right now"), deliberately apart
-          from the persisted Custom Diet on Profile. */}
+      {/* One card. Meal type, servings and hunger are the three questions that
+          matter every time; cravings and the one-off exclusion are optional,
+          so they sit behind "More options" (opened automatically when
+          something in them is already set). Cravings are free and reset on
+          restart ("what do I want right now"), deliberately apart from the
+          persisted Custom Diet on Profile. */}
       <View style={card}>
         <SectionLabel>{t("mealPrefs.mealTypeTitle")}</SectionLabel>
         <View style={styles.wrapRow}>
@@ -249,7 +257,6 @@ export default function MealPreferences() {
             <ChoiceChip
               key={cat.id}
               Icon={cat.Icon}
-              hue={cat.hue}
               label={t(cat.labelKey)}
               selected={mealType === cat.id}
               onPress={() => setMealType(cat.id)}
@@ -260,21 +267,15 @@ export default function MealPreferences() {
         <Divider />
 
         <View style={styles.servingsRow}>
-          <SectionLabel>{t("mealPrefs.servings")}</SectionLabel>
+          <SectionLabel noMargin>{t("mealPrefs.servings")}</SectionLabel>
           <View style={styles.stepper}>
             <TouchableOpacity
               onPress={() => setServings(Math.max(1, servings - 1))}
               activeOpacity={0.85}
-              style={[
-                styles.stepBtn,
-                {
-                  backgroundColor: isDark ? colors.inputBg : "#F1F5F9",
-                  borderColor: colors.cardBorder,
-                },
-              ]}
+              style={[styles.stepBtn, { backgroundColor: palette.idleBg }]}
               accessibilityLabel={t("a11y.decreaseServings")}
             >
-              <Minus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+              <Minus size={15} color={colors.textPrimary} strokeWidth={2.6} />
             </TouchableOpacity>
 
             <View style={styles.servingsCenter}>
@@ -295,16 +296,10 @@ export default function MealPreferences() {
             <TouchableOpacity
               onPress={() => setServings(Math.min(12, servings + 1))}
               activeOpacity={0.85}
-              style={[
-                styles.stepBtn,
-                {
-                  backgroundColor: isDark ? colors.inputBg : "#F1F5F9",
-                  borderColor: colors.cardBorder,
-                },
-              ]}
+              style={[styles.stepBtn, { backgroundColor: palette.idleBg }]}
               accessibilityLabel={t("a11y.increaseServings")}
             >
-              <Plus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+              <Plus size={15} color={colors.textPrimary} strokeWidth={2.6} />
             </TouchableOpacity>
           </View>
         </View>
@@ -312,92 +307,71 @@ export default function MealPreferences() {
         <Divider />
 
         <SectionLabel>{t("profile.hungerLevel")}</SectionLabel>
-        <View style={styles.hungerRow}>
-          {HUNGER_OPTIONS.map((item) => {
-            const selected = hungerLevel === item.id;
-            const Icon = item.Icon;
-            return (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => setHungerLevel(item.id)}
-                activeOpacity={0.88}
-                accessibilityRole="button"
-                accessibilityState={{ selected }}
-                style={[
-                  styles.hungerTile,
-                  {
-                    backgroundColor: selected ? choice.selectedBg : choice.idleBg,
-                    borderColor: selected ? choice.selectedBorder : "transparent",
-                  },
-                ]}
-              >
-                <IconDisc Icon={Icon} hue={item.hue} size={38} />
-                <Text
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                    styles.hungerLabel,
-                    { color: selected ? choice.selectedInk : choice.idleInk },
-                  ]}
-                >
-                  {t(item.labelKey)}
-                </Text>
-                {/* 1-3 bars: how much food, at a glance. */}
-                <View style={styles.meter}>
-                  {[1, 2, 3].map((n) => {
-                    const h = HUES[item.hue];
-                    return (
-                      <View
-                        key={n}
-                        style={{
-                          width: 16,
-                          height: 4,
-                          borderRadius: 2,
-                          backgroundColor:
-                            n <= item.level
-                              ? isDark
-                                ? h.inkDark
-                                : h.ink
-                              : isDark
-                                ? "rgba(148,163,184,0.25)"
-                                : "#E2E8F0",
-                        }}
-                      />
-                    );
-                  })}
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+        <Segmented
+          options={HUNGER_OPTIONS}
+          value={hungerLevel}
+          onChange={setHungerLevel}
+          t={t}
+        />
 
         <Divider />
 
-        <SectionLabel>{t("mealPrefs.cravingTitle")}</SectionLabel>
-        <View style={styles.wrapRow}>
-          {CRAVING_TAGS.map((tag) => (
-            <ChoiceChip
-              key={tag.id}
-              Icon={tag.Icon}
-              hue={tag.hue}
-              label={t(tag.labelKey)}
-              selected={cravingTags.includes(tag.id)}
-              onPress={() => toggleCravingTag(tag.id)}
+        <TouchableOpacity
+          onPress={() => {
+            animateLayout();
+            setMoreOpen((v) => !v);
+          }}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: moreOpen }}
+          style={styles.moreRow}
+        >
+          <Text style={[styles.moreLabel, { color: colors.textPrimary }]}>
+            {t("mealPrefs.moreOptions")}
+          </Text>
+          <View style={styles.moreRight}>
+            {!moreOpen && activeMore > 0 ? (
+              <View style={styles.moreBadge}>
+                <Text style={styles.moreBadgeText}>{activeMore}</Text>
+              </View>
+            ) : null}
+            <ChevronDown
+              size={18}
+              color={colors.textSecondary}
+              strokeWidth={2.4}
+              style={{ transform: [{ rotate: moreOpen ? "180deg" : "0deg" }] }}
             />
-          ))}
-        </View>
+          </View>
+        </TouchableOpacity>
 
-        <View style={[styles.excludeRow, { borderTopColor: colors.cardBorder }]}>
-          <Sparkles size={14} color={isDark ? colors.textSecondary : "#94A3B8"} />
-          <TextInput
-            value={excludeThisBatch}
-            onChangeText={setExcludeThisBatch}
-            placeholder={t("mealPrefs.excludeThisBatchPlaceholder")}
-            placeholderTextColor={colors.textSecondary}
-            style={[styles.excludeInput, { color: colors.textPrimary }]}
-            returnKeyType="done"
-          />
-        </View>
+        {moreOpen ? (
+          <View style={{ marginTop: 14 }}>
+            <SectionLabel>{t("mealPrefs.cravingTitle")}</SectionLabel>
+            <View style={styles.wrapRow}>
+              {CRAVING_TAGS.map((tag) => (
+                <ChoiceChip
+                  key={tag.id}
+                  Icon={tag.Icon}
+                  label={t(tag.labelKey)}
+                  selected={cravingTags.includes(tag.id)}
+                  onPress={() => toggleCravingTag(tag.id)}
+                />
+              ))}
+            </View>
+
+            <View style={[styles.excludeRow, { borderTopColor: colors.cardBorder }]}>
+              <Sparkles size={14} color={isDark ? colors.textSecondary : "#94A3B8"} />
+              <TextInput
+                value={excludeThisBatch}
+                onChangeText={setExcludeThisBatch}
+                placeholder={t("mealPrefs.excludeThisBatchPlaceholder")}
+                placeholderTextColor={colors.textSecondary}
+                style={[styles.excludeInput, { color: colors.textPrimary }]}
+                returnKeyType="done"
+              />
+            </View>
+          </View>
+        ) : null}
       </View>
     </View>
   );
@@ -416,10 +390,13 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
     marginBottom: 2,
   },
+  // Quiet small-caps labels: the options below them are the content, the
+  // labels only name the group.
   groupLabel: {
-    fontWeight: "800",
-    fontSize: 13,
-    letterSpacing: -0.1,
+    fontWeight: "700",
+    fontSize: 11.5,
+    letterSpacing: 0.6,
+    textTransform: "uppercase",
     marginBottom: 10,
   },
   divider: {
@@ -434,17 +411,67 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    paddingLeft: 7,
-    paddingRight: 14,
-    paddingVertical: 6,
+    gap: 7,
+    paddingHorizontal: 13,
+    height: 38,
     borderRadius: RADIUS.pill,
-    borderWidth: 1.5,
   },
   chipLabel: {
     fontSize: 13.5,
-    fontWeight: "700",
+    fontWeight: "600",
     letterSpacing: -0.1,
+  },
+  segmented: {
+    flexDirection: "row",
+    borderRadius: 14,
+    padding: 3,
+    gap: 3,
+  },
+  segment: {
+    flex: 1,
+    height: 40,
+    borderRadius: 11,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    paddingHorizontal: 6,
+    overflow: "hidden",
+  },
+  segmentLabel: {
+    flexShrink: 1,
+    fontSize: 13,
+    fontWeight: "600",
+    letterSpacing: -0.1,
+  },
+  moreRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    minHeight: 28,
+  },
+  moreLabel: {
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  moreRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  moreBadge: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    backgroundColor: EMERALD,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  moreBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 11.5,
+    fontWeight: "800",
   },
   excludeRow: {
     flexDirection: "row",
@@ -479,14 +506,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
   },
-  // Neutral chip, not the near-black primary-button fill this used to be —
-  // a -/+ stepper is a minor adjustment and must not compete with the
-  // actual primary action ("Generate AI Recipes").
+  // Neutral chip, not a primary-button fill — a -/+ stepper is a minor
+  // adjustment and must not compete with "Generate AI Recipes".
   stepBtn: {
-    width: 36,
-    height: 36,
+    width: 34,
+    height: 34,
     borderRadius: RADIUS.control,
-    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -507,40 +532,6 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     letterSpacing: 0.6,
     marginTop: 1,
-  },
-  hungerRow: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  // Compact tiles: icon over label. They were square 96px tiles with a 36px
-  // emoji — a lot of padding for three choices. A translated label longer
-  // than the tile is wide ends in an ellipsis instead of spilling into the
-  // next tile (overflow hidden is the hard guarantee).
-  hungerTile: {
-    flex: 1,
-    minHeight: 104,
-    borderRadius: RADIUS.tile,
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 7,
-    paddingVertical: 12,
-    paddingHorizontal: 6,
-    overflow: "hidden",
-  },
-  meter: {
-    flexDirection: "row",
-    gap: 3,
-    marginTop: 1,
-  },
-  hungerLabel: {
-    fontSize: 12.5,
-    fontWeight: "700",
-    letterSpacing: -0.1,
-    lineHeight: 15,
-    width: "100%",
-    minWidth: 0,
-    textAlign: "center",
   },
   staplesCard: {
     flexDirection: "row",

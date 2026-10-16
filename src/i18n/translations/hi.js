@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "मीठा",
   "mealPrefs.title": "भोजन की पसंद",
   "mealPrefs.mealTypeTitle": "भोजन का प्रकार",
+  "mealPrefs.moreOptions": "और विकल्प",
   "mealPrefs.includeStaples": "पैंट्री आइटम शामिल करें",
   "mealPrefs.staplesDesc": "आपकी पैंट्री में स्टॉक के रूप में चिह्नित सामग्री",
   "mealPrefs.servings": "सर्विंग्स",

@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "קינוח",
   "mealPrefs.title": "העדפות ארוחה",
   "mealPrefs.mealTypeTitle": "סוג הארוחה",
+  "mealPrefs.moreOptions": "אפשרויות נוספות",
   "mealPrefs.includeStaples": "כלול פריטי מזווה",
   "mealPrefs.staplesDesc": "מרכיבים המסומנים כזמינים במזווה שלך",
   "mealPrefs.servings": "מנות",

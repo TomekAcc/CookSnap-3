@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "Десерт",
   "mealPrefs.title": "Предпочитания за хранене",
   "mealPrefs.mealTypeTitle": "Вид хранене",
+  "mealPrefs.moreOptions": "Още опции",
   "mealPrefs.includeStaples": "Включване на артикулите от килера",
   "mealPrefs.staplesDesc": "Съставки, отбелязани като налични в килера ти",
   "mealPrefs.servings": "Порции",

@@ -145,6 +145,7 @@ export default {
   "mealType.dessert": "Dessert",
   "mealPrefs.title": "Måltidspreferanser",
   "mealPrefs.mealTypeTitle": "Måltidstype",
+  "mealPrefs.moreOptions": "Flere alternativer",
   "mealPrefs.includeStaples": "Inkluder spiskammervarer",
   "mealPrefs.staplesDesc": "Ingredienser merket som på lager i spiskammeret ditt",
   "mealPrefs.servings": "Porsjoner",
