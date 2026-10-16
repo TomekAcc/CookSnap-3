@@ -9,6 +9,7 @@ import {
   TextInput,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import {
   Zap,
@@ -23,6 +24,7 @@ import {
   Trash2,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
+import { classifyPantryItemWithGemini } from "../services/geminiVision";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { PANTRY_CATEGORIES, PANTRY_STAPLES } from "../data/recipes";
@@ -77,6 +79,7 @@ export default function PantryTab() {
   // Which pantry row (if any) currently has its swipe-to-delete action
   // revealed. Only one row stays open at a time, like iOS Mail.
   const [openSwipeId, setOpenSwipeId] = useState(null);
+  const [isClassifying, setIsClassifying] = useState(false);
 
   const filteredItems = useMemo(() => {
     return (pantryItems || []).filter((item) => {
@@ -183,13 +186,23 @@ export default function PantryTab() {
     );
   }, [clearPantry, showToast, t]);
 
-  const handleAddCustomItem = () => {
+  // One tiny AI call picks the category and emoji for what was typed (in any
+  // language). Never blocks for long and falls back to the local guess, so
+  // adding always works — see classifyPantryItemWithGemini.
+  const handleAddCustomItem = async () => {
     const trimmed = newItemName.trim();
-    if (!trimmed) return;
-    addPantryItem(trimmed);
-    setNewItemName("");
-    setShowAddModal(false);
-    showToast?.(t("pantry.addedItem", { name: trimmed }), "success");
+    if (!trimmed || isClassifying) return;
+    setIsClassifying(true);
+    try {
+      const item = await classifyPantryItemWithGemini(trimmed);
+      if (!item) return;
+      addPantryItem(item);
+      setNewItemName("");
+      setShowAddModal(false);
+      showToast?.(t("pantry.addedItem", { name: item.name }), "success");
+    } finally {
+      setIsClassifying(false);
+    }
   };
 
   // Suggestions in the user's language, skipping what is already in the
@@ -964,7 +977,7 @@ export default function PantryTab() {
           />
           <TouchableOpacity
             onPress={handleAddCustomItem}
-            disabled={!newItemName.trim()}
+            disabled={!newItemName.trim() || isClassifying}
             activeOpacity={0.85}
             accessibilityRole="button"
             style={{
@@ -978,9 +991,13 @@ export default function PantryTab() {
               opacity: newItemName.trim() ? 1 : 0.45,
             }}
           >
-            <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>
-              {t("scanner.add")}
-            </Text>
+            {isClassifying ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>
+                {t("scanner.add")}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
 

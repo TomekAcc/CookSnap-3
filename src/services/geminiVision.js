@@ -682,6 +682,83 @@ export function classifyPantryItemLocal(name) {
 }
 
 /**
+ * Classifies ONE pantry item the user typed by hand — category + emoji — in
+ * any language. classifyPantryItemLocal only knows English keywords, so a
+ * typed "Ocet balsamiczny" or "Mąka" used to land in "Condiments" with a
+ * generic jar. One tiny request (about 100 tokens, ~1 s) fixes that.
+ *
+ * Contract: never throws, never blocks for long. Any failure, timeout (5 s),
+ * missing key or unexpected answer returns the local guess, so adding an item
+ * always works, offline included. The name is kept exactly as typed (only the
+ * first letter is capitalized); the model only supplies category and emoji.
+ */
+const PANTRY_CLASSIFY_TIMEOUT_MS = 5000;
+
+export async function classifyPantryItemWithGemini(name, providedApiKey = "") {
+  const local = classifyPantryItemLocal(name);
+  if (!local) return null;
+  const typed = local.name.charAt(0).toUpperCase() + local.name.slice(1);
+  const base = { ...local, name: typed };
+  const apiKey = resolveApiKey(providedApiKey);
+  if (!apiKey) return base;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), PANTRY_CLASSIFY_TIMEOUT_MS);
+  try {
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        signal: controller.signal,
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `A user typed this food or cooking item into their pantry list (any language): ${JSON.stringify(local.name)}.
+Pick the best "category" — EXACTLY one of: "Spices & Herbs" (spices, dried or fresh herbs, salt, pepper, seasoning blends), "Oils & Sauces" (oils, vinegars, butter, ghee, liquid sauces, stock, wine for cooking), "Grains & Baking" (flour, rice, pasta, noodles, oats, cereal, sugar, baking powder, yeast, starches), "Condiments & Jars" (everything else: canned and jarred goods, spreads, honey, jam, pickles, nuts, seeds, tea, coffee, snacks).
+Also give the single most specific food "icon" emoji for it (never a generic jar or box if a specific food emoji exists).
+Return ONLY JSON: {"category":"...","icon":"..."}`,
+                },
+              ],
+            },
+          ],
+          // No "thinking" pass (would add seconds to a one-word lookup); the
+          // small flash-lite model picked poor emoji (lettuce for balsamic
+          // vinegar), flash-latest does not.
+          generationConfig: {
+            temperature: 0,
+            responseMimeType: "application/json",
+            thinkingConfig: { thinkingBudget: 0 },
+          },
+        }),
+      }
+    );
+    if (!response.ok) return base;
+    const data = await response.json();
+    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
+    const parsed = JSON.parse(raw);
+    const category = normalizePantryCategory(parsed?.category);
+    const icon = typeof parsed?.icon === "string" ? parsed.icon.trim() : "";
+    // A real emoji is short; anything long is the model talking, not an icon.
+    const validIcon = icon && icon.length <= 8 ? icon : "";
+    return {
+      ...base,
+      category: category || base.category,
+      emoji: validIcon || base.emoji,
+      icon: validIcon || base.icon,
+    };
+  } catch (err) {
+    console.warn("[Cook AI] Pantry item classification skipped:", err?.message);
+    return base;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
  * @deprecated Always returns []. Never invent pantry items.
  *
  * Used to return a hardcoded 4-item starter list (Olive Oil, Sea Salt,
