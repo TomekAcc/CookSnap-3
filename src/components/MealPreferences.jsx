@@ -101,53 +101,71 @@ function ChoiceChip({ label, selected, onPress }) {
 // Abendessen", French "Petit-déjeuner", Portuguese, Turkish, Finnish — the
 // same choices wrap as flat chips instead of being cut off. The fit test uses
 // a per-character width estimate for the 12.5px bold label plus padding.
-const CHAR_W = 6.6;
-const SEGMENT_PAD = 16;
+const CHAR_W = 6.3; // average glyph width of a 12px semibold label
+const CELL_PAD = 4;
+// On iOS/Android the label shrinks to 80% (adjustsFontSizeToFit) before it is
+// cut, so a label may need up to ~12% less than its natural width.
+const SHRINK_ALLOWANCE = 0.88;
 
+// Every cell is the same width, so the bars line up on both edges and with
+// each other (5 equal fifths for meal type, 3 equal thirds for hunger level
+// and for the servings stepper). Where the longest label cannot fit its cell
+// (German "Mittagessen", French "Petit-déjeuner", ...), the same choices go
+// onto two full-width rows (3 + 2) instead of loose pills — still equal
+// cells, still flush with both edges.
 function Segmented({ options, value, onChange, t }) {
   const p = usePalette();
   const [width, setWidth] = useState(0);
   const labels = options.map((o) => t(o.labelKey));
-  const needed = labels.reduce((sum, l) => sum + l.length * CHAR_W + SEGMENT_PAD, 0);
-  // Until measured, assume it fits (avoids a flash of wrapped segments).
-  const fits = width === 0 || needed <= width - 6;
+  const n = options.length;
+  const longest = labels.reduce((m, l) => Math.max(m, l.length), 0);
+  const cellWidth = (width - 6 - (n - 1) * 3) / n;
+  // Until measured, assume it fits (avoids a flash of two rows).
+  const fits = width === 0 || longest * CHAR_W * SHRINK_ALLOWANCE + CELL_PAD <= cellWidth;
+  const rows = fits
+    ? [options.map((_, i) => i)]
+    : n <= 2
+    ? [options.map((_, i) => i)]
+    : [
+        options.slice(0, Math.ceil(n / 2)).map((_, i) => i),
+        options.slice(Math.ceil(n / 2)).map((_, i) => i + Math.ceil(n / 2)),
+      ];
 
   return (
     <View
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-      style={[styles.segmented, !fits && styles.segmentedWrap, { backgroundColor: p.idleBg }]}
+      style={[styles.segmented, { backgroundColor: p.idleBg }]}
     >
-      {options.map((o, i) => {
-        const selected = value === o.id;
-        return (
-          <TouchableOpacity
-            key={o.id}
-            onPress={() => onChange(o.id)}
-            activeOpacity={0.85}
-            accessibilityRole="button"
-            accessibilityState={{ selected }}
-            style={[
-              styles.segment,
-              fits
-                ? { flex: options.length <= 3 ? 1 : Math.max(labels[i].length, 4) + 3 }
-                : { paddingHorizontal: 14 },
-              selected && { backgroundColor: EMERALD },
-            ]}
-          >
-            <Text
-              numberOfLines={1}
-              adjustsFontSizeToFit={fits}
-              minimumFontScale={0.8}
-              style={[
-                styles.segmentLabel,
-                { color: selected ? "#FFFFFF" : p.idleInk, fontWeight: selected ? "700" : "600" },
-              ]}
-            >
-              {labels[i]}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+      {rows.map((row, ri) => (
+        <View key={ri} style={styles.segmentRow}>
+          {row.map((i) => {
+            const o = options[i];
+            const selected = value === o.id;
+            return (
+              <TouchableOpacity
+                key={o.id}
+                onPress={() => onChange(o.id)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                style={[styles.segment, selected && { backgroundColor: EMERALD }]}
+              >
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                  style={[
+                    styles.segmentLabel,
+                    { color: selected ? "#FFFFFF" : p.idleInk, fontWeight: selected ? "700" : "600" },
+                  ]}
+                >
+                  {labels[i]}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      ))}
     </View>
   );
 }
@@ -225,47 +243,42 @@ export default function MealPreferences() {
 
         <Divider />
 
-        {/* One line: caption left, compact stepper right. A full-width bar just
-            to show "1 osoba" wasted a whole row and looked unlike its
-            neighbours; the stepper is a control, not a question with options. */}
-        <View style={styles.servingsRow}>
-          <Text
-            numberOfLines={1}
-            style={[styles.groupLabel, { color: colors.textSecondary, marginBottom: 0, flexShrink: 1 }]}
-          >
-            {t("mealPrefs.servings")}
-          </Text>
-          <View style={[styles.servingsBar, { backgroundColor: palette.idleBg }]}>
+        {/* Same structure as the two bars around it: label above, one full-width
+            track, equal thirds. The number sits in the middle third, directly
+            under the middle segment of the hunger bar. */}
+        <SectionLabel>{t("mealPrefs.servings")}</SectionLabel>
+        <View style={[styles.segmented, { backgroundColor: palette.idleBg }]}>
+          <View style={styles.segmentRow}>
             <TouchableOpacity
               onPress={() => setServings(Math.max(1, servings - 1))}
               disabled={servings <= 1}
               activeOpacity={0.85}
               style={[
-                styles.servingsBtn,
+                styles.segment,
                 { backgroundColor: isDark ? colors.card : "#FFFFFF", opacity: servings <= 1 ? 0.4 : 1 },
               ]}
               accessibilityLabel={t("a11y.decreaseServings")}
             >
-              <Minus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+              <Minus size={18} color={colors.textPrimary} strokeWidth={2.6} />
             </TouchableOpacity>
 
-            {/* Number only, fixed width: the caption already says "servings",
-                and a unit word made the bar resize between 1 and 2. */}
-            <Text style={[styles.servingsText, { color: colors.textPrimary }]} numberOfLines={1}>
-              {servings}
-            </Text>
+            <View style={styles.segment}>
+              <Text style={[styles.servingsText, { color: colors.textPrimary }]} numberOfLines={1}>
+                {servings}
+              </Text>
+            </View>
 
             <TouchableOpacity
               onPress={() => setServings(Math.min(12, servings + 1))}
               disabled={servings >= 12}
               activeOpacity={0.85}
               style={[
-                styles.servingsBtn,
+                styles.segment,
                 { backgroundColor: isDark ? colors.card : "#FFFFFF", opacity: servings >= 12 ? 0.4 : 1 },
               ]}
               accessibilityLabel={t("a11y.increaseServings")}
             >
-              <Plus size={16} color={colors.textPrimary} strokeWidth={2.6} />
+              <Plus size={18} color={colors.textPrimary} strokeWidth={2.6} />
             </TouchableOpacity>
           </View>
         </View>
@@ -415,27 +428,26 @@ const styles = StyleSheet.create({
     letterSpacing: -0.1,
   },
   segmented: {
-    flexDirection: "row",
     borderRadius: 14,
     padding: 3,
     gap: 3,
   },
+  segmentRow: {
+    flexDirection: "row",
+    gap: 3,
+  },
   segment: {
+    flex: 1,
     minWidth: 0,
     height: 40,
     borderRadius: 11,
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
-    paddingHorizontal: 4,
-  },
-  segmentedWrap: {
-    flexWrap: "wrap",
+    paddingHorizontal: 2,
   },
   segmentLabel: {
     flexShrink: 1,
-    fontSize: 12.5,
+    fontSize: 12,
     fontWeight: "600",
     letterSpacing: -0.1,
   },
@@ -482,30 +494,10 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     paddingVertical: 2,
   },
-  servingsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  servingsBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 14,
-    padding: 3,
-    height: 46,
-  },
   staplesRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-  },
-  servingsBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 11,
-    alignItems: "center",
-    justifyContent: "center",
   },
   cardTitle: {
     fontWeight: "700",
@@ -517,7 +509,6 @@ const styles = StyleSheet.create({
     marginTop: 1,
   },
   servingsText: {
-    width: 52,
     textAlign: "center",
     fontSize: 18,
     fontWeight: "800",
