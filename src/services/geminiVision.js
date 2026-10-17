@@ -694,8 +694,23 @@ export function classifyPantryItemLocal(name) {
  */
 const PANTRY_CLASSIFY_TIMEOUT_MS = 5000;
 
+// "15ml oliwa z oliwek" / "oliwa 15 ml" / "2 kg mąka" -> the item name only. A
+// pantry entry is "what I have", not a recipe line; the amount made one list
+// row read "15ml Oliwa z oliwek". Only metric/imperial unit tokens that are the
+// same in every language are stripped, and never down to an empty name.
+const QUANTITY_UNIT = "(?:ml|cl|dl|l|g|kg|mg|oz|lb|lbs)";
+export function stripQuantityFromName(name) {
+  const text = String(name || "").trim();
+  const stripped = text
+    .replace(new RegExp(`^\\d+(?:[.,]\\d+)?\\s*${QUANTITY_UNIT}\\b\\.?\\s+`, "i"), "")
+    .replace(new RegExp(`\\s+\\d+(?:[.,]\\d+)?\\s*${QUANTITY_UNIT}\\b\\.?$`, "i"), "")
+    .trim();
+  return stripped.length >= 2 ? stripped : text;
+}
+
 export async function classifyPantryItemWithGemini(name, providedApiKey = "") {
-  const local = classifyPantryItemLocal(name);
+  const cleaned = stripQuantityFromName(name);
+  const local = classifyPantryItemLocal(cleaned);
   if (!local) return null;
   const typed = local.name.charAt(0).toUpperCase() + local.name.slice(1);
   const base = { ...local, name: typed };

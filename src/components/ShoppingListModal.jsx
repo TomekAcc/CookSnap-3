@@ -18,15 +18,10 @@ import { emojiLine } from "../theme/tokens";
 const CHECKED_HOLD_MS = 500;
 const FADE_OUT_MS = 380;
 
-// Primary-button fill used app-wide (Take Photo, Send Feedback, Scan CTA,
-// Add — 17 call sites). This sheet's "Done Shopping" button was the only
-// button anywhere on #0F172A, a visibly darker, bluer slate, so the app's
-// most prominent full-width CTA didn't match any other primary button.
-const SLATE_900 = "#1E293B";
 const SLATE_300 = "#CBD5E1";
 
 /**
- * Shopping List — slate CTA, clean check circles (no blue Buy chrome).
+ * Shopping List — one calm list card, emerald primary button.
  */
 export default function ShoppingListModal({
   visible = false,
@@ -157,7 +152,7 @@ export default function ShoppingListModal({
       footer={
         <TouchableOpacity
           onPress={handleClose}
-          activeOpacity={0.88}
+          activeOpacity={0.85}
           style={styles.doneButton}
         >
           <Text style={styles.doneButtonText}>{t("shoppingList.doneShopping")}</Text>
@@ -185,135 +180,132 @@ export default function ShoppingListModal({
           </Text>
         </View>
       ) : (
-        safeItems.map((item, index) => {
-          const itemId = item?.id || item?.name || `item-${index}`;
-          const isChecked = !!checkedIds[itemId];
-          return (
-            <Animated.View key={itemId} style={{ opacity: getRowOpacity(itemId) }}>
-              <TouchableOpacity
-                onPress={() => handleItemPress(item)}
-                activeOpacity={0.8}
-                disabled={isChecked}
-                style={[
-                  styles.itemRow,
-                  {
-                    backgroundColor: colors.card,
-                    borderColor: colors.cardBorder,
-                  },
-                ]}
-              >
-                <View style={styles.itemLeftGroup}>
-                  <View
+        <>
+          <Text style={[styles.hint, { color: colors.textSecondary }]}>
+            {t("shoppingList.tapHint")}
+          </Text>
+          {/* One calm card with hairline dividers instead of a stack of
+              bordered cards with boxed emoji: four items read as a list, not
+              four buttons. */}
+          <View
+            style={[
+              styles.listCard,
+              { backgroundColor: colors.card, borderColor: colors.cardBorder },
+            ]}
+          >
+            {safeItems.map((item, index) => {
+              const itemId = item?.id || item?.name || `item-${index}`;
+              const isChecked = !!checkedIds[itemId];
+              return (
+                <Animated.View key={itemId} style={{ opacity: getRowOpacity(itemId) }}>
+                  <TouchableOpacity
+                    onPress={() => handleItemPress(item)}
+                    activeOpacity={0.7}
+                    disabled={isChecked}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: isChecked }}
                     style={[
-                      styles.itemEmojiBox,
-                      {
-                        backgroundColor: isDark ? colors.inputBg : "#FFFFFF",
-                        borderColor: isDark ? colors.cardBorder : "#E2E8F0",
+                      styles.itemRow,
+                      index > 0 && {
+                        borderTopWidth: StyleSheet.hairlineWidth,
+                        borderTopColor: colors.cardBorder,
                       },
                     ]}
                   >
                     <Text style={styles.itemEmoji} allowFontScaling={false}>
                       {item?.emoji || "🫙"}
                     </Text>
-                  </View>
-                  <Text
-                    style={[
-                      styles.itemName,
-                      { color: colors.textPrimary },
-                      isChecked && styles.itemNameChecked,
-                    ]}
-                  >
-                    {item?.name || t("shoppingList.itemFallback")}
-                  </Text>
-                </View>
-                {isChecked ? (
-                  <View
-                    style={[
-                      styles.checkCircleActive,
-                      { backgroundColor: colors.accentGreen || "#10B981" },
-                    ]}
-                  >
-                    <Check size={13} color="#FFFFFF" strokeWidth={2.5} />
-                  </View>
-                ) : (
-                  <Circle
-                    size={20}
-                    color={isDark ? colors.textTertiary || SLATE_300 : SLATE_300}
-                    strokeWidth={2}
-                  />
-                )}
-              </TouchableOpacity>
-            </Animated.View>
-          );
-        })
+                    <Text
+                      style={[
+                        styles.itemName,
+                        { color: isChecked ? colors.textSecondary : colors.textPrimary },
+                        isChecked && styles.itemNameChecked,
+                      ]}
+                    >
+                      {item?.name || t("shoppingList.itemFallback")}
+                    </Text>
+                    {isChecked ? (
+                      <View
+                        style={[
+                          styles.checkCircleActive,
+                          { backgroundColor: colors.accentGreen || "#10B981" },
+                        ]}
+                      >
+                        <Check size={14} color="#FFFFFF" strokeWidth={3} />
+                      </View>
+                    ) : (
+                      <Circle
+                        size={24}
+                        color={isDark ? colors.textTertiary || SLATE_300 : SLATE_300}
+                        strokeWidth={2}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </Animated.View>
+              );
+            })}
+          </View>
+        </>
       )}
     </StandardSmoothModal>
   );
 }
 
 const styles = StyleSheet.create({
+  hint: {
+    fontSize: 13,
+    fontWeight: "500",
+    marginBottom: 12,
+  },
+  listCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    overflow: "hidden",
+  },
   itemRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    backgroundColor: "#F8FAFC",
-    borderRadius: 18,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-  },
-  itemLeftGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    flex: 1,
-    paddingRight: DS.spacing.sm,
-  },
-  itemEmojiBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
+    gap: 14,
+    paddingVertical: 15,
   },
   itemEmoji: {
-    fontSize: 22,
-    lineHeight: emojiLine(22),
+    fontSize: 26,
+    lineHeight: emojiLine(26),
+    width: 34,
     textAlign: "center",
     includeFontPadding: false,
   },
   itemName: {
-    fontSize: 15,
-    fontWeight: "800",
-    flexShrink: 1,
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: -0.2,
   },
   itemNameChecked: {
     textDecorationLine: "line-through",
   },
   checkCircleActive: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
   },
+  // Same emerald, height and type as every other full-width primary button.
   doneButton: {
+    height: 52,
     borderRadius: 16,
-    paddingVertical: 15,
     alignItems: "center",
     justifyContent: "center",
     marginTop: DS.spacing.md,
     marginBottom: DS.spacing.xs,
-    backgroundColor: SLATE_900,
+    backgroundColor: "#059669",
   },
   doneButtonText: {
-    fontSize: 14,
-    fontWeight: "900",
-    letterSpacing: 0.3,
+    fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: -0.2,
     color: "#FFFFFF",
   },
   emptyContainer: {

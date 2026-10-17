@@ -237,6 +237,8 @@ export default {
   "a11y.deleteItem": "Usuń element",
   "errors.pantryCameraPermission": "Do skanowania półek w spiżarni wymagane jest zezwolenie na użycie aparatu.",
   "shoppingList.doneShopping": "Zakupy zakończone",
+  "shoppingList.tapHint": "Stuknij produkt, gdy go kupisz",
+  "recipeDetail.stepsChecked": "{checked} z {total} kroków ukończono",
   "shoppingList.listClear": "Twoja lista jest pusta",
   "shoppingList.listClearDesc": "Wszystko jest na stanie. Oznacz produkty jako niedostępne w spiżarni, aby utworzyć listę zakupów.",
   "shoppingList.itemFallback": "Produkt",
