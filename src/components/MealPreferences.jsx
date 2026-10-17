@@ -9,6 +9,12 @@ import {
 } from "react-native";
 import {
   Sparkles,
+  Waves,
+  Flame,
+  Candy,
+  Beef,
+  Leaf,
+  Soup,
   Minus,
   Plus,
   ChevronDown,
@@ -17,7 +23,6 @@ import {
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import { animateLayout } from "../utils/layoutMotion";
-import { RADIUS } from "../theme/tokens";
 
 // Every option on this screen is text only, and every selected option looks
 // the same: solid emerald with a white bold label. (A white "raised pill"
@@ -42,12 +47,12 @@ const HUNGER_OPTIONS = [
 // ids here must match CRAVING_PROMPT_TEXT in CookAIContext.jsx — that's
 // where these get translated into the actual prompt phrasing.
 const CRAVING_TAGS = [
-  { id: "salty", labelKey: "mealPrefs.cravingSalty" },
-  { id: "spicy", labelKey: "mealPrefs.cravingSpicy" },
-  { id: "sweet", labelKey: "mealPrefs.cravingSweet" },
-  { id: "savory", labelKey: "mealPrefs.cravingSavory" },
-  { id: "light", labelKey: "mealPrefs.cravingLight" },
-  { id: "comfort", labelKey: "mealPrefs.cravingComfort" },
+  { id: "salty", labelKey: "mealPrefs.cravingSalty", Icon: Waves },
+  { id: "spicy", labelKey: "mealPrefs.cravingSpicy", Icon: Flame },
+  { id: "sweet", labelKey: "mealPrefs.cravingSweet", Icon: Candy },
+  { id: "savory", labelKey: "mealPrefs.cravingSavory", Icon: Beef },
+  { id: "light", labelKey: "mealPrefs.cravingLight", Icon: Leaf },
+  { id: "comfort", labelKey: "mealPrefs.cravingComfort", Icon: Soup },
 ];
 
 const EMERALD = "#10B981";
@@ -59,6 +64,12 @@ function cardStyle(isDark, colors) {
     borderWidth: 1,
     borderColor: isDark ? colors.cardBorder : "#E5E7EB",
     padding: 18,
+    // Soft lift so the cards read as separate surfaces on the grey page.
+    shadowColor: "#0F172A",
+    shadowOpacity: isDark ? 0 : 0.05,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 0,
   };
 }
 
@@ -73,25 +84,48 @@ function usePalette() {
   };
 }
 
-// Flat chip: neutral fill, no border, label only. Selected = solid emerald
-// with white label (the same width in both states, so nothing shifts).
-function ChoiceChip({ label, selected, onPress }) {
+// Multi-select cravings as an equal 2-column grid (3 rows for the 6 tags):
+// every cell the same size, flush with both edges. One icon style (lucide,
+// same size and stroke) in front of each label; selected = solid emerald.
+function CravingGrid({ tags, selectedIds, onToggle, t }) {
   const p = usePalette();
+  const rows = [];
+  for (let i = 0; i < tags.length; i += 2) rows.push(tags.slice(i, i + 2));
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.85}
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
-      style={[styles.chip, { backgroundColor: selected ? EMERALD : p.idleBg }]}
-    >
-      <Text
-        numberOfLines={1}
-        style={[styles.chipLabel, { color: selected ? "#FFFFFF" : p.idleInk }]}
-      >
-        {label}
-      </Text>
-    </TouchableOpacity>
+    <View style={{ gap: 10 }}>
+      {rows.map((row, ri) => (
+        <View key={ri} style={{ flexDirection: "row", gap: 10 }}>
+          {row.map((tag) => {
+            const selected = selectedIds.includes(tag.id);
+            const Icon = tag.Icon;
+            return (
+              <TouchableOpacity
+                key={tag.id}
+                onPress={() => onToggle(tag.id)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                style={[styles.cell, { backgroundColor: selected ? EMERALD : p.idleBg }]}
+              >
+                <Icon size={18} color={selected ? "#FFFFFF" : p.muted} strokeWidth={2.2} />
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                  style={[
+                    styles.cellLabel,
+                    { color: selected ? "#FFFFFF" : p.idleInk, fontWeight: selected ? "700" : "600" },
+                  ]}
+                >
+                  {t(tag.labelKey)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+          {row.length < 2 ? <View style={{ flex: 1 }} /> : null}
+        </View>
+      ))}
+    </View>
   );
 }
 
@@ -226,9 +260,9 @@ export default function MealPreferences() {
         </Text>
       </View>
 
-      {/* One card. Meal type, servings and hunger are the three questions that
-          matter every time; cravings and the one-off exclusion are optional,
-          so they sit behind "More options" (opened automatically when
+      {/* Three cards instead of one long white block. First: meal type, servings
+          and hunger — the three questions that matter every time. Cravings and
+          the one-off exclusion are optional, so they sit behind "More options" (opened automatically when
           something in them is already set). Cravings are free and reset on
           restart ("what do I want right now"), deliberately apart from the
           persisted Custom Diet on Profile. */}
@@ -292,9 +326,11 @@ export default function MealPreferences() {
           onChange={setHungerLevel}
           t={t}
         />
+      </View>
 
-        <Divider />
-
+      {/* Second card: the one setting that is about WHERE ingredients come
+          from, not about the meal. */}
+      <View style={card}>
         {/* Pantry staples — whole row is the touch target (tapping the text used
             to do nothing); pointerEvents="none" on the Switch stops a direct tap
             from double-toggling via bubbling. No amber badge: amber means PRO. */}
@@ -321,9 +357,10 @@ export default function MealPreferences() {
             thumbColor="#FFFFFF"
           />
         </TouchableOpacity>
+      </View>
 
-        <Divider />
-
+      {/* Third card: optional extras (cravings + one-off exclusion). */}
+      <View style={card}>
         <TouchableOpacity
           onPress={() => {
             animateLayout();
@@ -354,16 +391,12 @@ export default function MealPreferences() {
         {moreOpen ? (
           <View style={{ marginTop: 20 }}>
             <SectionLabel>{t("mealPrefs.cravingTitle")}</SectionLabel>
-            <View style={styles.wrapRow}>
-              {CRAVING_TAGS.map((tag) => (
-                <ChoiceChip
-                  key={tag.id}
-                  label={t(tag.labelKey)}
-                  selected={cravingTags.includes(tag.id)}
-                  onPress={() => toggleCravingTag(tag.id)}
-                />
-              ))}
-            </View>
+            <CravingGrid
+              tags={CRAVING_TAGS}
+              selectedIds={cravingTags}
+              onToggle={toggleCravingTag}
+              t={t}
+            />
 
             <View style={[styles.excludeRow, { borderTopColor: colors.cardBorder }]}>
               <Sparkles size={14} color={isDark ? colors.textSecondary : "#94A3B8"} />
@@ -409,22 +442,20 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     marginVertical: 24,
   },
-  wrapRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  chip: {
+  cell: {
+    flex: 1,
+    minWidth: 0,
+    height: 50,
+    borderRadius: 14,
     flexDirection: "row",
     alignItems: "center",
-    gap: 7,
-    paddingHorizontal: 13,
-    height: 38,
-    borderRadius: RADIUS.pill,
+    justifyContent: "center",
+    gap: 8,
+    paddingHorizontal: 10,
   },
-  chipLabel: {
-    fontSize: 13.5,
-    fontWeight: "600",
+  cellLabel: {
+    flexShrink: 1,
+    fontSize: 14,
     letterSpacing: -0.1,
   },
   segmented: {

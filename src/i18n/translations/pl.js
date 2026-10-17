@@ -144,7 +144,7 @@ export default {
   "errors.capturePhotoFailed": "Nie udało się zrobić zdjęcia. Spróbuj ponownie.",
   "errors.galleryPermission": "Do wyboru zdjęcia wymagane jest zezwolenie na dostęp do biblioteki zdjęć.",
   "errors.loadPhotoFailed": "Nie udało się wczytać zdjęcia. Spróbuj ponownie.",
-  "mealType.all": "Wszystkie",
+  "mealType.all": "Wszystko",
   "mealType.breakfast": "Śniadanie",
   "mealType.lunch": "Obiad",
   "mealType.dinner": "Kolacja",
