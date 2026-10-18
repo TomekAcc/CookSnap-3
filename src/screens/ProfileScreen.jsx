@@ -153,6 +153,11 @@ export default function ProfileScreen() {
                 width: 44,
                 height: 44,
                 borderRadius: 22,
+                // The 44px button would make this row taller than the 35px
+                // title and push the title (and everything below) lower than
+                // on Pantry/Saved. Negative margins let it overhang the row
+                // so the title sits at exactly the same height on every tab.
+                marginVertical: -4.5,
                 backgroundColor: colors.card,
                 borderWidth: 1,
                 borderColor: colors.cardBorder,
