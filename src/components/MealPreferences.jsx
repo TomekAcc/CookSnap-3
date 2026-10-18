@@ -526,9 +526,12 @@ export default function MealPreferences({ compact = false }) {
         onClose={() => setPicker(null)}
         title={pickerTitle}
         type="bottom-sheet"
+        scroll={false}
+        dragAnywhere
       >
+        <View style={{ paddingBottom: 4 }}>
         {pickerKind === "servings" ? (
-          <View style={{ alignItems: "center", paddingTop: 8 }}>
+          <View style={{ alignItems: "center", paddingTop: 4 }}>
             <View style={styles.bigStepper}>
               <TouchableOpacity
                 onPress={() => setServings(Math.max(1, servings - 1))}
@@ -539,7 +542,7 @@ export default function MealPreferences({ compact = false }) {
               >
                 <Minus size={22} color={colors.textPrimary} strokeWidth={2.6} />
               </TouchableOpacity>
-              <View style={{ alignItems: "center", minWidth: 110 }}>
+              <View style={{ alignItems: "center", minWidth: 96 }}>
                 <Text style={[styles.bigNumber, { color: colors.textPrimary }]}>{servings}</Text>
                 <Text style={[styles.bigUnit, { color: colors.textSecondary }]}>{unitText}</Text>
               </View>
@@ -594,6 +597,7 @@ export default function MealPreferences({ compact = false }) {
             );
           })
         )}
+        </View>
       </StandardSmoothModal>
     </View>
   );
@@ -667,37 +671,37 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 16,
+    paddingVertical: 14,
   },
   optionText: {
-    fontSize: 17,
+    fontSize: 16,
   },
   bigStepper: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 18,
-    marginBottom: 22,
+    gap: 14,
+    marginBottom: 16,
   },
   bigStepBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 18,
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
   },
   bigNumber: {
-    fontSize: 44,
+    fontSize: 34,
     fontWeight: "800",
-    letterSpacing: -1,
+    letterSpacing: -0.8,
   },
   bigUnit: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
   },
   doneBtn: {
     alignSelf: "stretch",
-    height: 52,
-    borderRadius: 16,
+    height: 48,
+    borderRadius: 14,
     backgroundColor: "#059669",
     alignItems: "center",
     justifyContent: "center",

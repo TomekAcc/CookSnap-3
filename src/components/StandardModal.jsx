@@ -99,6 +99,13 @@ export default function StandardModal({
   // sheet that doesn't pass this prop (default 0 preserves old behavior
   // exactly).
   dragZoneRightInset = 0,
+  // For short sheets with no scrolling content (pickers, steppers): the whole
+  // sheet can be pulled down, not just the thin handle/header strip. A
+  // dismiss drag that starts anywhere lower on the sheet used to do nothing,
+  // which read as "unresponsive". Needs a few more px of downward travel to
+  // activate than the header zone, so a tap on a button that wobbles by a
+  // pixel still counts as a tap. Don't use with a ScrollView inside.
+  dragAnywhere = false,
 }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -140,16 +147,16 @@ export default function StandardModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animate]);
 
-  const panGesture = Gesture.Pan()
+  const buildPan = (activeDown, failX) => Gesture.Pan()
     // Cut to the practical floor — the gesture recognizer needs *some*
     // confirmed downward movement before committing to "this is a drag"
     // (standard OS behavior), but every extra pixel here reads as a beat
     // of dead time before the sheet starts following the finger.
-    .activeOffsetY([-1000, 1])
+    .activeOffsetY([-1000, activeDown])
     // Wide horizontal tolerance — a one-handed reach up to a grab handle
     // naturally arcs sideways more than a straight-down pull, and a tight
     // tolerance can trip the gesture's own fail state mid-drag.
-    .failOffsetX([-45, 45])
+    .failOffsetX([-failX, failX])
     .onUpdate((e) => {
       // A raw 1:1 bind here means any brief pause in the finger's own
       // motion (without lifting) reads as the SHEET itself freezing —
@@ -179,6 +186,8 @@ export default function StandardModal({
         translateY.value = withSpring(0, { duration: 280, dampingRatio: 1 });
       }
     });
+  const panGesture = buildPan(1, 45);
+  const panAnywhere = buildPan(8, 30);
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: isBottom ? [{ translateY: translateY.value }] : [],
@@ -218,37 +227,73 @@ export default function StandardModal({
           />
         </Animated.View>
 
-        <Animated.View
-          style={[
-            styles.sheet,
-            BACKDROP_SHADOW_KILL,
-            isBottom ? styles.bottomSheet : styles.centerSheet,
-            maxHeight != null ? { maxHeight } : null,
-            {
-              backgroundColor: colors.card || "#FFFFFF",
-              borderColor: colors.cardBorder || "#F1F5F9",
-              paddingBottom: isBottom
-                ? Math.max((insets?.bottom || 0) + 16, 24)
-                : 16,
-            },
-            sheetAnimatedStyle,
-            contentStyle,
-          ]}
-        >
-          {children}
-          {isBottom ? (
-            <GestureDetector gesture={panGesture}>
-              <View
-                style={[
-                  styles.dragZone,
-                  { height: dragZoneHeight, right: dragZoneRightInset },
-                ]}
-                accessibilityElementsHidden
-                importantForAccessibility="no-hide-descendants"
-              />
-            </GestureDetector>
-          ) : null}
-        </Animated.View>
+        {isBottom && dragAnywhere ? (
+          <GestureDetector gesture={panAnywhere}>
+          <Animated.View
+            style={[
+              styles.sheet,
+              BACKDROP_SHADOW_KILL,
+              isBottom ? styles.bottomSheet : styles.centerSheet,
+              maxHeight != null ? { maxHeight } : null,
+              {
+                backgroundColor: colors.card || "#FFFFFF",
+                borderColor: colors.cardBorder || "#F1F5F9",
+                paddingBottom: isBottom
+                  ? Math.max((insets?.bottom || 0) + 16, 24)
+                  : 16,
+              },
+              sheetAnimatedStyle,
+              contentStyle,
+            ]}
+          >
+            {children}
+            {isBottom && !dragAnywhere ? (
+              <GestureDetector gesture={panGesture}>
+                <View
+                  style={[
+                    styles.dragZone,
+                    { height: dragZoneHeight, right: dragZoneRightInset },
+                  ]}
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                />
+              </GestureDetector>
+            ) : null}
+          </Animated.View>
+          </GestureDetector>
+        ) : (
+          <Animated.View
+            style={[
+              styles.sheet,
+              BACKDROP_SHADOW_KILL,
+              isBottom ? styles.bottomSheet : styles.centerSheet,
+              maxHeight != null ? { maxHeight } : null,
+              {
+                backgroundColor: colors.card || "#FFFFFF",
+                borderColor: colors.cardBorder || "#F1F5F9",
+                paddingBottom: isBottom
+                  ? Math.max((insets?.bottom || 0) + 16, 24)
+                  : 16,
+              },
+              sheetAnimatedStyle,
+              contentStyle,
+            ]}
+          >
+            {children}
+            {isBottom && !dragAnywhere ? (
+              <GestureDetector gesture={panGesture}>
+                <View
+                  style={[
+                    styles.dragZone,
+                    { height: dragZoneHeight, right: dragZoneRightInset },
+                  ]}
+                  accessibilityElementsHidden
+                  importantForAccessibility="no-hide-descendants"
+                />
+              </GestureDetector>
+            ) : null}
+          </Animated.View>
+        )}
       </KeyboardAvoidingView>
     </Modal>
   );

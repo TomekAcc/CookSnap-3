@@ -25,6 +25,7 @@ export default function StandardSmoothModal({
   scrollProps = null,
   maxHeight,
   dragZoneHeight,
+  dragAnywhere = false,
 }) {
   const { colors } = useTheme();
   const handleClose = typeof onClose === "function" ? onClose : () => {};
@@ -54,6 +55,7 @@ export default function StandardSmoothModal({
       type={type}
       maxHeight={maxHeight}
       dragZoneHeight={effectiveDragZoneHeight}
+      dragAnywhere={dragAnywhere}
     >
       <View onLayout={(e) => setMeasuredHeaderHeight(e.nativeEvent.layout.height)}>
         {isBottom ? (
