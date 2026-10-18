@@ -18,6 +18,7 @@ import {
   Camera,
   Image as ImageIcon,
   Plus,
+  ChevronUp,
   X,
   RefreshCw,
   CheckCircle2,
@@ -34,13 +35,21 @@ import { getIngredientStyle } from "../utils/imageUtils";
 import { startAsymptoticCreep } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
 import PillTag from "./PillTag";
+import { animateLayout } from "../utils/layoutMotion";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import ScanMoreSheet from "./ScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Ingredient chips shown before "+N" (a 15-item scan made the list ~800 px
+// tall and pushed preferences and Generate far below the fold).
+const INGREDIENT_PREVIEW = 8;
+// Placeholders the vision model is told never to use but sometimes does; a
+// chip with no emoji reads better than a generic jar or box.
+const GENERIC_EMOJI = new Set(["🫙", "🛒", "📦", "❓", "🍽️", "🍽"]);
+
 /** Compact header after AI detection completes. */
-const COMPACT_HEIGHT = 150;
+const COMPACT_HEIGHT = 120;
 
 // Detected-ingredient pills only — a scoped override on top of PillTag's
 // shared defaults so PantryTab's category-filter pills stay untouched.
@@ -166,6 +175,7 @@ export default function FridgeScannerHero() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
   const [showAddInput, setShowAddInput] = useState(false);
+  const [showAllIngredients, setShowAllIngredients] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [progressPct, setProgressPct] = useState(0);
@@ -1450,10 +1460,30 @@ export default function FridgeScannerHero() {
                       </View>
                     )}
 
+                    {/* Real tester feedback: a top-down photo can't show an
+                        exact cut of meat or a label facing away, and the
+                        scan can't know that — so say it plainly, once, right
+                        where the list can be fixed. Now ABOVE the chips: at
+                        the bottom of a long list it was out of sight. */}
+                    <Text
+                      style={{
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                        fontWeight: "500",
+                        lineHeight: 17,
+                        marginBottom: 12,
+                      }}
+                    >
+                      {t("scanner.verifyHint")}
+                    </Text>
+
                     <View
                       style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}
                     >
-                      {(ingredients || []).map((item) => {
+                      {(showAllIngredients
+                        ? ingredients || []
+                        : (ingredients || []).slice(0, INGREDIENT_PREVIEW)
+                      ).map((item) => {
                         const cleanName =
                           stripInlineEmojis(item?.name) ||
                           String(item?.name || "").trim() ||
@@ -1461,43 +1491,67 @@ export default function FridgeScannerHero() {
                         // Vision already returns an accurate, language-independent
                         // emoji per item (see MASTER_VISION_SYSTEM_PROMPT) — prefer
                         // that over the local English-keyword guesser, which can't
-                        // match a name that's now in the user's selected language
-                        // and was silently falling back to a generic jar icon for
-                        // every item once names stopped being English.
+                        // match a name that's now in the user's selected language.
                         const aiIcon =
                           (typeof item?.icon === "string" && item.icon.trim()) ||
                           (typeof item?.emoji === "string" && item.emoji.trim());
                         const style = getIngredientStyle(cleanName);
+                        const rawEmoji = aiIcon || style.emoji || "";
                         return (
                           <PillTag
                             key={item.id}
-                            emoji={aiIcon || style.emoji || "🛒"}
+                            emoji={GENERIC_EMOJI.has(rawEmoji) ? "" : rawEmoji}
                             label={cleanName}
                             onRemove={() => removeIngredient(item.id)}
-                            style={getDetectedPillStyle(isDark, colors)}
+                            // flexGrow: each row stretches to the card's edges, so
+                            // the chips end flush on the right instead of ragged.
+                            style={{
+                              ...getDetectedPillStyle(isDark, colors),
+                              flexGrow: 1,
+                              justifyContent: "center",
+                            }}
                             labelStyle={{
                               color: isDark ? colors.textPrimary : "#1E293B",
                             }}
                           />
                         );
                       })}
+                      {(ingredients || []).length > INGREDIENT_PREVIEW ? (
+                        <TouchableOpacity
+                          onPress={() => {
+                            animateLayout();
+                            setShowAllIngredients((v) => !v);
+                          }}
+                          activeOpacity={0.75}
+                          accessibilityRole="button"
+                          style={{
+                            flexGrow: 1,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: 4,
+                            paddingVertical: 6,
+                            paddingHorizontal: 14,
+                            borderRadius: 999,
+                            backgroundColor: isDark ? "#064E3B" : "#D1FAE5",
+                          }}
+                        >
+                          {showAllIngredients ? (
+                            <ChevronUp size={16} color={isDark ? "#34D399" : "#047857"} strokeWidth={2.6} />
+                          ) : (
+                            <Text
+                              style={{
+                                color: isDark ? "#34D399" : "#047857",
+                                fontSize: 14,
+                                fontWeight: "800",
+                              }}
+                            >
+                              +{(ingredients || []).length - INGREDIENT_PREVIEW}
+                            </Text>
+                          )}
+                        </TouchableOpacity>
+                      ) : null}
                     </View>
-                    {/* Real tester feedback: a top-down photo can't show an
-                        exact cut of meat or a label facing away, and the
-                        scan can't know that — so say it plainly, once,
-                        right where the list can be fixed (× removes, Add
-                        adds). Quiet caption, not a warning. */}
-                    <Text
-                      style={{
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: "500",
-                        lineHeight: 17,
-                        marginTop: 12,
-                      }}
-                    >
-                      {t("scanner.verifyHint")}
-                    </Text>
                   </View>
                 )}
               </Animated.View>
