@@ -18,7 +18,6 @@ import {
   Camera,
   Image as ImageIcon,
   Plus,
-  ChevronUp,
   X,
   RefreshCw,
   CheckCircle2,
@@ -35,15 +34,11 @@ import { getIngredientStyle } from "../utils/imageUtils";
 import { startAsymptoticCreep } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
 import PillTag from "./PillTag";
-import { animateLayout } from "../utils/layoutMotion";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import ScanMoreSheet from "./ScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// Ingredient chips shown before "+N" (a 15-item scan made the list ~800 px
-// tall and pushed preferences and Generate far below the fold).
-const INGREDIENT_PREVIEW = 8;
 // Placeholders the vision model is told never to use but sometimes does; a
 // chip with no emoji reads better than a generic jar or box.
 const GENERIC_EMOJI = new Set(["🫙", "🛒", "📦", "❓", "🍽️", "🍽"]);
@@ -65,8 +60,8 @@ const COMPACT_HEIGHT = 120;
 // need a visible boundary that a selectable filter pill doesn't.
 function getDetectedPillStyle(isDark, colors) {
   return {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    paddingVertical: 4,
+    paddingHorizontal: 11,
     backgroundColor: isDark ? colors.inputBg : "rgba(241, 245, 249, 0.7)",
     borderColor: isDark ? colors.cardBorder : "rgba(226, 232, 240, 0.8)",
   };
@@ -175,7 +170,6 @@ export default function FridgeScannerHero() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
   const [showAddInput, setShowAddInput] = useState(false);
-  const [showAllIngredients, setShowAllIngredients] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [progressPct, setProgressPct] = useState(0);
@@ -1478,12 +1472,9 @@ export default function FridgeScannerHero() {
                     </Text>
 
                     <View
-                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}
+                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}
                     >
-                      {(showAllIngredients
-                        ? ingredients || []
-                        : (ingredients || []).slice(0, INGREDIENT_PREVIEW)
-                      ).map((item) => {
+                      {(ingredients || []).map((item) => {
                         const cleanName =
                           stripInlineEmojis(item?.name) ||
                           String(item?.name || "").trim() ||
@@ -1516,41 +1507,6 @@ export default function FridgeScannerHero() {
                           />
                         );
                       })}
-                      {(ingredients || []).length > INGREDIENT_PREVIEW ? (
-                        <TouchableOpacity
-                          onPress={() => {
-                            animateLayout();
-                            setShowAllIngredients((v) => !v);
-                          }}
-                          activeOpacity={0.75}
-                          accessibilityRole="button"
-                          style={{
-                            flexGrow: 1,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: 4,
-                            paddingVertical: 6,
-                            paddingHorizontal: 14,
-                            borderRadius: 999,
-                            backgroundColor: isDark ? "#064E3B" : "#D1FAE5",
-                          }}
-                        >
-                          {showAllIngredients ? (
-                            <ChevronUp size={16} color={isDark ? "#34D399" : "#047857"} strokeWidth={2.6} />
-                          ) : (
-                            <Text
-                              style={{
-                                color: isDark ? "#34D399" : "#047857",
-                                fontSize: 14,
-                                fontWeight: "800",
-                              }}
-                            >
-                              +{(ingredients || []).length - INGREDIENT_PREVIEW}
-                            </Text>
-                          )}
-                        </TouchableOpacity>
-                      ) : null}
                     </View>
                   </View>
                 )}
