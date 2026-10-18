@@ -260,6 +260,7 @@ export default {
 
   "shoppingList.doneShopping": "Done Shopping",
   "shoppingList.tapHint": "Tap an item once you've bought it",
+  "shoppingList.share": "Share",
   "shoppingList.listClear": "Your list is clear",
   "shoppingList.listClearDesc": "Everything is stocked. Mark items out of stock in Pantry to build a shopping list.",
   "shoppingList.itemFallback": "Item",

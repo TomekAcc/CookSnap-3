@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Kamerazugriff ist erforderlich, um deine Vorratsregale zu scannen.",
   "shoppingList.doneShopping": "Einkauf beendet",
   "shoppingList.tapHint": "Gekaufte Artikel einfach antippen",
+  "shoppingList.share": "Teilen",
   "pantry.generateCtaBody": "Erstelle Rezepte mit Zutaten aus deinem Kühlschrank und deinem Vorrat.",
   "pantry.generateCtaBtn": "Rezepte erstellen",
   "pantry.generateCtaTitle": "Bereit zum Kochen?",

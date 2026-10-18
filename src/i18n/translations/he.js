@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "נדרשת הרשאת שימוש במצלמה כדי לסרוק את מדפי המזווה.",
   "shoppingList.doneShopping": "סיימתי לקנות",
   "shoppingList.tapHint": "הקש על פריט לאחר שקנית אותו",
+  "shoppingList.share": "שיתוף",
   "pantry.generateCtaBody": "צרו מתכונים המשלבים מצרכים מהמקרר ומהמזווה.",
   "pantry.generateCtaBtn": "יצירת מתכונים",
   "pantry.generateCtaTitle": "מוכנים לבשל?",

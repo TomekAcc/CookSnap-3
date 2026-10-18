@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Для сканирования полок кладовой необходим доступ к камере.",
   "shoppingList.doneShopping": "Покупки завершены",
   "shoppingList.tapHint": "Нажмите на купленный товар",
+  "shoppingList.share": "Поделиться",
   "pantry.generateCtaBody": "Создавайте рецепты из того, что есть в холодильнике и кладовой.",
   "pantry.generateCtaBtn": "Подобрать рецепты",
   "pantry.generateCtaTitle": "Готовы готовить?",

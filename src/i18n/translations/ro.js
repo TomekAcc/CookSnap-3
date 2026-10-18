@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Este necesară permisiunea pentru cameră pentru a scana rafturile cămării.",
   "shoppingList.doneShopping": "Gata cumpărăturile",
   "shoppingList.tapHint": "Atinge un articol după ce l-ai cumpărat",
+  "shoppingList.share": "Trimite",
   "pantry.generateCtaBody": "Creează rețete combinând ingredientele din frigider și din cămară.",
   "pantry.generateCtaBtn": "Generează rețete",
   "pantry.generateCtaTitle": "Gata de gătit?",

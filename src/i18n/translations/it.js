@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "È necessario il permesso di accesso alla fotocamera per scansionare gli scaffali della dispensa.",
   "shoppingList.doneShopping": "Spesa completata",
   "shoppingList.tapHint": "Tocca un articolo dopo l'acquisto",
+  "shoppingList.share": "Condividi",
   "pantry.generateCtaBody": "Crea ricette combinando gli ingredienti in frigo e in dispensa.",
   "pantry.generateCtaBtn": "Genera ricette",
   "pantry.generateCtaTitle": "Pronti a cucinare?",

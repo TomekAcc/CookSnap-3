@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Izin kamera diperlukan untuk memindai rak dapur Anda.",
   "shoppingList.doneShopping": "Selesai Belanja",
   "shoppingList.tapHint": "Ketuk item yang sudah dibeli",
+  "shoppingList.share": "Bagikan",
   "pantry.generateCtaBody": "Buat resep menggunakan bahan-bahan di kulkas dan dapur Anda sekaligus.",
   "pantry.generateCtaBtn": "Buat resep",
   "pantry.generateCtaTitle": "Siap memasak?",

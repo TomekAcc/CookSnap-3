@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "식료품함을 스캔하려면 카메라 권한이 필요합니다.",
   "shoppingList.doneShopping": "장보기 완료",
   "shoppingList.tapHint": "구매한 항목을 탭하세요",
+  "shoppingList.share": "공유",
   "pantry.generateCtaBody": "냉장고와 팬트리에 있는 재료를 조합해 레시피를 만들어 보세요.",
   "pantry.generateCtaBtn": "레시피 생성",
   "pantry.generateCtaTitle": "요리할 준비 되셨나요?",

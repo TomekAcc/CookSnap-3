@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "扫描储藏室货架需要相机权限。",
   "shoppingList.doneShopping": "完成购物",
   "shoppingList.tapHint": "购买后点击该商品",
+  "shoppingList.share": "分享",
   "pantry.generateCtaBody": "结合冰箱与储藏室的食材，为你生成专属食谱。",
   "pantry.generateCtaBtn": "生成食谱",
   "pantry.generateCtaTitle": "准备下厨了吗？",

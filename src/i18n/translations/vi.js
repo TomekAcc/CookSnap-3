@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Cần cấp quyền truy cập camera để quét kệ tủ bếp của bạn.",
   "shoppingList.doneShopping": "Hoàn tất mua sắm",
   "shoppingList.tapHint": "Chạm vào món đồ sau khi đã mua",
+  "shoppingList.share": "Chia sẻ",
   "pantry.generateCtaBody": "Tạo công thức nấu ăn bằng cách kết hợp nguyên liệu trong tủ lạnh và tủ đồ khô.",
   "pantry.generateCtaBtn": "Tạo công thức",
   "pantry.generateCtaTitle": "Sẵn sàng nấu nướng chưa?",

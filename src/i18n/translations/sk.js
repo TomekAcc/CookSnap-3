@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Na skenovanie políc v špajzi je potrebné povolenie na prístup k fotoaparátu.",
   "shoppingList.doneShopping": "Nakupovanie dokončené",
   "shoppingList.tapHint": "Kúpenú položku odklepnite",
+  "shoppingList.share": "Zdieľať",
   "pantry.generateCtaBody": "Vytvárajte recepty z ingrediencií v chladničke a špajze.",
   "pantry.generateCtaBtn": "Vytvoriť recepty",
   "pantry.generateCtaTitle": "Pripravení variť?",

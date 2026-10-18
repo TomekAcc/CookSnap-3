@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "إذن الكاميرا مطلوب لمسح أرفف المؤونة.",
   "shoppingList.doneShopping": "انتهيت من التسوق",
   "shoppingList.tapHint": "اضغط على العنصر بعد شرائه",
+  "shoppingList.share": "مشاركة",
   "pantry.generateCtaBody": "ابتكر وصفات تجمع بين محتويات ثلاجتك وخزانتك.",
   "pantry.generateCtaBtn": "إنشاء وصفات",
   "pantry.generateCtaTitle": "جاهز للطهي؟",

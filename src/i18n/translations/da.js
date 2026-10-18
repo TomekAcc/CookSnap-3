@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Kameratilladelse er påkrævet for at scanne dit spisekammer.",
   "shoppingList.doneShopping": "Færdig med at handle",
   "shoppingList.tapHint": "Tryk på en vare, når du har købt den",
+  "shoppingList.share": "Del",
   "pantry.generateCtaBody": "Lav opskrifter med ingredienserne fra dit køleskab og spisekammer.",
   "pantry.generateCtaBtn": "Generer opskrifter",
   "pantry.generateCtaTitle": "Klar til at lave mad?",

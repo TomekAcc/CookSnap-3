@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "ต้องได้รับอนุญาตใช้กล้องเพื่อสแกนชั้นวางของในครัวของคุณ",
   "shoppingList.doneShopping": "ซื้อของเสร็จแล้ว",
   "shoppingList.tapHint": "แตะรายการเมื่อซื้อแล้ว",
+  "shoppingList.share": "แชร์",
   "pantry.generateCtaBody": "คิดสูตรอาหารง่ายๆ จากวัตถุดิบในตู้เย็นและตู้เก็บของด้วยกัน",
   "pantry.generateCtaBtn": "สร้างสูตรอาหาร",
   "pantry.generateCtaTitle": "พร้อมทำอาหารหรือยัง?",

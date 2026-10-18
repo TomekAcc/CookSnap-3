@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "A kamra polcainak szkenneléséhez kameraengedély szükséges.",
   "shoppingList.doneShopping": "Bevásárlás vége",
   "shoppingList.tapHint": "Koppints a megvett tételekre",
+  "shoppingList.share": "Megosztás",
   "pantry.generateCtaBody": "Készíts recepteket a hűtődben és a kamrádban lévő alapanyagokból.",
   "pantry.generateCtaBtn": "Receptek keresése",
   "pantry.generateCtaTitle": "Készen állsz a főzésre?",

@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Kameran käyttöoikeus vaaditaan ruokakomeron hyllyjen skannaamiseen.",
   "shoppingList.doneShopping": "Ostokset valmiina",
   "shoppingList.tapHint": "Napauta ostamaasi tuotetta",
+  "shoppingList.share": "Jaa",
   "pantry.generateCtaBody": "Luo reseptejä hyödyntämällä jääkaapin ja kuivakaapin aineksia yhdessä.",
   "pantry.generateCtaBtn": "Luo reseptejä",
   "pantry.generateCtaTitle": "Valmiina kokkaamaan?",

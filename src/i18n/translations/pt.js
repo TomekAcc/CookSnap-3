@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "É necessária permissão de câmara para escanear as prateleiras da despensa.",
   "shoppingList.doneShopping": "Compras Concluídas",
   "shoppingList.tapHint": "Toque no item após comprá-lo",
+  "shoppingList.share": "Compartilhar",
   "pantry.generateCtaBody": "Crie receitas usando ingredientes do frigorífico e da despensa em conjunto.",
   "pantry.generateCtaBtn": "Gerar receitas",
   "pantry.generateCtaTitle": "Pronto para cozinhar?",

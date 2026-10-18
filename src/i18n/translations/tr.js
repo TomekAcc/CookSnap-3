@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Kiler raflarınızı taramak için kamera izni gerekiyor.",
   "shoppingList.doneShopping": "Alışverişi Tamamla",
   "shoppingList.tapHint": "Satın aldığınız ürüne dokunun",
+  "shoppingList.share": "Paylaş",
   "pantry.generateCtaBody": "Buzdolabınızdaki ve kilerinizdeki malzemeleri bir araya getirerek tarifler oluşturun.",
   "pantry.generateCtaBtn": "Tarif oluştur",
   "pantry.generateCtaTitle": "Yemek yapmaya hazır mısınız?",

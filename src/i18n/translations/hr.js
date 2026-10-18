@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Dopuštenje za korištenje kamere potrebno je za skeniranje polica smočnice.",
   "shoppingList.doneShopping": "Kupovina završena",
   "shoppingList.tapHint": "Dodirnite kupljeni artikl",
+  "shoppingList.share": "Podijeli",
   "pantry.generateCtaBody": "Stvorite recepte koristeći namirnice iz hladnjaka i smočnice.",
   "pantry.generateCtaBtn": "Generiraj recepte",
   "pantry.generateCtaTitle": "Spremni za kuhanje?",

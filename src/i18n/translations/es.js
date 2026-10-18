@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Se necesita permiso de cámara para escanear los estantes de tu despensa.",
   "shoppingList.doneShopping": "Compra finalizada",
   "shoppingList.tapHint": "Toca un artículo cuando lo compres",
+  "shoppingList.share": "Compartir",
   "pantry.generateCtaBody": "Crea recetas combinando los ingredientes de tu nevera y tu despensa.",
   "pantry.generateCtaBtn": "Generar recetas",
   "pantry.generateCtaTitle": "¿Listo para cocinar?",

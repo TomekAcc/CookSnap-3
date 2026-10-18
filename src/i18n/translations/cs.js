@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "K naskenování polic ve spíži je vyžadován přístup k fotoaparátu.",
   "shoppingList.doneShopping": "Nakoupeno",
   "shoppingList.tapHint": "Koupenou položku odklepněte",
+  "shoppingList.share": "Sdílet",
   "pantry.generateCtaBody": "Vytvářejte recepty z ingrediencí v lednici a spíži.",
   "pantry.generateCtaBtn": "Vytvořit recepty",
   "pantry.generateCtaTitle": "Máte chuť vařit?",

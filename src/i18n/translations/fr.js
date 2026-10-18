@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "L'accès à l'appareil photo est requis pour scanner votre garde-manger.",
   "shoppingList.doneShopping": "Courses terminées",
   "shoppingList.tapHint": "Touchez un article une fois acheté",
+  "shoppingList.share": "Partager",
   "pantry.generateCtaBody": "Créez des recettes en combinant les ingrédients de votre réfrigérateur et de votre garde-manger.",
   "pantry.generateCtaBtn": "Générer des recettes",
   "pantry.generateCtaTitle": "Prêt à cuisiner ?",

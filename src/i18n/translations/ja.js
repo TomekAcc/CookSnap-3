@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "パントリーの棚をスキャンするにはカメラの権限が必要です。",
   "shoppingList.doneShopping": "買い物を完了",
   "shoppingList.tapHint": "購入した商品をタップ",
+  "shoppingList.share": "共有",
   "pantry.generateCtaBody": "冷蔵庫とパントリーの食材を組み合わせてレシピを作成します。",
   "pantry.generateCtaBtn": "レシピを生成",
   "pantry.generateCtaTitle": "料理を始めますか？",

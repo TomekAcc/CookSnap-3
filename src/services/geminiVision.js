@@ -708,6 +708,12 @@ export function stripQuantityFromName(name) {
   return stripped.length >= 2 ? stripped : text;
 }
 
+// Display form of a stored pantry name: quantity removed, first letter capitalized.
+export function prettyPantryName(name) {
+  const t = stripQuantityFromName(name);
+  return t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+}
+
 export async function classifyPantryItemWithGemini(name, providedApiKey = "") {
   const cleaned = stripQuantityFromName(name);
   const local = classifyPantryItemLocal(cleaned);

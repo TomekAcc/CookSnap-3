@@ -24,7 +24,7 @@ import {
   Trash2,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
-import { classifyPantryItemWithGemini } from "../services/geminiVision";
+import { classifyPantryItemWithGemini, prettyPantryName } from "../services/geminiVision";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { PANTRY_CATEGORIES, PANTRY_STAPLES } from "../data/recipes";
@@ -590,7 +590,7 @@ export default function PantryTab() {
                           }}
                           numberOfLines={2}
                         >
-                          {item.name}
+                          {prettyPantryName(item.name)}
                         </Text>
                       </View>
                     </TouchableOpacity>
@@ -779,7 +779,7 @@ export default function PantryTab() {
                           }}
                           numberOfLines={2}
                         >
-                          {item.name}
+                          {prettyPantryName(item.name)}
                         </Text>
                       </View>
                     </TouchableOpacity>

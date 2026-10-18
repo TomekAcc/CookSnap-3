@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Cameratoegang is vereist om je voorraadkast te scannen.",
   "shoppingList.doneShopping": "Klaar met winkelen",
   "shoppingList.tapHint": "Tik op een item als je het hebt gekocht",
+  "shoppingList.share": "Delen",
   "pantry.generateCtaBody": "Maak recepten met ingrediënten uit je koelkast en voorraadkast samen.",
   "pantry.generateCtaBtn": "Genereer recepten",
   "pantry.generateCtaTitle": "Klaar om te koken?",

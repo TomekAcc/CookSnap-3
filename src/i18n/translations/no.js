@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Kameratillatelse kreves for å skanne matskapet.",
   "shoppingList.doneShopping": "Ferdig med å handle",
   "shoppingList.tapHint": "Trykk på varen når den er kjøpt",
+  "shoppingList.share": "Del",
   "pantry.generateCtaBody": "Lag oppskrifter med ingredienser fra både kjøleskapet og spiskammerset.",
   "pantry.generateCtaBtn": "Generer oppskrifter",
   "pantry.generateCtaTitle": "Klar til å lage mat?",

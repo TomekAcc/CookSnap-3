@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from "react-native";
-import { ShoppingCart, Circle, Check, PackageCheck } from "lucide-react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Share } from "react-native";
+import { Circle, Check, PackageCheck, Share2 } from "lucide-react-native";
 import StandardSmoothModal from "./StandardSmoothModal";
-import IconBadge from "./IconBadge";
+import { prettyPantryName } from "../services/geminiVision";
 import { DS } from "../utils/designSystem";
 import { animateLayout } from "../utils/layoutMotion";
 import { useTheme } from "../context/ThemeContext";
@@ -104,6 +104,19 @@ export default function ShoppingListModal({
     return opacityRef.current[itemId];
   };
 
+  // A shopping list is only useful in the shop: hand it to the system share
+  // sheet (Messages, Notes, Reminders...) as a plain bulleted list.
+  const handleShare = async () => {
+    const lines = safeItems.map(
+      (item) => `• ${prettyPantryName(item?.name) || t("shoppingList.itemFallback")}`
+    );
+    try {
+      await Share.share({ message: `${t("pantry.shoppingListTitle")}\n\n${lines.join("\n")}` });
+    } catch {
+      // dismissed or unavailable: nothing to do
+    }
+  };
+
   const handleItemPress = (item) => {
     const itemId = item?.id || item?.name;
     if (!itemId || checkedIds[itemId]) return;
@@ -144,11 +157,6 @@ export default function ShoppingListModal({
         { count: safeItems.length }
       )}
       type="bottom-sheet"
-      headerLeft={
-        <IconBadge tone="emerald" isDark={isDark}>
-          <ShoppingCart size={18} color="#059669" />
-        </IconBadge>
-      }
       footer={
         <TouchableOpacity
           onPress={handleClose}
@@ -181,9 +189,23 @@ export default function ShoppingListModal({
         </View>
       ) : (
         <>
-          <Text style={[styles.hint, { color: colors.textSecondary }]}>
-            {t("shoppingList.tapHint")}
-          </Text>
+          <View style={styles.hintRow}>
+            <Text style={[styles.hint, { color: colors.textSecondary }]} numberOfLines={2}>
+              {t("shoppingList.tapHint")}
+            </Text>
+            <TouchableOpacity
+              onPress={handleShare}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={styles.shareBtn}
+            >
+              <Share2 size={15} color="#059669" strokeWidth={2.4} />
+              <Text style={styles.shareText} numberOfLines={1}>
+                {t("shoppingList.share")}
+              </Text>
+            </TouchableOpacity>
+          </View>
           {/* One calm card with hairline dividers instead of a stack of
               bordered cards with boxed emoji: four items read as a list, not
               four buttons. */}
@@ -222,7 +244,7 @@ export default function ShoppingListModal({
                         isChecked && styles.itemNameChecked,
                       ]}
                     >
-                      {item?.name || t("shoppingList.itemFallback")}
+                      {prettyPantryName(item?.name) || t("shoppingList.itemFallback")}
                     </Text>
                     {isChecked ? (
                       <View
@@ -252,10 +274,31 @@ export default function ShoppingListModal({
 }
 
 const styles = StyleSheet.create({
+  hintRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    marginBottom: 12,
+  },
   hint: {
+    flex: 1,
     fontSize: 13,
     fontWeight: "500",
-    marginBottom: 12,
+  },
+  shareBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 10,
+    backgroundColor: "rgba(16,185,129,0.12)",
+  },
+  shareText: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#059669",
   },
   listCard: {
     borderRadius: 20,
@@ -267,7 +310,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
-    paddingVertical: 15,
+    paddingVertical: 12,
   },
   itemEmoji: {
     fontSize: 26,

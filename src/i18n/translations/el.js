@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Απαιτείται άδεια κάμερας για τη σάρωση των ραφιών του ντουλαπιού σας.",
   "shoppingList.doneShopping": "Τέλος αγορών",
   "shoppingList.tapHint": "Πατήστε ένα είδος μόλις το αγοράσετε",
+  "shoppingList.share": "Κοινοποίηση",
   "pantry.generateCtaBody": "Δημιουργήστε συνταγές συνδυάζοντας υλικά από το ψυγείο και το ντουλάπι σας.",
   "pantry.generateCtaBtn": "Δημιουργία συνταγών",
   "pantry.generateCtaTitle": "Έτοιμοι για μαγείρεμα;",

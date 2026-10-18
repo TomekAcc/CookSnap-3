@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Kamerabehörighet krävs för att skanna dina skafferihyllor.",
   "shoppingList.doneShopping": "Klar med handeln",
   "shoppingList.tapHint": "Tryck på en vara när du har köpt den",
+  "shoppingList.share": "Dela",
   "pantry.generateCtaBody": "Skapa recept med ingredienser från både kylskåpet och skafferiet.",
   "pantry.generateCtaBtn": "Skapa recept",
   "pantry.generateCtaTitle": "Dags att laga mat?",

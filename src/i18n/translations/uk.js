@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "Для сканування полиць комори потрібен доступ до камери.",
   "shoppingList.doneShopping": "Покупки завершено",
   "shoppingList.tapHint": "Торкніться купленого товару",
+  "shoppingList.share": "Поділитися",
   "pantry.generateCtaBody": "Створюйте рецепти з інгредієнтів у холодильнику та коморі.",
   "pantry.generateCtaBtn": "Згенерувати рецепти",
   "pantry.generateCtaTitle": "Готові куховарити?",

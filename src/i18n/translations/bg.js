@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "За сканиране на килера е необходимо разрешение за достъп до камерата.",
   "shoppingList.doneShopping": "Пазаруването е приключено",
   "shoppingList.tapHint": "Докоснете закупен артикул",
+  "shoppingList.share": "Споделяне",
   "pantry.generateCtaBody": "Създавайте рецепти, като комбинирате продуктите от хладилника и килера.",
   "pantry.generateCtaBtn": "Генериране на рецепти",
   "pantry.generateCtaTitle": "Готови ли сте за готвене?",

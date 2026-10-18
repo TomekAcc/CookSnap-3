@@ -232,6 +232,7 @@ export default {
   "errors.pantryCameraPermission": "पैंट्री शेल्फ स्कैन करने के लिए कैमरे की अनुमति आवश्यक है।",
   "shoppingList.doneShopping": "खरीदारी पूरी हुई",
   "shoppingList.tapHint": "खरीदने के बाद आइटम पर टैप करें",
+  "shoppingList.share": "साझा करें",
   "pantry.generateCtaBody": "अपने फ्रिज और पेंट्री के सामान को मिलाकर नई रेसिपी बनाएं।",
   "pantry.generateCtaBtn": "रेसिपी बनाएं",
   "pantry.generateCtaTitle": "खाना पकाने के लिए तैयार हैं?",
