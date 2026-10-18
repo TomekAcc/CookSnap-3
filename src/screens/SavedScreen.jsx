@@ -2,14 +2,13 @@ import { useTabScroll } from "../hooks/useTabScroll";
 import React from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Bookmark, Heart } from "lucide-react-native";
+import { Heart } from "lucide-react-native";
 import EmptyStateSparkle from "../components/EmptyStateSparkle";
 import Header from "../components/Header";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import RecipeCard from "../components/RecipeCard";
-import IconBadge from "../components/IconBadge";
 
 export default function SavedScreen() {
   const tabScroll = useTabScroll("saved");
@@ -44,17 +43,14 @@ export default function SavedScreen() {
             marginBottom: 8,
           }}
         >
-          <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
-            <Bookmark size={18} color="#059669" />
-          </IconBadge>
           <Text
             style={{
               color: colors.textPrimary,
               // Bold (700), not ExtraBold — matches the same change on
               // Profile/Pantry/Settings' titles, for a more visible "i" dot.
               fontWeight: "700",
-              fontSize: 24,
-              letterSpacing: -0.4,
+              fontSize: 28,
+              letterSpacing: -0.5,
             }}
           >
             {t("menu.savedRecipes")}

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  Settings,
   Sun,
   Moon,
   Ruler,
@@ -24,7 +23,6 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import { useCookAI } from "../context/CookAIContext";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
-import IconBadge from "../components/IconBadge";
 import StandardModal from "../components/StandardModal";
 
 export default function SettingsScreen() {
@@ -111,16 +109,13 @@ export default function SettingsScreen() {
             >
               <ChevronLeft size={22} color={colors.textPrimary} />
             </TouchableOpacity>
-            <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
-              <Settings size={18} color={isDark ? "#34D399" : "#059669"} />
-            </IconBadge>
             <Text
               style={{
-                fontSize: 24,
+                fontSize: 28,
                 // Bold (700), not ExtraBold — matches the same change on
                 // Profile/Pantry/Saved's titles, for a more visible "i" dot.
                 fontWeight: "700",
-                letterSpacing: -0.4,
+                letterSpacing: -0.5,
                 color: colors.textPrimary,
                 flexShrink: 1,
               }}

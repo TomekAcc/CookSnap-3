@@ -4,7 +4,6 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-nati
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  UserRound,
   Crown,
   Settings as SettingsIcon,
   CalendarRange,
@@ -18,7 +17,6 @@ import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import DietList from "../components/DietList";
 import CustomDietSection from "../components/CustomDietSection";
-import IconBadge from "../components/IconBadge";
 import Header from "../components/Header";
 import { breakLigatures } from "../utils/textLigatures";
 
@@ -129,26 +127,12 @@ export default function ProfileScreen() {
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              {/* Same pastel IconBadge every other tab's header icon uses
-                  (Pantry, Saved) — Profile's plain gray circle was the one
-                  header on its own, out of step with the rest of the app.
-                  Glyph 18 / marginRight 8 to match those tabs exactly: this
-                  was 20/12, so the badge still read visibly larger and set
-                  further from its title than every other header.
-                  UserRound, not User: User's body is a flat-sided trapezoid
-                  under a small circle, which at 18px reads as an eye (circle
-                  "pupil" inside a surrounding curve) rather than a person.
-                  UserRound's body is one continuous dome arc under a larger
-                  head — the standard shape for a small round avatar glyph. */}
-              <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
-                <UserRound size={18} color="#059669" />
-              </IconBadge>
               <Text
                 style={{
                   color: colors.textPrimary,
                   fontWeight: "700",
-                  fontSize: 24,
-                  letterSpacing: -0.4,
+                  fontSize: 28,
+                  letterSpacing: -0.5,
                 }}
               >
                 {breakLigatures(t("profile.title"))}

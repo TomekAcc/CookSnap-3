@@ -12,7 +12,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import {
-  Zap,
   Check,
   Plus,
   Search,
@@ -34,7 +33,6 @@ import PillTag from "./PillTag";
 import ShoppingListModal from "./ShoppingListModal";
 import PantryScannerHero from "./PantryScannerHero";
 import ErrorBoundary from "./ErrorBoundary";
-import IconBadge from "./IconBadge";
 import Header from "./Header";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -270,17 +268,14 @@ export default function PantryTab() {
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <IconBadge tone="emerald" isDark={isDark} style={{ marginRight: 8 }}>
-                <Zap size={18} color="#059669" />
-              </IconBadge>
               <Text
                 style={{
                   color: colors.textPrimary,
                   // Bold (700), not ExtraBold — matches the same change on
                   // Profile/Saved/Settings' titles, for a more visible "i" dot.
                   fontWeight: "700",
-                  fontSize: 24,
-                  letterSpacing: -0.4,
+                  fontSize: 28,
+                  letterSpacing: -0.5,
                 }}
               >
                 {t("pantry.title")}
