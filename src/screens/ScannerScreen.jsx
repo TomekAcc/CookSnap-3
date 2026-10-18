@@ -15,6 +15,7 @@ import { Sparkles, RefreshCw } from "lucide-react-native";
 import Header from "../components/Header";
 import FridgeScannerHero from "../components/FridgeScannerHero";
 import MealPreferences from "../components/MealPreferences";
+import ScanSteps from "../components/ScanSteps";
 import RecipeFeed from "../components/RecipeFeed";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
@@ -183,6 +184,9 @@ export default function ScannerScreen() {
         <FridgeScannerHero />
 
         {showPreferences ? <MealPreferences compact={!hasFood} /> : null}
+
+        {/* Empty state only: nothing scanned yet and no recipes to show. */}
+        {!hasFood && !hasGeneratedOnce && !stillScanning ? <ScanSteps /> : null}
 
         {showRecipes ? (
           <View
