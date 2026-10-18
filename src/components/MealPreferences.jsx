@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -19,10 +19,13 @@ import {
   Plus,
   ChevronDown,
   ChevronUp,
+  Check,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import { animateLayout } from "../utils/layoutMotion";
+import { translateCount } from "../i18n";
+import StandardSmoothModal from "./StandardSmoothModal";
 
 // Every option on this screen is text only, and every selected option looks
 // the same: solid emerald with a white bold label. (A white "raised pill"
@@ -204,6 +207,13 @@ function Segmented({ options, value, onChange, t }) {
   );
 }
 
+// Servings unit stored in capitals ("PEOPLE"): shown as a normal word, except
+// German, whose nouns keep a capital.
+function softCase(text, lang) {
+  const lower = String(text || "").toLowerCase();
+  return lang === "de" ? lower.charAt(0).toUpperCase() + lower.slice(1) : lower;
+}
+
 function SectionLabel({ children }) {
   const { colors } = useTheme();
   return (
@@ -243,6 +253,7 @@ export default function MealPreferences({ compact = false }) {
     includePantryStaples,
     setIncludePantryStaples,
     t,
+    recipeLanguageId,
   } = useCookAI();
   const { colors, isDark } = useTheme();
   const card = cardStyle(isDark, colors);
@@ -251,50 +262,108 @@ export default function MealPreferences({ compact = false }) {
     () => cravingTags.length > 0 || !!excludeThisBatch
   );
   const activeMore = cravingTags.length + (excludeThisBatch ? 1 : 0);
-  // Before anything is scanned these settings have nothing to apply to, so
-  // they collapse into one summary row (tap to open). Once ingredients exist
-  // (compact=false) the full cards show automatically.
-  const [expanded, setExpanded] = useState(false);
-  const showSummary = compact && !expanded;
+  // Open/closed is the user's to toggle (chevron on the title). Default: closed
+  // before anything is scanned (these settings have nothing to apply to yet),
+  // open once ingredients exist.
+  const [expanded, setExpanded] = useState(!compact);
+  useEffect(() => {
+    setExpanded(!compact);
+  }, [compact]);
+  const toggleExpanded = () => {
+    animateLayout();
+    setExpanded((v) => !v);
+  };
 
-  if (showSummary) {
-    const mealLabel = t((MEAL_CATEGORIES.find((o) => o.id === mealType) || MEAL_CATEGORIES[0]).labelKey);
-    const hungerLabel = t((HUNGER_OPTIONS.find((o) => o.id === hungerLevel) || HUNGER_OPTIONS[1]).labelKey);
-    const parts = [mealLabel, `${t("mealPrefs.servings")} ${servings}`, hungerLabel];
-    if (cravingTags.length > 0) parts.push(`+${cravingTags.length}`);
-    return (
-      <View style={styles.root}>
-        <View style={{ paddingHorizontal: 4 }}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
-            {t("mealPrefs.title")}
-          </Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            animateLayout();
-            setExpanded(true);
-          }}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: false }}
-          style={[card, styles.summaryCard]}
-        >
-          <Text style={[styles.summaryText, { color: colors.textPrimary }]} numberOfLines={1}>
-            {parts.join("  ·  ")}
-          </Text>
-          <ChevronDown size={18} color={colors.textSecondary} strokeWidth={2.4} />
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  // Collapsed bar: three labeled values, each editable in a small picker.
+  const [picker, setPicker] = useState(null);
+  const lastPickerRef = useRef("meal");
+  if (picker) lastPickerRef.current = picker;
+  const unitText = softCase(
+    servings === 1
+      ? t("mealPrefs.personUnit")
+      : translateCount(recipeLanguageId, servings, {
+          few: "mealPrefs.peopleUnitFew",
+          many: "mealPrefs.peopleUnitMany",
+          fallback: "mealPrefs.peopleUnit",
+        }),
+    recipeLanguageId
+  );
+  const mealLabel = t((MEAL_CATEGORIES.find((o) => o.id === mealType) || MEAL_CATEGORIES[0]).labelKey);
+  const hungerLabel = t((HUNGER_OPTIONS.find((o) => o.id === hungerLevel) || HUNGER_OPTIONS[1]).labelKey);
+  const summaryFields = [
+    { kind: "meal", label: t("mealPrefs.mealTypeTitle"), value: mealLabel },
+    { kind: "servings", label: t("mealPrefs.servings"), value: `${servings} ${unitText}` },
+    { kind: "hunger", label: t("profile.hungerLevel"), value: hungerLabel },
+  ];
+  const pickerKind = picker || lastPickerRef.current;
+  const pickerTitle =
+    pickerKind === "meal"
+      ? t("mealPrefs.mealTypeTitle")
+      : pickerKind === "servings"
+      ? t("mealPrefs.servings")
+      : t("profile.hungerLevel");
+  const pickerOptions = pickerKind === "meal" ? MEAL_CATEGORIES : HUNGER_OPTIONS;
 
   return (
     <View style={styles.root}>
-      <View style={{ paddingHorizontal: 4 }}>
+      <TouchableOpacity
+        onPress={toggleExpanded}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityState={{ expanded }}
+        style={styles.titleRow}
+      >
         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
           {t("mealPrefs.title")}
         </Text>
-      </View>
+        <View style={[styles.titleChevron, { backgroundColor: palette.idleBg }]}>
+          {expanded ? (
+            <ChevronUp size={18} color={colors.textSecondary} strokeWidth={2.4} />
+          ) : (
+            <ChevronDown size={18} color={colors.textSecondary} strokeWidth={2.4} />
+          )}
+        </View>
+      </TouchableOpacity>
+
+      {!expanded ? (
+        <View style={[card, styles.summaryCard]}>
+          {summaryFields.map((f, i) => (
+            <TouchableOpacity
+              key={f.kind}
+              onPress={() => setPicker(f.kind)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              style={[
+                styles.summaryCol,
+                i > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: colors.cardBorder },
+              ]}
+            >
+              <Text
+                style={[styles.summaryLabel, { color: colors.textSecondary }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.85}
+              >
+                {f.label}
+              </Text>
+              <View style={styles.summaryValueRow}>
+                <Text
+                  style={[styles.summaryValue, { color: colors.textPrimary }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
+                  {f.value}
+                </Text>
+                <ChevronDown size={14} color={colors.textSecondary} strokeWidth={2.4} />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+      ) : null}
+
+      {expanded ? (
+        <>
 
       {/* Three cards instead of one long white block. First: meal type, servings
           and hunger — the three questions that matter every time. Cravings and
@@ -448,6 +517,84 @@ export default function MealPreferences({ compact = false }) {
           </View>
         ) : null}
       </View>
+        </>
+      ) : null}
+
+      {/* Picker for the collapsed bar: one small sheet per field. */}
+      <StandardSmoothModal
+        visible={!!picker}
+        onClose={() => setPicker(null)}
+        title={pickerTitle}
+        type="bottom-sheet"
+      >
+        {pickerKind === "servings" ? (
+          <View style={{ alignItems: "center", paddingTop: 8 }}>
+            <View style={styles.bigStepper}>
+              <TouchableOpacity
+                onPress={() => setServings(Math.max(1, servings - 1))}
+                disabled={servings <= 1}
+                activeOpacity={0.85}
+                accessibilityLabel={t("a11y.decreaseServings")}
+                style={[styles.bigStepBtn, { backgroundColor: palette.idleBg, opacity: servings <= 1 ? 0.4 : 1 }]}
+              >
+                <Minus size={22} color={colors.textPrimary} strokeWidth={2.6} />
+              </TouchableOpacity>
+              <View style={{ alignItems: "center", minWidth: 110 }}>
+                <Text style={[styles.bigNumber, { color: colors.textPrimary }]}>{servings}</Text>
+                <Text style={[styles.bigUnit, { color: colors.textSecondary }]}>{unitText}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setServings(Math.min(12, servings + 1))}
+                disabled={servings >= 12}
+                activeOpacity={0.85}
+                accessibilityLabel={t("a11y.increaseServings")}
+                style={[styles.bigStepBtn, { backgroundColor: palette.idleBg, opacity: servings >= 12 ? 0.4 : 1 }]}
+              >
+                <Plus size={22} color={colors.textPrimary} strokeWidth={2.6} />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              onPress={() => setPicker(null)}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              style={styles.doneBtn}
+            >
+              <Text style={styles.doneText}>{t("settings.done")}</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          pickerOptions.map((o, i) => {
+            const selected = (pickerKind === "meal" ? mealType : hungerLevel) === o.id;
+            return (
+              <TouchableOpacity
+                key={o.id}
+                onPress={() => {
+                  if (pickerKind === "meal") setMealType(o.id);
+                  else setHungerLevel(o.id);
+                  setPicker(null);
+                }}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+                style={[
+                  styles.optionRow,
+                  i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.cardBorder },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.optionText,
+                    { color: selected ? "#059669" : colors.textPrimary, fontWeight: selected ? "800" : "600" },
+                  ]}
+                >
+                  {t(o.labelKey)}
+                </Text>
+                {selected ? <Check size={20} color="#059669" strokeWidth={3} /> : null}
+              </TouchableOpacity>
+            );
+          })
+        )}
+      </StandardSmoothModal>
     </View>
   );
 }
@@ -478,16 +625,86 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     marginVertical: 24,
   },
-  summaryCard: {
+  titleRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    paddingHorizontal: 4,
+  },
+  titleChevron: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  summaryCard: {
+    flexDirection: "row",
+    paddingVertical: 14,
+    paddingHorizontal: 6,
+  },
+  summaryCol: {
+    flex: 1,
+    minWidth: 0,
+    paddingHorizontal: 10,
+    gap: 4,
+  },
+  summaryLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  summaryValueRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  summaryValue: {
+    flexShrink: 1,
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  optionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 16,
   },
-  summaryText: {
-    flex: 1,
+  optionText: {
+    fontSize: 17,
+  },
+  bigStepper: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 18,
+    marginBottom: 22,
+  },
+  bigStepBtn: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bigNumber: {
+    fontSize: 44,
+    fontWeight: "800",
+    letterSpacing: -1,
+  },
+  bigUnit: {
     fontSize: 14,
+    fontWeight: "600",
+  },
+  doneBtn: {
+    alignSelf: "stretch",
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: "#059669",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  doneText: {
+    color: "#FFFFFF",
+    fontSize: 16,
     fontWeight: "600",
   },
   cell: {
