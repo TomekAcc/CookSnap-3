@@ -228,7 +228,7 @@ function Divider() {
  * tiles and craving tags. All three selectable groups share one
  * "selected" language: pale green fill, green border, green label.
  */
-export default function MealPreferences() {
+export default function MealPreferences({ compact = false }) {
   const {
     mealType,
     setMealType,
@@ -251,6 +251,42 @@ export default function MealPreferences() {
     () => cravingTags.length > 0 || !!excludeThisBatch
   );
   const activeMore = cravingTags.length + (excludeThisBatch ? 1 : 0);
+  // Before anything is scanned these settings have nothing to apply to, so
+  // they collapse into one summary row (tap to open). Once ingredients exist
+  // (compact=false) the full cards show automatically.
+  const [expanded, setExpanded] = useState(false);
+  const showSummary = compact && !expanded;
+
+  if (showSummary) {
+    const mealLabel = t((MEAL_CATEGORIES.find((o) => o.id === mealType) || MEAL_CATEGORIES[0]).labelKey);
+    const hungerLabel = t((HUNGER_OPTIONS.find((o) => o.id === hungerLevel) || HUNGER_OPTIONS[1]).labelKey);
+    const parts = [mealLabel, `${t("mealPrefs.servings")} ${servings}`, hungerLabel];
+    if (cravingTags.length > 0) parts.push(`+${cravingTags.length}`);
+    return (
+      <View style={styles.root}>
+        <View style={{ paddingHorizontal: 4 }}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+            {t("mealPrefs.title")}
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            animateLayout();
+            setExpanded(true);
+          }}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: false }}
+          style={[card, styles.summaryCard]}
+        >
+          <Text style={[styles.summaryText, { color: colors.textPrimary }]} numberOfLines={1}>
+            {parts.join("  ·  ")}
+          </Text>
+          <ChevronDown size={18} color={colors.textSecondary} strokeWidth={2.4} />
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -441,6 +477,18 @@ const styles = StyleSheet.create({
   divider: {
     height: StyleSheet.hairlineWidth,
     marginVertical: 24,
+  },
+  summaryCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingVertical: 16,
+  },
+  summaryText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: "600",
   },
   cell: {
     flex: 1,

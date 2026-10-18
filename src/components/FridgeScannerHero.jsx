@@ -709,15 +709,15 @@ export default function FridgeScannerHero() {
             {isDark ? (
               <View
                 style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 20,
+                  width: 52,
+                  height: 52,
+                  borderRadius: 16,
                   backgroundColor: "#064E3B",
                   borderWidth: 1,
                   borderColor: "#065F46",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: 14,
+                  marginBottom: 12,
                   shadowColor: "#059669",
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.18,
@@ -725,7 +725,7 @@ export default function FridgeScannerHero() {
                   elevation: 3,
                 }}
               >
-                <Camera size={26} color="#34D399" />
+                <Camera size={22} color="#34D399" />
               </View>
             ) : (
               // Split into two views on purpose: LinearGradient needs
@@ -752,10 +752,10 @@ export default function FridgeScannerHero() {
               // keeps this looking like elevation instead of a glow.
               <View
                 style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: 20,
-                  marginBottom: 14,
+                  width: 52,
+                  height: 52,
+                  borderRadius: 16,
+                  marginBottom: 12,
                   shadowColor: "#059669",
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.12,
@@ -768,15 +768,15 @@ export default function FridgeScannerHero() {
                   start={{ x: 0.15, y: 0 }}
                   end={{ x: 0.85, y: 1 }}
                   style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 20,
+                    width: 52,
+                    height: 52,
+                    borderRadius: 16,
                     overflow: "hidden",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <Camera size={26} color="#059669" />
+                  <Camera size={22} color="#059669" />
                 </LinearGradient>
               </View>
             )}

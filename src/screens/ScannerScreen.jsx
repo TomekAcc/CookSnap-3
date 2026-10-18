@@ -182,7 +182,7 @@ export default function ScannerScreen() {
         <Header />
         <FridgeScannerHero />
 
-        {showPreferences ? <MealPreferences /> : null}
+        {showPreferences ? <MealPreferences compact={!hasFood} /> : null}
 
         {showRecipes ? (
           <View
