@@ -18,6 +18,7 @@ import {
   X,
   Sparkles,
   ShoppingCart,
+  ChevronRight,
   Package,
   PackageOpen,
   Trash2,
@@ -62,6 +63,7 @@ export default function PantryTab() {
     setActiveTab,
     registerRecipeGenerationAttempt,
     generateRecipes,
+    ingredients,
     t,
   } = useCookAI();
   const { setLocalSheetOpen, setProModalOpen } = useModalState();
@@ -232,8 +234,13 @@ export default function PantryTab() {
     });
   };
 
+  // Something to cook with: an in-stock pantry item or a scanned fridge item.
+  const canGenerate =
+    (pantryItems || []).some((item) => item.inStock) ||
+    (Array.isArray(ingredients) && ingredients.length > 0);
+
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <ScrollView
         ref={tabScroll.setRef}
         onScroll={tabScroll.onScroll}
@@ -242,7 +249,7 @@ export default function PantryTab() {
         style={{ backgroundColor: colors.bg }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: insets.bottom + 120,
+          paddingBottom: insets.bottom + 156,
         }}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={tabScroll.scrollEventThrottle}
@@ -302,71 +309,6 @@ export default function PantryTab() {
             of Stock sections below, already fed by the same scan result. */}
         <PantryScannerHero />
 
-        {/* Confirmed user feedback: people land on Pantry (often from the
-            "Scan your pantry" nudge on Scanner — see that screen's own
-            pantryCta) to manage their staples, then have no obvious way
-            back to actually generating recipes — the bottom nav's
-            "Scanner" tab icon doesn't read as "where recipes happen" to
-            someone who already scanned once. Always-visible (not a
-            one-time dismissible nudge like Scanner's own pantry prompt)
-            since this is ongoing navigational clarity, not a one-time
-            discovery tip — someone can land on Pantry repeatedly and need
-            the way back each time. */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            borderRadius: 16,
-            borderWidth: 1,
-            padding: 14,
-            marginBottom: 16,
-            backgroundColor: colors.card || "#FFFFFF",
-            borderColor: colors.cardBorder || "#E5E7EB",
-          }}
-        >
-          <View style={{ flex: 1, paddingRight: 10 }}>
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "700",
-                letterSpacing: -0.2,
-                marginBottom: 2,
-                color: colors.textPrimary,
-              }}
-            >
-              {t("pantry.generateCtaTitle")}
-            </Text>
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: "500",
-                lineHeight: 16,
-                color: colors.textSecondary,
-              }}
-            >
-              {t("pantry.generateCtaBody")}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={handleGenerateFromPantry}
-            activeOpacity={0.85}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 6,
-              backgroundColor: "#059669",
-              borderRadius: 12,
-              paddingVertical: 9,
-              paddingHorizontal: 12,
-            }}
-          >
-            <Sparkles size={14} color="#FFFFFF" />
-            <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700" }}>
-              {t("pantry.generateCtaBtn")}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
         {/* Search */}
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 12 }}>
         <View style={{ flex: 1, position: "relative", justifyContent: "center" }}>
@@ -414,15 +356,15 @@ export default function PantryTab() {
               borderRadius: 16,
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+              backgroundColor: colors.card,
               borderWidth: 1,
-              borderColor: isDark ? "#059669" : "#A7F3D0",
+              borderColor: colors.cardBorder,
             }}
           >
-            <Plus size={16} color={isDark ? "#34D399" : "#059669"} strokeWidth={2.6} />
+            <Plus size={16} color="#059669" strokeWidth={2.6} />
             <Text
               numberOfLines={1}
-              style={{ color: isDark ? "#34D399" : "#047857", fontSize: 13, fontWeight: "700", marginLeft: 5 }}
+              style={{ color: colors.textPrimary, fontSize: 13, fontWeight: "600", marginLeft: 5 }}
             >
               {t("scanner.add")}
             </Text>
@@ -460,60 +402,37 @@ export default function PantryTab() {
           <Pressable
             key="shopping-list-shortcut"
             onPress={() => handleOpenShoppingList()}
+            accessibilityRole="button"
             style={{
-              backgroundColor: isDark ? "rgba(245,158,11,0.08)" : "#FFFBEB",
+              backgroundColor: colors.card,
               marginTop: 2,
-              marginBottom: 20,
+              marginBottom: 18,
               borderRadius: 16,
               flexDirection: "row",
               alignItems: "center",
-              justifyContent: "space-between",
+              gap: 12,
               borderWidth: 1,
-              borderColor: isDark ? "rgba(245,158,11,0.3)" : "#FDE68A",
-              paddingVertical: 14,
-              paddingHorizontal: 16,
+              borderColor: colors.cardBorder,
+              paddingVertical: 13,
+              paddingHorizontal: 14,
             }}
           >
-            <View style={{ flexDirection: "row", alignItems: "center", flex: 1, paddingRight: 12 }}>
-              <ShoppingCart size={20} color="#F59E0B" />
-              {/* Two lines, not one — the count alone ("2 items needed")
-                  never actually named the feature, so this only read as
-                  "shopping list" to someone who already knew that's what it
-                  was. Explicit "Shopping List" title now, same two-line
-                  title/subtitle shape as every other named CTA on this
-                  screen. */}
-              <View style={{ marginLeft: 12, flex: 1 }}>
-                <Text
-                  style={{ color: colors.textPrimary, fontWeight: "800", fontSize: 14 }}
-                  numberOfLines={1}
-                >
-                  {t("pantry.shoppingListTitle")}
-                </Text>
-                <Text
-                  style={{ color: colors.textSecondary, fontWeight: "500", fontSize: 12, marginTop: 1 }}
-                  numberOfLines={1}
-                >
-                  {t(
-                    shoppingListItems.length === 1
-                      ? "pantry.itemsNeededOne"
-                      : "pantry.itemsNeededOther",
-                    { count: shoppingListItems.length }
-                  )}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={{
-                backgroundColor: "#F59E0B",
-                paddingHorizontal: 14,
-                paddingVertical: 6,
-                borderRadius: 12,
-              }}
-            >
-              <Text style={{ color: "#0F172A", fontWeight: "900", fontSize: 12, letterSpacing: 0.3 }}>
-                {t("pantry.viewList")}
+            <ShoppingCart size={18} color="#059669" />
+            <Text style={{ flex: 1 }} numberOfLines={1}>
+              <Text style={{ color: colors.textPrimary, fontWeight: "700", fontSize: 14 }}>
+                {t("pantry.shoppingListTitle")}
               </Text>
-            </View>
+              <Text style={{ color: colors.textSecondary, fontWeight: "500", fontSize: 13 }}>
+                {"  ·  "}
+                {t(
+                  shoppingListItems.length === 1
+                    ? "pantry.itemsNeededOne"
+                    : "pantry.itemsNeededOther",
+                  { count: shoppingListItems.length }
+                )}
+              </Text>
+            </Text>
+            <ChevronRight size={18} color={colors.textSecondary} />
           </Pressable>
         )}
 
@@ -609,24 +528,25 @@ export default function PantryTab() {
               </Text>
             </View>
           ) : (
-            <View style={{ gap: 10 }}>
+            <View style={{ gap: 8 }}>
               {inStockItems.map((item) => (
                 <SwipeToDeleteRow
                   key={item.id}
                   isOpen={openSwipeId === item.id}
                   onOpenChange={(open) => setOpenSwipeId(open ? item.id : null)}
                   onDelete={() => handleRemoveItem(item)}
+                  borderRadius={16}
                 >
                   <View
                     style={{
                       backgroundColor: isDark ? colors.card : "#FFFFFF",
-                      borderRadius: 20,
+                      borderRadius: 16,
                       borderWidth: 1,
                       borderColor: isDark ? colors.cardBorder : "#F1F5F9",
                       flexDirection: "row",
                       alignItems: "center",
                       justifyContent: "space-between",
-                      paddingVertical: 10,
+                      paddingVertical: 7,
                       paddingHorizontal: 14,
                     }}
                   >
@@ -644,9 +564,9 @@ export default function PantryTab() {
                     >
                       <View
                         style={{
-                          width: 52,
-                          height: 52,
-                          borderRadius: 14,
+                          width: 42,
+                          height: 42,
+                          borderRadius: 12,
                           backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
                           borderWidth: 1,
                           borderColor: isDark ? colors.cardBorder : "#F1F5F9",
@@ -655,14 +575,14 @@ export default function PantryTab() {
                           flexShrink: 0,
                         }}
                       >
-                        <Text style={{ fontSize: 26, lineHeight: 30 }} allowFontScaling={false}>
+                        <Text style={{ fontSize: 22, lineHeight: 26 }} allowFontScaling={false}>
                           {item.emoji}
                         </Text>
                       </View>
                       <View style={{ flex: 1, minWidth: 0, justifyContent: "center" }}>
                         <Text
                           style={{
-                            fontWeight: "800",
+                            fontWeight: "700",
                             color: colors.textPrimary,
                             fontSize: 15,
                             lineHeight: 19,
@@ -682,15 +602,13 @@ export default function PantryTab() {
                         width: 28,
                         height: 28,
                         borderRadius: 9,
-                        backgroundColor: isDark ? colors.inputBg : "#FFFFFF",
-                        borderWidth: 1.5,
-                        borderColor: isDark ? colors.cardBorder : "#CBD5E1",
+                        backgroundColor: "#10B981",
                         alignItems: "center",
                         justifyContent: "center",
                         flexShrink: 0,
                       }}
                     >
-                      <Check size={14} color="#0F172A" strokeWidth={2.5} />
+                      <Check size={15} color="#FFFFFF" strokeWidth={3} />
                     </TouchableOpacity>
                   </View>
                 </SwipeToDeleteRow>
@@ -790,13 +708,14 @@ export default function PantryTab() {
               </Text>
             </View>
           ) : (
-            <View style={{ gap: 10 }}>
+            <View style={{ gap: 8 }}>
               {outOfStockItems.map((item) => (
                 <SwipeToDeleteRow
                   key={item.id}
                   isOpen={openSwipeId === item.id}
                   onOpenChange={(open) => setOpenSwipeId(open ? item.id : null)}
                   onDelete={() => handleRemoveItem(item)}
+                  borderRadius={16}
                 >
                   <View
                     style={{
@@ -807,10 +726,10 @@ export default function PantryTab() {
                       // Restock button in dark mode (confirmed via screenshot:
                       // identical row was clean in light mode, where the
                       // opaque #FFFBEB fully hid it).
-                      backgroundColor: isDark ? "#3A2E1B" : "#FFFBEB",
+                      backgroundColor: isDark ? colors.card : "#FFFFFF",
                       borderRadius: 20,
                       borderWidth: 1,
-                      borderColor: isDark ? "rgba(245,158,11,0.3)" : "#FDE68A",
+                      borderColor: isDark ? colors.cardBorder : "#F1F5F9",
                       flexDirection: "row",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -832,9 +751,9 @@ export default function PantryTab() {
                     >
                       <View
                         style={{
-                          width: 52,
-                          height: 52,
-                          borderRadius: 14,
+                          width: 42,
+                          height: 42,
+                          borderRadius: 12,
                           backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
                           borderWidth: 1,
                           borderColor: isDark ? colors.cardBorder : "#F1F5F9",
@@ -844,14 +763,14 @@ export default function PantryTab() {
                           opacity: 0.7,
                         }}
                       >
-                        <Text style={{ fontSize: 26, lineHeight: 30 }} allowFontScaling={false}>
+                        <Text style={{ fontSize: 22, lineHeight: 26 }} allowFontScaling={false}>
                           {item.emoji}
                         </Text>
                       </View>
                       <View style={{ flex: 1, minWidth: 0, justifyContent: "center" }}>
                         <Text
                           style={{
-                            fontWeight: "800",
+                            fontWeight: "700",
                             color: colors.textSecondary,
                             fontSize: 15,
                             lineHeight: 19,
@@ -869,19 +788,19 @@ export default function PantryTab() {
                       onPress={() => togglePantryItem(item.id)}
                       activeOpacity={0.85}
                       style={{
-                        backgroundColor: "#F59E0B",
+                        backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
                         paddingHorizontal: 12,
-                        paddingVertical: 10,
-                        borderRadius: 13,
+                        paddingVertical: 9,
+                        borderRadius: 12,
                         flexDirection: "row",
                         alignItems: "center",
                         flexShrink: 0,
                       }}
                     >
-                      <Plus size={14} color="#0F172A" />
+                      <Plus size={14} color={isDark ? "#34D399" : "#047857"} strokeWidth={2.6} />
                       <Text
                         style={{
-                          color: "#0F172A",
+                          color: isDark ? "#34D399" : "#047857",
                           fontSize: 12,
                           fontWeight: "800",
                           marginLeft: 4,
@@ -1024,6 +943,42 @@ export default function PantryTab() {
           </>
         ) : null}
       </StandardSmoothModal>
-    </>
+
+      {/* One primary action per tab: the same floating green button as the
+          Scanner's Generate, replacing the old "Ready to cook?" card that
+          took ~75 px of list space and competed with Scan Pantry. */}
+      {canGenerate ? (
+        <View
+          style={{
+            position: "absolute",
+            left: 16,
+            right: 16,
+            bottom: Math.max(insets.bottom, 8) + 56 + 10,
+          }}
+          pointerEvents="box-none"
+        >
+          <TouchableOpacity
+            onPress={handleGenerateFromPantry}
+            activeOpacity={0.9}
+            accessibilityRole="button"
+            style={{
+              width: "100%",
+              backgroundColor: "#059669",
+              paddingVertical: 17,
+              borderRadius: 18,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            <Sparkles size={16} color="#FFFFFF" />
+            <Text style={{ color: "#FFFFFF", fontWeight: "600", fontSize: 17, letterSpacing: -0.3 }} numberOfLines={1}>
+              {t("pantry.generateCtaBtn")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
+    </View>
   );
 }

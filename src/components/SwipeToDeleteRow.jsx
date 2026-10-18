@@ -108,8 +108,21 @@ export default function SwipeToDeleteRow({
 
   return (
     <View style={styles.wrap}>
-      <View
-        style={[styles.deleteBg, { borderRadius }]}
+      {/* Invisible until the row is actually dragged: the red layer sits right
+          behind the row, and its edge bled through the row's rounded corners
+          as a thin red line even when closed. */}
+      <Animated.View
+        style={[
+          styles.deleteBg,
+          {
+            borderRadius,
+            opacity: translateX.interpolate({
+              inputRange: [OPEN_X, -6, 0],
+              outputRange: [1, 1, 0],
+              extrapolate: "clamp",
+            }),
+          },
+        ]}
         pointerEvents={isOpen ? "auto" : "none"}
       >
         <TouchableOpacity
@@ -121,7 +134,7 @@ export default function SwipeToDeleteRow({
         >
           <Trash2 size={20} color="#FFFFFF" strokeWidth={2} />
         </TouchableOpacity>
-      </View>
+      </Animated.View>
       <Animated.View
         {...panResponder.panHandlers}
         style={{ transform: [{ translateX }] }}
