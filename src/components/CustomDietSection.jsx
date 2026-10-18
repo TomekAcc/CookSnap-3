@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
-import { Crown, Lock } from "lucide-react-native";
+import { Lock, SlidersHorizontal } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
@@ -48,57 +48,75 @@ export default function CustomDietSection() {
       </Text>
 
       {!isPro ? (
+        // Locked state: a neutral row like the diet rows above it, with a small
+        // PRO tag. It used to be a full amber card ("Custom Diet (PRO)" + lock)
+        // sitting directly above the real "Upgrade to PRO" card, so the screen
+        // pitched PRO twice in a row. One amber block per screen now.
         <TouchableOpacity
           onPress={() => setProModalOpen(true)}
           activeOpacity={0.85}
+          accessibilityRole="button"
           style={{
             flexDirection: "row",
             alignItems: "center",
-            gap: 10,
-            backgroundColor: isDark ? "rgba(245,158,11,0.14)" : "#FFFBEB",
+            gap: 12,
+            backgroundColor: colors.card,
             borderWidth: 1,
-            borderColor: isDark ? "rgba(245,158,11,0.35)" : "#FDE68A",
-            borderRadius: 16,
-            paddingVertical: 10,
+            borderColor: colors.cardBorder,
+            borderRadius: 18,
+            paddingVertical: 12,
             paddingHorizontal: 14,
           }}
         >
           <View
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 16,
-              backgroundColor: "rgba(245,158,11,0.16)",
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: isDark ? colors.inputBg : "#F3F5F8",
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
             }}
           >
-            <Crown size={16} color="#F59E0B" fill="#FDE68A" />
+            <SlidersHorizontal size={18} color={colors.textSecondary} strokeWidth={2.2} />
           </View>
-          <View style={{ flex: 1, minWidth: 0 }}>
-            <Text
-              style={{
-                fontSize: 13,
-                fontWeight: "800",
-                color: isDark ? "#FCD34D" : "#78350F",
-              }}
-            >
-              {t("settings.customDietTitle")}
-            </Text>
+          <Text
+            style={{
+              flex: 1,
+              minWidth: 0,
+              fontSize: 13.5,
+              fontWeight: "600",
+              lineHeight: 18,
+              color: colors.textPrimary,
+            }}
+            numberOfLines={3}
+          >
+            {t("settings.customDietProDesc")}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 4,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              borderRadius: 8,
+              backgroundColor: isDark ? "rgba(245,158,11,0.16)" : "#FEF3C7",
+            }}
+          >
+            <Lock size={11} color={isDark ? "#FCD34D" : "#B45309"} strokeWidth={2.6} />
             <Text
               style={{
                 fontSize: 11,
-                fontWeight: "600",
-                color: isDark ? "#FBBF24" : "#92400E",
-                marginTop: 1,
+                fontWeight: "800",
+                letterSpacing: 0.5,
+                color: isDark ? "#FCD34D" : "#B45309",
               }}
-              numberOfLines={2}
             >
-              {t("settings.customDietProDesc")}
+              PRO
             </Text>
           </View>
-          <Lock size={16} color="#B45309" />
         </TouchableOpacity>
       ) : (
         <View

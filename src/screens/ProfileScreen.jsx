@@ -312,7 +312,7 @@ export default function ProfileScreen() {
           <DietList showDescriptions={false} />
         </View>
 
-        <View style={{ marginBottom: 10 }}>
+        <View style={{ marginBottom: 18 }}>
           <CustomDietSection />
         </View>
 
