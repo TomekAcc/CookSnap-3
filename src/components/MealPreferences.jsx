@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -238,7 +238,7 @@ function Divider() {
  * tiles and craving tags. All three selectable groups share one
  * "selected" language: pale green fill, green border, green label.
  */
-export default function MealPreferences({ compact = false }) {
+export default function MealPreferences() {
   const {
     mealType,
     setMealType,
@@ -262,13 +262,11 @@ export default function MealPreferences({ compact = false }) {
     () => cravingTags.length > 0 || !!excludeThisBatch
   );
   const activeMore = cravingTags.length + (excludeThisBatch ? 1 : 0);
-  // Open/closed is the user's to toggle (chevron on the title). Default: closed
-  // before anything is scanned (these settings have nothing to apply to yet),
-  // open once ingredients exist.
-  const [expanded, setExpanded] = useState(!compact);
-  useEffect(() => {
-    setExpanded(!compact);
-  }, [compact]);
+  // Open/closed is the user's to toggle (chevron on the title). Always starts
+  // closed: the compact bar is the standard look before AND after a scan; it
+  // used to spring open once ingredients appeared, which flipped the screen
+  // back to the long form.
+  const [expanded, setExpanded] = useState(false);
   const toggleExpanded = () => {
     animateLayout();
     setExpanded((v) => !v);
@@ -360,6 +358,24 @@ export default function MealPreferences({ compact = false }) {
             </TouchableOpacity>
           ))}
         </View>
+      ) : null}
+      {!expanded && cravingTags.length > 0 ? (
+        <TouchableOpacity
+          onPress={toggleExpanded}
+          activeOpacity={0.7}
+          style={styles.cravingSummary}
+        >
+          <Text style={[styles.cravingSummaryText, { color: colors.textSecondary }]} numberOfLines={1}>
+            {t("mealPrefs.cravingTitle")}:{" "}
+            <Text style={{ color: colors.textPrimary, fontWeight: "700" }}>
+              {cravingTags
+                .map((id) => CRAVING_TAGS.find((tag) => tag.id === id))
+                .filter(Boolean)
+                .map((tag) => t(tag.labelKey))
+                .join(", ")}
+            </Text>
+          </Text>
+        </TouchableOpacity>
       ) : null}
 
       {expanded ? (
@@ -646,6 +662,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: 14,
     paddingHorizontal: 6,
+  },
+  cravingSummary: {
+    marginTop: -6,
+    paddingHorizontal: 6,
+  },
+  cravingSummaryText: {
+    fontSize: 13,
+    fontWeight: "500",
   },
   summaryCol: {
     flex: 1,

@@ -183,7 +183,7 @@ export default function ScannerScreen() {
         <Header />
         <FridgeScannerHero />
 
-        {showPreferences ? <MealPreferences compact={!hasFood} /> : null}
+        {showPreferences ? <MealPreferences /> : null}
 
         {/* Empty state only: nothing scanned yet and no recipes to show. */}
         {!hasFood && !hasGeneratedOnce && !stillScanning ? <ScanSteps /> : null}
