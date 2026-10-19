@@ -962,6 +962,30 @@ export default function FridgeScannerHero() {
                 />
               </TouchableOpacity>
 
+              {/* A light fridge photo (white door, bright shelf) is nearly the page
+                  colour, so its edge and rounded corners vanished and the white
+                  Close / Scan More buttons looked like they floated past the
+                  photo. A soft dark scrim behind the top controls keeps them
+                  readable, and a hairline outline restores the photo's shape. */}
+              <LinearGradient
+                pointerEvents="none"
+                colors={["rgba(15, 23, 42, 0.38)", "rgba(15, 23, 42, 0)"]}
+                style={{ position: "absolute", top: 0, left: 0, right: 0, height: 72 }}
+              />
+              <View
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  borderRadius: 28,
+                  borderWidth: 1,
+                  borderColor: isDark ? "rgba(255,255,255,0.16)" : "rgba(15,23,42,0.14)",
+                }}
+              />
+
               {/* 60fps Reanimated laser — UI thread, never blocks Gemini */}
               <ScanLaserOverlay
                 active={scanStage === "scanning"}
