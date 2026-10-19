@@ -59,7 +59,7 @@ export default function SavedScreen() {
       }}
     >
       <Header />
-      <View style={{ paddingHorizontal: 20, paddingTop: 16, flex: 1 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 4, flex: 1 }}>
         <View
           style={{
             flexDirection: "row",
