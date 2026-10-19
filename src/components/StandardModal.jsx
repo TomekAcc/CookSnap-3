@@ -214,22 +214,30 @@ export default function StandardModal({
   // Scroll-aware whole-sheet pan: stays inactive (so the list scrolls) until the
   // list is at the top AND the finger moves down; then it takes over.
   const touchStart = useSharedValue({ x: 0, y: 0 });
+  // True once the pan has taken over. After that point NOTHING may cancel it:
+  // a slow thumb drag drifts sideways well past the early "this is a scroll or
+  // a horizontal swipe" thresholds, and cancelling mid-drag made the sheet
+  // spring back while still being held.
+  const panTookOver = useSharedValue(false);
   const panScrollAware = scrollTopSignal
     ? buildPan(1, 1000)
         .manualActivation(true)
         .onTouchesDown((e) => {
           "worklet";
           touchStart.value = { x: e.allTouches[0].absoluteX, y: e.allTouches[0].absoluteY };
+          panTookOver.value = false;
         })
         .onTouchesMove((e, manager) => {
           "worklet";
+          if (panTookOver.value) return;
           const dy = e.allTouches[0].absoluteY - touchStart.value.y;
           const dx = e.allTouches[0].absoluteX - touchStart.value.x;
-          if (!scrollTopSignal.value || dy < -6 || Math.abs(dx) > 14) {
+          if (!scrollTopSignal.value || dy < -6 || (Math.abs(dx) > 14 && Math.abs(dx) > dy)) {
             manager.fail();
           } else if (dy > 8) {
             // translationY is counted from the moment the pan takes over, so the
             // sheet starts moving from there with no jump.
+            panTookOver.value = true;
             manager.activate();
           }
         })
