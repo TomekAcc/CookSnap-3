@@ -1,9 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useSharedValue } from "react-native-reanimated";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { DS } from "../utils/designSystem";
 import { useTheme } from "../context/ThemeContext";
 import StandardModal from "./StandardModal";
-import { pullToCloseHandlers } from "../utils/pullToClose";
 
 /**
  * StandardSmoothModal — themed chrome on top of StandardModal.
@@ -28,6 +28,9 @@ export default function StandardSmoothModal({
   dragZoneHeight,
   dragAnywhere = false,
   compactBottom = false,
+  // For scroll={false} sheets that render their OWN list: pass a shared boolean
+  // kept true while that list is at the top (see StandardModal.scrollTopSignal).
+  scrollTopSignal: externalTopSignal = null,
 }) {
   const { colors } = useTheme();
   const handleClose = typeof onClose === "function" ? onClose : () => {};
@@ -54,6 +57,12 @@ export default function StandardSmoothModal({
   // the touch. When content overflows (long lists, keyboard open) scrolling
   // wins, as before. Measured from the scroll view's own layout/content size.
   const [contentFits, setContentFits] = useState(false);
+  // Own scroll view at the very top? Lets the shared sheet move with the finger
+  // when you pull down at the top of a long list (and scroll normally elsewhere).
+  const ownTop = useSharedValue(true);
+  useEffect(() => {
+    if (visible) ownTop.value = true;
+  }, [visible, ownTop]);
   const sizes = useRef({ layout: 0, content: 0 });
   const updateFits = () => {
     const { layout, content } = sizes.current;
@@ -73,6 +82,7 @@ export default function StandardSmoothModal({
       maxHeight={maxHeight}
       dragZoneHeight={effectiveDragZoneHeight}
       dragAnywhere={dragAnywhere || (scroll && contentFits)}
+      scrollTopSignal={scroll ? (contentFits ? null : ownTop) : externalTopSignal}
       compactBottom={compactBottom}
     >
       <View onLayout={(e) => setMeasuredHeaderHeight(e.nativeEvent.layout.height)}>
@@ -128,7 +138,13 @@ export default function StandardSmoothModal({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
           scrollEnabled={!contentFits}
-          {...(contentFits ? {} : pullToCloseHandlers(handleClose))}
+          // No bounce when it scrolls: a bouncing list and a moving sheet at the
+          // top would both react to the same pull.
+          bounces={false}
+          scrollEventThrottle={16}
+          onScroll={(e) => {
+            ownTop.value = e.nativeEvent.contentOffset.y <= 0;
+          }}
           onLayout={(e) => {
             sizes.current.layout = e.nativeEvent.layout.height;
             updateFits();

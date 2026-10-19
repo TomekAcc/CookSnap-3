@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { pullToCloseHandlers } from "../utils/pullToClose";
+import React, { useState, useEffect } from "react";
+import { useSharedValue } from "react-native-reanimated";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -186,6 +186,12 @@ export default function ProSubscriptionModal() {
   const [selectedPlanId, setSelectedPlanId] = useState("annual");
   const [heroHeight, setHeroHeight] = useState(HERO_WASH_FALLBACK_HEIGHT);
   const close = () => setProModalOpen(false);
+  // True while the (overflowing) body is scrolled to the very top: then pulling
+  // down anywhere moves the whole sheet (StandardModal.scrollTopSignal).
+  const listAtTop = useSharedValue(true);
+  useEffect(() => {
+    if (proModalOpen) listAtTop.value = true;
+  }, [proModalOpen, listAtTop]);
   const plan = PLANS[selectedPlanId];
   // One plan's pricing block: guarantee line, CTA, price disclosure. Rendered
   // for BOTH plans inside StableSwap so switching plans can never resize the
@@ -305,6 +311,7 @@ export default function ProSubscriptionModal() {
       // reach). Content overflows: scrolling wins and the pull-past-the-top
       // gesture below takes over.
       dragAnywhere={!contentOverflows}
+      scrollTopSignal={contentOverflows ? listAtTop : null}
     >
       {/* Soft warm wash behind the hero (crown/title/subtitle) — direct
           feedback that the page read as flat/monochrome even after the
@@ -399,10 +406,13 @@ export default function ProSubscriptionModal() {
           // that give entirely when there's nothing to scroll, while real
           // dragging still works normally on a smaller screen or longer
           // language where content genuinely does overflow.
-          bounces={contentOverflows}
+          bounces={false}
           overScrollMode="never"
           scrollEnabled={contentOverflows}
-          {...pullToCloseHandlers(close)}
+          scrollEventThrottle={16}
+          onScroll={(e) => {
+            listAtTop.value = e.nativeEvent.contentOffset.y <= 0;
+          }}
           onLayout={(e) => setScrollViewH(e.nativeEvent.layout.height)}
           onContentSizeChange={(_w, h) => setScrollContentH(h)}
         >

@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
-import { pullToCloseHandlers } from "../utils/pullToClose";
+import { useSharedValue } from "react-native-reanimated";
 import {
   View,
   Text,
@@ -318,6 +318,13 @@ export default function MealPlannerModal() {
     }
     void refreshMealPool();
   }, [mealPlannerOpen, isPro, fridgeEmpty, scannedIngredients, pantryStaples, refreshMealPool]);
+
+  // True while the weekly list is scrolled to the very top: then a pull down
+  // anywhere on the sheet moves the whole sheet (see StandardModal.scrollTopSignal).
+  const listAtTop = useSharedValue(true);
+  useEffect(() => {
+    if (mealPlannerOpen) listAtTop.value = true;
+  }, [mealPlannerOpen, listAtTop]);
 
   const handleClose = useCallback(() => {
     if (handoffTimerRef.current) {
@@ -705,6 +712,7 @@ export default function MealPlannerModal() {
     <StandardSmoothModal
       visible={!!mealPlannerOpen}
       onClose={handleClose}
+      scrollTopSignal={listAtTop}
       maxHeight="90%"
       // Default drag-to-dismiss zone (110px) reached past the grab handle +
       // header row into the Auto-Fill Week banner right below it — its
@@ -837,10 +845,14 @@ export default function MealPlannerModal() {
 
           <ScrollView
             showsVerticalScrollIndicator={false}
+            bounces={false}
             overScrollMode="never"
             nestedScrollEnabled
             keyboardShouldPersistTaps="handled"
-            {...pullToCloseHandlers(handleClose)}
+            scrollEventThrottle={16}
+            onScroll={(e) => {
+              listAtTop.value = e.nativeEvent.contentOffset.y <= 0;
+            }}
             onScrollBeginDrag={() => setOpenSwipeDayId(null)}
             contentContainerStyle={{ paddingVertical: 8, paddingBottom: 24 }}
           >

@@ -115,6 +115,12 @@ export default function StandardModal({
   // Smaller margin under the last button (home-bar inset + 4 instead of + 16)
   // for short sheets where that band read as wasted space.
   compactBottom = false,
+  // For sheets whose content scrolls: a Reanimated shared boolean that the
+  // sheet's owner keeps true while its scroll view is at the very top. When
+  // provided, pulling down from ANYWHERE on the sheet moves the whole sheet
+  // (with the finger) as long as the list is at the top; otherwise the list
+  // scrolls as normal. The owner should set bounces={false} on that list.
+  scrollTopSignal = null,
 }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -185,10 +191,11 @@ export default function StandardModal({
       });
     })
     .onEnd((e) => {
+      const pulled = e.translationY;
       const pullNeeded = Math.max(DISMISS_DISTANCE, sheetHeight.value * DISMISS_FRACTION);
       if (
-        e.translationY > pullNeeded ||
-        (e.velocityY > DISMISS_VELOCITY && e.translationY > FLICK_MIN_DISTANCE)
+        pulled > pullNeeded ||
+        (e.velocityY > DISMISS_VELOCITY && pulled > FLICK_MIN_DISTANCE)
       ) {
         gestureDismissingRef.current = true;
         translateY.value = withTiming(SCREEN_HEIGHT, {
@@ -203,6 +210,30 @@ export default function StandardModal({
     });
   const panGesture = buildPan(1, 45);
   const panAnywhere = buildPan(8, 30);
+
+  // Scroll-aware whole-sheet pan: stays inactive (so the list scrolls) until the
+  // list is at the top AND the finger moves down; then it takes over.
+  const touchStart = useSharedValue({ x: 0, y: 0 });
+  const panScrollAware = scrollTopSignal
+    ? buildPan(1, 1000)
+        .manualActivation(true)
+        .onTouchesDown((e) => {
+          "worklet";
+          touchStart.value = { x: e.allTouches[0].absoluteX, y: e.allTouches[0].absoluteY };
+        })
+        .onTouchesMove((e, manager) => {
+          "worklet";
+          const dy = e.allTouches[0].absoluteY - touchStart.value.y;
+          const dx = e.allTouches[0].absoluteX - touchStart.value.x;
+          if (!scrollTopSignal.value || dy < -6 || Math.abs(dx) > 14) {
+            manager.fail();
+          } else if (dy > 8) {
+            // translationY is counted from the moment the pan takes over, so the
+            // sheet starts moving from there with no jump.
+            manager.activate();
+          }
+        })
+    : null;
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: isBottom ? [{ translateY: translateY.value }] : [],
@@ -286,7 +317,9 @@ export default function StandardModal({
             toggling the wrapper itself would remount the sheet's children
             (losing input focus) whenever a sheet starts or stops overflowing. */}
         {isBottom ? (
-          <GestureDetector gesture={panAnywhere.enabled(!!dragAnywhere)}>{sheetNode}</GestureDetector>
+          <GestureDetector gesture={panScrollAware || panAnywhere.enabled(!!dragAnywhere)}>
+            {sheetNode}
+          </GestureDetector>
         ) : (
           sheetNode
         )}

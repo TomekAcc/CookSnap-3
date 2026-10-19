@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { pullToCloseHandlers } from "../utils/pullToClose";
+import { useSharedValue } from "react-native-reanimated";
 import {
   View,
   Text,
@@ -214,6 +214,12 @@ export default function RecipeDetailModal() {
   };
 
   const onClose = () => setSelectedRecipe?.(null);
+  // True while the recipe body is scrolled to the very top: then pulling down
+  // anywhere moves the whole sheet (StandardModal.scrollTopSignal).
+  const listAtTop = useSharedValue(true);
+  useEffect(() => {
+    if (visible) listAtTop.value = true;
+  }, [visible, listAtTop]);
   const onToggleFavorite = () => {
     // Heart Pop — identical physics to RecipeCard. No haptics.
     Animated.sequence([
@@ -324,6 +330,7 @@ export default function RecipeDetailModal() {
     <StandardModal
       visible={visible}
       onClose={onClose}
+      scrollTopSignal={listAtTop}
       type="bottom-sheet"
       // Taller than the app-wide 75% bottom-sheet default on purpose —
       // this modal's content (stats grid, ingredients, instructions) is
@@ -440,7 +447,11 @@ export default function RecipeDetailModal() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
-        {...pullToCloseHandlers(onClose)}
+        bounces={false}
+        scrollEventThrottle={16}
+        onScroll={(e) => {
+          listAtTop.value = e.nativeEvent.contentOffset.y <= 0;
+        }}
       >
         {/* Redesigned from 7 separately-bordered boxes (4 stat cards + 3
             macro cards) down to one borderless row of plain columns with
