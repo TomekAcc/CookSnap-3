@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "已识别的食材",
   "scanner.add": "添加",
   "scanner.addItemPlaceholder": "例如：马苏里拉奶酪、大蒜...",
-  "scanner.verifyHint": "照片无法呈现所有细节（例如肉的具体部位）——请检查清单，并添加或删除食材。",
+  "scanner.verifyHint": "检查清单 — 添加或删除物品",
   "scanner.stepsTitle": "使用方法",
   "scanner.step1Title": "拍下冰箱食材",
   "scanner.step1Desc": "拍摄或选取照片 — AI 智能识别食材",

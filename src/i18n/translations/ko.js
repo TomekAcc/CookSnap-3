@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "감지된 재료",
   "scanner.add": "추가",
   "scanner.addItemPlaceholder": "예: 모차렐라, 마늘...",
-  "scanner.verifyHint": "사진으로는 모든 것을 알 수 없어요(예: 고기의 정확한 부위). 목록을 확인하고 재료를 추가하거나 삭제하세요.",
+  "scanner.verifyHint": "목록 확인 — 품목 추가 또는 삭제",
   "scanner.stepsTitle": "이용 방법",
   "scanner.step1Title": "냉장고 촬영하기",
   "scanner.step1Desc": "사진을 찍거나 선택하면 AI가 재료를 인식해요",

@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Erkannte Zutaten",
   "scanner.add": "Hinzufügen",
   "scanner.addItemPlaceholder": "z. B. Mozzarella, Knoblauch...",
-  "scanner.verifyHint": "Ein Foto zeigt nicht alles (z. B. den genauen Fleischschnitt) – prüfe die Liste und füge Zutaten hinzu oder entferne sie.",
+  "scanner.verifyHint": "Liste prüfen — Zutaten ergänzen oder entfernen",
   "scanner.stepsTitle": "So funktioniert's",
   "scanner.step1Title": "Kühlschrank fotografieren",
   "scanner.step1Desc": "Foto aufnehmen oder auswählen — KI erkennt die Zutaten",

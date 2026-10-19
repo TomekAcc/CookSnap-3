@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "पहचानी गई सामग्रियां",
   "scanner.add": "जोड़ें",
   "scanner.addItemPlaceholder": "जैसे मोज़ेरेला, लहसुन...",
-  "scanner.verifyHint": "एक फ़ोटो से सब कुछ नहीं दिखता (जैसे मांस का सही कट) — सूची जाँचें और सामग्री जोड़ें या हटाएँ।",
+  "scanner.verifyHint": "लिस्ट देखें — सामान जोड़ें या हटाएं",
   "scanner.stepsTitle": "यह कैसे काम करता है",
   "scanner.step1Title": "फ्रिज की फोटो लें",
   "scanner.step1Desc": "फोटो खींचें या चुनें — AI सामग्री पहचान लेगा",

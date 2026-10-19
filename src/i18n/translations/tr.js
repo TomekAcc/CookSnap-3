@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Algılanan Malzemeler",
   "scanner.add": "Ekle",
   "scanner.addItemPlaceholder": "örn. Mozzarella, Sarımsak...",
-  "scanner.verifyHint": "Bir fotoğraf her şeyi göstermez (örneğin etin tam kesimi) — listeyi kontrol edin, malzeme ekleyin veya çıkarın.",
+  "scanner.verifyHint": "Listeyi kontrol et — ürün ekle/çıkar",
   "scanner.stepsTitle": "Nasıl çalışır",
   "scanner.step1Title": "Buzdolabını çek",
   "scanner.step1Desc": "Fotoğraf çek veya seç — yapay zekâ malzemeleri tanısın",

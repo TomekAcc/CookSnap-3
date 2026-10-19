@@ -109,6 +109,7 @@ export default function FridgeScannerHero() {
     cameraOpen,
     setCameraOpen,
     fridgePhoto,
+    scanHistory,
     hasScanned,
     completeScan,
     endScanChoreography,
@@ -1435,22 +1436,24 @@ export default function FridgeScannerHero() {
                       </View>
                     )}
 
-                    {/* Real tester feedback: a top-down photo can't show an
-                        exact cut of meat or a label facing away, and the
-                        scan can't know that — so say it plainly, once, right
-                        where the list can be fixed. Now ABOVE the chips: at
-                        the bottom of a long list it was out of sight. */}
-                    <Text
-                      style={{
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: "500",
-                        lineHeight: 17,
-                        marginBottom: 12,
-                      }}
-                    >
-                      {t("scanner.verifyHint")}
-                    </Text>
+                    {/* Real tester feedback: a top-down photo can't show an exact
+                        cut of meat, so the scan can be wrong. One short line,
+                        only for the first 3 scans (scanHistory is persisted):
+                        after that people know the list is editable (the × and
+                        Add are right there) and the line is just noise. */}
+                    {(scanHistory || []).length <= 3 ? (
+                      <Text
+                        style={{
+                          color: colors.textSecondary,
+                          fontSize: 12,
+                          fontWeight: "500",
+                          lineHeight: 17,
+                          marginBottom: 12,
+                        }}
+                      >
+                        {t("scanner.verifyHint")}
+                      </Text>
+                    ) : null}
 
                     <View
                       style={{

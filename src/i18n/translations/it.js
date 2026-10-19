@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Ingredienti rilevati",
   "scanner.add": "Aggiungi",
   "scanner.addItemPlaceholder": "es. Mozzarella, Aglio...",
-  "scanner.verifyHint": "Una foto non mostra tutto (ad esempio il taglio esatto della carne): controlla l'elenco e aggiungi o rimuovi ingredienti.",
+  "scanner.verifyHint": "Controlla la lista — modifica articoli",
   "scanner.stepsTitle": "Come funziona",
   "scanner.step1Title": "Fotografa il frigo",
   "scanner.step1Desc": "Scatta o scegli una foto — l'IA riconosce gli ingredienti",

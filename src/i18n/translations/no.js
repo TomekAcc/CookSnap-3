@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Oppdagede ingredienser",
   "scanner.add": "Legg til",
   "scanner.addItemPlaceholder": "f.eks. mozzarella, hvitløk...",
-  "scanner.verifyHint": "Et bilde viser ikke alt (for eksempel det nøyaktige kjøttstykket) — sjekk listen og legg til eller fjern ingredienser.",
+  "scanner.verifyHint": "Sjekk listen — legg til eller fjern",
   "scanner.stepsTitle": "Slik fungerer det",
   "scanner.step1Title": "Ta bilde av kjøleskapet",
   "scanner.step1Desc": "Ta eller velg et bilde — AI finner ingrediensene",

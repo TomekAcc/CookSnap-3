@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Wykryte składniki",
   "scanner.add": "Dodaj",
   "scanner.addItemPlaceholder": "np. mozzarella, czosnek...",
-  "scanner.verifyHint": "Zdjęcie nie pokaże wszystkiego (np. dokładnego rodzaju mięsa) — sprawdź listę i dodaj lub usuń składniki.",
+  "scanner.verifyHint": "Sprawdź listę — dodaj lub usuń składniki",
   "scanner.stepsTitle": "Jak to działa",
   "scanner.step1Title": "Zrób zdjęcie lodówki",
   "scanner.step1Desc": "Zrób lub wybierz zdjęcie — AI rozpozna składniki",

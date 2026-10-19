@@ -132,7 +132,7 @@ export default {
   "scanner.detectedIngredients": "Detected Ingredients",
   "scanner.add": "Add",
   "scanner.addItemPlaceholder": "e.g. Mozzarella, Garlic...",
-  "scanner.verifyHint": "A photo can't show everything (like the exact cut of meat) — check the list and add or remove items.",
+  "scanner.verifyHint": "Check the list — remove or add items",
   "scanner.stepsTitle": "How it works",
   "scanner.step1Title": "Snap your fridge",
   "scanner.step1Desc": "Take or pick a photo — AI lists what it sees",

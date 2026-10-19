@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Bahan Terdeteksi",
   "scanner.add": "Tambah",
   "scanner.addItemPlaceholder": "cth. Mozzarella, Bawang Putih...",
-  "scanner.verifyHint": "Foto tidak bisa menunjukkan semuanya (misalnya potongan daging yang tepat) — periksa daftar lalu tambah atau hapus bahan.",
+  "scanner.verifyHint": "Cek daftar — tambah atau hapus item",
   "scanner.stepsTitle": "Cara kerja",
   "scanner.step1Title": "Foto kulkasmu",
   "scanner.step1Desc": "Ambil atau pilih foto — AI akan mendeteksi isinya",

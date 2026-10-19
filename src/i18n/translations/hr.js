@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Prepoznati sastojci",
   "scanner.add": "Dodaj",
   "scanner.addItemPlaceholder": "npr. mozzarella, češnjak...",
-  "scanner.verifyHint": "Fotografija ne pokazuje sve (npr. točan komad mesa) — provjerite popis te dodajte ili uklonite sastojke.",
+  "scanner.verifyHint": "Provjeri popis — dodaj ili ukloni",
   "scanner.stepsTitle": "Kako funkcionira",
   "scanner.step1Title": "Slikaj hladnjak",
   "scanner.step1Desc": "Snimi ili odaberi sliku — AI prepoznaje sastojke",

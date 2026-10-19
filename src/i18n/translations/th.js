@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "วัตถุดิบที่พบ",
   "scanner.add": "เพิ่ม",
   "scanner.addItemPlaceholder": "เช่น มอสซาเรลล่า, กระเทียม...",
-  "scanner.verifyHint": "ภาพถ่ายแสดงได้ไม่ครบทุกอย่าง (เช่น ส่วนของเนื้อสัตว์ที่แน่ชัด) — โปรดตรวจรายการแล้วเพิ่มหรือลบวัตถุดิบ",
+  "scanner.verifyHint": "ตรวจรายการ — เพิ่มหรือลบสินค้า",
   "scanner.stepsTitle": "วิธีใช้งาน",
   "scanner.step1Title": "ถ่ายรูปตู้เย็น",
   "scanner.step1Desc": "ถ่ายหรือเลือกภาพ — AI จะสแกนหาวัตถุดิบให้",

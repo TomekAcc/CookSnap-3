@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Распознанные ингредиенты",
   "scanner.add": "Добавить",
   "scanner.addItemPlaceholder": "напр. моцарелла, чеснок...",
-  "scanner.verifyHint": "По фото видно не всё (например, точный отруб мяса) — проверьте список и добавьте или удалите продукты.",
+  "scanner.verifyHint": "Проверьте список — добавьте или удалите",
   "scanner.stepsTitle": "Как это работает",
   "scanner.step1Title": "Сфотографируйте холодильник",
   "scanner.step1Desc": "Сделайте или выберите фото — ИИ распознает продукты",

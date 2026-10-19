@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Εντοπισμένα υλικά",
   "scanner.add": "Προσθήκη",
   "scanner.addItemPlaceholder": "π.χ. Μοτσαρέλα, Σκόρδο...",
-  "scanner.verifyHint": "Μια φωτογραφία δεν δείχνει τα πάντα (π.χ. το ακριβές κομμάτι του κρέατος) — ελέγξτε τη λίστα και προσθέστε ή αφαιρέστε υλικά.",
+  "scanner.verifyHint": "Ελέγξτε τη λίστα — αφαιρέστε ή προσθέστε",
   "scanner.stepsTitle": "Πώς λειτουργεί",
   "scanner.step1Title": "Φωτογράφισε το ψυγείο",
   "scanner.step1Desc": "Τράβηξε ή διάλεξε φωτό — το AI αναγνωρίζει τα υλικά",

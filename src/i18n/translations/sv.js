@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Upptäckta ingredienser",
   "scanner.add": "Lägg till",
   "scanner.addItemPlaceholder": "t.ex. mozzarella, vitlök...",
-  "scanner.verifyHint": "Ett foto visar inte allt (till exempel exakt styckdetalj på köttet) — kontrollera listan och lägg till eller ta bort ingredienser.",
+  "scanner.verifyHint": "Kolla listan — lägg till eller ta bort",
   "scanner.stepsTitle": "Så funkar det",
   "scanner.step1Title": "Fota ditt kylskåp",
   "scanner.step1Desc": "Ta eller välj en bild — AI hittar ingredienserna",

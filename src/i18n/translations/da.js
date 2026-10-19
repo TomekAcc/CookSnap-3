@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Genkendte ingredienser",
   "scanner.add": "Tilføj",
   "scanner.addItemPlaceholder": "f.eks. mozzarella, hvidløg...",
-  "scanner.verifyHint": "Et foto viser ikke alt (f.eks. det præcise stykke kød) — tjek listen og tilføj eller fjern ingredienser.",
+  "scanner.verifyHint": "Tjek listen — tilføj eller fjern varer",
   "scanner.stepsTitle": "Sådan virker det",
   "scanner.step1Title": "Tag et billede",
   "scanner.step1Desc": "Tag eller vælg et foto — AI finder ingredienserne",

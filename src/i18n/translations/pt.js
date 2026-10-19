@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Ingredientes Detectados",
   "scanner.add": "Adicionar",
   "scanner.addItemPlaceholder": "ex: Mussarela, Alho...",
-  "scanner.verifyHint": "Uma foto não mostra tudo (por exemplo, o corte exato da carne) — confira a lista e adicione ou remova ingredientes.",
+  "scanner.verifyHint": "Verifique a lista — adicione ou remova",
   "scanner.stepsTitle": "Como funciona",
   "scanner.step1Title": "Fotografe o frigorífico",
   "scanner.step1Desc": "Tire ou escolha uma foto — a IA lista o que vê",

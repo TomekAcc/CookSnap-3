@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Ingredientes detectados",
   "scanner.add": "Añadir",
   "scanner.addItemPlaceholder": "ej. Mozzarella, ajo...",
-  "scanner.verifyHint": "Una foto no lo muestra todo (por ejemplo, el corte exacto de la carne): revisa la lista y añade o quita ingredientes.",
+  "scanner.verifyHint": "Revisa la lista: añade o quita cosas",
   "scanner.stepsTitle": "Cómo funciona",
   "scanner.step1Title": "Foto a tu nevera",
   "scanner.step1Desc": "Haz o sube una foto — la IA detectará lo que hay",

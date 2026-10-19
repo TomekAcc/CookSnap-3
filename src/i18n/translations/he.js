@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "מצרכים שזוהו",
   "scanner.add": "הוספה",
   "scanner.addItemPlaceholder": "לדוגמה: מוצרלה, שום...",
-  "scanner.verifyHint": "תמונה לא מציגה הכול (למשל את נתח הבשר המדויק) — בדקו את הרשימה והוסיפו או הסירו מרכיבים.",
+  "scanner.verifyHint": "בדקו את הרשימה — הוסיפו או מחקו",
   "scanner.stepsTitle": "איך זה עובד",
   "scanner.step1Title": "צלמו את המקרר",
   "scanner.step1Desc": "צלמו או בחרו תמונה — ה-AI יזהה את המצרכים",

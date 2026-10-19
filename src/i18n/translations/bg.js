@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Открити съставки",
   "scanner.add": "Добави",
   "scanner.addItemPlaceholder": "напр. моцарела, чесън...",
-  "scanner.verifyHint": "Снимката не показва всичко (например точната част на месото) — проверете списъка и добавете или премахнете продукти.",
+  "scanner.verifyHint": "Вижте списъка — добавете или махнете",
   "scanner.stepsTitle": "Как работи",
   "scanner.step1Title": "Снимай хладилника",
   "scanner.step1Desc": "Направи или избери снимка — AI ще разпознае продуктите",

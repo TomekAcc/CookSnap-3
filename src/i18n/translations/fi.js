@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "Havaitut ainekset",
   "scanner.add": "Lisää",
   "scanner.addItemPlaceholder": "esim. mozzarella, valkosipuli...",
-  "scanner.verifyHint": "Valokuva ei näytä kaikkea (esimerkiksi lihan tarkkaa osaa) — tarkista lista ja lisää tai poista aineksia.",
+  "scanner.verifyHint": "Tarkista lista — lisää tai poista",
   "scanner.stepsTitle": "Miten se toimii",
   "scanner.step1Title": "Kuvaa jääkaappisi",
   "scanner.step1Desc": "Ota tai valitse kuva — tekoäly tunnistaa ainekset",

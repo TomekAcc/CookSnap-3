@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "المكونات المكتشفة",
   "scanner.add": "إضافة",
   "scanner.addItemPlaceholder": "مثل: موتزاريلا، ثوم...",
-  "scanner.verifyHint": "لا تُظهر الصورة كل شيء (مثل نوع قطعة اللحم بالضبط) — راجع القائمة وأضف المكونات أو احذفها.",
+  "scanner.verifyHint": "راجع القائمة — أضف أو احذف عناصر",
   "scanner.stepsTitle": "كيف يعمل",
   "scanner.step1Title": "صوّر ثلاجتك",
   "scanner.step1Desc": "التقط صورة أو اخترها — وسيتعرف الذكاء الاصطناعي على المحتويات",

@@ -120,7 +120,7 @@ export default {
   "scanner.detectedIngredients": "検出された食材",
   "scanner.add": "追加",
   "scanner.addItemPlaceholder": "例: モッツァレラ、ニンニク...",
-  "scanner.verifyHint": "写真ではすべてを判別できません（肉の部位など）。リストを確認し、食材を追加または削除してください。",
+  "scanner.verifyHint": "リストを確認してアイテムを追加・削除",
   "scanner.stepsTitle": "使い方",
   "scanner.step1Title": "冷蔵庫を撮影",
   "scanner.step1Desc": "写真を撮るか選ぶだけ — AIが食材を読み取ります",
