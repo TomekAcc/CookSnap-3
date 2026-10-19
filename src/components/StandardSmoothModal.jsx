@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { DS } from "../utils/designSystem";
 import { useTheme } from "../context/ThemeContext";
@@ -46,6 +46,21 @@ export default function StandardSmoothModal({
   // to the caller's `dragZoneHeight` (or StandardModal's own default) only
   // for the brief instant before the first layout pass resolves.
   const [measuredHeaderHeight, setMeasuredHeaderHeight] = useState(null);
+
+  // When the content fits without scrolling, nothing competes with a pull-down
+  // gesture, so the WHOLE sheet can be dragged closed (not just the thin
+  // handle/header strip); the scroll view is switched off so it cannot steal
+  // the touch. When content overflows (long lists, keyboard open) scrolling
+  // wins, as before. Measured from the scroll view's own layout/content size.
+  const [contentFits, setContentFits] = useState(false);
+  const sizes = useRef({ layout: 0, content: 0 });
+  const updateFits = () => {
+    const { layout, content } = sizes.current;
+    if (layout > 0 && content > 0) {
+      const fits = content <= layout + 1;
+      setContentFits((prev) => (prev === fits ? prev : fits));
+    }
+  };
   const effectiveDragZoneHeight =
     measuredHeaderHeight != null ? measuredHeaderHeight : dragZoneHeight;
 
@@ -56,7 +71,7 @@ export default function StandardSmoothModal({
       type={type}
       maxHeight={maxHeight}
       dragZoneHeight={effectiveDragZoneHeight}
-      dragAnywhere={dragAnywhere}
+      dragAnywhere={dragAnywhere || (scroll && contentFits)}
       compactBottom={compactBottom}
     >
       <View onLayout={(e) => setMeasuredHeaderHeight(e.nativeEvent.layout.height)}>
@@ -111,6 +126,15 @@ export default function StandardSmoothModal({
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
+          scrollEnabled={!contentFits}
+          onLayout={(e) => {
+            sizes.current.layout = e.nativeEvent.layout.height;
+            updateFits();
+          }}
+          onContentSizeChange={(w, h) => {
+            sizes.current.content = h;
+            updateFits();
+          }}
           {...(scrollProps || {})}
         >
           {children}

@@ -267,8 +267,11 @@ export default function StandardModal({
           />
         </Animated.View>
 
-        {isBottom && dragAnywhere ? (
-          <GestureDetector gesture={panAnywhere}>{sheetNode}</GestureDetector>
+        {/* Always wrapped for bottom sheets and switched on/off with .enabled():
+            toggling the wrapper itself would remount the sheet's children
+            (losing input focus) whenever a sheet starts or stops overflowing. */}
+        {isBottom ? (
+          <GestureDetector gesture={panAnywhere.enabled(!!dragAnywhere)}>{sheetNode}</GestureDetector>
         ) : (
           sheetNode
         )}
