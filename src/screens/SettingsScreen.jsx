@@ -89,7 +89,7 @@ export default function SettingsScreen() {
             an explicit, obvious way out, landing on Profile (the primary
             entry point) regardless of which of the two ways in was used. */}
         <View>
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
             <TouchableOpacity
               onPress={() => setActiveTab("profile")}
               activeOpacity={0.7}
@@ -124,17 +124,6 @@ export default function SettingsScreen() {
               {t("settings.title")}
             </Text>
           </View>
-          <Text
-            style={{
-              fontSize: 13,
-              fontWeight: "500",
-              color: colors.textSecondary,
-              marginBottom: 24,
-              lineHeight: 18,
-            }}
-          >
-            {t("settings.subtitle")}
-          </Text>
         </View>
 
         {/* App Theme */}

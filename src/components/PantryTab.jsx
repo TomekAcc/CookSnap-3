@@ -271,7 +271,7 @@ export default function PantryTab() {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              marginBottom: 8,
+              marginBottom: 20,
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -289,17 +289,6 @@ export default function PantryTab() {
               </Text>
             </View>
           </View>
-          <Text
-            style={{
-              color: colors.textSecondary,
-              fontSize: 13,
-              fontWeight: "500",
-              marginBottom: 24,
-              lineHeight: 18,
-            }}
-          >
-            {t("pantry.subtitle")}
-          </Text>
         </View>
 
         {/* Scan hero — owns the camera trigger, gallery pick, and the

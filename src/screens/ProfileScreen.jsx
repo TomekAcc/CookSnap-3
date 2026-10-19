@@ -123,7 +123,7 @@ export default function ProfileScreen() {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              marginBottom: 8,
+              marginBottom: 20,
             }}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -168,17 +168,6 @@ export default function ProfileScreen() {
               <SettingsIcon size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
-          <Text
-            style={{
-              color: colors.textSecondary,
-              fontWeight: "500",
-              fontSize: 13,
-              marginBottom: 24,
-              lineHeight: 18,
-            }}
-          >
-            {t("profile.subtitle")}
-          </Text>
         </View>
 
         {isPro ? (

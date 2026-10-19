@@ -64,7 +64,7 @@ export default function SavedScreen() {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginBottom: 8,
+            marginBottom: mealChips.length ? 16 : 20,
           }}
         >
           <Text
@@ -92,17 +92,6 @@ export default function SavedScreen() {
             </View>
           ) : null}
         </View>
-        <Text
-          style={{
-            color: colors.textSecondary,
-            fontWeight: "500",
-            fontSize: 13,
-            marginBottom: mealChips.length ? 16 : 20,
-            lineHeight: 18,
-          }}
-        >
-          {t("saved.subtitle")}
-        </Text>
 
         {savedRecipes.length === 0 ? (
           // Deliberately NOT a card. A card frames a thing, and an empty
