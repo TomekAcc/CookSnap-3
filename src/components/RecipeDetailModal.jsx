@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { pullToCloseHandlers } from "../utils/pullToClose";
 import {
   View,
   Text,
@@ -439,6 +440,7 @@ export default function RecipeDetailModal() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        {...pullToCloseHandlers(onClose)}
       >
         {/* Redesigned from 7 separately-bordered boxes (4 stat cards + 3
             macro cards) down to one borderless row of plain columns with

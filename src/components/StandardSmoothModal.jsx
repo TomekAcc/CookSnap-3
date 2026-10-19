@@ -3,6 +3,7 @@ import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { DS } from "../utils/designSystem";
 import { useTheme } from "../context/ThemeContext";
 import StandardModal from "./StandardModal";
+import { pullToCloseHandlers } from "../utils/pullToClose";
 
 /**
  * StandardSmoothModal — themed chrome on top of StandardModal.
@@ -127,6 +128,7 @@ export default function StandardSmoothModal({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
           scrollEnabled={!contentFits}
+          {...(contentFits ? {} : pullToCloseHandlers(handleClose))}
           onLayout={(e) => {
             sizes.current.layout = e.nativeEvent.layout.height;
             updateFits();
