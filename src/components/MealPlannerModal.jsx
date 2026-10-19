@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  CalendarDays,
   Sparkles,
   Plus,
   RefreshCw,
@@ -29,7 +28,6 @@ import { useTheme } from "../context/ThemeContext";
 import { getDishEmojiAndColor } from "../utils/imageUtils";
 import StandardSmoothModal from "./StandardSmoothModal";
 import SwipeToDeleteRow from "./SwipeToDeleteRow";
-import EmptyStateSparkle from "./EmptyStateSparkle";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { animateLayout } from "../utils/layoutMotion";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
@@ -337,6 +335,8 @@ export default function MealPlannerModal() {
   // Per-day generate/swap/auto-fill actions still correctly stay disabled
   // via their own fridgeEmpty checks until a fresh scan exists.
   const showEmptyState = fridgeEmpty && plannedCount === 0;
+  // Which row is today (the plan is Mon-Sun): getDay() is 0 for Sunday.
+  const todayId = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][new Date().getDay()];
 
   const refreshMealPool = useCallback(async () => {
     try {
@@ -593,7 +593,6 @@ export default function MealPlannerModal() {
         ]}
       >
         <Refrigerator size={28} color="#059669" />
-        <EmptyStateSparkle color="#059669" />
       </View>
       <Text style={[styles.emptyFridgeTitle, { color: colors.textPrimary }]}>
         {t("mealPlanner.fridgeEmptyTitle")}
@@ -608,7 +607,7 @@ export default function MealPlannerModal() {
         accessibilityRole="button"
         accessibilityLabel={t("a11y.scanFridge")}
       >
-        <Camera size={18} color="#F59E0B" />
+        <Camera size={18} color="#FFFFFF" />
         <Text style={styles.scanCtaText}>{t("scanner.title")}</Text>
       </TouchableOpacity>
     </View>
@@ -797,16 +796,6 @@ export default function MealPlannerModal() {
       }
       type="bottom-sheet"
       scroll={false}
-      headerLeft={
-        <View
-          style={[
-            styles.iconBadge,
-            { backgroundColor: isDark ? "#064E3B" : "#ECFDF5" },
-          ]}
-        >
-          <CalendarDays size={18} color="#059669" />
-        </View>
-      }
     >
       {showEmptyState ? (
         renderFridgeEmpty()
@@ -889,29 +878,31 @@ export default function MealPlannerModal() {
             ) : null}
           </TouchableOpacity>
 
-          <View style={styles.generationUsageRow}>
-            {isPro ? (
-              <Crown size={12} color="#D97706" />
-            ) : (
-              <Sparkles size={12} color="#059669" />
-            )}
-            <Text
-              style={[
-                styles.generationUsageText,
-                { color: isDark ? "#94A3B8" : "#64748B" },
-                isPro ? { color: "#D97706" } : null,
-              ]}
-            >
-              {isPro
-                ? t("scanner.unlimitedGenerations")
-                : remainingGenerations > 0
-                  ? t("scanner.generationsLeftToday", {
-                      count: remainingGenerations,
-                      total: freeDailyRecipeGenerations,
-                    })
-                  : t("scanner.generationsUsedUpToday")}
-            </Text>
-          </View>
+          {!isPro ? (
+            <View style={styles.generationUsageRow}>
+              {isPro ? (
+                <Crown size={12} color="#D97706" />
+              ) : (
+                <Sparkles size={12} color="#059669" />
+              )}
+              <Text
+                style={[
+                  styles.generationUsageText,
+                  { color: isDark ? "#94A3B8" : "#64748B" },
+                  isPro ? { color: "#D97706" } : null,
+                ]}
+              >
+                {isPro
+                  ? t("scanner.unlimitedGenerations")
+                  : remainingGenerations > 0
+                    ? t("scanner.generationsLeftToday", {
+                        count: remainingGenerations,
+                        total: freeDailyRecipeGenerations,
+                      })
+                    : t("scanner.generationsUsedUpToday")}
+              </Text>
+            </View>
+          ) : null}
 
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -933,19 +924,19 @@ export default function MealPlannerModal() {
               return (
                 <View key={day.id} style={{ marginBottom: 8 }}>
                   <View style={styles.dayRowContainer}>
+                    {/* Today is the one filled badge (language-neutral, no extra
+                        word needed); other days are plain text, so the column
+                        stops looking like a stack of grey buttons. */}
                     <View
                       style={[
                         styles.dayBadge,
-                        {
-                          backgroundColor: colors.inputBg,
-                          borderColor: colors.cardBorder,
-                        },
+                        day.id === todayId && { backgroundColor: "#10B981", borderColor: "#10B981" },
                       ]}
                     >
                       <Text
                         style={[
                           styles.dayBadgeText,
-                          { color: colors.textPrimary },
+                          { color: day.id === todayId ? "#FFFFFF" : colors.textSecondary },
                         ]}
                       >
                         {t(day.nameKey)}
@@ -1070,7 +1061,7 @@ export default function MealPlannerModal() {
                         style={[
                           styles.emptyMealCard,
                           {
-                            backgroundColor: colors.inputBg,
+                            backgroundColor: "transparent",
                             borderColor: colors.cardBorder,
                           },
                           isExpanded && styles.cardExpanded,
@@ -1084,16 +1075,8 @@ export default function MealPlannerModal() {
                         >
                           {t("mealPlanner.notPlannedYet")}
                         </Text>
-                        <View
-                          style={[
-                            styles.addPill,
-                            {
-                              backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
-                              borderColor: isDark ? "#059669" : "#D1FAE5",
-                            },
-                          ]}
-                        >
-                          <Plus size={14} color="#059669" />
+                        <View style={styles.addPill}>
+                          <Plus size={14} color="#059669" strokeWidth={2.6} />
                           <Text style={styles.addPillText}>{t("scanner.add")}</Text>
                         </View>
                       </TouchableOpacity>
@@ -1112,15 +1095,6 @@ export default function MealPlannerModal() {
 }
 
 const styles = StyleSheet.create({
-  iconBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#ECFDF5",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
   emptyFridgeCard: {
     marginTop: 4,
     marginBottom: 12,
@@ -1160,16 +1134,16 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 18,
     borderRadius: 14,
-    backgroundColor: "#1E293B",
+    backgroundColor: "#059669",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
+    gap: 8,
   },
   scanCtaText: {
     color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "800",
+    fontSize: 15,
+    fontWeight: "600",
   },
   autoFillBanner: {
     flexDirection: "row",
@@ -1238,16 +1212,16 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
   },
   dayBadgeText: {
-    fontSize: 12,
-    fontWeight: "900",
+    fontSize: 13,
+    fontWeight: "700",
     color: "#0F172A",
   },
   assignedMealCard: {
@@ -1325,18 +1299,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#ECFDF5",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#D1FAE5",
     flexShrink: 0,
     minHeight: 32,
   },
   addPillText: {
-    fontSize: 12,
-    fontWeight: "800",
+    fontSize: 14,
+    fontWeight: "700",
     color: "#059669",
   },
   cardExpanded: {
