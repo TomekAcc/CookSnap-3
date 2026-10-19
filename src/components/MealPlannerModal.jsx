@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import { pullToCloseHandlers } from "../utils/pullToClose";
 import {
   View,
   Text,
@@ -836,10 +837,10 @@ export default function MealPlannerModal() {
 
           <ScrollView
             showsVerticalScrollIndicator={false}
-            bounces={false}
             overScrollMode="never"
             nestedScrollEnabled
             keyboardShouldPersistTaps="handled"
+            {...pullToCloseHandlers(handleClose)}
             onScrollBeginDrag={() => setOpenSwipeDayId(null)}
             contentContainerStyle={{ paddingVertical: 8, paddingBottom: 24 }}
           >

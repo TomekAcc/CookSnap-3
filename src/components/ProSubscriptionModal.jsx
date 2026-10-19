@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { pullToCloseHandlers } from "../utils/pullToClose";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -299,6 +300,11 @@ export default function ProSubscriptionModal() {
       type="bottom-sheet"
       maxHeight={sheetHeight}
       dragZoneRightInset={60}
+      // Content fits: the whole sheet can be pulled down from anywhere (the
+      // header strip alone sat near the top of a tall sheet, out of thumb
+      // reach). Content overflows: scrolling wins and the pull-past-the-top
+      // gesture below takes over.
+      dragAnywhere={!contentOverflows}
     >
       {/* Soft warm wash behind the hero (crown/title/subtitle) — direct
           feedback that the page read as flat/monochrome even after the
@@ -393,9 +399,10 @@ export default function ProSubscriptionModal() {
           // that give entirely when there's nothing to scroll, while real
           // dragging still works normally on a smaller screen or longer
           // language where content genuinely does overflow.
-          bounces={false}
+          bounces={contentOverflows}
           overScrollMode="never"
           scrollEnabled={contentOverflows}
+          {...pullToCloseHandlers(close)}
           onLayout={(e) => setScrollViewH(e.nativeEvent.layout.height)}
           onContentSizeChange={(_w, h) => setScrollContentH(h)}
         >
