@@ -41,13 +41,14 @@ const ENTER_DURATION_MS = 300;
 const DRAG_ZONE_HEIGHT = 110;
 // How far down you need to drag (or how fast you need to flick, in px/s)
 // before it commits to closing instead of springing back. Forgiving on purpose.
-// A short drag-and-release must snap back; closing needs either a pull of
-// ~30% of the sheet's height (at least 90 px) or a real flick (fast AND past a
-// small minimum distance). The old fixed 70 px / 700 px/s closed tall sheets
-// from a slight drag.
-const DISMISS_DISTANCE = 90;
-const DISMISS_FRACTION = 0.3;
-const DISMISS_VELOCITY = 1100;
+// A short drag-and-release must snap back, but a long one must not be needed
+// either: closing takes a pull of 20% of the sheet's height, never less than
+// 90 px and never more than 130 px (30% of a tall sheet was ~180 px, too far
+// for a thumb), or a real flick (fast AND past a small minimum distance).
+const DISMISS_MIN = 90;
+const DISMISS_MAX = 130;
+const DISMISS_FRACTION = 0.2;
+const DISMISS_VELOCITY = 900;
 const FLICK_MIN_DISTANCE = 30;
 
 /**
@@ -192,7 +193,7 @@ export default function StandardModal({
     })
     .onEnd((e) => {
       const pulled = e.translationY;
-      const pullNeeded = Math.max(DISMISS_DISTANCE, sheetHeight.value * DISMISS_FRACTION);
+      const pullNeeded = Math.min(DISMISS_MAX, Math.max(DISMISS_MIN, sheetHeight.value * DISMISS_FRACTION));
       if (
         pulled > pullNeeded ||
         (e.velocityY > DISMISS_VELOCITY && pulled > FLICK_MIN_DISTANCE)
