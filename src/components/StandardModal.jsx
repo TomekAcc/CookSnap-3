@@ -41,8 +41,14 @@ const ENTER_DURATION_MS = 300;
 const DRAG_ZONE_HEIGHT = 110;
 // How far down you need to drag (or how fast you need to flick, in px/s)
 // before it commits to closing instead of springing back. Forgiving on purpose.
-const DISMISS_DISTANCE = 70;
-const DISMISS_VELOCITY = 700;
+// A short drag-and-release must snap back; closing needs either a pull of
+// ~30% of the sheet's height (at least 90 px) or a real flick (fast AND past a
+// small minimum distance). The old fixed 70 px / 700 px/s closed tall sheets
+// from a slight drag.
+const DISMISS_DISTANCE = 90;
+const DISMISS_FRACTION = 0.3;
+const DISMISS_VELOCITY = 1100;
+const FLICK_MIN_DISTANCE = 30;
 
 /**
  * StandardModal — single source of truth for Cook AI overlays.
@@ -119,6 +125,8 @@ export default function StandardModal({
 
   const translateY = useSharedValue(isBottom ? SCREEN_HEIGHT : 0);
   const backdropOpacity = useSharedValue(0);
+  // Measured sheet height (for the proportional dismiss distance).
+  const sheetHeight = useSharedValue(0);
 
   // Guards against the entrance/exit effect below restarting the exit
   // animation a beat after a gesture-driven dismiss already started one on
@@ -177,7 +185,11 @@ export default function StandardModal({
       });
     })
     .onEnd((e) => {
-      if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY) {
+      const pullNeeded = Math.max(DISMISS_DISTANCE, sheetHeight.value * DISMISS_FRACTION);
+      if (
+        e.translationY > pullNeeded ||
+        (e.velocityY > DISMISS_VELOCITY && e.translationY > FLICK_MIN_DISTANCE)
+      ) {
         gestureDismissingRef.current = true;
         translateY.value = withTiming(SCREEN_HEIGHT, {
           duration: EXIT_ANIM_MS,
@@ -201,6 +213,9 @@ export default function StandardModal({
 
   const sheetNode = (
     <Animated.View
+      onLayout={(e) => {
+        sheetHeight.value = e.nativeEvent.layout.height;
+      }}
       style={[
         styles.sheet,
         BACKDROP_SHADOW_KILL,
