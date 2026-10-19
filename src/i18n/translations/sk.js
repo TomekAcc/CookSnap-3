@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Preferencie jedla",
   "mealPrefs.mealTypeTitle": "Typ jedla",
   "mealPrefs.moreOptions": "Ďalšie možnosti",
+  "mealPrefs.pantryOff": "Špajza vypnutá",
   "mealPrefs.includeStaples": "Zahrnúť položky zo špajze",
   "mealPrefs.staplesDesc": "Suroviny označené ako dostupné vo vašej špajzi",
   "mealPrefs.servings": "Porcie",

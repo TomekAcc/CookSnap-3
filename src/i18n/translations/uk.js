@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Уподобання щодо їжі",
   "mealPrefs.mealTypeTitle": "Тип прийому їжі",
   "mealPrefs.moreOptions": "Більше опцій",
+  "mealPrefs.pantryOff": "Без запасів",
   "mealPrefs.includeStaples": "Враховувати продукти з комори",
   "mealPrefs.staplesDesc": "Інгредієнти, позначені як наявні у вашій коморі",
   "mealPrefs.servings": "Порції",

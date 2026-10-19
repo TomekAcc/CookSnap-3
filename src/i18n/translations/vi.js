@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Sở thích bữa ăn",
   "mealPrefs.mealTypeTitle": "Loại bữa ăn",
   "mealPrefs.moreOptions": "Thêm tùy chọn",
+  "mealPrefs.pantryOff": "Tắt kho",
   "mealPrefs.includeStaples": "Bao gồm nguyên liệu trong tủ đựng thức ăn",
   "mealPrefs.staplesDesc": "Nguyên liệu được đánh dấu còn hàng trong tủ đựng thức ăn của bạn",
   "mealPrefs.servings": "Khẩu phần",

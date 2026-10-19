@@ -159,6 +159,7 @@ export default {
   "mealPrefs.title": "Preferencje posiłków",
   "mealPrefs.mealTypeTitle": "Typ posiłku",
   "mealPrefs.moreOptions": "Więcej opcji",
+  "mealPrefs.pantryOff": "Bez spiżarni",
   "mealPrefs.includeStaples": "Uwzględnij produkty ze spiżarni",
   "mealPrefs.staplesDesc": "Składniki oznaczone jako dostępne w twojej spiżarni",
   "mealPrefs.servings": "Porcje",

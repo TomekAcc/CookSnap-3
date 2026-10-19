@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "העדפות ארוחה",
   "mealPrefs.mealTypeTitle": "סוג הארוחה",
   "mealPrefs.moreOptions": "אפשרויות נוספות",
+  "mealPrefs.pantryOff": "מזווה כבוי",
   "mealPrefs.includeStaples": "כלול פריטי מזווה",
   "mealPrefs.staplesDesc": "מרכיבים המסומנים כזמינים במזווה שלך",
   "mealPrefs.servings": "מנות",

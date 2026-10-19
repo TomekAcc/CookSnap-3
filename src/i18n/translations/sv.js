@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Måltidspreferenser",
   "mealPrefs.mealTypeTitle": "Typ av måltid",
   "mealPrefs.moreOptions": "Fler alternativ",
+  "mealPrefs.pantryOff": "Skafferi av",
   "mealPrefs.includeStaples": "Inkludera skafferivaror",
   "mealPrefs.staplesDesc": "Ingredienser markerade som i lager i ditt skafferi",
   "mealPrefs.servings": "Portioner",

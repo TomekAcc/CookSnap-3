@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Προτιμήσεις γευμάτων",
   "mealPrefs.mealTypeTitle": "Είδος γεύματος",
   "mealPrefs.moreOptions": "Περισσότερες επιλογές",
+  "mealPrefs.pantryOff": "Χωρίς αποθήκη",
   "mealPrefs.includeStaples": "Συμπερίληψη ειδών ντουλαπιού",
   "mealPrefs.staplesDesc": "Υλικά επισημασμένα ως διαθέσιμα στο ντουλάπι σας",
   "mealPrefs.servings": "Μερίδες",

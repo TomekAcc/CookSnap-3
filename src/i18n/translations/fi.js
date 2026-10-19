@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Ateriatoiveet",
   "mealPrefs.mealTypeTitle": "Aterian tyyppi",
   "mealPrefs.moreOptions": "Lisää vaihtoehtoja",
+  "mealPrefs.pantryOff": "Ruokakomero pois",
   "mealPrefs.includeStaples": "Sisällytä ruokakomeron tuotteet",
   "mealPrefs.staplesDesc": "Ainesosat, jotka on merkitty varastossa oleviksi ruokakomerossasi",
   "mealPrefs.servings": "Annokset",

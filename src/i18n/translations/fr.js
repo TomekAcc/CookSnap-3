@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Préférences de repas",
   "mealPrefs.mealTypeTitle": "Type de repas",
   "mealPrefs.moreOptions": "Plus d'options",
+  "mealPrefs.pantryOff": "Garde-manger désactivé",
   "mealPrefs.includeStaples": "Inclure les articles du garde-manger",
   "mealPrefs.staplesDesc": "Ingrédients marqués comme disponibles dans votre garde-manger",
   "mealPrefs.servings": "Portions",

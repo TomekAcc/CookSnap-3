@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Yemek Tercihleri",
   "mealPrefs.mealTypeTitle": "Öğün türü",
   "mealPrefs.moreOptions": "Daha fazla seçenek",
+  "mealPrefs.pantryOff": "Kiler kapalı",
   "mealPrefs.includeStaples": "Kiler ürünlerini dahil et",
   "mealPrefs.staplesDesc": "Kilerinizde stokta olarak işaretlenen malzemeler",
   "mealPrefs.servings": "Porsiyon",

@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Preferenze pasto",
   "mealPrefs.mealTypeTitle": "Tipo di pasto",
   "mealPrefs.moreOptions": "Altre opzioni",
+  "mealPrefs.pantryOff": "Dispensa disattivata",
   "mealPrefs.includeStaples": "Includi articoli della dispensa",
   "mealPrefs.staplesDesc": "Ingredienti contrassegnati come disponibili nella tua dispensa",
   "mealPrefs.servings": "Porzioni",

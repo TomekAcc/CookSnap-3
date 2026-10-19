@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "ความต้องการด้านอาหาร",
   "mealPrefs.mealTypeTitle": "ประเภทมื้ออาหาร",
   "mealPrefs.moreOptions": "ตัวเลือกเพิ่มเติม",
+  "mealPrefs.pantryOff": "ปิดคลังอาหาร",
   "mealPrefs.includeStaples": "รวมรายการในตู้กับข้าว",
   "mealPrefs.staplesDesc": "วัตถุดิบที่ทำเครื่องหมายว่ามีอยู่ในตู้กับข้าวของคุณ",
   "mealPrefs.servings": "จำนวนเสิร์ฟ",

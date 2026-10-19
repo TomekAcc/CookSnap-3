@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "Prehrambene postavke",
   "mealPrefs.mealTypeTitle": "Vrsta obroka",
   "mealPrefs.moreOptions": "Više opcija",
+  "mealPrefs.pantryOff": "Špajza isključena",
   "mealPrefs.includeStaples": "Uključi artikle iz smočnice",
   "mealPrefs.staplesDesc": "Sastojci označeni kao dostupni u vašoj smočnici",
   "mealPrefs.servings": "Porcije",

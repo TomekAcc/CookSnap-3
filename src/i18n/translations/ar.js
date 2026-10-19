@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "تفضيلات الوجبات",
   "mealPrefs.mealTypeTitle": "نوع الوجبة",
   "mealPrefs.moreOptions": "المزيد من الخيارات",
+  "mealPrefs.pantryOff": "المؤونة معطلة",
   "mealPrefs.includeStaples": "تضمين عناصر المخزن",
   "mealPrefs.staplesDesc": "المكونات المحددة كمتوفرة في مخزنك",
   "mealPrefs.servings": "الحصص",

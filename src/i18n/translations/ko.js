@@ -153,6 +153,7 @@ export default {
   "mealPrefs.title": "식단 선호 설정",
   "mealPrefs.mealTypeTitle": "식사 유형",
   "mealPrefs.moreOptions": "옵션 더 보기",
+  "mealPrefs.pantryOff": "팬트리 제외",
   "mealPrefs.includeStaples": "팬트리 항목 포함",
   "mealPrefs.staplesDesc": "팬트리에서 재고 있음으로 표시된 재료",
   "mealPrefs.servings": "인원 수",
