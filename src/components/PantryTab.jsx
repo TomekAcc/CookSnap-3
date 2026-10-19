@@ -860,7 +860,10 @@ export default function PantryTab() {
         onClose={() => setShowAddModal(false)}
         title={t("pantry.addStapleTitle")}
         type="bottom-sheet"
-        scrollProps={{ keyboardShouldPersistTaps: "handled" }}
+        scrollProps={{
+          keyboardShouldPersistTaps: "handled",
+          contentContainerStyle: { paddingBottom: 8 },
+        }}
       >
         {/* Name field and button share one row so the sheet stays short enough
             to sit above the keyboard without scrolling (the field used to be

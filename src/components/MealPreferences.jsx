@@ -383,7 +383,13 @@ export default function MealPreferences() {
         onClose={() => setMoreOpen(false)}
         title={t("mealPrefs.moreOptions")}
         type="bottom-sheet"
-        scrollProps={{ keyboardShouldPersistTaps: "handled" }}
+        // Short sheet: the default 48 px of padding inside the scroll area, on
+        // top of the sheet's own home-bar padding, left a big empty band under
+        // "Done".
+        scrollProps={{
+          keyboardShouldPersistTaps: "handled",
+          contentContainerStyle: { paddingBottom: 0 },
+        }}
       >
         <TouchableOpacity
           onPress={() => setIncludePantryStaples((prev) => !prev)}
