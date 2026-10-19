@@ -1542,6 +1542,11 @@ export function CookAIProvider({ children }) {
     [scanHistory]
   );
 
+  /** Remove one past scan (and its stored photo) from the history. */
+  const deleteScan = useCallback((scanId) => {
+    setScanHistory((prev) => (prev || []).filter((s) => s.id !== scanId));
+  }, []);
+
   /**
    * Instant Vision scan — AI runs immediately; UI choreography (laser/radar)
    * commits ingredients via endScanChoreography when progress hits 100%.
@@ -2494,6 +2499,7 @@ export function CookAIProvider({ children }) {
       visibleRecipes,
       scanHistory,
       restoreScan,
+      deleteScan,
       dietaryRestrictions,
       toggleDietaryRestriction,
       customDietAvoid,
@@ -2602,6 +2608,7 @@ export function CookAIProvider({ children }) {
       startPantryScanMore,
       scanHistory,
       restoreScan,
+      deleteScan,
       dietaryRestrictions,
       toggleDietaryRestriction,
       customDietAvoid,

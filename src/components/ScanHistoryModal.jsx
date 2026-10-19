@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { History, ChevronRight } from "lucide-react-native";
+import { History, ChevronRight, Camera, Image as ImageIcon, Sparkles } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import StandardSmoothModal from "./StandardSmoothModal";
 import EmptyStateSparkle from "./EmptyStateSparkle";
+import SwipeToDeleteRow from "./SwipeToDeleteRow";
+import { translateCount } from "../i18n";
+
+const SOURCE_ICON = { camera: Camera, gallery: ImageIcon, demo: Sparkles };
+
+// The source labels ship with a leading emoji ("📸 Camera"); the icon beside
+// the text replaces it, in the same line-icon style as the rest of the app.
+const stripLeadingEmoji = (label) => String(label || "").replace(/^[^\p{L}\p{N}]+/u, "");
 
 const SOURCE_LABEL_KEY = {
   camera: "scanHistory.sourceCamera",
@@ -17,9 +25,10 @@ const SOURCE_LABEL_KEY = {
  * Scan History — StandardSmoothModal bottom-sheet.
  */
 export default function ScanHistoryModal() {
-  const { scanHistory, restoreScan, showToast, t } = useCookAI();
+  const { scanHistory, restoreScan, deleteScan, showToast, recipeLanguageId, t } = useCookAI();
   const { scanHistoryOpen, setScanHistoryOpen } = useModalState();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
+  const [openSwipeId, setOpenSwipeId] = useState(null);
   const handleClose = () => setScanHistoryOpen(false);
 
   const handleRestore = (scan) => {
@@ -41,16 +50,6 @@ export default function ScanHistoryModal() {
       // never fired with the default height). Shrunk to just cover the
       // grab handle + title.
       dragZoneHeight={66}
-      headerLeft={
-        <View
-          style={[
-            styles.iconBadge,
-            { backgroundColor: isDark ? "#064E3B" : "#ECFDF5" },
-          ]}
-        >
-          <History size={18} color="#10B981" />
-        </View>
-      }
     >
       {!scanHistory?.length ? (
         <View style={styles.emptyContainer}>
@@ -78,48 +77,72 @@ export default function ScanHistoryModal() {
           </Text>
         </View>
       ) : (
-        scanHistory.map((scan) => (
-          <TouchableOpacity
-            key={scan.id}
-            activeOpacity={0.7}
-            onPress={() => handleRestore(scan)}
-            style={[
-              styles.scanRow,
-              {
-                backgroundColor: colors.inputBg,
-                borderColor: colors.cardBorder,
-              },
-            ]}
-          >
-            <Image
-              source={{ uri: scan.photoUri }}
-              style={styles.scanThumb}
-              resizeMode="cover"
-            />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.scanTitle, { color: colors.textPrimary }]}>
-                {t("scanHistory.ingredientsDetected", { count: scan.itemCount })}
-              </Text>
-              <Text style={[styles.scanMeta, { color: colors.textSecondary }]}>
-                {t(SOURCE_LABEL_KEY[scan.source] || "scanHistory.sourceCamera")} · {scan.date}
-              </Text>
+        scanHistory.map((scan) => {
+          const SourceIcon = SOURCE_ICON[scan.source] || Camera;
+          const count = scan.itemCount || 0;
+          return (
+            <View key={scan.id} style={styles.rowGap}>
+              <SwipeToDeleteRow
+                isOpen={openSwipeId === scan.id}
+                onOpenChange={(open) => setOpenSwipeId(open ? scan.id : null)}
+                onDelete={() => deleteScan(scan.id)}
+                borderRadius={16}
+              >
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    setOpenSwipeId(null);
+                    handleRestore(scan);
+                  }}
+                  style={[
+                    styles.scanRow,
+                    {
+                      backgroundColor: colors.inputBg,
+                      borderColor: colors.cardBorder,
+                    },
+                  ]}
+                >
+                  <Image
+                    source={{ uri: scan.photoUri }}
+                    style={styles.scanThumb}
+                    resizeMode="cover"
+                  />
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.scanTitle, { color: colors.textPrimary }]}>
+                      {count === 1
+                        ? t("scanner.itemsFoundOne", { count })
+                        : translateCount(recipeLanguageId, count, {
+                            few: "scanner.itemsFoundFew",
+                            many: "scanner.itemsFoundMany",
+                            fallback: "scanner.itemsFoundOther",
+                          })}
+                    </Text>
+                    <View style={styles.metaRow}>
+                      <SourceIcon size={13} color={colors.textSecondary} />
+                      <Text
+                        style={[styles.scanMeta, { color: colors.textSecondary }]}
+                        numberOfLines={1}
+                      >
+                        {stripLeadingEmoji(
+                          t(SOURCE_LABEL_KEY[scan.source] || "scanHistory.sourceCamera")
+                        )}
+                        {" · "}
+                        {scan.date}
+                      </Text>
+                    </View>
+                  </View>
+                  <ChevronRight size={18} color={colors.textSecondary} />
+                </TouchableOpacity>
+              </SwipeToDeleteRow>
             </View>
-            <ChevronRight size={18} color={colors.textSecondary} />
-          </TouchableOpacity>
-        ))
+          );
+        })
       )}
     </StandardSmoothModal>
   );
 }
 
 const styles = StyleSheet.create({
-  iconBadge: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   // Sheet-level empty-state scale, identical to ShoppingListModal's:
   // 56 chip / radius 16 / 28 glyph, 16-800--0.2 title, 13-500 body at
   // lineHeight 18. This was 14/700 over a 12/400 body with no lineHeight
@@ -153,24 +176,30 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 18,
   },
+  rowGap: { marginBottom: 10 },
   scanRow: {
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 14,
-    padding: 10,
-    marginBottom: 8,
+    borderRadius: 16,
+    padding: 12,
     borderWidth: 1,
   },
   scanThumb: {
-    width: 52,
-    height: 52,
-    borderRadius: 10,
-    marginRight: 10,
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    marginRight: 14,
   },
-  scanTitle: { fontSize: 13, fontWeight: "700" },
+  scanTitle: { fontSize: 16, fontWeight: "700", letterSpacing: -0.2 },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 4,
+  },
   scanMeta: {
-    fontSize: 11,
+    flexShrink: 1,
+    fontSize: 13,
     fontWeight: "500",
-    marginTop: 2,
   },
 });
