@@ -241,7 +241,7 @@ export default function MealPreferences() {
 
   return (
     <View style={styles.root}>
-      <View style={{ paddingHorizontal: 4 }}>
+      <View>
         <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
           {t("mealPrefs.title")}
         </Text>
@@ -458,7 +458,7 @@ export default function MealPreferences() {
 
 const styles = StyleSheet.create({
   root: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     marginTop: 8,
     marginBottom: 12,
     gap: 16,

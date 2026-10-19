@@ -129,7 +129,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     zIndex: 10,
-    paddingHorizontal: 16,
+    // 20 = the screens' content gutter: the wordmark's left edge and the crown's
+    // right edge line up with the titles and cards below.
+    paddingHorizontal: 20,
     paddingTop: 6,
     paddingBottom: 8,
     marginTop: 24,
@@ -146,7 +148,6 @@ const styles = StyleSheet.create({
   brandChrome: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     gap: 6,

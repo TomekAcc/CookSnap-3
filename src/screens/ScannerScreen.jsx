@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     zIndex: 39,
   },
   // Explicit shadow purge, not just "no shadow style applied" — RN shadows
