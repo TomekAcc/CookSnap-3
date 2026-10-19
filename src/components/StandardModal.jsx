@@ -106,6 +106,9 @@ export default function StandardModal({
   // activate than the header zone, so a tap on a button that wobbles by a
   // pixel still counts as a tap. Don't use with a ScrollView inside.
   dragAnywhere = false,
+  // Smaller margin under the last button (home-bar inset + 4 instead of + 16)
+  // for short sheets where that band read as wasted space.
+  compactBottom = false,
 }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -196,6 +199,43 @@ export default function StandardModal({
     opacity: backdropOpacity.value,
   }));
 
+  const sheetNode = (
+    <Animated.View
+      style={[
+        styles.sheet,
+        BACKDROP_SHADOW_KILL,
+        isBottom ? styles.bottomSheet : styles.centerSheet,
+        maxHeight != null ? { maxHeight } : null,
+        {
+          backgroundColor: colors.card || "#FFFFFF",
+          borderColor: colors.cardBorder || "#F1F5F9",
+          paddingBottom: isBottom
+            ? Math.max(
+                (insets?.bottom || 0) + (compactBottom ? 4 : 16),
+                compactBottom ? 16 : 24
+              )
+            : 16,
+        },
+        sheetAnimatedStyle,
+        contentStyle,
+      ]}
+    >
+      {children}
+      {isBottom && !dragAnywhere ? (
+        <GestureDetector gesture={panGesture}>
+          <View
+            style={[
+              styles.dragZone,
+              { height: dragZoneHeight, right: dragZoneRightInset },
+            ]}
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          />
+        </GestureDetector>
+      ) : null}
+    </Animated.View>
+  );
+
   return (
     <Modal
       visible={present}
@@ -228,71 +268,9 @@ export default function StandardModal({
         </Animated.View>
 
         {isBottom && dragAnywhere ? (
-          <GestureDetector gesture={panAnywhere}>
-          <Animated.View
-            style={[
-              styles.sheet,
-              BACKDROP_SHADOW_KILL,
-              isBottom ? styles.bottomSheet : styles.centerSheet,
-              maxHeight != null ? { maxHeight } : null,
-              {
-                backgroundColor: colors.card || "#FFFFFF",
-                borderColor: colors.cardBorder || "#F1F5F9",
-                paddingBottom: isBottom
-                  ? Math.max((insets?.bottom || 0) + 16, 24)
-                  : 16,
-              },
-              sheetAnimatedStyle,
-              contentStyle,
-            ]}
-          >
-            {children}
-            {isBottom && !dragAnywhere ? (
-              <GestureDetector gesture={panGesture}>
-                <View
-                  style={[
-                    styles.dragZone,
-                    { height: dragZoneHeight, right: dragZoneRightInset },
-                  ]}
-                  accessibilityElementsHidden
-                  importantForAccessibility="no-hide-descendants"
-                />
-              </GestureDetector>
-            ) : null}
-          </Animated.View>
-          </GestureDetector>
+          <GestureDetector gesture={panAnywhere}>{sheetNode}</GestureDetector>
         ) : (
-          <Animated.View
-            style={[
-              styles.sheet,
-              BACKDROP_SHADOW_KILL,
-              isBottom ? styles.bottomSheet : styles.centerSheet,
-              maxHeight != null ? { maxHeight } : null,
-              {
-                backgroundColor: colors.card || "#FFFFFF",
-                borderColor: colors.cardBorder || "#F1F5F9",
-                paddingBottom: isBottom
-                  ? Math.max((insets?.bottom || 0) + 16, 24)
-                  : 16,
-              },
-              sheetAnimatedStyle,
-              contentStyle,
-            ]}
-          >
-            {children}
-            {isBottom && !dragAnywhere ? (
-              <GestureDetector gesture={panGesture}>
-                <View
-                  style={[
-                    styles.dragZone,
-                    { height: dragZoneHeight, right: dragZoneRightInset },
-                  ]}
-                  accessibilityElementsHidden
-                  importantForAccessibility="no-hide-descendants"
-                />
-              </GestureDetector>
-            ) : null}
-          </Animated.View>
+          sheetNode
         )}
       </KeyboardAvoidingView>
     </Modal>

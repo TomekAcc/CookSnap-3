@@ -152,9 +152,13 @@ function SectionLabel({ children }) {
   );
 }
 
-function Divider() {
+function Divider({ tight = false }) {
   const { colors } = useTheme();
-  return <View style={[styles.divider, { backgroundColor: colors.cardBorder }]} />;
+  return (
+    <View
+      style={[styles.divider, tight && { marginVertical: 16 }, { backgroundColor: colors.cardBorder }]}
+    />
+  );
 }
 
 /**
@@ -383,6 +387,7 @@ export default function MealPreferences() {
         onClose={() => setMoreOpen(false)}
         title={t("mealPrefs.moreOptions")}
         type="bottom-sheet"
+        compactBottom
         // Short sheet: the default 48 px of padding inside the scroll area, on
         // top of the sheet's own home-bar padding, left a big empty band under
         // "Done".
@@ -396,7 +401,7 @@ export default function MealPreferences() {
           activeOpacity={0.7}
           accessibilityRole="switch"
           accessibilityState={{ checked: includePantryStaples }}
-          style={styles.staplesRow}
+          style={[styles.staplesRow, { paddingTop: 10 }]}
         >
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
@@ -415,7 +420,7 @@ export default function MealPreferences() {
           />
         </TouchableOpacity>
 
-        <Divider />
+        <Divider tight />
 
         <SectionLabel>{t("mealPrefs.cravingTitle")}</SectionLabel>
         <CravingGrid
