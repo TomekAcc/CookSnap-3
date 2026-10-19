@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useSharedValue } from "react-native-reanimated";
+import { weeklyShoppingItemsFor } from "../utils/weeklyShopping";
 import {
   View,
   Text,
@@ -20,10 +21,12 @@ import {
   Camera,
   Refrigerator,
   Lock,
+  ShoppingCart,
+  ChevronRight,
   Crown,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
-import { useModalState } from "../context/ModalContext";
+import { MODAL, useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { getDishEmojiAndColor } from "../utils/imageUtils";
 import StandardSmoothModal from "./StandardSmoothModal";
@@ -195,8 +198,13 @@ export default function MealPlannerModal() {
     t,
   } = useCookAI();
   const minUnit = t("cookingTime.minUnit");
-  const { mealPlannerOpen, setMealPlannerOpen, setSelectedRecipe, setProModalOpen } =
-    useModalState();
+  const {
+    mealPlannerOpen,
+    setMealPlannerOpen,
+    setSelectedRecipe,
+    setProModalOpen,
+    openModalAfter,
+  } = useModalState();
   const { colors, isDark } = useTheme();
 
   const [weeklyPlan, setWeeklyPlan] = useState(EMPTY_PLAN);
@@ -414,6 +422,23 @@ export default function MealPlannerModal() {
   // tap — which called setProModalOpen(true) without closing this sheet
   // first — froze the entire app on-device (invisible to web testing,
   // since RN Web's Modal has no equivalent native presentation collision).
+  // "What to buy this week": ingredients of the planned meals that are not
+  // already in stock (pantry), in the fridge scan, or an always-available basic.
+  const weeklyShoppingCount = useMemo(
+    () =>
+      weeklyShoppingItemsFor({ plan: weeklyPlan, pantryItems, scannedIngredients, t }).length,
+    [weeklyPlan, pantryItems, scannedIngredients, t]
+  );
+
+  // Same handoff as the PRO sheet (two native Modals at once froze devices):
+  // close the planner, then open the shopping sheet once its exit is done. The
+  // timer lives in ModalContext because this component unmounts meanwhile;
+  // WeeklyShoppingModal (an App-level overlay) reopens the planner on close.
+  const handleOpenWeeklyShopping = useCallback(() => {
+    handleClose();
+    openModalAfter(MODAL.shoppingList, HANDOFF_MS);
+  }, [handleClose, openModalAfter]);
+
   const handleOpenProFromPlanner = useCallback(() => {
     handleClose();
     handoffTimerRef.current = setTimeout(() => {
@@ -878,6 +903,37 @@ export default function MealPlannerModal() {
             ) : null}
           </TouchableOpacity>
 
+          {plannedCount > 0 ? (
+            <TouchableOpacity
+              onPress={handleOpenWeeklyShopping}
+              activeOpacity={0.75}
+              accessibilityRole="button"
+              style={[
+                styles.weeklyShopRow,
+                { backgroundColor: colors.card, borderColor: colors.cardBorder },
+              ]}
+            >
+              <ShoppingCart size={18} color="#059669" />
+              <Text style={{ flex: 1 }} numberOfLines={1}>
+                <Text style={{ color: colors.textPrimary, fontWeight: "700", fontSize: 14 }}>
+                  {t("pantry.shoppingListTitle")}
+                </Text>
+                <Text style={{ color: colors.textSecondary, fontWeight: "500", fontSize: 13 }}>
+                  {"  ·  "}
+                  {weeklyShoppingCount === 0
+                    ? t("shoppingList.listClear")
+                    : t(
+                        weeklyShoppingCount === 1
+                          ? "pantry.itemsNeededOne"
+                          : "pantry.itemsNeededOther",
+                        { count: weeklyShoppingCount }
+                      )}
+                </Text>
+              </Text>
+              <ChevronRight size={18} color={colors.textSecondary} />
+            </TouchableOpacity>
+          ) : null}
+
           {!isPro ? (
             <View style={styles.generationUsageRow}>
               {isPro ? (
@@ -1144,6 +1200,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 15,
     fontWeight: "600",
+  },
+  weeklyShopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+    marginBottom: 10,
   },
   autoFillBanner: {
     flexDirection: "row",

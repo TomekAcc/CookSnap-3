@@ -60,6 +60,19 @@ export function ModalProvider({ children }) {
     setActiveModalId(name || null);
   }, []);
 
+  /**
+   * Opens a modal after a delay (e.g. once another sheet's exit animation is
+   * done). The timer lives HERE, not in the sheet that asked for it, because
+   * that sheet is unmounted by then.
+   */
+  const openModalAfter = useCallback((name, delayMs) => {
+    if (modalHandoffTimerRef.current) clearTimeout(modalHandoffTimerRef.current);
+    modalHandoffTimerRef.current = setTimeout(() => {
+      modalHandoffTimerRef.current = null;
+      setActiveModalId(name || null);
+    }, delayMs);
+  }, []);
+
   const closeModal = useCallback(() => {
     if (modalHandoffTimerRef.current) {
       clearTimeout(modalHandoffTimerRef.current);
@@ -166,6 +179,7 @@ export function ModalProvider({ children }) {
       /** @deprecated Prefer activeModalId */
       activeModal: activeModalId,
       openModal,
+      openModalAfter,
       setActiveModal,
       closeModal,
       addIngredientOpen,
@@ -199,6 +213,7 @@ export function ModalProvider({ children }) {
     [
       activeModalId,
       openModal,
+      openModalAfter,
       closeModal,
       addIngredientOpen,
       setAddIngredientOpen,

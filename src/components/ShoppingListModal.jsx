@@ -108,7 +108,7 @@ export default function ShoppingListModal({
   // sheet (Messages, Notes, Reminders...) as a plain bulleted list.
   const handleShare = async () => {
     const lines = safeItems.map(
-      (item) => `• ${prettyPantryName(item?.name) || t("shoppingList.itemFallback")}`
+      (item) => `• ${item?.label || prettyPantryName(item?.name) || t("shoppingList.itemFallback")}`
     );
     try {
       await Share.share({ message: `${t("pantry.shoppingListTitle")}\n\n${lines.join("\n")}` });
@@ -244,7 +244,7 @@ export default function ShoppingListModal({
                         isChecked && styles.itemNameChecked,
                       ]}
                     >
-                      {prettyPantryName(item?.name) || t("shoppingList.itemFallback")}
+                      {item?.label || prettyPantryName(item?.name) || t("shoppingList.itemFallback")}
                     </Text>
                     {isChecked ? (
                       <View
