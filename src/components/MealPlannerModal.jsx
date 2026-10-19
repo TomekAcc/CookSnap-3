@@ -33,7 +33,6 @@ import EmptyStateSparkle from "./EmptyStateSparkle";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { animateLayout } from "../utils/layoutMotion";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
-import { TYPE, WEIGHT } from "../theme/tokens";
 
 const PLANNER_STORAGE_KEY = "cookai:weeklyPlan:v1";
 
@@ -83,12 +82,69 @@ function toRecipe(meal, dayId, t) {
   };
 }
 
+// A week of dinners should not repeat itself: two tortilla dishes, or the same
+// salad with one ingredient fewer. Picks cards from the pool in order but skips
+// one whose dish type is already planned or whose title is mostly the same
+// words as one already picked; if the pool is too small for that, the rules are
+// relaxed (dish type first, then title similarity) so every day still gets a meal.
+const TITLE_STOPWORDS = new Set(["with", "and", "from", "bowl", "z", "i", "ze", "und", "mit", "con", "avec"]);
+function titleWords(title) {
+  return new Set(
+    String(title || "")
+      .toLowerCase()
+      .split(/[^\p{L}]+/u)
+      .filter((w) => w.length > 2 && !TITLE_STOPWORDS.has(w))
+  );
+}
+function titleSimilarity(a, b) {
+  if (!a.size || !b.size) return 0;
+  let common = 0;
+  a.forEach((w) => {
+    if (b.has(w)) common += 1;
+  });
+  return common / Math.min(a.size, b.size);
+}
+function pickVariedCards(pool, count, taken) {
+  const picked = [];
+  const usedIdx = new Set();
+  const seen = taken.map((m) => ({ words: titleWords(m.title), type: m.dishType || null }));
+  for (let n = 0; n < count; n += 1) {
+    let choice = -1;
+    for (const relax of [0, 1, 2]) {
+      for (let i = 0; i < pool.length; i += 1) {
+        if (usedIdx.has(i)) continue;
+        const card = pool[i];
+        const type = card?.recipe?.dishType;
+        const words = titleWords(card?.title);
+        const typeClash = relax < 1 && type && type !== "other" && seen.some((x) => x.type === type);
+        const similar = relax < 2 && seen.some((x) => titleSimilarity(words, x.words) >= 0.6);
+        if (!typeClash && !similar) {
+          choice = i;
+          break;
+        }
+      }
+      if (choice >= 0) break;
+    }
+    if (choice < 0) {
+      // pool exhausted: start reusing from the top
+      choice = n % Math.max(pool.length, 1);
+    } else {
+      usedIdx.add(choice);
+    }
+    const card = pool[choice];
+    picked.push(card);
+    seen.push({ words: titleWords(card?.title), type: card?.recipe?.dishType || null });
+  }
+  return picked;
+}
+
 function mealFromInventoryCard(card, minUnit) {
   if (!card) return null;
   const { emoji } = getDishEmojiAndColor(card.title, card.recipe?.dishType);
   return {
     title: card.title,
     emoji,
+    dishType: card.recipe?.dishType || null,
     time: formatTimeLabel(card.time || card.cookTime, minUnit, `20 ${minUnit}`),
     prepTime: card.prepTime,
     cookTime: card.cookTime,
@@ -406,12 +462,11 @@ export default function MealPlannerModal() {
       setWeeklyPlan((prev) => {
         const base = regenerate ? EMPTY_PLAN : prev;
         const next = { ...base };
-        let cursor = 0;
-        DAYS_OF_WEEK.forEach((day) => {
-          if (!next[day.id]) {
-            next[day.id] = mealFromInventoryCard(pool[cursor % pool.length], minUnit);
-            cursor += 1;
-          }
+        const emptyDays = DAYS_OF_WEEK.filter((day) => !next[day.id]);
+        const alreadyPlanned = DAYS_OF_WEEK.map((day) => next[day.id]).filter(Boolean);
+        const varied = pickVariedCards(pool, emptyDays.length, alreadyPlanned);
+        emptyDays.forEach((day, i) => {
+          next[day.id] = mealFromInventoryCard(varied[i], minUnit);
         });
         return next;
       });
@@ -771,30 +826,39 @@ export default function MealPlannerModal() {
             style={[
               styles.autoFillBanner,
               {
-                backgroundColor: isDark ? "#1E293B" : "#F8FAFC",
-                borderColor: isDark ? "#334155" : "#E2E8F0",
+                backgroundColor: colors.card,
+                borderColor: colors.cardBorder,
               },
               !hasScanned ? { opacity: 0.55 } : null,
             ]}
           >
-            <View style={styles.autoFillIconBox}>
+            <View
+              style={[
+                styles.autoFillIconBox,
+                {
+                  backgroundColor:
+                    !hasScanned || !isPro
+                      ? isDark
+                        ? colors.inputBg
+                        : "#F3F5F8"
+                      : isDark
+                        ? "#064E3B"
+                        : "#ECFDF5",
+                },
+              ]}
+            >
               {isGeneratingWeek ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
+                <ActivityIndicator size="small" color="#059669" />
               ) : !hasScanned || !isPro ? (
-                <Lock size={16} color="#F59E0B" />
+                <Sparkles size={17} color={colors.textSecondary} />
               ) : plannedCount === 7 ? (
-                <RefreshCw size={18} color="#FFFFFF" />
+                <RefreshCw size={17} color="#059669" />
               ) : (
-                <Sparkles size={18} color="#FFFFFF" />
+                <Sparkles size={17} color="#059669" />
               )}
             </View>
             <View style={{ flex: 1, minWidth: 0 }}>
-              <Text
-                style={[
-                  styles.autoFillTitle,
-                  { color: isDark ? "#F8FAFC" : "#0F172A" },
-                ]}
-              >
+              <Text style={[styles.autoFillTitle, { color: colors.textPrimary }]}>
                 {isGeneratingWeek
                   ? t("mealPlanner.creatingPlan")
                   : plannedCount === 7
@@ -802,21 +866,27 @@ export default function MealPlannerModal() {
                     : t("mealPlanner.autoFillWeek")}
               </Text>
               <Text
-                style={[
-                  styles.autoFillSubtitle,
-                  { color: isDark ? "#94A3B8" : "#64748B" },
-                ]}
+                style={[styles.autoFillSubtitle, { color: colors.textSecondary }]}
                 numberOfLines={2}
               >
                 {!hasScanned
                   ? t("mealPlanner.scanFirstSubtitle")
-                  : !isPro
-                    ? t("mealPlanner.fillsAllDinnersSubtitle")
-                    : plannedCount === 7
-                      ? t("mealPlanner.clearAndBuildSubtitle")
-                      : t("mealPlanner.mealsBuiltFromInventorySubtitle")}
+                  : plannedCount === 7
+                    ? t("mealPlanner.clearAndBuildSubtitle")
+                    : t("mealPlanner.mealsBuiltFromInventorySubtitle")}
               </Text>
             </View>
+            {hasScanned && !isPro ? (
+              // The same small amber "lock PRO" tag as the locked Custom Diet row
+              // on Profile; the one place this screen says PRO, instead of a
+              // locked chip on every meal.
+              <View style={styles.proTag}>
+                <Lock size={11} color={isDark ? "#FCD34D" : "#B45309"} strokeWidth={2.6} />
+                <Text style={[styles.proTagText, { color: isDark ? "#FCD34D" : "#B45309" }]}>
+                  PRO
+                </Text>
+              </View>
+            ) : null}
           </TouchableOpacity>
 
           <View style={styles.generationUsageRow}>
@@ -914,7 +984,7 @@ export default function MealPlannerModal() {
                             ]}
                           >
                         <View style={styles.mealInfoGroup}>
-                          <Text style={{ fontSize: 24, flexShrink: 0 }}>
+                          <Text style={{ fontSize: 22, flexShrink: 0 }}>
                             {meal.emoji}
                           </Text>
                           <View style={{ flex: 1, minWidth: 0 }}>
@@ -952,27 +1022,7 @@ export default function MealPlannerModal() {
                                   >
                                     {meal.calories}
                                   </Text>
-                                ) : (
-                                  <TouchableOpacity
-                                    onPress={handleOpenProFromPlanner}
-                                    activeOpacity={0.7}
-                                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                                    style={styles.caloriesLockChip}
-                                  >
-                                    {/* Names what's actually hidden instead
-                                        of just saying "PRO" — a bare PRO
-                                        badge with no context doesn't tell a
-                                        free user what tapping it gets them.
-                                        Reuses the same "CALORIES" label the
-                                        unlocked Recipe Detail calorie tile
-                                        already uses, so the wording matches
-                                        across the app. */}
-                                    <Lock size={9} color="#B45309" strokeWidth={2.5} />
-                                    <Text style={styles.caloriesLockText}>
-                                      {t("recipeDetail.caloriesLabel")}
-                                    </Text>
-                                  </TouchableOpacity>
-                                )
+                                ) : null
                               ) : null}
                             </View>
                             {/* Macro breakdown — PRO only, and only when the
@@ -1134,24 +1184,38 @@ const styles = StyleSheet.create({
     minHeight: 52,
   },
   autoFillIconBox: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#1E293B",
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#F3F5F8",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
   },
   autoFillTitle: {
-    fontSize: 13,
-    fontWeight: "800",
+    fontSize: 14,
+    fontWeight: "700",
     color: "#0F172A",
   },
   autoFillSubtitle: {
-    fontSize: 11,
-    fontWeight: "600",
+    fontSize: 12,
+    fontWeight: "500",
     color: "#64748B",
-    marginTop: 1,
+    marginTop: 2,
+  },
+  proTag: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: "rgba(245,158,11,0.14)",
+  },
+  proTagText: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0.5,
   },
   generationUsageRow: {
     flexDirection: "row",
@@ -1208,11 +1272,11 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   mealTitle: {
-    fontSize: TYPE.title,
-    fontWeight: WEIGHT.bold,
+    fontSize: 15,
+    fontWeight: "700",
     color: "#0F172A",
-    lineHeight: 22,
-    letterSpacing: -0.3,
+    lineHeight: 20,
+    letterSpacing: -0.2,
   },
   metaRow: {
     flexDirection: "row",
@@ -1236,23 +1300,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#64748B",
     marginTop: 3,
-  },
-  caloriesLockChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: "#FFFBEB",
-    borderWidth: 1,
-    borderColor: "#FDE68A",
-    borderRadius: 999,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-  },
-  caloriesLockText: {
-    fontSize: 9,
-    fontWeight: "900",
-    color: "#B45309",
-    letterSpacing: 0.3,
   },
   emptyMealCard: {
     flex: 1,
