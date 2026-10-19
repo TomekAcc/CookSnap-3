@@ -171,6 +171,16 @@ export const EMOJI_STYLE_MAP = {
     bgColorDark: "rgba(12, 74, 110, 0.4)",
     borderColorDark: "rgba(7, 89, 133, 0.5)",
   },
+  // Wraps/tortillas/burritos — same sky blue family as sandwiches, own glyph
+  "🌯": {
+    bg: "bg-sky-100",
+    border: "border-sky-200",
+    text: "text-sky-900",
+    bgColor: "#E0F2FE",
+    borderColor: "#BAE6FD",
+    bgColorDark: "rgba(12, 74, 110, 0.4)",
+    borderColorDark: "rgba(7, 89, 133, 0.5)",
+  },
   // Meat — distinct red, so it never collides with breakfast's amber or dessert's rose
   "🍗": {
     bg: "bg-red-100",
@@ -279,7 +289,7 @@ function styleFromEmoji(emoji) {
                     ? "salad"
                     : key === "🍗" || key === "🥩" || key === "🍖"
                       ? "meat"
-                      : key === "🥪"
+                      : key === "🥪" || key === "🌯"
                       ? "snack"
                       : "snack",
   };
@@ -337,6 +347,19 @@ const DISH_TYPE_TO_EMOJI = {
  * fallback templates that don't set it, or an "other"/unmapped value).
  */
 export function getDishEmojiAndStyle(dishTitle, dishType) {
+  // A tortilla/wrap dish is a 🌯, not a 🥪 — the model files it under
+  // "sandwich"/"bread"/"other". Spanish "tortilla" (an egg omelette) keeps its
+  // own egg dishType, so only these generic types are overridden.
+  if (
+    dishTitle &&
+    (!dishType || dishType === "sandwich" || dishType === "bread" || dishType === "other") &&
+    /\b(tortillas?|wraps?|burritos?|quesadillas?|fajitas?|enchiladas?)\b|tortill|burrito/i.test(
+      String(dishTitle)
+    )
+  ) {
+    return styleFromEmoji("🌯");
+  }
+
   const mappedEmoji = dishType && DISH_TYPE_TO_EMOJI[dishType];
   if (mappedEmoji && mappedEmoji !== "🥘") {
     return styleFromEmoji(mappedEmoji);

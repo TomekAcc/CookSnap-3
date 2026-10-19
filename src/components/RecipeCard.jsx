@@ -23,6 +23,11 @@ const CARD_SHADOW = Platform.select({
 });
 
 /**
+ * `compact` is the Saved list's row: smaller tile, one meta line (time ·
+ * calories — a saved recipe's "uses N fridge items" goes stale the moment the
+ * fridge changes), no heart (everything here is saved, so it said nothing; the
+ * row swipes to delete instead) and no outer margin (the swipe wrapper owns it).
+ *
  * Recipe card — one row: dish tile, title, a single meta line, and a rail
  * carrying the heart and a chevron. The whole card is the tap target.
  *
@@ -47,6 +52,7 @@ export default function RecipeCard({
   isFavorite = false,
   onToggleFavorite,
   onSelect,
+  compact = false,
 }) {
   const { colors, isDark } = useTheme();
   const { t } = useCookAI();
@@ -66,12 +72,15 @@ export default function RecipeCard({
         ? safeRecipe.ingredients.length
         : 3);
 
+  const calories = typeof safeRecipe.calories === "string" ? safeRecipe.calories.trim() : "";
+
   return (
     <TouchableOpacity
       onPress={() => onSelect?.(safeRecipe)}
       activeOpacity={0.9}
       style={[
         styles.card,
+        compact && styles.cardCompact,
         CARD_SHADOW,
         { backgroundColor: colors.card, borderColor: colors.cardBorder },
       ]}
@@ -85,20 +94,28 @@ export default function RecipeCard({
       <View
         style={[
           styles.tile,
+          compact && styles.tileCompact,
           {
             backgroundColor: badge.backgroundColor,
             borderColor: badge.borderColor,
           },
         ]}
       >
-        <Text style={styles.tileEmoji} allowFontScaling={false}>
+        <Text
+          style={[styles.tileEmoji, compact && styles.tileEmojiCompact]}
+          allowFontScaling={false}
+        >
           {emoji}
         </Text>
       </View>
 
       <View style={styles.body}>
         <Text
-          style={[styles.title, { color: colors.textPrimary }]}
+          style={[
+            styles.title,
+            compact && styles.titleCompact,
+            { color: colors.textPrimary },
+          ]}
           // Usunięto limit numberOfLines oraz skalowanie
           // Tytuły ułożą się naturalnie, a ich zwięzłość zapewni prompt Gemini
         >
@@ -110,20 +127,38 @@ export default function RecipeCard({
             match trails behind it lighter. Both halves at the same weight
             is what read as messy. */}
         <Text
-          style={[styles.meta, { color: colors.textSecondary }]}
-          numberOfLines={2}
+          style={[
+            styles.meta,
+            compact && styles.metaCompact,
+            { color: colors.textSecondary },
+          ]}
+          numberOfLines={compact ? 1 : 2}
         >
           <Text style={[styles.metaStrong, { color: colors.textPrimary }]}>
             {cookTimeLabel(safeRecipe, t("cookingTime.minUnit"))}
           </Text>
-          <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
-            {"  ·  "}
-          </Text>
-          {t("recipeCard.usesFridgeItems", { count: matchCount })}
+          {compact ? (
+            calories ? (
+              <>
+                <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
+                  {"  ·  "}
+                </Text>
+                {calories}
+              </>
+            ) : null
+          ) : (
+            <>
+              <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
+                {"  ·  "}
+              </Text>
+              {t("recipeCard.usesFridgeItems", { count: matchCount })}
+            </>
+          )}
         </Text>
       </View>
 
       <View style={styles.rail}>
+        {onToggleFavorite ? (
         <TouchableOpacity
           onPress={() => onToggleFavorite?.(safeRecipe.id)}
           // Confirmed real complaint: a uniform 12pt hitSlop on all sides
@@ -157,6 +192,7 @@ export default function RecipeCard({
             strokeWidth={ICON.stroke}
           />
         </TouchableOpacity>
+        ) : null}
 
         {/* Decorative: the card itself is the button, so this must not be
             its own tap target competing with the heart beside it. */}
@@ -188,6 +224,27 @@ const styles = StyleSheet.create({
     // clearly separate surfaces (own background, border and radius), so a gap
     // equal to the inner padding keeps them distinct and groups them as one list.
     marginBottom: SPACE.lg + 2,
+  },
+  cardCompact: {
+    padding: SPACE.md + 2,
+    gap: SPACE.md,
+    marginBottom: 0,
+  },
+  tileCompact: {
+    width: 56,
+    height: 56,
+  },
+  tileEmojiCompact: {
+    fontSize: 30,
+    lineHeight: emojiLine(30),
+  },
+  titleCompact: {
+    fontSize: TYPE.body + 1,
+    lineHeight: 21,
+  },
+  metaCompact: {
+    marginTop: 2,
+    lineHeight: 18,
   },
   tile: {
     width: 76,
