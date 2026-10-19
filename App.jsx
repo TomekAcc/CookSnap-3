@@ -23,7 +23,6 @@ import ProSubscriptionModal from "./src/components/ProSubscriptionModal";
 import RecipeDetailModal from "./src/components/RecipeDetailModal";
 import ScanHistoryModal from "./src/components/ScanHistoryModal";
 import MealPlannerModal from "./src/components/MealPlannerModal";
-import WeeklyShoppingModal from "./src/components/WeeklyShoppingModal";
 import HelpFeedbackModal from "./src/components/HelpFeedbackModal";
 import Toast from "./src/components/Toast";
 import ScannerScreen from "./src/screens/ScannerScreen";
@@ -84,7 +83,6 @@ function OverlayHost() {
     selectedRecipe,
     scanHistoryOpen,
     mealPlannerOpen,
-    shoppingListOpen,
     helpModalOpen,
   } = useModalState();
 
@@ -93,7 +91,6 @@ function OverlayHost() {
   const { present: recipePresent } = useModalPresence(!!selectedRecipe);
   const { present: scanHistoryPresent } = useModalPresence(scanHistoryOpen);
   const { present: mealPlannerPresent } = useModalPresence(mealPlannerOpen);
-  const { present: weeklyShopPresent } = useModalPresence(shoppingListOpen);
   const { present: helpPresent } = useModalPresence(helpModalOpen);
 
   return (
@@ -107,7 +104,6 @@ function OverlayHost() {
       ) : null}
       {scanHistoryPresent ? <ScanHistoryModal /> : null}
       {mealPlannerPresent ? <MealPlannerModal /> : null}
-      {weeklyShopPresent ? <WeeklyShoppingModal /> : null}
       {helpPresent ? <HelpFeedbackModal /> : null}
     </ErrorBoundary>
   );
