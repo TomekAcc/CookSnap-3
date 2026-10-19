@@ -29,6 +29,7 @@ export default function PillTag({
   labelStyle,
   labelLines = 1,
   fitLabel = false,
+  reserveEmojiSpace = false,
 }) {
   const { colors, isDark } = useTheme();
 
@@ -63,6 +64,9 @@ export default function PillTag({
         <Text style={styles.emoji} allowFontScaling={false}>
           {emoji}
         </Text>
+      ) : reserveEmojiSpace ? (
+        // Keeps names in one column when some chips have no emoji.
+        <View style={{ width: 22 }} />
       ) : null}
       {label ? (
         <Text
@@ -71,7 +75,7 @@ export default function PillTag({
           minimumFontScale={0.75}
           style={[
             styles.label,
-            { color: textColor, marginLeft: emoji ? 5 : 0 },
+            { color: textColor, marginLeft: emoji || reserveEmojiSpace ? 5 : 0 },
             labelStyle,
           ]}
         >

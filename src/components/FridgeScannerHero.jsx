@@ -1488,6 +1488,7 @@ export default function FridgeScannerHero() {
                             // use a second line instead of being cut.
                             labelLines={2}
                             fitLabel
+                            reserveEmojiSpace
                             style={{
                               ...getDetectedPillStyle(isDark, colors),
                               width: "49%",
