@@ -27,6 +27,8 @@ export default function PillTag({
   selected = false,
   style,
   labelStyle,
+  labelLines = 1,
+  fitLabel = false,
 }) {
   const { colors, isDark } = useTheme();
 
@@ -64,7 +66,9 @@ export default function PillTag({
       ) : null}
       {label ? (
         <Text
-          numberOfLines={1}
+          numberOfLines={labelLines}
+          adjustsFontSizeToFit={fitLabel}
+          minimumFontScale={0.75}
           style={[
             styles.label,
             { color: textColor, marginLeft: emoji ? 5 : 0 },

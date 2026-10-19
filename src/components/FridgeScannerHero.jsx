@@ -60,7 +60,7 @@ const COMPACT_HEIGHT = 120;
 // need a visible boundary that a selectable filter pill doesn't.
 function getDetectedPillStyle(isDark, colors) {
   return {
-    paddingVertical: 4,
+    paddingVertical: 5,
     paddingHorizontal: 11,
     backgroundColor: isDark ? colors.inputBg : "rgba(241, 245, 249, 0.7)",
     borderColor: isDark ? colors.cardBorder : "rgba(226, 232, 240, 0.8)",
@@ -1356,25 +1356,6 @@ export default function FridgeScannerHero() {
                         >
                           {t("scanner.detectedIngredients")}
                         </Text>
-                        <View
-                          style={{
-                            backgroundColor: isDark ? "#064E3B" : "#D1FAE5",
-                            paddingHorizontal: 10,
-                            paddingVertical: 2,
-                            borderRadius: 999,
-                            marginLeft: 8,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: isDark ? "#34D399" : "#065F46",
-                              fontSize: 12,
-                              fontWeight: "900",
-                            }}
-                          >
-                            {foodCount}
-                          </Text>
-                        </View>
                       </View>
 
                       <TouchableOpacity
@@ -1472,7 +1453,12 @@ export default function FridgeScannerHero() {
                     </Text>
 
                     <View
-                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}
+                      style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "space-between",
+                        rowGap: 5,
+                      }}
                     >
                       {(ingredients || []).map((item) => {
                         const cleanName =
@@ -1496,12 +1482,21 @@ export default function FridgeScannerHero() {
                             onRemove={() => removeIngredient(item.id)}
                             // flexGrow: each row stretches to the card's edges, so
                             // the chips end flush on the right instead of ragged.
+                            // Strict two-column grid: equal widths, content left-aligned,
+                            // × pinned to the right edge of each chip, so emoji,
+                            // names and × each line up in a column. Long names may
+                            // use a second line instead of being cut.
+                            labelLines={2}
+                            fitLabel
                             style={{
                               ...getDetectedPillStyle(isDark, colors),
-                              flexGrow: 1,
-                              justifyContent: "center",
+                              width: "49%",
+                              justifyContent: "flex-start",
                             }}
                             labelStyle={{
+                              flex: 1,
+                              minWidth: 0,
+                              overflow: "hidden",
                               color: isDark ? colors.textPrimary : "#1E293B",
                             }}
                           />

@@ -353,7 +353,7 @@ export default function MealPreferences() {
                 >
                   {f.value}
                 </Text>
-                <ChevronDown size={14} color={colors.textSecondary} strokeWidth={2.4} />
+                <ChevronDown size={12} color={colors.textSecondary} strokeWidth={2.6} />
               </View>
             </TouchableOpacity>
           ))}
@@ -674,7 +674,7 @@ const styles = StyleSheet.create({
   summaryCol: {
     flex: 1,
     minWidth: 0,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     gap: 4,
   },
   summaryLabel: {
@@ -688,7 +688,7 @@ const styles = StyleSheet.create({
   },
   summaryValue: {
     flexShrink: 1,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "700",
   },
   optionRow: {
