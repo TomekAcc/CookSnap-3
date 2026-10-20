@@ -729,6 +729,13 @@ export default function FridgeScannerHero() {
     }
   };
 
+
+  // The camera has no gallery of its own. Close it first, then open the picker
+  // once the full-screen modal is gone (two native presentations at once fail).
+  const handleGalleryFromCamera = () => {
+    setCameraOpen(false);
+    setTimeout(() => handlePickFromGallery(), 450);
+  };
   const handlePickFromGallery = async () => {
     if (!canScanFridge) {
       setProModalOpen(true);
@@ -1755,6 +1762,31 @@ export default function FridgeScannerHero() {
               >
                 {t("scanner.pointAtFridge")}
               </Text>
+              <TouchableOpacity
+                onPress={handleGalleryFromCamera}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel={t("scanner.fromGallery")}
+                style={{ position: "absolute", left: 28, bottom: 6, alignItems: "center" }}
+              >
+                <View
+                  style={{
+                    width: 52,
+                    height: 52,
+                    borderRadius: 26,
+                    backgroundColor: "rgba(255,255,255,0.2)",
+                    borderWidth: 1,
+                    borderColor: "rgba(255,255,255,0.45)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <ImageIcon size={22} color="#FFFFFF" />
+                </View>
+                <Text style={{ color: "#FFFFFF", fontSize: 11, fontWeight: "600", marginTop: 4 }}>
+                  {t("scanner.fromGallery")}
+                </Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleCapture}
                 activeOpacity={0.8}
