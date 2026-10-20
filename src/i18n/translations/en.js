@@ -391,6 +391,10 @@ export default {
   "scanHistory.sourceCamera": "📸 Camera",
   "scanHistory.sourceGallery": "🖼️ Gallery",
   "scanHistory.sourceDemo": "✨ Demo Scan",
+  "scanHistory.tapToRestore": "Tap a scan to restore it, swipe left to delete",
+  "scanHistory.confirmTitle": "Restore this scan?",
+  "scanHistory.confirmBody": "The recipes you generated from your current scan will be replaced.",
+  "scanHistory.confirmAction": "Restore",
 
   "help.thanksTitle": "Thanks for your feedback!",
   "help.thanksMessage": "Our team will get back to you shortly.",

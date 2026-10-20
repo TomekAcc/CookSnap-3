@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
 import { History, ChevronRight, Camera, Image as ImageIcon, Sparkles } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
@@ -25,7 +25,8 @@ const SOURCE_LABEL_KEY = {
  * Scan History — StandardSmoothModal bottom-sheet.
  */
 export default function ScanHistoryModal() {
-  const { scanHistory, restoreScan, deleteScan, showToast, recipeLanguageId, t } = useCookAI();
+  const { scanHistory, restoreScan, deleteScan, showToast, generatedRecipes, recipeLanguageId, t } =
+    useCookAI();
   const { scanHistoryOpen, setScanHistoryOpen } = useModalState();
   const { colors } = useTheme();
   const [openSwipeId, setOpenSwipeId] = useState(null);
@@ -35,6 +36,23 @@ export default function ScanHistoryModal() {
     restoreScan(scan.id);
     handleClose();
     showToast(t("scanHistory.restoredToast", { date: scan.date }), "success", 2600);
+  };
+
+  // Restoring clears the recipes generated from the current scan, and for a free
+  // user regenerating costs one of the day's generations. Ask first, but only
+  // when there is something to lose: the current scan itself is already in this
+  // history, so restoring never loses a scan.
+  const hasRecipesToLose = Array.isArray(generatedRecipes) && generatedRecipes.length > 0;
+  const handleRowPress = (scan) => {
+    setOpenSwipeId(null);
+    if (!hasRecipesToLose) {
+      handleRestore(scan);
+      return;
+    }
+    Alert.alert(t("scanHistory.confirmTitle"), t("scanHistory.confirmBody"), [
+      { text: t("recipeDetail.cancel"), style: "cancel" },
+      { text: t("scanHistory.confirmAction"), onPress: () => handleRestore(scan) },
+    ]);
   };
 
   return (
@@ -77,7 +95,11 @@ export default function ScanHistoryModal() {
           </Text>
         </View>
       ) : (
-        scanHistory.map((scan) => {
+        <>
+          <Text style={[styles.hint, { color: colors.textSecondary }]}>
+            {t("scanHistory.tapToRestore")}
+          </Text>
+          {scanHistory.map((scan) => {
           const SourceIcon = SOURCE_ICON[scan.source] || Camera;
           const count = scan.itemCount || 0;
           return (
@@ -90,10 +112,7 @@ export default function ScanHistoryModal() {
               >
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  onPress={() => {
-                    setOpenSwipeId(null);
-                    handleRestore(scan);
-                  }}
+                  onPress={() => handleRowPress(scan)}
                   style={[
                     styles.scanRow,
                     {
@@ -136,7 +155,8 @@ export default function ScanHistoryModal() {
               </SwipeToDeleteRow>
             </View>
           );
-        })
+          })}
+        </>
       )}
     </StandardSmoothModal>
   );
@@ -175,6 +195,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: "center",
     lineHeight: 18,
+  },
+  hint: {
+    fontSize: 13,
+    fontWeight: "500",
+    lineHeight: 18,
+    marginBottom: 12,
   },
   rowGap: { marginBottom: 10 },
   scanRow: {
