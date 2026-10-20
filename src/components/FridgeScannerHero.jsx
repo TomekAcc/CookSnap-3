@@ -174,6 +174,47 @@ export default function FridgeScannerHero() {
   // from "we mounted straight into an already-finished scan, just show it".
   const mountedAlreadyCompleteRef = useRef(rawScanStage === "completed");
   const scanHeight = useMemo(() => getScanHeight(), []);
+
+  // Show the photo in its own shape (a 3:4 camera photo whole, a wide gallery
+  // image shorter) instead of always cropping it into one fixed frame: the
+  // height the photo needs at the card's width, never above the screen cap.
+  // Purely visual — the AI always receives the full original photo.
+  const [photoFitHeight, setPhotoFitHeight] = useState(null);
+  useEffect(() => {
+    if (!fridgePhoto) {
+      setPhotoFitHeight(null);
+      return undefined;
+    }
+    let cancelled = false;
+    const contentWidth = Dimensions.get("window").width - 40;
+    Image.getSize(
+      fridgePhoto,
+      (w, h) => {
+        if (cancelled || !w || !h) return;
+        setPhotoFitHeight(Math.max(240, Math.round((contentWidth * h) / w)));
+      },
+      () => {}
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [fridgePhoto]);
+  const scanDisplayHeight = photoFitHeight
+    ? Math.min(scanHeight, photoFitHeight)
+    : scanHeight;
+  const scanDisplayHeightRef = useRef(scanDisplayHeight);
+  scanDisplayHeightRef.current = scanDisplayHeight;
+  // Once the photo's shape is known, settle the scanning frame onto it.
+  useEffect(() => {
+    if (scanStage !== "scanning") return;
+    Animated.timing(photoHeightAnim, {
+      toValue: scanDisplayHeightRef.current,
+      duration: 280,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photoFitHeight]);
   const hasFood = Array.isArray(ingredients) && ingredients.length > 0;
   const foodCount = hasFood ? ingredients.length : 0;
   // Read by the reveal animation without making its effect re-run on every edit.
@@ -1030,7 +1071,7 @@ export default function FridgeScannerHero() {
               {/* 60fps Reanimated laser — UI thread, never blocks Gemini */}
               <ScanLaserOverlay
                 active={scanStage === "scanning"}
-                travelDistance={Math.max(scanHeight - 32, 80)}
+                travelDistance={Math.max(scanDisplayHeight - 32, 80)}
               />
 
               <Animated.View
