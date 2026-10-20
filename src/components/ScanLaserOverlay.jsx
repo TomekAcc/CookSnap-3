@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, StyleSheet, Platform } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   Easing,
@@ -97,7 +97,7 @@ export default function ScanLaserOverlay({
     <>
       <Animated.View
         pointerEvents="none"
-        style={[styles.tint, { top: LASER_TOP + 3 }, tintStyle]}
+        style={[styles.tint, { top: LASER_TOP + 3, height: travel + 120 }, tintStyle]}
       />
       <Animated.View
         pointerEvents="none"
@@ -137,9 +137,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    // Long enough to cover the photo from the beam to the bottom at any point
-    // of the pass; the photo container clips the overflow.
-    height: 2000,
+    // Height is set from the travel distance: just enough to cover the photo
+    // from the beam to the bottom edge (a huge layer is costly to move).
     backgroundColor: "rgba(15, 23, 42, 0.26)",
     zIndex: 9,
   },
@@ -157,15 +156,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 3.5,
     zIndex: 11,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#10B981",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.9,
-        shadowRadius: 8,
-      },
-      android: {},
-    }),
   },
   frame: { zIndex: 12 },
   bracket: {

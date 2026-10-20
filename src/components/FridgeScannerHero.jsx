@@ -250,7 +250,6 @@ export default function FridgeScannerHero() {
   const [showAddInput, setShowAddInput] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
-  const [progressPct, setProgressPct] = useState(0);
   const cameraRef = useRef(null);
 
   const photoHeightAnim = useRef(new Animated.Value(COMPACT_HEIGHT)).current;
@@ -261,12 +260,12 @@ export default function FridgeScannerHero() {
   // Brief brightening of the photo at the moment the scan completes.
   const completionFlash = useRef(new Animated.Value(0)).current;
   const ingredientsTranslate = useRef(new Animated.Value(18)).current;
-  const badgePulse = useRef(new Animated.Value(1)).current;
   const radarOpacity = useRef(new Animated.Value(0)).current;
   const radarTranslate = useRef(new Animated.Value(16)).current;
   const stepOpacity = useRef(new Animated.Value(1)).current;
   const stepTranslate = useRef(new Animated.Value(0)).current;
   const progressBarAnim = useRef(new Animated.Value(0)).current;
+  const [barWidth, setBarWidth] = useState(0);
   // Icon "breathing" pulse (scale) — purely cosmetic, looped only while
   // scanStage === "scanning" via the same effect that already drives
   // badgePulse below, so they start/stop together with no separate
@@ -336,7 +335,6 @@ export default function FridgeScannerHero() {
       // resting values with no motion instead of replaying a reveal that
       // already happened once, in a previous mount.
       progressBarAnim.setValue(1);
-      setProgressPct(100);
       return undefined;
     }
 
@@ -349,10 +347,9 @@ export default function FridgeScannerHero() {
       toValue: 1,
       duration: 120,
       easing: Easing.out(Easing.quad),
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start(() => {
       if (cancelled) return;
-      setProgressPct(100);
       // Hold the genuinely-full bar on screen for a beat before letting
       // the shrink/reveal effect below swap the view away — long enough
       // to actually register as "done", short enough not to feel laggy.
@@ -380,7 +377,6 @@ export default function FridgeScannerHero() {
       progressAnimRef.current = null;
       if (scanStage !== "completed") {
         progressBarAnim.setValue(0);
-        setProgressPct(0);
         setCurrentStepIdx(0);
         shrinkStartedRef.current = false;
       }
@@ -404,12 +400,8 @@ export default function FridgeScannerHero() {
     photoHeightAnim.setValue(scanDisplayHeightRef.current);
     shrinkStartedRef.current = false;
     setCurrentStepIdx(0);
-    setProgressPct(0);
     progressBarAnim.setValue(0);
 
-    const listenerId = progressBarAnim.addListener(({ value }) => {
-      setProgressPct(Math.min(100, Math.round(value * 100)));
-    });
 
     // Two-phase, never-lies-about-100% approach. This has been "fixed"
     // twice before and regressed both times, so here's the actual
@@ -448,7 +440,7 @@ export default function FridgeScannerHero() {
       toValue: PHASE1_PROGRESS,
       duration: TOTAL_SCAN_DURATION,
       easing: Easing.linear,
-      useNativeDriver: false,
+      useNativeDriver: true,
     });
     progressAnimRef.current = phase1Anim;
 
@@ -469,7 +461,6 @@ export default function FridgeScannerHero() {
 
     return () => {
       stepTimers.forEach((id) => id && clearTimeout(id));
-      progressBarAnim.removeListener(listenerId);
       progressAnimRef.current?.stop?.();
       progressAnimRef.current = null;
     };
@@ -538,23 +529,6 @@ export default function FridgeScannerHero() {
         }),
       ]).start();
 
-      const pulseLoop = Animated.loop(
-        Animated.sequence([
-          Animated.timing(badgePulse, {
-            toValue: 0.7,
-            duration: 700,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(badgePulse, {
-            toValue: 1,
-            duration: 700,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ])
-      );
-      pulseLoop.start();
 
       // Icon "breathing" — slow scale pulse so the Vision Radar icon reads
       // as actively working, not a static glyph. 1.6s cycle (slower than
@@ -578,7 +552,6 @@ export default function FridgeScannerHero() {
       iconPulseLoop.start();
 
       return () => {
-        pulseLoop.stop();
         iconPulseLoop.stop();
       };
     }
@@ -663,7 +636,6 @@ export default function FridgeScannerHero() {
     ingredientsTranslate,
     chipReveal,
     completionFlash,
-    badgePulse,
     iconPulse,
     radarOpacity,
     radarTranslate,
@@ -730,12 +702,6 @@ export default function FridgeScannerHero() {
   };
 
 
-  // The camera has no gallery of its own. Close it first, then open the picker
-  // once the full-screen modal is gone (two native presentations at once fail).
-  const handleGalleryFromCamera = () => {
-    setCameraOpen(false);
-    setTimeout(() => handlePickFromGallery(), 450);
-  };
   const handlePickFromGallery = async () => {
     if (!canScanFridge) {
       setProModalOpen(true);
@@ -1304,7 +1270,11 @@ export default function FridgeScannerHero() {
                     </View>
                   </Animated.View>
 
+                  {/* Slides a full-width fill in with a native-driven transform
+                      instead of animating its width, which re-laid the card out
+                      on the JS thread every frame. */}
                   <View
+                    onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
                     style={{
                       width: "100%",
                       backgroundColor: isDark ? "#1E293B" : "#F1F5F9",
@@ -1313,17 +1283,24 @@ export default function FridgeScannerHero() {
                       overflow: "hidden",
                     }}
                   >
-                    <Animated.View
-                      style={{
-                        height: "100%",
-                        borderRadius: 999,
-                        backgroundColor: "#10B981",
-                        width: progressBarAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: ["0%", "100%"],
-                        }),
-                      }}
-                    />
+                    {barWidth > 0 ? (
+                      <Animated.View
+                        style={{
+                          width: barWidth,
+                          height: "100%",
+                          borderRadius: 999,
+                          backgroundColor: "#10B981",
+                          transform: [
+                            {
+                              translateX: progressBarAnim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [-barWidth, 0],
+                              }),
+                            },
+                          ],
+                        }}
+                      />
+                    ) : null}
                   </View>
                 </View>
               </Animated.View>
@@ -1433,6 +1410,22 @@ export default function FridgeScannerHero() {
                           <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 12 }}>
                             {t("scanner.add")}
                           </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setShowAddInput(false);
+                            setNewItemName("");
+                          }}
+                          activeOpacity={0.7}
+                          accessibilityRole="button"
+                          accessibilityLabel={t("recipeDetail.cancel")}
+                          style={{
+                            width: 38,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <X size={18} color={colors.textSecondary} />
                         </TouchableOpacity>
                       </View>
                     ) : (
@@ -1647,6 +1640,22 @@ export default function FridgeScannerHero() {
                             {t("scanner.add")}
                           </Text>
                         </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setShowAddInput(false);
+                            setNewItemName("");
+                          }}
+                          activeOpacity={0.7}
+                          accessibilityRole="button"
+                          accessibilityLabel={t("recipeDetail.cancel")}
+                          style={{
+                            width: 38,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <X size={18} color={colors.textSecondary} />
+                        </TouchableOpacity>
                       </View>
                     )}
 
@@ -1792,31 +1801,6 @@ export default function FridgeScannerHero() {
               >
                 {t("scanner.pointAtFridge")}
               </Text>
-              <TouchableOpacity
-                onPress={handleGalleryFromCamera}
-                activeOpacity={0.8}
-                accessibilityRole="button"
-                accessibilityLabel={t("scanner.fromGallery")}
-                style={{ position: "absolute", left: 28, bottom: 6, alignItems: "center" }}
-              >
-                <View
-                  style={{
-                    width: 52,
-                    height: 52,
-                    borderRadius: 26,
-                    backgroundColor: "rgba(255,255,255,0.2)",
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.45)",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <ImageIcon size={22} color="#FFFFFF" />
-                </View>
-                <Text style={{ color: "#FFFFFF", fontSize: 11, fontWeight: "600", marginTop: 4 }}>
-                  {t("scanner.fromGallery")}
-                </Text>
-              </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleCapture}
                 activeOpacity={0.8}
