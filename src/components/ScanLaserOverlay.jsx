@@ -66,16 +66,19 @@ export default function ScanLaserOverlay({
     };
   }, [active, progress, breathe]);
 
-  const travel = Math.max(travelDistance, 80);
+  // Runs past the bottom edge (+40) so the beam and the tint below it leave the
+  // photo completely at the end of the pass; otherwise a strip of tint stayed
+  // at the bottom and vanished abruptly when the next pass began.
+  const travel = Math.max(travelDistance, 80) + 40;
 
   // Fades the beam and trail in at the top and out at the bottom so the jump
   // back to the start is never seen.
   const beamStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(progress.value, [0, 0.05, 0.93, 1], [0, 1, 1, 0]),
+    opacity: interpolate(progress.value, [0, 0.05, 0.86, 0.98], [0, 1, 1, 0]),
     transform: [{ translateY: progress.value * travel }],
   }));
   const trailStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(progress.value, [0, 0.12, 0.93, 1], [0, 1, 1, 0]),
+    opacity: interpolate(progress.value, [0, 0.12, 0.86, 0.98], [0, 1, 1, 0]),
     transform: [{ translateY: progress.value * travel - TRAIL_HEIGHT + 3 }],
   }));
   // Tint over everything below the beam; it rides down with it, so the part

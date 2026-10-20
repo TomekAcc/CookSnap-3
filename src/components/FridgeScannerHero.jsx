@@ -1363,6 +1363,82 @@ export default function FridgeScannerHero() {
                     >
                       {t("scanner.noItemsDetected")}
                     </Text>
+
+                    {/* The message offers "add manually", so the way to do it has
+                        to be right here (the normal card's Add button only exists
+                        once there is a list). */}
+                    {showAddInput ? (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignSelf: "stretch",
+                          marginTop: 14,
+                          gap: 8,
+                        }}
+                      >
+                        <TextInput
+                          placeholder={t("scanner.addItemPlaceholder")}
+                          placeholderTextColor={colors.textSecondary}
+                          value={newItemName}
+                          onChangeText={setNewItemName}
+                          onSubmitEditing={handleAddItem}
+                          returnKeyType="done"
+                          autoFocus
+                          style={{
+                            flex: 1,
+                            backgroundColor: colors.inputBg,
+                            borderWidth: 1,
+                            borderColor: colors.cardBorder,
+                            borderRadius: 12,
+                            paddingHorizontal: 12,
+                            paddingVertical: 8,
+                            fontSize: 14,
+                            color: colors.textPrimary,
+                          }}
+                        />
+                        <TouchableOpacity
+                          onPress={handleAddItem}
+                          activeOpacity={0.85}
+                          style={{
+                            backgroundColor: "#10B981",
+                            paddingHorizontal: 16,
+                            justifyContent: "center",
+                            borderRadius: 12,
+                          }}
+                        >
+                          <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 12 }}>
+                            {t("scanner.add")}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => setShowAddInput(true)}
+                        activeOpacity={0.8}
+                        accessibilityRole="button"
+                        style={{
+                          marginTop: 14,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          backgroundColor: "#059669",
+                          paddingHorizontal: 18,
+                          paddingVertical: 10,
+                          borderRadius: 999,
+                        }}
+                      >
+                        <Plus size={16} color="#FFFFFF" />
+                        <Text
+                          style={{
+                            color: "#FFFFFF",
+                            fontSize: 14,
+                            fontWeight: "700",
+                            marginLeft: 6,
+                          }}
+                        >
+                          {t("scanner.add")}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 ) : (
                   <View
