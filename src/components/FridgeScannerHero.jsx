@@ -92,7 +92,7 @@ function stripInlineEmojis(str) {
  */
 function getScanHeight() {
   const h = Dimensions.get("window").height;
-  return Math.round(Math.min(h * 0.48, 360));
+  return Math.round(Math.min(h * 0.58, 470));
 }
 
 function resolveScanStage(hasScanned, isScanning) {
@@ -174,6 +174,9 @@ export default function FridgeScannerHero() {
   const scanHeight = useMemo(() => getScanHeight(), []);
   const hasFood = Array.isArray(ingredients) && ingredients.length > 0;
   const foodCount = hasFood ? ingredients.length : 0;
+  // Read by the reveal animation without making its effect re-run on every edit.
+  const ingredientCountRef = useRef(0);
+  ingredientCountRef.current = foodCount;
   const insets = useSafeAreaInsets();
   const shutterBottom = Math.max(insets.bottom + 28, 40);
 
@@ -187,6 +190,9 @@ export default function FridgeScannerHero() {
 
   const photoHeightAnim = useRef(new Animated.Value(COMPACT_HEIGHT)).current;
   const ingredientsOpacity = useRef(new Animated.Value(0)).current;
+  // 0 -> 1 once per fresh scan: drives the detected chips appearing one after
+  // another. Starts at 1 so a restored or returning-to-the-tab list just shows.
+  const chipReveal = useRef(new Animated.Value(1)).current;
   const ingredientsTranslate = useRef(new Animated.Value(18)).current;
   const badgePulse = useRef(new Animated.Value(1)).current;
   const radarOpacity = useRef(new Animated.Value(0)).current;
@@ -441,6 +447,7 @@ export default function FridgeScannerHero() {
     if (scanStage === "scanning") {
       ingredientsOpacity.setValue(0);
       ingredientsTranslate.setValue(18);
+      chipReveal.setValue(0);
 
       Animated.timing(photoHeightAnim, {
         toValue: scanHeight,
@@ -538,6 +545,16 @@ export default function FridgeScannerHero() {
         useNativeDriver: false,
       }).start();
 
+      // The end of the wait is the payoff: let the detected items appear one
+      // after another (~1s at most) instead of the whole list landing at once.
+      Animated.timing(chipReveal, {
+        toValue: 1,
+        duration: 450 + Math.min(ingredientCountRef.current, 12) * 70,
+        delay: 250,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }).start();
+
       Animated.parallel([
         Animated.spring(ingredientsOpacity, {
           toValue: 1,
@@ -560,6 +577,7 @@ export default function FridgeScannerHero() {
       photoHeightAnim.setValue(COMPACT_HEIGHT);
       ingredientsOpacity.setValue(1);
       ingredientsTranslate.setValue(0);
+      chipReveal.setValue(1);
       radarOpacity.setValue(0);
     }
   }, [
@@ -568,6 +586,7 @@ export default function FridgeScannerHero() {
     photoHeightAnim,
     ingredientsOpacity,
     ingredientsTranslate,
+    chipReveal,
     badgePulse,
     iconPulse,
     radarOpacity,
@@ -1397,7 +1416,8 @@ export default function FridgeScannerHero() {
                         rowGap: 5,
                       }}
                     >
-                      {(ingredients || []).map((item) => {
+                      {(ingredients || []).map((item, index, list) => {
+                        const count = list.length;
                         const cleanName =
                           stripInlineEmojis(item?.name) ||
                           String(item?.name || "").trim() ||
@@ -1411,9 +1431,30 @@ export default function FridgeScannerHero() {
                           (typeof item?.emoji === "string" && item.emoji.trim());
                         const style = getIngredientStyle(cleanName);
                         const rawEmoji = aiIcon || style.emoji || "";
+                        const slot = Math.min(index, 11) / Math.min(Math.max(count, 1), 12);
+                        const revealStart = slot * 0.6;
                         return (
-                          <PillTag
+                          <Animated.View
                             key={item.id}
+                            style={{
+                              width: "49%",
+                              opacity: chipReveal.interpolate({
+                                inputRange: [revealStart, revealStart + 0.4],
+                                outputRange: [0, 1],
+                                extrapolate: "clamp",
+                              }),
+                              transform: [
+                                {
+                                  translateY: chipReveal.interpolate({
+                                    inputRange: [revealStart, revealStart + 0.4],
+                                    outputRange: [10, 0],
+                                    extrapolate: "clamp",
+                                  }),
+                                },
+                              ],
+                            }}
+                          >
+                          <PillTag
                             emoji={GENERIC_EMOJI.has(rawEmoji) ? "" : rawEmoji}
                             label={cleanName}
                             onRemove={() => removeIngredient(item.id)}
@@ -1428,7 +1469,7 @@ export default function FridgeScannerHero() {
                             reserveEmojiSpace
                             style={{
                               ...getDetectedPillStyle(isDark, colors),
-                              width: "49%",
+                              width: "100%",
                               justifyContent: "flex-start",
                             }}
                             labelStyle={{
@@ -1438,6 +1479,7 @@ export default function FridgeScannerHero() {
                               color: isDark ? colors.textPrimary : "#1E293B",
                             }}
                           />
+                          </Animated.View>
                         );
                       })}
                     </View>
