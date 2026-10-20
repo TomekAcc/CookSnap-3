@@ -18,6 +18,7 @@ import {
   Camera,
   Image as ImageIcon,
   Plus,
+  SearchX,
   X,
   CheckCircle2,
   Zap,
@@ -1341,27 +1342,41 @@ export default function FridgeScannerHero() {
                   >
                     <View
                       style={{
-                        width: 48,
-                        height: 48,
+                        width: 52,
+                        height: 52,
                         borderRadius: 16,
-                        backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
+                        backgroundColor: colors.accentGreenSoft || "#ECFDF5",
+                        borderWidth: 1,
+                        borderColor: colors.accentGreenBorder || "#D1FAE5",
                         alignItems: "center",
                         justifyContent: "center",
-                        marginBottom: 10,
+                        marginBottom: 12,
                       }}
                     >
-                      <Text style={{ fontSize: 22 }}>🔍</Text>
+                      <SearchX size={26} color="#059669" />
                     </View>
                     <Text
                       style={{
-                        color: colors.textSecondary,
-                        fontSize: 13,
-                        fontWeight: "600",
+                        color: colors.textPrimary,
+                        fontSize: 17,
+                        fontWeight: "800",
+                        letterSpacing: -0.2,
                         textAlign: "center",
-                        lineHeight: 18,
                       }}
                     >
-                      {t("scanner.noItemsDetected")}
+                      {t("scanner.noItemsTitle")}
+                    </Text>
+                    <Text
+                      style={{
+                        color: colors.textSecondary,
+                        fontSize: 14,
+                        fontWeight: "500",
+                        textAlign: "center",
+                        lineHeight: 20,
+                        marginTop: 6,
+                      }}
+                    >
+                      {t("scanner.noItemsTip")}
                     </Text>
 
                     {/* The message offers "add manually", so the way to do it has
@@ -1412,32 +1427,71 @@ export default function FridgeScannerHero() {
                         </TouchableOpacity>
                       </View>
                     ) : (
-                      <TouchableOpacity
-                        onPress={() => setShowAddInput(true)}
-                        activeOpacity={0.8}
-                        accessibilityRole="button"
+                      <View
                         style={{
-                          marginTop: 14,
                           flexDirection: "row",
-                          alignItems: "center",
-                          backgroundColor: "#059669",
-                          paddingHorizontal: 18,
-                          paddingVertical: 10,
-                          borderRadius: 999,
+                          alignSelf: "stretch",
+                          marginTop: 16,
+                          gap: 10,
                         }}
                       >
-                        <Plus size={16} color="#FFFFFF" />
-                        <Text
+                        <TouchableOpacity
+                          onPress={startScanAgain}
+                          activeOpacity={0.85}
+                          accessibilityRole="button"
                           style={{
-                            color: "#FFFFFF",
-                            fontSize: 14,
-                            fontWeight: "700",
-                            marginLeft: 6,
+                            flex: 1,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "#059669",
+                            paddingVertical: 13,
+                            borderRadius: 16,
                           }}
                         >
-                          {t("scanner.add")}
-                        </Text>
-                      </TouchableOpacity>
+                          <Camera size={17} color="#FFFFFF" />
+                          <Text
+                            style={{
+                              color: "#FFFFFF",
+                              fontSize: 15,
+                              fontWeight: "700",
+                              marginLeft: 8,
+                              flexShrink: 1,
+                            }}
+                            numberOfLines={1}
+                          >
+                            {t("scanner.tryAnotherPhoto")}
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => setShowAddInput(true)}
+                          activeOpacity={0.8}
+                          accessibilityRole="button"
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: colors.inputBg,
+                            borderWidth: 1,
+                            borderColor: colors.cardBorder,
+                            paddingHorizontal: 18,
+                            paddingVertical: 13,
+                            borderRadius: 16,
+                          }}
+                        >
+                          <Plus size={16} color={colors.textPrimary} />
+                          <Text
+                            style={{
+                              color: colors.textPrimary,
+                              fontSize: 15,
+                              fontWeight: "700",
+                              marginLeft: 6,
+                            }}
+                          >
+                            {t("scanner.add")}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
                     )}
                   </View>
                 ) : (
