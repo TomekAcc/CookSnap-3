@@ -92,7 +92,9 @@ function stripInlineEmojis(str) {
  */
 function getScanHeight() {
   const h = Dimensions.get("window").height;
-  return Math.round(Math.min(h * 0.58, 470));
+  // Fill the screen: everything else on it (header, status card, bottom inset)
+  // takes about 310pt, so the photo gets the rest instead of leaving a blank band.
+  return Math.round(Math.max(300, Math.min(h - 310, 560)));
 }
 
 function resolveScanStage(hasScanned, isScanning) {
