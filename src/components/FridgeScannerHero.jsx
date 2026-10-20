@@ -1176,7 +1176,9 @@ export default function FridgeScannerHero() {
                 </Animated.View>
               ) : null}
 
-              {scanStage === "completed" ? (
+              {/* With nothing detected, Take Photo / From Gallery in the card below
+                  already do what Scan More would, so it would only be a duplicate. */}
+              {scanStage === "completed" && hasFood ? (
                 <TouchableOpacity
                   ref={scanMoreButtonRef}
                   onPress={handleScanMore}
@@ -1434,6 +1436,7 @@ export default function FridgeScannerHero() {
                         </TouchableOpacity>
                       </View>
                     ) : (
+                      <>
                       <View
                         style={{
                           flexDirection: "row",
@@ -1443,7 +1446,7 @@ export default function FridgeScannerHero() {
                         }}
                       >
                         <TouchableOpacity
-                          onPress={startScanAgain}
+                          onPress={handleOpenCamera}
                           activeOpacity={0.85}
                           accessibilityRole="button"
                           style={{
@@ -1467,38 +1470,65 @@ export default function FridgeScannerHero() {
                             }}
                             numberOfLines={1}
                           >
-                            {t("scanner.tryAnotherPhoto")}
+                            {t("scanner.takePhoto")}
                           </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                          onPress={() => setShowAddInput(true)}
+                          onPress={handlePickFromGallery}
                           activeOpacity={0.8}
                           accessibilityRole="button"
                           style={{
+                            flex: 1,
                             flexDirection: "row",
                             alignItems: "center",
                             justifyContent: "center",
                             backgroundColor: colors.inputBg,
                             borderWidth: 1,
                             borderColor: colors.cardBorder,
-                            paddingHorizontal: 18,
                             paddingVertical: 13,
                             borderRadius: 16,
                           }}
                         >
-                          <Plus size={16} color={colors.textPrimary} />
+                          <ImageIcon size={17} color="#059669" />
                           <Text
                             style={{
                               color: colors.textPrimary,
                               fontSize: 15,
                               fontWeight: "700",
-                              marginLeft: 6,
+                              marginLeft: 8,
+                              flexShrink: 1,
                             }}
+                            numberOfLines={1}
                           >
-                            {t("scanner.add")}
+                            {t("scanner.fromGallery")}
                           </Text>
                         </TouchableOpacity>
                       </View>
+                      <TouchableOpacity
+                        onPress={() => setShowAddInput(true)}
+                        activeOpacity={0.7}
+                        accessibilityRole="button"
+                        style={{
+                          marginTop: 12,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          paddingVertical: 6,
+                          paddingHorizontal: 10,
+                        }}
+                      >
+                        <Plus size={15} color="#059669" />
+                        <Text
+                          style={{
+                            color: "#059669",
+                            fontSize: 14,
+                            fontWeight: "700",
+                            marginLeft: 5,
+                          }}
+                        >
+                          {t("scanner.add")}
+                        </Text>
+                      </TouchableOpacity>
+                      </>
                     )}
                   </View>
                 ) : (
