@@ -19,17 +19,13 @@ import {
   Image as ImageIcon,
   Plus,
   X,
-  RefreshCw,
   CheckCircle2,
   Zap,
 } from "lucide-react-native";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
-import {
-  TOTAL_SCAN_DURATION,
-  SCAN_STEPS,
-} from "../constants/scanChoreography";
+import { TOTAL_SCAN_DURATION } from "../constants/scanChoreography";
 import { getIngredientStyle } from "../utils/imageUtils";
 import { startAsymptoticCreep } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
@@ -42,6 +38,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 // Placeholders the vision model is told never to use but sometimes does; a
 // chip with no emoji reads better than a generic jar or box.
 const GENERIC_EMOJI = new Set(["🫙", "🛒", "📦", "❓", "🍽️", "🍽"]);
+
+// What the scan screen says while the AI works, and when each line appears
+// (ms after the scan starts). Deliberately generic: the model sees the whole
+// photo at once, so it never "scans shelves" one after another.
+const SCAN_STATUS_KEYS = [
+  "scanner.statusLooking",
+  "scanner.statusSpotting",
+  "scanner.statusAlmost",
+  "scanner.statusSlow",
+];
+const SCAN_STATUS_AT_MS = [0, 2500, 6500, 14000];
+// Where the bar sits when the scripted first phase ends; it creeps on from here.
+const PHASE1_PROGRESS = 0.6;
 
 /** Compact header after AI detection completes. */
 const COMPACT_HEIGHT = 120;
@@ -83,7 +92,7 @@ function stripInlineEmojis(str) {
  */
 function getScanHeight() {
   const h = Dimensions.get("window").height;
-  return Math.round(Math.min(h * 0.55, 420));
+  return Math.round(Math.min(h * 0.48, 360));
 }
 
 function resolveScanStage(hasScanned, isScanning) {
@@ -363,7 +372,7 @@ export default function FridgeScannerHero() {
     // actually takes, never claiming "100%" and never going visibly flat,
     // until real completion overrides it below.
     const phase1Anim = Animated.timing(progressBarAnim, {
-      toValue: 0.92,
+      toValue: PHASE1_PROGRESS,
       duration: TOTAL_SCAN_DURATION,
       easing: Easing.linear,
       useNativeDriver: false,
@@ -372,21 +381,21 @@ export default function FridgeScannerHero() {
 
     phase1Anim.start(({ finished }) => {
       if (!finished) return;
-      setCurrentStepIdx(SCAN_STEPS.length - 1);
       endScanChoreography();
-      const stopCreep = startAsymptoticCreep(progressBarAnim, { from: 0.92 });
+      const stopCreep = startAsymptoticCreep(progressBarAnim, {
+        from: PHASE1_PROGRESS,
+        ceiling: 0.96,
+        decayMs: 7000,
+      });
       progressAnimRef.current = { stop: stopCreep };
     });
 
-    const stepDuration = TOTAL_SCAN_DURATION / SCAN_STEPS.length;
-    const stepInterval = setInterval(() => {
-      setCurrentStepIdx((prev) =>
-        prev < SCAN_STEPS.length - 1 ? prev + 1 : prev
-      );
-    }, stepDuration);
+    const stepTimers = SCAN_STATUS_AT_MS.map((ms, idx) =>
+      idx === 0 ? null : setTimeout(() => setCurrentStepIdx(idx), ms)
+    );
 
     return () => {
-      clearInterval(stepInterval);
+      stepTimers.forEach((id) => id && clearTimeout(id));
       progressBarAnim.removeListener(listenerId);
       progressAnimRef.current?.stop?.();
       progressAnimRef.current = null;
@@ -992,43 +1001,6 @@ export default function FridgeScannerHero() {
                 travelDistance={Math.max(scanHeight - 32, 80)}
               />
 
-              {scanStage === "scanning" && (
-                <Animated.View
-                  style={{
-                    position: "absolute",
-                    top: 16,
-                    left: 14,
-                    right: 54,
-                    opacity: badgePulse,
-                    zIndex: 20,
-                    backgroundColor: "rgba(15, 23, 42, 0.85)",
-                    paddingHorizontal: 14,
-                    paddingVertical: 9,
-                    borderRadius: 9999,
-                    borderWidth: 1,
-                    borderColor: "rgba(255,255,255,0.2)",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <RefreshCw size={13} color="#34D399" />
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      color: "#FFFFFF",
-                      fontSize: 12,
-                      fontWeight: "800",
-                      marginLeft: 8,
-                      letterSpacing: 0.3,
-                      flexShrink: 1,
-                    }}
-                  >
-                    {t("scanner.scanningLabel")}
-                  </Text>
-                </Animated.View>
-              )}
-
               {scanStage === "completed" && hasFood ? (
                 // This count is the actual proof the scan worked — the most
                 // important confirmation on this screen — so it gets a
@@ -1152,145 +1124,83 @@ export default function FridgeScannerHero() {
                     padding: 16,
                   }}
                 >
-                  {/* Design decision, per direct request: the "ACTIVE SCAN"
-                      badge that used to sit here was removed outright
-                      rather than reworked to survive every language's text
-                      length — it was redundant with the "Skanowanie..."
-                      pill on the photo above AND the step label right
-                      below, three simultaneous "it's scanning" signals on
-                      one screen. Removing it is also the permanent fix for
-                      the truncation bug this card had: with nothing
-                      fighting the title for row width, there's no language
-                      length that can overflow it. The icon now pulses
-                      (iconPulse, scale) so the row still reads as "live"
-                      without needing the badge for that. */}
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Animated.View
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 12,
-                        backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginRight: 8,
-                        flexShrink: 0,
-                        transform: [{ scale: iconPulse }],
-                      }}
-                    >
-                      <Zap size={18} color="#059669" />
-                    </Animated.View>
-                    <Text
-                      style={{
-                        color: colors.textPrimary,
-                        fontWeight: "800",
-                        fontSize: 14,
-                        flexShrink: 1,
-                        minWidth: 0,
-                      }}
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                    >
-                      {t("scanner.visionRadarTitle")}
-                    </Text>
-                  </View>
-
-                  {/* Bumped from fontSize 12/22 — per a direct design
-                      request to make this row (what's actually happening
-                      right now) the clear visual focus of the card, with
-                      the progress row below receding in comparison. */}
+                  {/* One status area instead of four statements of the same
+                      thing (pill on the photo, "Vision Radar" title, step box,
+                      percent). The line says what is happening in plain words;
+                      the bar carries no percent because the AI returns the whole
+                      result at once, so any number would be an estimate. */}
                   <Animated.View
                     style={{
-                      backgroundColor: colors.inputBg,
-                      borderRadius: 16,
-                      padding: 12,
-                      borderWidth: 1,
-                      borderColor: colors.cardBorder,
                       flexDirection: "row",
                       alignItems: "center",
                       opacity: stepOpacity,
                       transform: [{ translateY: stepTranslate }],
                     }}
                   >
-                    <Text style={{ fontSize: 24, marginRight: 12 }}>
-                      {SCAN_STEPS[currentStepIdx].icon}
-                    </Text>
-                    <Text
+                    <Animated.View
                       style={{
-                        color: colors.textPrimary,
-                        fontWeight: "800",
-                        fontSize: 14,
-                        flex: 1,
+                        width: 40,
+                        height: 40,
+                        borderRadius: 14,
+                        backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginRight: 12,
+                        flexShrink: 0,
+                        transform: [{ scale: iconPulse }],
                       }}
-                      numberOfLines={2}
-                      ellipsizeMode="tail"
                     >
-                      {scanningLabel ||
-                        t(SCAN_STEPS[currentStepIdx].textKey) ||
-                        t("scanner.analyzingLabel")}
-                    </Text>
+                      <Zap size={20} color="#059669" />
+                    </Animated.View>
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text
+                        style={{
+                          color: colors.textPrimary,
+                          fontWeight: "800",
+                          fontSize: 16,
+                          letterSpacing: -0.2,
+                        }}
+                        numberOfLines={2}
+                      >
+                        {t(SCAN_STATUS_KEYS[currentStepIdx])}
+                      </Text>
+                      {/* Only when there is already a list to add to; on a first scan "adding new ingredients" is just noise. */}
+                      {scanningLabel && hasFood ? (
+                        <Text
+                          style={{
+                            color: colors.textSecondary,
+                            fontWeight: "500",
+                            fontSize: 13,
+                            marginTop: 2,
+                          }}
+                          numberOfLines={2}
+                        >
+                          {scanningLabel}
+                        </Text>
+                      ) : null}
+                    </View>
                   </Animated.View>
 
-                  <View style={{ gap: 6 }}>
-                    <View
+                  <View
+                    style={{
+                      width: "100%",
+                      backgroundColor: isDark ? "#1E293B" : "#F1F5F9",
+                      height: 8,
+                      borderRadius: 999,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <Animated.View
                       style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingHorizontal: 2,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: colors.textSecondary,
-                          fontSize: 10,
-                          fontWeight: "700",
-                          flexShrink: 1,
-                          minWidth: 0,
-                        }}
-                        numberOfLines={1}
-                        ellipsizeMode="tail"
-                      >
-                        {t("scanner.scanProgress")}
-                      </Text>
-                      <Text
-                        style={{
-                          color: colors.textSecondary,
-                          fontSize: 11,
-                          fontWeight: "800",
-                          flexShrink: 0,
-                          marginLeft: 8,
-                        }}
-                      >
-                        {progressPct}%
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        width: "100%",
-                        backgroundColor: isDark ? "#1E293B" : "#F1F5F9",
-                        height: 8,
+                        height: "100%",
                         borderRadius: 999,
-                        overflow: "hidden",
+                        backgroundColor: "#10B981",
+                        width: progressBarAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ["0%", "100%"],
+                        }),
                       }}
-                    >
-                      <Animated.View
-                        style={{
-                          height: "100%",
-                          borderRadius: 999,
-                          backgroundColor: "#10B981",
-                          width: progressBarAnim.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: ["0%", "100%"],
-                          }),
-                        }}
-                      />
-                    </View>
+                    />
                   </View>
                 </View>
               </Animated.View>
