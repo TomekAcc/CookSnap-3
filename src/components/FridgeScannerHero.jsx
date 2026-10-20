@@ -97,6 +97,33 @@ function getScanHeight() {
   return Math.round(Math.max(300, Math.min(h - 310, 560)));
 }
 
+/**
+ * Height the photo needs at the card's width to show whole (its own shape),
+ * or null when the size can't be read quickly. Never rejects.
+ */
+function measureFitHeight(uri) {
+  const contentWidth = Dimensions.get("window").width - 40;
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(null), 500);
+    try {
+      Image.getSize(
+        uri,
+        (w, h) => {
+          clearTimeout(timer);
+          resolve(w && h ? Math.max(240, Math.round((contentWidth * h) / w)) : null);
+        },
+        () => {
+          clearTimeout(timer);
+          resolve(null);
+        }
+      );
+    } catch {
+      clearTimeout(timer);
+      resolve(null);
+    }
+  });
+}
+
 function resolveScanStage(hasScanned, isScanning) {
   if (!hasScanned) return "idle";
   if (isScanning) return "scanning";
@@ -186,15 +213,9 @@ export default function FridgeScannerHero() {
       return undefined;
     }
     let cancelled = false;
-    const contentWidth = Dimensions.get("window").width - 40;
-    Image.getSize(
-      fridgePhoto,
-      (w, h) => {
-        if (cancelled || !w || !h) return;
-        setPhotoFitHeight(Math.max(240, Math.round((contentWidth * h) / w)));
-      },
-      () => {}
-    );
+    measureFitHeight(fridgePhoto).then((fit) => {
+      if (!cancelled && fit) setPhotoFitHeight(fit);
+    });
     return () => {
       cancelled = true;
     };
@@ -379,7 +400,7 @@ export default function FridgeScannerHero() {
     // above resets it to false the moment a fresh scan starts).
     if (completionHandledRef.current) return undefined;
 
-    photoHeightAnim.setValue(scanHeight);
+    photoHeightAnim.setValue(scanDisplayHeightRef.current);
     shrinkStartedRef.current = false;
     setCurrentStepIdx(0);
     setProgressPct(0);
@@ -495,7 +516,7 @@ export default function FridgeScannerHero() {
       chipReveal.setValue(0);
 
       Animated.timing(photoHeightAnim, {
-        toValue: scanHeight,
+        toValue: scanDisplayHeightRef.current,
         duration: 400,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
@@ -677,7 +698,12 @@ export default function FridgeScannerHero() {
 
   const beginInstantScan = async (uri, source) => {
     if (!uri) return;
-    photoHeightAnim.setValue(scanHeight);
+    // Measure the photo first so the frame opens at its final shape; resizing
+    // it after the scan starts read as a sudden zoom.
+    const fit = await measureFitHeight(uri);
+    if (fit) setPhotoFitHeight(fit);
+    scanDisplayHeightRef.current = fit ? Math.min(scanHeight, fit) : scanHeight;
+    photoHeightAnim.setValue(scanDisplayHeightRef.current);
     try {
       await completeScan?.(uri, source);
     } catch (err) {
@@ -1186,7 +1212,7 @@ export default function FridgeScannerHero() {
 
               <PerfectCloseButton
                 isFullScreen={false}
-                corner={scanStage === "completed" ? "left" : "right"}
+                corner="left"
                 onPress={startScanAgain}
                 accessibilityLabel={t("a11y.dismissFridgePhoto")}
               />
