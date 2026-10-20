@@ -193,6 +193,8 @@ export default function FridgeScannerHero() {
   // 0 -> 1 once per fresh scan: drives the detected chips appearing one after
   // another. Starts at 1 so a restored or returning-to-the-tab list just shows.
   const chipReveal = useRef(new Animated.Value(1)).current;
+  // Brief brightening of the photo at the moment the scan completes.
+  const completionFlash = useRef(new Animated.Value(0)).current;
   const ingredientsTranslate = useRef(new Animated.Value(18)).current;
   const badgePulse = useRef(new Animated.Value(1)).current;
   const radarOpacity = useRef(new Animated.Value(0)).current;
@@ -545,6 +547,14 @@ export default function FridgeScannerHero() {
         useNativeDriver: false,
       }).start();
 
+      completionFlash.setValue(0.4);
+      Animated.timing(completionFlash, {
+        toValue: 0,
+        duration: 650,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }).start();
+
       // The end of the wait is the payoff: let the detected items appear one
       // after another (~1s at most) instead of the whole list landing at once.
       Animated.timing(chipReveal, {
@@ -587,6 +597,7 @@ export default function FridgeScannerHero() {
     ingredientsOpacity,
     ingredientsTranslate,
     chipReveal,
+    completionFlash,
     badgePulse,
     iconPulse,
     radarOpacity,
@@ -1018,6 +1029,20 @@ export default function FridgeScannerHero() {
               <ScanLaserOverlay
                 active={scanStage === "scanning"}
                 travelDistance={Math.max(scanHeight - 32, 80)}
+              />
+
+              <Animated.View
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: "#FFFFFF",
+                  opacity: completionFlash,
+                  zIndex: 15,
+                }}
               />
 
               {scanStage === "completed" && hasFood ? (
