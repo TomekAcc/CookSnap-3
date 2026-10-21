@@ -723,8 +723,8 @@ Return ONLY JSON: {"category":"...","icon":"..."}`,
  * the confirmed real bug a user reported: scanning a photo with nothing
  * pantry-related in it "found 4 items" every single time, always the same
  * four. That's the opposite of this app's own stated policy — brand-new
- * users start with a clean, empty pantry, no seeded staples (see
- * safePantryInit in CookAIContext) — so silently reintroducing fake
+ * users start with a clean, empty pantry, no seeded staples (see the
+ * pantryItems initial state in InventoryContext) — so silently reintroducing fake
  * staples on a scan failure was never consistent with that to begin with.
  * Matches getFallbackFridgeItems' identical fix above.
  */

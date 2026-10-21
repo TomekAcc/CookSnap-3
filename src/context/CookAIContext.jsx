@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { Directory, File, Paths } from "expo-file-system";
 import {
   RECIPES,
   FALLBACK_RECIPES,
@@ -16,297 +15,102 @@ import {
   modifyRecipeWithGemini,
   RECIPES_PER_SCAN,
 } from "../services/geminiRecipes";
+import { persistPhotoToDevice } from "../utils/photoStorage";
+import { appendFeedbackLog } from "../storage/feedbackLog";
+import { enrichRecipes, safeStorageRead, safeVisibleRecipes } from "../utils/recipeLists";
 import {
-  stampRecipeEmojis,
-} from "../utils/imageUtils";
-import { DIETARY_OPTIONS_DEFAULT } from "../data/dietaryOptions";
-import * as Localization from "expo-localization";
-import {
-  DEFAULT_LANGUAGE_ID,
-  LANGUAGE_OPTIONS,
-  getLanguageById,
-  matchDeviceLanguage,
-} from "../data/languageOptions";
-import { translate } from "../i18n";
+  FREE_DAILY_FRIDGE_SCANS,
+  FREE_DAILY_PANTRY_SCANS,
+  FREE_DAILY_RECIPE_GENERATIONS,
+  FREE_RECIPES_PER_GENERATION,
+} from "../constants/limits";
 import { useModalState } from "./ModalContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { SAMPLE_FRIDGE_ITEMS } from "../constants/sampleFridge";
-import { toastStore } from "../utils/toastStore";
-import * as storage from "../storage/storage";
+import { showToast, hideToast } from "../utils/toast";
 import { STORAGE_KEYS } from "../storage/keys";
-import {
-  arrayCodec,
-  booleanCodec,
-  enumCodec,
-  flagCodec,
-  jsonCodec,
-  objectCodec,
-  positiveIntCodec,
-  textCodec,
-} from "../storage/codecs";
+import { arrayCodec, jsonCodec } from "../storage/codecs";
 import { usePersistedState } from "../hooks/usePersistedState";
 import { mergeUniqueIngredients, normalizePantryName } from "../utils/ingredients";
-import { useFreeTierCap } from "../hooks/useFreeTierCap";
 import { log } from "../utils/log";
+import { NavigationProvider, useNavigation } from "./NavigationContext";
+import { OnboardingProvider, useOnboarding } from "./OnboardingContext";
+import { LanguageProvider, useLanguage, useTranslation } from "./LanguageContext";
+import { EntitlementsProvider, useEntitlements } from "./EntitlementsContext";
+import { PreferencesProvider, usePreferences } from "./PreferencesContext";
 
 const CookAIContext = createContext(null);
-// Language-only slice of the context. CookAIContext is one 50+ field value, so
-// anything that reads it re-renders on every state change in the app. Leaf
-// components that only need the translator (rows, cards, buttons) read this
-// instead and re-render only when the language changes.
-const TranslationContext = createContext(null);
-
-/**
- * Measurement system to start from when nothing is saved yet: the device's own
- * setting (expo-localization), falling back to its region. Onboarding no longer
- * makes everyone pick units up front, so a Polish phone has to start on metric
- * rather than on the old US default.
- */
-function detectUnitSystem() {
-  try {
-    const locale = Localization.getLocales?.()?.[0];
-    const system = locale?.measurementSystem;
-    if (system === "us") return "us";
-    if (system === "metric" || system === "uk") return "metric";
-    const region = locale?.regionCode;
-    if (region) return ["US", "LR", "MM"].includes(region) ? "us" : "metric";
-  } catch {
-    // fall through to the historical default
-  }
-  return "us";
-}
 
 
-// Craving/mood quick-tag ids → plain-English flavor-mood phrasing for the
-// prompt (never shown to the user — MealPreferences.jsx owns the
-// translated labelKey for each id shown on-screen). Kept as fixed English
-// tokens same as dishType/category, not run through t() — the prompt
-// itself is always built in English regardless of the app's display
-// language (see LANGUAGE block in geminiRecipes.js's buildPrompt).
-const CRAVING_PROMPT_TEXT = {
-  salty: "salty",
-  spicy: "spicy",
-  sweet: "sweet",
-  savory: "bold, savory",
-  light: "light and fresh",
-  comfort: "comforting, hearty",
-};
-
-/**
- * Copies a captured/picked fridge photo into a permanent, app-owned
- * directory (Paths.document) instead of leaving it at its original
- * ephemeral location — camera captures and gallery picks both land in
- * OS-managed cache/temp paths that are NOT guaranteed to survive an app
- * restart or a cache purge. Without this, `fridgePhoto` and `scanHistory`
- * thumbnails would silently break (broken image) even if the URI string
- * itself were persisted correctly, since the underlying file could already
- * be gone. Falls back to the original URI on any failure — a scan should
- * never be blocked by a storage-housekeeping step failing.
- */
-function persistPhotoToDevice(sourceUri) {
-  try {
-    const scansDir = new Directory(Paths.document, "cookai-scans");
-    scansDir.create({ intermediates: true, idempotent: true });
-    const sourceFile = new File(sourceUri);
-    const ext = sourceFile.extension || ".jpg";
-    const destFile = new File(scansDir, `scan-${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`);
-    sourceFile.copy(destFile);
-    return destFile.uri;
-  } catch (err) {
-    log.warn("[Cook AI] Could not persist scan photo to device:", err?.message);
-    return sourceUri;
-  }
-}
-// Scanning a fridge is inherently infrequent — it rarely changes more than
-// once every few days — so a low free cap barely constrains real usage.
-// Regenerating recipe suggestions is what people actually repeat within a
-// single session, and each one is its own Gemini text-generation call,
-// making it the meaningful usage-based (and cost-based) lever. See
-// FREE_DAILY_RECIPE_GENERATIONS below.
-const FREE_DAILY_FRIDGE_SCANS = 2;
-// Pantry scanning used to be deliberately left free/unlimited (see the old
-// comment this replaced) — reversed after confirming pantry scans hit
-// gemini-3.7-flash, the same pricier vision model fridge scans use, with no
-// cap and no PRO gate at all. An unmetered path to the most expensive call
-// in the app was a real, unbounded cost exposure (anyone could script
-// repeated "scans" all day for free), not just a monetization gap. Same
-// cap as fridge scans — no reason for pantry to be more or less restricted.
-const FREE_DAILY_PANTRY_SCANS = 2;
-const FREE_DAILY_RECIPE_GENERATIONS = 2;
-
-// A single Scanner "generation" returns RECIPES_PER_SCAN (5) recipes at
-// once, while a single Meal Planner day-generate returns exactly 1 — so
-// the same 2-generations/day allowance is worth 5x more spent on Scanner
-// than on Meal Planner. At the full 5, a free user could pull up to 10
-// AI recipes a day indefinitely via Scanner alone, which made "unlimited"
-// a weak PRO benefit (the free daily volume was already generous). This
-// gives PRO a second, immediate, day-one benefit beyond just no daily cap
-// — a fuller batch every time, not just more of them over time.
-const FREE_RECIPES_PER_GENERATION = 3;
-
-/**
- * Fire-and-forget append to the local feedback/signal log (recipe ratings,
- * flagged bad detections). Never throws into the caller — a logging
- * failure must not block the user action (favoriting, removing an
- * ingredient) that triggered it. Capped at 200 like scanHistory caps at 10,
- * just a higher ceiling since this is meant to accumulate over weeks, not
- * show the last few items in a UI.
- */
-async function appendFeedbackLog(entry) {
-  try {
-    const raw = await storage.getItem(STORAGE_KEYS.feedbackLog);
-    const list = raw ? JSON.parse(raw) : [];
-    const next = [
-      { ...entry, loggedAt: new Date().toISOString() },
-      ...(Array.isArray(list) ? list : []),
-    ].slice(0, 200);
-    await storage.setItem(STORAGE_KEYS.feedbackLog, JSON.stringify(next));
-  } catch (err) {
-    log.warn("[Cook AI] feedback log append failed:", err?.message);
-  }
-}
-
-/** Brand-new users start with a clean, empty pantry — no seeded staples. */
-function safePantryInit() {
-  return [];
-}
-
-/**
- * Optional persisted state hydration hook-point.
- * Wrap any future AsyncStorage reads here so storage failures never red-screen.
- */
-function safeStorageRead(reader, fallback) {
-  try {
-    const value = typeof reader === "function" ? reader() : fallback;
-    return value == null ? fallback : value;
-  } catch (err) {
-    log.warn("[Cook AI] storage read failed, using fallback:", err?.message);
-    return fallback;
-  }
-}
-
-/** Sync emoji + vectorType stamp for recipe cards. */
-function enrichRecipes(rawRecipes) {
-  try {
-    return stampRecipeEmojis(
-      Array.isArray(rawRecipes) ? rawRecipes.filter(Boolean) : []
-    );
-  } catch (err) {
-    log.warn("[Cook AI] enrichRecipes failed:", err?.message);
-    return Array.isArray(rawRecipes)
-      ? rawRecipes.filter(Boolean).slice(0, 5)
-      : [];
-  }
-}
-// Confirmed real bug, not a hypothetical: every single AI-generated recipe
-// card showed the exact same "Uses 3 fridge items" badge, regardless of
-// the recipe's actual content — because `r.matchCount || 3` below always
-// fell through to the literal 3, since normalizeRecipe() in
-// geminiRecipes.js never sets a numeric `matchCount` field (only a
-// `matchBadge` *string*, which the card doesn't even read). A live test
-// against the real API confirmed the AI itself generates recipes with
-// genuinely varied ingredient counts (2-6 depending on the dish) — this
-// was purely a display bug flattening all of that into a constant. Counts
-// how many of the recipe's own ingredientsList entries actually reference
-// one of the user's real scanned fridge items (case-insensitive substring
-// match — ingredientsList entries are formatted like "1 lb Chicken Breast
-// 🍗", so this is deliberately loose rather than an exact-string match).
-function countFridgeMatches(ingredientsList, fridgeItems) {
-  if (!Array.isArray(ingredientsList) || !Array.isArray(fridgeItems)) {
-    return null;
-  }
-  const listText = ingredientsList.join(" | ").toLowerCase();
-  let count = 0;
-  for (const item of fridgeItems) {
-    const name = String(item?.name || "").toLowerCase().trim();
-    if (name && listText.includes(name)) count++;
-  }
-  return count;
-}
-
-function safeVisibleRecipes(
-  generatedRecipes,
-  mealType,
-  hungerLevel,
-  maxCount,
-  fridgeItems
-) {
-  // Never show recipes before the user has actually generated any —
-  // generatedRecipes stays null until generateRecipes() runs at least once,
-  // so this is the one place we can tell "never generated" apart from
-  // "generated but the API fell back to smart matches."
-  if (generatedRecipes == null) return [];
-
-  try {
-    const source =
-      Array.isArray(generatedRecipes) && generatedRecipes.length > 0
-        ? generatedRecipes
-        : FALLBACK_RECIPES || [];
-
-    let stamped = enrichRecipes(source).slice(0, maxCount);
-
-    // Guarantee exactly `maxCount` Soft UI emoji cards — this used to be
-    // hardcoded to 5 regardless of caller, which silently re-padded a free
-    // user's deliberately-smaller batch (generateRecipes requests only
-    // FREE_RECIPES_PER_GENERATION) right back up to 5 with filler recipes,
-    // completely undoing that free/PRO differentiation at the display
-    // layer. Confirmed directly: a free user still saw exactly 5 cards
-    // until this was threaded through.
-    if (stamped.length < maxCount) {
-      const fillers = enrichRecipes(FALLBACK_RECIPES || []);
-      for (const filler of fillers) {
-        if (stamped.length >= maxCount) break;
-        if (
-          stamped.some((r) => r.title === filler.title || r.id === filler.id)
-        ) {
-          continue;
-        }
-        stamped.push({
-          ...filler,
-          category: mealType !== "all" ? mealType : filler.category,
-          cardIndex: stamped.length,
-        });
-      }
-    }
-
-    return stamped.slice(0, maxCount).map((r, idx) => {
-      // Real fridge-item overlap when possible; a genuine per-recipe
-      // ingredient count as a sane fallback (still varies card-to-card,
-      // unlike the old flat 3) when there's no fridge inventory to match
-      // against (e.g. a pantry-staples-only generation) or matching found
-      // nothing. r.matchCount survives untouched for FALLBACK_RECIPES,
-      // which already carry their own hand-set, genuinely varied values.
-      const fridgeMatch = countFridgeMatches(r.ingredientsList, fridgeItems);
-      const computedMatch =
-        fridgeMatch != null && fridgeMatch > 0
-          ? fridgeMatch
-          : Array.isArray(r.ingredientsList)
-            ? Math.max(r.ingredientsList.length, 1)
-            : 3;
-      return {
-        ...r,
-        cardIndex: idx,
-        // Strip any leftover image / vector fields — emoji-only cards
-        emoji: r.emoji,
-        matchCount: r.matchCount || computedMatch,
-      };
-    });
-  } catch (err) {
-    log.warn("[Cook AI] visibleRecipes failed:", err?.message);
-  }
-
-  try {
-    return enrichRecipes(FALLBACK_RECIPES || []).slice(0, maxCount);
-  } catch {
-    return [];
-  }
-}
-
-export function CookAIProvider({ children }) {
+function LegacyProvider({ children }) {
   // Modal open/close state lives in its own context (see ModalContext.jsx) —
   // only pulled in here because addIngredient() needs to close its sheet.
   const { setAddIngredientOpen, setProModalOpen, setProReason } = useModalState();
-  const [activeTab, setActiveTab] = useState("scanner");
+  const {
+    activeTab,
+    setActiveTab,
+    scrollViewRef,
+    recipesSectionY,
+    setRecipesSectionY: updateRecipesSectionY,
+    scrollToRecipesTop,
+  } = useNavigation();
+  const {
+    onboardingComplete,
+    onboardingHydrated,
+    completeOnboarding,
+    resetOnboarding,
+    settingsDoneHintShown,
+    markSettingsDoneHintShown,
+    firstScanHintShown,
+    markFirstScanHintShown,
+  } = useOnboarding();
+  const {
+    t,
+    tLatestRef,
+    recipeLanguageId,
+    recipeLanguageName,
+    setRecipeLanguageId,
+    recipeLanguageHydrated,
+  } = useLanguage();
+  const {
+    isPro,
+    activatePro,
+    deactivatePro,
+    dailyFridgeScanCount,
+    canScanFridge,
+    registerFridgeScanAttempt,
+    dailyPantryScanCount,
+    canScanPantry,
+    registerPantryScanAttempt,
+    dailyRecipeGenerationCount,
+    canGenerateRecipes,
+    registerRecipeGenerationAttempt,
+  } = useEntitlements();
+  const {
+    mealType,
+    setMealType,
+    servings,
+    setServings,
+    hungerLevel,
+    setHungerLevel,
+    cravingTags,
+    toggleCravingTag,
+    excludeThisBatch,
+    setExcludeThisBatch,
+    includePantryStaples,
+    setIncludePantryStaples,
+    ingredientPriority,
+    setIngredientPriority,
+    dietaryRestrictions,
+    toggleDietaryRestriction,
+    dietaryRestrictionsWithCustom,
+    customDietAvoid,
+    setCustomDietAvoid,
+    customDietPrefer,
+    setCustomDietPrefer,
+    unitSystem,
+    setUnitSystem,
+  } = usePreferences();
   // True while the onboarding sample scan is on screen. Its photo is a bundled
   // asset whose path changes between updates and its list is not the user's
   // fridge, so neither is ever written to storage (see shouldPersist below).
@@ -316,59 +120,6 @@ export function CookAIProvider({ children }) {
     codec: arrayCodec,
     shouldPersist: () => !scanIsDemoRef.current,
   });
-  // Smart default instead of always "All" — a one-tap-to-change starting
-  // point that's actually relevant to when someone opened the app, rather
-  // than making them filter manually every single time. Lazy initializer
-  // so this only runs once on mount, never fights a user's own selection
-  // afterward. Late night has no clean single mapping among the five
-  // options, so it falls back to "all" rather than forcing a bad guess.
-  const [mealType, setMealType] = useState(() => {
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 11) return "breakfast";
-    if (hour >= 11 && hour < 16) return "lunch";
-    if (hour >= 16 && hour < 22) return "dinner";
-    return "all";
-  });
-  // Servings and hunger level are remembered between launches (like the diet
-  // toggles below); meal type is not — it follows the time of day.
-  const [servings, setServings] = usePersistedState(STORAGE_KEYS.servings, {
-    initial: 2,
-    codec: positiveIntCodec,
-  });
-  const [hungerLevel, setHungerLevel] = usePersistedState(STORAGE_KEYS.hungerLevel, {
-    initial: "normal",
-    codec: enumCodec("light", "normal", "hungry"),
-  });
-  // Craving/mood quick-tags + one-off batch exclusion — deliberately NOT
-  // persisted to AsyncStorage, same as mealType above: this is "what am I
-  // in the mood for right now," not a standing preference like the diet
-  // toggles or Custom Diet. Free for every tier, not PRO-gated — it's a
-  // lightweight steering nudge, not a safety-relevant allergy declaration.
-  const [cravingTags, setCravingTags] = useState([]);
-  const toggleCravingTag = useCallback((id) => {
-    setCravingTags((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
-    );
-  }, []);
-  const [excludeThisBatch, setExcludeThisBatch] = useState("");
-
-  // Ingredient Source Priority — persisted standing preference:
-  // "balanced" (default, current behavior, never added to the
-  // prompt) | "fridge" | "pantry". Soft steering only (see buildPrompt's
-  // INVENTORY LOCK section in geminiRecipes.js) — it changes which list a
-  // recipe leans on more, never what's allowed at all, so unlike Custom
-  // Diet this needs no code-level safety net.
-  const [ingredientPriority, setIngredientPriorityState] = usePersistedState(
-    STORAGE_KEYS.ingredientPriority,
-    { initial: "balanced", codec: enumCodec("fridge", "pantry", "balanced") }
-  );
-
-  const setIngredientPriority = useCallback((next) => {
-    setIngredientPriorityState(
-      next === "fridge" || next === "pantry" ? next : "balanced"
-    );
-  }, [setIngredientPriorityState]);
-
   // Favorites id list — dish #1 liked by default (🤍 → ❤️)
   const [favorites, setFavorites, favoritesHydrated] = usePersistedState(STORAGE_KEYS.favorites, {
     initial: [1],
@@ -390,69 +141,9 @@ export function CookAIProvider({ children }) {
   const savedHydrated = favoritesHydrated && savedRecipesHydrated;
   // Pantry starts empty: no seeded staples for a brand-new user.
   const [pantryItems, setPantryItems, pantryHydrated] = usePersistedState(STORAGE_KEYS.pantryItems, {
-    initial: safePantryInit,
+    initial: [],
     codec: arrayCodec,
   });
-
-  // ─── PRO entitlement (LOCAL MOCK — no real payment processor wired up) ───
-  // `isPro` here is a locally-persisted flag flipped by activatePro(), which
-  // ProSubscriptionModal's "Start Free Trial" button calls directly. There
-  // is no RevenueCat / StoreKit / Play Billing integration — hooking up a
-  // real payment SDK requires App Store Connect product IDs and API
-  // credentials that live outside this codebase. activatePro() is the exact
-  // spot a real `Purchases.purchasePackage(...)` call would replace this.
-  const [isPro, setIsPro] = usePersistedState(STORAGE_KEYS.isPro, {
-    initial: false,
-    codec: booleanCodec,
-  });
-
-  /** Mock trial activation — see the PRO entitlement note above. */
-  const activatePro = useCallback(() => {
-    setIsPro(true);
-  }, [setIsPro]);
-
-  /**
-   * Testing-only reset — there's no real subscription to cancel yet (see
-   * the PRO entitlement note above), so once a device flips isPro on via
-   * activatePro() there was previously no way back to reviewing the free
-   * tier short of clearing app storage entirely. Exposed via a clearly
-   * "testing" toggle in Settings, not framed as real subscription
-   * management.
-   */
-  const deactivatePro = useCallback(() => {
-    setIsPro(false);
-  }, [setIsPro]);
-
-  // ─── Daily free-tier caps (fridge scans, pantry scans, recipe generations) ───
-  // Each is `limit` uses per local day for free users, unlimited for PRO — see
-  // useFreeTierCap. register*() is called right before the action: it returns
-  // false (and does not count) when the cap is already hit, and the caller shows
-  // the paywall instead of proceeding.
-  //
-  // Pantry scans deliberately share the fridge scans' limit: both hit
-  // gemini-3.7-flash, the pricier vision model. They used to be free and
-  // unlimited by product direction; that was reversed after confirming it left
-  // the most expensive call in the app reachable with no cap and no PRO gate at
-  // all — a real, unbounded cost exposure, not just a monetization gap.
-  // Generations count the initial "Generate AI Recipes" and every "Regenerate"
-  // tap equally — see FREE_DAILY_RECIPE_GENERATIONS for why this is the cap
-  // that actually matters.
-  const fridgeScanCap = useFreeTierCap(STORAGE_KEYS.dailyFridgeScans, FREE_DAILY_FRIDGE_SCANS, isPro);
-  const pantryScanCap = useFreeTierCap(STORAGE_KEYS.dailyPantryScans, FREE_DAILY_PANTRY_SCANS, isPro);
-  const generationCap = useFreeTierCap(
-    STORAGE_KEYS.dailyRecipeGenerations,
-    FREE_DAILY_RECIPE_GENERATIONS,
-    isPro
-  );
-  const dailyFridgeScanCount = fridgeScanCap.count;
-  const canScanFridge = fridgeScanCap.canUse;
-  const registerFridgeScanAttempt = fridgeScanCap.register;
-  const dailyPantryScanCount = pantryScanCap.count;
-  const canScanPantry = pantryScanCap.canUse;
-  const registerPantryScanAttempt = pantryScanCap.register;
-  const dailyRecipeGenerationCount = generationCap.count;
-  const canGenerateRecipes = generationCap.canUse;
-  const registerRecipeGenerationAttempt = generationCap.register;
 
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
   const [generatedRecipes, setGeneratedRecipes] = useState(null);
@@ -579,149 +270,6 @@ export function CookAIProvider({ children }) {
   // The three scan-data keys load in the same batched read.
   const scanDataHydrated = ingredientsHydrated && fridgePhotoHydrated && scanHistoryHydrated;
 
-  // Confirmed real failure, not a hypothetical: this and servings/hungerLevel
-  // below were plain useState with no AsyncStorage read/write at all — every
-  // one of them (dietary restrictions included, the single most safety-
-  // relevant setting in the app) silently reset to its default the moment
-  // the app restarted. A user who set "Vegan" once would see it vanish on
-  // the next launch and get non-vegan recipes with no warning. Same
-  // hydrate-once-then-persist-on-change pattern as unitSystem below.
-  const [dietaryRestrictions, setDietaryRestrictions] = usePersistedState(
-    STORAGE_KEYS.dietaryRestrictions,
-    { initial: DIETARY_OPTIONS_DEFAULT, codec: objectCodec(DIETARY_OPTIONS_DEFAULT) }
-  );
-
-  // PRO-only Custom Diet — raw comma-separated text, same hydrate-once-
-  // then-persist-on-change pattern as dietaryRestrictions above. Stored
-  // under their own keys (plain strings, not the boolean map) so they
-  // don't interfere with FULL_DIETARY_OPTIONS' fixed id set. Kept even if
-  // the user's PRO status later lapses — dietaryRestrictionsWithCustom
-  // below is what actually gates whether they reach generation, so a
-  // lapsed-then-renewed PRO user gets their list back instead of having
-  // to retype it.
-  const [customDietAvoid, setCustomDietAvoid] = usePersistedState(STORAGE_KEYS.customDietAvoid, {
-    initial: "",
-    codec: textCodec(),
-  });
-  const [customDietPrefer, setCustomDietPrefer] = usePersistedState(STORAGE_KEYS.customDietPrefer, {
-    initial: "",
-    codec: textCodec(),
-  });
-
-  // What every generation call actually receives — dietaryRestrictions
-  // (the boolean preset map) with customAvoid/customPrefer/craving riding
-  // along on the same object (see buildDietaryGuardrail/getDietViolation
-  // in geminiRecipes.js for why: every one of their ~10 call sites already
-  // threads this exact object through untouched, so piggybacking here
-  // needs zero signature changes downstream).
-  //
-  // customAvoid merges TWO sources with different gating: the persisted
-  // PRO Custom Diet list (gated on isPro, same as any other PRO feature —
-  // a lapsed-PRO user's typed list stays saved but stops affecting
-  // generation) and excludeThisBatch, the free-for-everyone one-off
-  // exclusion from the craving quick-tags row. Both get the SAME hard
-  // enforcement via getDietViolation's keyword safety net — "exclude
-  // ingredient X for this batch" is a real exclusion, not just a prompt
-  // suggestion, even though it's never saved anywhere.
-  const parseCustomDietList = (text) =>
-    String(text || "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-  const dietaryRestrictionsWithCustom = useMemo(() => {
-    const proAvoid = isPro ? parseCustomDietList(customDietAvoid) : [];
-    const proPrefer = isPro ? parseCustomDietList(customDietPrefer) : [];
-    const batchAvoid = parseCustomDietList(excludeThisBatch);
-    const avoid = [...new Set([...proAvoid, ...batchAvoid])];
-    const prefer = proPrefer;
-    const craving = Array.isArray(cravingTags)
-      ? cravingTags
-          .map((id) => CRAVING_PROMPT_TEXT[id])
-          .filter(Boolean)
-      : [];
-    const priority =
-      ingredientPriority === "fridge" || ingredientPriority === "pantry"
-        ? ingredientPriority
-        : undefined;
-    if (
-      avoid.length === 0 &&
-      prefer.length === 0 &&
-      craving.length === 0 &&
-      !priority
-    ) {
-      return dietaryRestrictions;
-    }
-    return {
-      ...dietaryRestrictions,
-      customAvoid: avoid,
-      customPrefer: prefer,
-      craving,
-      ingredientPriority: priority,
-    };
-  }, [
-    dietaryRestrictions,
-    customDietAvoid,
-    customDietPrefer,
-    excludeThisBatch,
-    cravingTags,
-    ingredientPriority,
-    isPro,
-  ]);
-
-  const [includePantryStaples, setIncludePantryStaples] = useState(true);
-
-
-  // Recipe measurement system — "us" (cups/tbsp/°F) or "metric" (g/ml/°C).
-  // User explicitly asked NOT to show both units at once (a prior fix had
-  // shown dual units inline everywhere); this is a persisted single choice
-  // that's threaded into every Gemini recipe prompt so generated recipes
-  // come back in exactly one system, never mixed.
-  const [unitSystem, setUnitSystemState] = usePersistedState(STORAGE_KEYS.unitSystem, {
-    initial: "us",
-    codec: enumCodec("us", "metric"),
-    // Nothing (valid) saved yet: guess from the device's region.
-    fallback: detectUnitSystem,
-  });
-
-  const setUnitSystem = useCallback((next) => {
-    setUnitSystemState(next === "metric" ? "metric" : "us");
-  }, [setUnitSystemState]);
-
-  // Recipe output language — persisted the same way as unitSystem. Drives
-  // both the language Gemini writes recipe titles/ingredients/steps in
-  // (task #28) AND the app's own UI chrome text via `t()` below — the two
-  // were deliberately unified into one setting rather than kept separate.
-  //
-  // First launch (nothing persisted yet) auto-detects from the device's
-  // own language setting via expo-localization rather than defaulting to
-  // English outright — matches the device's preferred language against
-  // LANGUAGE_OPTIONS, falling back to English only when the device
-  // language isn't one we support. Still fully overridable in Settings,
-  // and whatever the user picks there always wins from then on.
-  const [recipeLanguageId, setRecipeLanguageIdState, recipeLanguageHydrated] = usePersistedState(
-    STORAGE_KEYS.recipeLanguage,
-    {
-      initial: DEFAULT_LANGUAGE_ID,
-      codec: textCodec((raw) => LANGUAGE_OPTIONS.some((l) => l.id === raw)),
-      fallback: () => matchDeviceLanguage(Localization.getLocales?.()?.[0]?.languageCode),
-    }
-  );
-
-  const setRecipeLanguageId = useCallback((next) => {
-    setRecipeLanguageIdState(
-      LANGUAGE_OPTIONS.some((l) => l.id === next) ? next : DEFAULT_LANGUAGE_ID
-    );
-  }, [setRecipeLanguageIdState]);
-
-  // English name (e.g. "Polish") threaded into every Gemini prompt — the
-  // model is instructed in English regardless of which language the
-  // recipe text itself should come back in.
-  const recipeLanguageName = useMemo(
-    () => getLanguageById(recipeLanguageId).englishName,
-    [recipeLanguageId]
-  );
-
   // Auto-translates already-scanned fridge/pantry item names when the
   // language actually changes (not on first mount/hydration) — these are
   // free-text AI-detected names with no translation-key system of their
@@ -771,82 +319,6 @@ export function CookAIProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipeLanguageId, recipeLanguageHydrated, scanDataHydrated, pantryHydrated, recipeLanguageName]);
 
-  // `t()` — the SAME recipeLanguageId now drives both recipe generation
-  // AND app UI text, deliberately not a second separate setting. Changing
-  // it in Settings re-renders every consumer instantly (ordinary React
-  // context propagation — no restart needed), since every translated
-  // string is looked up live through this function rather than cached.
-  const t = useCallback(
-    (key, vars) => translate(recipeLanguageId, key, vars),
-    [recipeLanguageId]
-  );
-  // Always the newest translator, for callbacks that outlive the render that
-  // created them (the onboarding sample names are looked up a moment after the
-  // language may have just been changed on that same screen).
-  const tLatestRef = useRef(t);
-  tLatestRef.current = t;
-
-  // First-launch onboarding gate — App.jsx shows a language + units picker
-  // instead of the main shell until this flips true. `onboardingHydrated`
-  // is what App.jsx actually waits on before deciding what to render — an
-  // existing user must never see the gate flash while AsyncStorage is
-  // still being read, so the gate stays hidden (nothing renders yet)
-  // until hydration resolves either way.
-  const [onboardingComplete, setOnboardingCompleteState, onboardingHydrated] = usePersistedState(
-    STORAGE_KEYS.onboardingComplete,
-    { initial: false, codec: flagCodec }
-  );
-
-  const completeOnboarding = useCallback(() => {
-    setOnboardingCompleteState(true);
-  }, [setOnboardingCompleteState]);
-
-  // Confirmed real feedback: Settings' sticky "Done" button only earns its
-  // keep the very first time someone lands there — by any later visit,
-  // they've already learned the screen has a way out and the extra button
-  // just adds noise. SettingsScreen reads this flag once per mount (via
-  // its own lazy useState initializer, not live) so it still shows for
-  // that first visit even though this flips true the moment it mounts.
-  const [settingsDoneHintShown, setSettingsDoneHintShownState] = usePersistedState(
-    STORAGE_KEYS.settingsDoneHintShown,
-    { initial: false, codec: flagCodec }
-  );
-
-  const markSettingsDoneHintShown = useCallback(() => {
-    setSettingsDoneHintShownState(true);
-  }, [setSettingsDoneHintShownState]);
-
-  // Confirmed real feedback: a first-time user landing on the idle Scanner
-  // screen right after onboarding didn't register that this is where you
-  // scan — same one-time-hint pattern as Settings' "Done" button above.
-  // Shown once, dismissed the moment the user actually taps either scan
-  // action (handled in FridgeScannerHero, not here), never shown again.
-  const [firstScanHintShown, setFirstScanHintShownState] = usePersistedState(
-    STORAGE_KEYS.firstScanHintShown,
-    { initial: false, codec: flagCodec }
-  );
-
-  const markFirstScanHintShown = useCallback(() => {
-    setFirstScanHintShownState(true);
-  }, [setFirstScanHintShownState]);
-
-  // Testing-only escape hatch (Settings > Testing) — replays the
-  // first-launch onboarding flow (language/units + the PRO intro screen)
-  // without needing to uninstall/reinstall the app to clear AsyncStorage.
-  const resetOnboarding = useCallback(() => {
-    // Replaying onboarding is meant to simulate a genuine first-time user end
-    // to end — that includes Settings' one-time "Done" hint and the Scanner's
-    // first-scan hint, not just the onboarding screens themselves. Each flag
-    // deletes its own storage key when it goes false.
-    setOnboardingCompleteState(false);
-    setSettingsDoneHintShownState(false);
-    setFirstScanHintShownState(false);
-  }, [setOnboardingCompleteState, setSettingsDoneHintShownState, setFirstScanHintShownState]);
-
-  const toastTimerRef = useRef(null);
-
-  const scrollViewRef = useRef(null);
-  const recipesSectionYRef = useRef(0);
   const scanSessionIdRef = useRef(0);
   const pendingDetectedRef = useRef(null);
   const ingredientsCommittedRef = useRef(false);
@@ -866,35 +338,7 @@ export function CookAIProvider({ children }) {
   const pantryPendingDetectedRef = useRef(null);
   const pantryIngredientsCommittedRef = useRef(false);
   const pantryScanAwaitTimerRef = useRef(null);
-  const [recipesSectionY, setRecipesSectionY] = useState(0);
   const [scanStartedAt, setScanStartedAt] = useState(null);
-
-  const updateRecipesSectionY = useCallback((y) => {
-    const next = typeof y === "number" && Number.isFinite(y) ? y : 0;
-    recipesSectionYRef.current = next;
-    setRecipesSectionY(next);
-  }, []);
-
-  /** Scroll so the recipes header sits just under the top edge (12px breathing room).
-   *
-   * Previously tried measureLayout() against a ref to the RecipeFeed
-   * wrapper for a "can't go stale" measurement, but that throws
-   * synchronously ("ref.measureLayout must be called with a ref to a
-   * native component") on this View — confirmed by a live crash report —
-   * rather than falling through to the failure callback, so there was no
-   * safe way to catch it. Back to the plain onLayout-cached Y, which is
-   * the version that was actually working. */
-  const scrollToRecipesTop = useCallback(() => {
-    const scroll = () => {
-      const y = Math.max((recipesSectionYRef.current || 0) - 12, 0);
-      scrollViewRef.current?.scrollTo?.({ y, animated: true });
-    };
-    // First pass after commit; second after recipe cards finish laying out.
-    requestAnimationFrame(() => {
-      setTimeout(scroll, 80);
-      setTimeout(scroll, 280);
-    });
-  }, []);
 
   const hasScanned = !!fridgePhoto;
   const hasPantryScanned = !!pantryPhoto;
@@ -910,18 +354,6 @@ export function CookAIProvider({ children }) {
       ),
     [generatedRecipes, mealType, hungerLevel, isPro, ingredients]
   );
-
-  const showToast = useCallback((message, type = "info", duration = 3200) => {
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastStore.set({ message, type });
-    toastTimerRef.current = setTimeout(() => toastStore.set(null), duration);
-  }, []);
-
-  // Tap / swipe-up dismiss from the Toast component.
-  const hideToast = useCallback(() => {
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    toastStore.set(null);
-  }, []);
 
   // Removing a vision-detected ingredient (as opposed to one the user typed
   // in themselves via AddIngredientModal) is the user telling us the scan
@@ -993,7 +425,7 @@ export function CookAIProvider({ children }) {
       scanMetaRef.current = { photoUri: entry.photoUri, source: entry.source || "camera" };
       setActiveTab("scanner");
     },
-    [scanHistory, markScanDemo, setFridgePhoto, setIngredients]
+    [scanHistory, markScanDemo, setFridgePhoto, setIngredients, setActiveTab]
   );
 
   /** Remove one past scan (and its stored photo) from the history. */
@@ -1092,7 +524,7 @@ export function CookAIProvider({ children }) {
       pendingDetectedRef.current = [];
       showToast(t("errors.readPhotoFailed"), "error", 4200);
     }
-  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen, setProReason, showToast, markScanDemo, setFridgePhoto]);
+  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen, setProReason, markScanDemo, setFridgePhoto]);
 
   /**
    * The onboarding "sample scan". Runs the same choreography as a real scan on
@@ -1136,7 +568,7 @@ export function CookAIProvider({ children }) {
         }));
       }, 1400);
     },
-    [markScanDemo, setFridgePhoto, setIngredients]
+    [markScanDemo, setFridgePhoto, setIngredients, tLatestRef]
   );
 
   /**
@@ -1565,7 +997,7 @@ export function CookAIProvider({ children }) {
         showToast(t("errors.analyzePantryFailed"), "error");
       }
     },
-    [t, recipeLanguageName, registerPantryScanAttempt, setProModalOpen, setProReason, showToast]
+    [t, recipeLanguageName, registerPantryScanAttempt, setProModalOpen, setProReason]
   );
 
   /**
@@ -1620,7 +1052,7 @@ export function CookAIProvider({ children }) {
       "success"
     );
     setIsPantryScanning(false);
-  }, [mergePantryScanResults, showToast, t]);
+  }, [mergePantryScanResults, t]);
 
   /** Dismiss the just-scanned photo/summary and return to the idle Scan
    * Pantry prompt — does NOT touch pantryItems, matching the existing "X"
@@ -1748,7 +1180,6 @@ export function CookAIProvider({ children }) {
     unitSystem,
     recipeLanguageName,
     scrollToRecipesTop,
-    showToast,
     isPro,
     t,
   ]);
@@ -1914,10 +1345,6 @@ export function CookAIProvider({ children }) {
     // closure at switch time, same reasoning as the inventory effect above.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipeLanguageId, recipeLanguageHydrated, savedHydrated, ensureRecipeLanguage]);
-
-  const toggleDietaryRestriction = useCallback((key) => {
-    setDietaryRestrictions((prev) => ({ ...prev, [key]: !prev[key] }));
-  }, [setDietaryRestrictions]);
 
   // Memoized — an unmemoized value object here recreates on every render of
   // this provider and forces every useCookAI() consumer in the app (every
@@ -2149,25 +1576,34 @@ export function CookAIProvider({ children }) {
       markSettingsDoneHintShown,
       firstScanHintShown,
       markFirstScanHintShown,
-      showToast,
-      hideToast,
     ]
   );
 
-  const translation = useMemo(() => ({ t, recipeLanguageId }), [t, recipeLanguageId]);
+  return <CookAIContext.Provider value={value}>{children}</CookAIContext.Provider>;
+}
 
+/**
+ * Every provider, outermost first. Each domain only depends on the ones above
+ * it. LegacyProvider is what is left of the old single provider and is being
+ * split into more domains.
+ */
+export function CookAIProvider({ children }) {
   return (
-    <CookAIContext.Provider value={value}>
-      <TranslationContext.Provider value={translation}>{children}</TranslationContext.Provider>
-    </CookAIContext.Provider>
+    <NavigationProvider>
+      <OnboardingProvider>
+        <LanguageProvider>
+          <EntitlementsProvider>
+            <PreferencesProvider>
+              <LegacyProvider>{children}</LegacyProvider>
+            </PreferencesProvider>
+          </EntitlementsProvider>
+        </LanguageProvider>
+      </OnboardingProvider>
+    </NavigationProvider>
   );
 }
 
-export function useTranslation() {
-  const ctx = useContext(TranslationContext);
-  if (!ctx) throw new Error("useTranslation must be used within CookAIProvider");
-  return ctx;
-}
+export { useTranslation };
 
 export function useCookAI() {
   const ctx = useContext(CookAIContext);
