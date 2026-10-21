@@ -38,6 +38,20 @@ Versioning · CI/CD · Cross-Platform · AI Integration
   explicit fallback (`colors.card || "#FFFFFF"`) — never hardcode a color
   that should adapt to dark mode.
 
+### Component structure
+- A screen-sized component is a thin composition. Timelines, permissions and
+  other stateful behavior go in a hook (`useFridgeScanChoreography`,
+  `useScanCapture`, `useManualAdd`), and each visual stage is its own component
+  that reads the domain state it shows and takes animation values and handlers
+  as props. `FridgeScannerHero` (about 130 lines) and `src/components/scanner/`
+  are the model.
+- Fridge and pantry share one implementation of anything they both do (camera
+  modal, capture hook, Scan More sheet, image picker). Don't copy one scanner
+  into the other; give the shared piece a `kind` option instead.
+- Icons are imported from `src/icons.js` only, and by an exported name
+  (`Image as ImageIcon`, not `ImageIcon`). `__tests__/iconImports.test.js`
+  fails on a missing one.
+
 ### No dead code
 - Delete code that's confirmed unused (verified via grep across `src/`)
   rather than leaving it "just in case." This codebase has already
@@ -179,13 +193,25 @@ Testing is three layers, none of which replaces the others:
    Gemini client, the storage layer and persisted-state hooks (AsyncStorage is
    mocked in `jest.setup.js`), the daily-limit counter and the ingredient merge,
    and every state domain through the real providers (`test-utils/renderApp.js`):
-   library, inventory, preferences/entitlements, recipes, scan. When you move
+   library, inventory, preferences/entitlements, recipes, scan; plus the scanner
+   components rendered through each stage (`scannerScreens`, `scanMoreSheet`,
+   `scanCapture`). When you move
    logic out of a component or the context (see the refactor plan), add its
    test in the same change.
 2. A Playwright-driven **web smoke test** for crash-level JS bugs.
 3. **Manual on-device verification** through Expo Go.
 There is still no automated coverage of screens, gestures or the scan flow.
 Don't claim a change is "tested" unless one of these actually ran.
+
+### Visual refactors
+- Before restructuring UI, capture deterministic screenshots of every state
+  (fake clock, mocked Gemini) and compare them after; "pixel-identical" is the
+  bar for a pure refactor. **Restart Metro with `--clear` first**: the dev
+  server can keep serving an old bundle, which makes a broken refactor look
+  identical to the baseline (this hid a crashing import until the smoke test).
+  Make the capture fail if the page shows the error boundary.
+- Jest's icon stub exports exactly the names in `src/icons.js`, so a bad icon
+  import renders `undefined` there just as it does in the app.
 
 ### Lint (`npm run lint`)
 - ESLint with `eslint-config-expo` (includes `react-hooks/exhaustive-deps`);

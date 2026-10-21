@@ -53,3 +53,14 @@ export const FALLBACK_FRIDGE_ITEMS = [
   { id: "fallback-potatoes", name: "Potatoes", icon: "🥔", emoji: "🥔" },
   { id: "fallback-juice", name: "Juice", icon: "🧃", emoji: "🧃" },
 ];
+
+// What the scan screen says while the AI works, and when each line appears
+// (ms after the scan starts). Deliberately generic: the model sees the whole
+// photo at once, so it never "scans shelves" one after another.
+export const SCAN_STATUS_KEYS = [
+  "scanner.statusLooking",
+  "scanner.statusSpotting",
+  "scanner.statusAlmost",
+  "scanner.statusSlow",
+];
+export const SCAN_STATUS_AT_MS = [0, 2500, 6500, 14000];

@@ -17,7 +17,15 @@ cook-ai/
 ├── src/
 │   ├── components/
 │   │   ├── Header.jsx               # Brand badge, menu & notifications
-│   │   ├── FridgeScannerHero.jsx    # AR-style scanner with camera
+│   │   ├── FridgeScannerHero.jsx    # Fridge scanner: composes the pieces below
+│   │   ├── PantryScannerHero.jsx    # Pantry scanner (shares capture + camera + sheet)
+│   │   ├── scanner/                 # Scanner building blocks
+│   │   │   ├── useScanCapture.js        # Camera permission, shutter, gallery, free-cap check
+│   │   │   ├── ScanCameraModal.jsx      # The one full-screen camera
+│   │   │   ├── ScanMoreSheet.jsx        # "Scan More" popover (fridge + pantry)
+│   │   │   ├── useFridgeScanChoreography.js  # Scan stage + every animation value
+│   │   │   ├── FridgeIdleCard / FridgePhotoCard / FridgeScanProgress
+│   │   │   └── NoItemsFound / DetectedIngredientsCard / PhotoViewerModal
 │   │   ├── MealPreferences.jsx      # Filters, servings, hunger level
 │   │   ├── RecipeFeed.jsx           # 3 free recipes + PRO paywall
 │   │   ├── RecipeDetailModal.jsx    # Full recipe with scaled ingredients
