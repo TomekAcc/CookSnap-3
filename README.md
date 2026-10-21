@@ -48,6 +48,10 @@ cook-ai/
 │   │   ├── ScanContext.jsx          # Fridge / pantry scan flows
 │   │   ├── ModalContext.jsx         # Which modal is open
 │   │   └── ThemeContext.jsx         # Light / dark
+│   ├── theme/
+│   │   ├── palette.js               # Raw colors (the only hex values)
+│   │   ├── colors.js                # Light + dark theme roles
+│   │   └── tokens.js                # Type, radius, spacing, icon scales
 │   ├── data/
 │   │   └── recipes.js               # Recipes, pantry data & helpers
 │   └── screens/

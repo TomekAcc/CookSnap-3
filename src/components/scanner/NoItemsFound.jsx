@@ -3,6 +3,7 @@ import { TextInput, Text, TouchableOpacity, View } from "react-native";
 import { Camera, Image as ImageIcon, Plus, SearchX, X } from "../../icons";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
+import { EMERALD, WHITE } from "../../theme/palette";
 
 /** Shown when a finished scan found no food: retry with another photo, or add items by hand. */
 export default function NoItemsFound({
@@ -29,15 +30,15 @@ export default function NoItemsFound({
           width: 52,
           height: 52,
           borderRadius: 16,
-          backgroundColor: colors.accentGreenSoft || "#ECFDF5",
+          backgroundColor: colors.accentGreenSoft || EMERALD[50],
           borderWidth: 1,
-          borderColor: colors.accentGreenBorder || "#D1FAE5",
+          borderColor: colors.accentGreenBorder || EMERALD[100],
           alignItems: "center",
           justifyContent: "center",
           marginBottom: 12,
         }}
       >
-        <SearchX size={26} color="#059669" />
+        <SearchX size={26} color={EMERALD[600]} />
       </View>
       <Text
         style={{
@@ -99,13 +100,13 @@ export default function NoItemsFound({
             onPress={handleAddItem}
             activeOpacity={0.85}
             style={{
-              backgroundColor: "#10B981",
+              backgroundColor: EMERALD[500],
               paddingHorizontal: 16,
               justifyContent: "center",
               borderRadius: 12,
             }}
           >
-            <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 12 }}>
+            <Text style={{ color: WHITE, fontWeight: "700", fontSize: 12 }}>
               {t("scanner.add")}
             </Text>
           </TouchableOpacity>
@@ -145,15 +146,15 @@ export default function NoItemsFound({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "#059669",
+              backgroundColor: EMERALD[600],
               paddingVertical: 13,
               borderRadius: 16,
             }}
           >
-            <Camera size={17} color="#FFFFFF" />
+            <Camera size={17} color={WHITE} />
             <Text
               style={{
-                color: "#FFFFFF",
+                color: WHITE,
                 fontSize: 15,
                 fontWeight: "700",
                 marginLeft: 8,
@@ -180,7 +181,7 @@ export default function NoItemsFound({
               borderRadius: 16,
             }}
           >
-            <ImageIcon size={17} color="#059669" />
+            <ImageIcon size={17} color={EMERALD[600]} />
             <Text
               style={{
                 color: colors.textPrimary,
@@ -207,10 +208,10 @@ export default function NoItemsFound({
             paddingHorizontal: 10,
           }}
         >
-          <Plus size={15} color="#059669" />
+          <Plus size={15} color={EMERALD[600]} />
           <Text
             style={{
-              color: "#059669",
+              color: EMERALD[600],
               fontSize: 14,
               fontWeight: "700",
               marginLeft: 5,

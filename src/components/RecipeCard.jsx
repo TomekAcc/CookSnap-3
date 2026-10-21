@@ -9,12 +9,13 @@ import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "../context/LanguageContext";
 import { cookTimeLabel } from "../utils/timeFormat";
 import { TYPE, WEIGHT, RADIUS, SPACE, ICON, emojiLine } from "../theme/tokens";
+import { APPLE, SLATE } from "../theme/palette";
 
 // Explicit iOS/Android shadow so the card reads as elevated even if the
 // NativeWind `shadow-sm` utility doesn't fully translate on a given platform.
 const CARD_SHADOW = Platform.select({
   ios: {
-    shadowColor: "#0F172A",
+    shadowColor: SLATE[900],
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
@@ -140,7 +141,7 @@ function RecipeCard({
           {compact ? (
             calories ? (
               <>
-                <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
+                <Text style={{ color: colors.textTertiary || SLATE[300] }}>
                   {"  ·  "}
                 </Text>
                 {calories}
@@ -148,7 +149,7 @@ function RecipeCard({
             ) : null
           ) : (
             <>
-              <Text style={{ color: colors.textTertiary || "#CBD5E1" }}>
+              <Text style={{ color: colors.textTertiary || SLATE[300] }}>
                 {"  ·  "}
               </Text>
               {t("recipeCard.usesFridgeItems", { count: matchCount })}
@@ -187,8 +188,8 @@ function RecipeCard({
         >
           <Heart
             size={ICON.md}
-            color={isFavorite ? "#FF3B30" : "#94A3B8"}
-            fill={isFavorite ? "#FF3B30" : "none"}
+            color={isFavorite ? APPLE.red : SLATE[400]}
+            fill={isFavorite ? APPLE.red : "none"}
             strokeWidth={ICON.stroke}
           />
         </TouchableOpacity>
@@ -198,7 +199,7 @@ function RecipeCard({
             its own tap target competing with the heart beside it. */}
         <ChevronRight
           size={ICON.md}
-          color={colors.textTertiary || "#CBD5E1"}
+          color={colors.textTertiary || SLATE[300]}
           strokeWidth={ICON.stroke}
         />
       </View>

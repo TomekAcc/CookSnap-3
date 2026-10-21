@@ -24,6 +24,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useLibrary } from "../context/LibraryContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useScan } from "../context/ScanContext";
+import { AMBER, APPLE, EMERALD, SKY, WHITE } from "../theme/palette";
 
 export default function ProfileScreen() {
   const tabScroll = useTabScroll("profile");
@@ -57,21 +58,21 @@ export default function ProfileScreen() {
       id: "planner",
       labelKey: "menu.mealPlanner",
       Icon: CalendarRange,
-      color: "#059669",
+      color: EMERALD[600],
       onPress: () => setMealPlannerOpen(true),
     },
     {
       id: "history",
       labelKey: "menu.scanHistory",
       Icon: History,
-      color: "#D97706",
+      color: AMBER[600],
       onPress: () => setScanHistoryOpen(true),
     },
     {
       id: "help",
       labelKey: "menu.helpFeedback",
       Icon: MessageCircleQuestion,
-      color: "#0284C7",
+      color: SKY[600],
       onPress: () => setHelpModalOpen(true),
     },
   ];
@@ -210,13 +211,13 @@ export default function ProfileScreen() {
                   backgroundColor: colors.accentAmber,
                   alignItems: "center",
                   justifyContent: "center",
-                  shadowColor: "#FF9F0A",
+                  shadowColor: APPLE.orange,
                   shadowOpacity: 0.35,
                   shadowRadius: 10,
                   shadowOffset: { width: 0, height: 4 },
                 }}
               >
-                <Crown size={24} color="#FFFFFF" fill="#FFFFFF" />
+                <Crown size={24} color={WHITE} fill={WHITE} />
               </View>
               <View
                 style={{
@@ -226,14 +227,14 @@ export default function ProfileScreen() {
                   width: 20,
                   height: 20,
                   borderRadius: 10,
-                  backgroundColor: "#10B981",
+                  backgroundColor: EMERALD[500],
                   borderWidth: 2,
                   borderColor: colors.card,
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Check size={11} color="#FFFFFF" strokeWidth={3.5} />
+                <Check size={11} color={WHITE} strokeWidth={3.5} />
               </View>
             </View>
             <View style={{ flex: 1, marginLeft: 16 }}>
@@ -343,7 +344,7 @@ export default function ProfileScreen() {
                 justifyContent: "center",
               }}
             >
-              <Crown size={22} color="#FFFFFF" fill="#FFFFFF" />
+              <Crown size={22} color={WHITE} fill={WHITE} />
             </View>
             <View style={{ flex: 1, marginLeft: 14 }}>
               <Text

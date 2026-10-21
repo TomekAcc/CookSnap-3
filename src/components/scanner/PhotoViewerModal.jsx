@@ -2,6 +2,7 @@ import React from "react";
 import { Image, Modal, TouchableOpacity, View } from "react-native";
 import { useLanguage } from "../../context/LanguageContext";
 import PerfectCloseButton from "../PerfectCloseButton";
+import { BLACK } from "../../theme/palette";
 
 /** Full-screen view of the scanned fridge photo. */
 export default function PhotoViewerModal({ open, uri, onClose }) {
@@ -18,7 +19,7 @@ export default function PhotoViewerModal({ open, uri, onClose }) {
       presentationStyle="overFullScreen"
       onRequestClose={onClose}
     >
-      <View style={{ flex: 1, backgroundColor: "#000000" }}>
+      <View style={{ flex: 1, backgroundColor: BLACK }}>
         <TouchableOpacity
           activeOpacity={1}
           onPress={onClose}

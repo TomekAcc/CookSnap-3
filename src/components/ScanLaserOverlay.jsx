@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
   cancelAnimation,
 } from "react-native-reanimated";
+import { EMERALD } from "../theme/palette";
 
 const LASER_TOP = 14;
 const TRAIL_HEIGHT = 120;
@@ -113,7 +114,7 @@ export default function ScanLaserOverlay({
         style={[styles.beam, { top: LASER_TOP }, beamStyle]}
       >
         <LinearGradient
-          colors={["#6EE7B7", "#10B981", "#34D399", "#10B981", "#6EE7B7"]}
+          colors={[EMERALD[300], EMERALD[500], EMERALD[400], EMERALD[500], EMERALD[300]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={StyleSheet.absoluteFill}

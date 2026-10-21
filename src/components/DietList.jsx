@@ -5,6 +5,7 @@ import DietIcon from "./DietIcon";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
+import { EMERALD, WHITE } from "../theme/palette";
 
 /**
  * The dietary-restriction list — one component for Settings and Profile, so
@@ -93,9 +94,9 @@ export default function DietList({ showDescriptions = true }) {
               pointerEvents="none"
               trackColor={{
                 false: colors.trackStrong,
-                true: "#10B981",
+                true: EMERALD[500],
               }}
-              thumbColor="#FFFFFF"
+              thumbColor={WHITE}
             />
           </TouchableOpacity>
         );

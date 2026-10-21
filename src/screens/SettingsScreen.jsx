@@ -28,6 +28,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useOnboarding } from "../context/OnboardingContext";
 import { usePreferences } from "../context/PreferencesContext";
+import { EMERALD, WHITE } from "../theme/palette";
 
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
@@ -143,7 +144,7 @@ export default function SettingsScreen() {
                 borderRadius: 16,
                 backgroundColor: colors.card,
                 borderWidth: 2,
-                borderColor: theme === "light" ? "#10B981" : colors.cardBorder,
+                borderColor: theme === "light" ? EMERALD[500] : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 // Guaranteed clip — see BottomNav.jsx's comment on why a
@@ -155,7 +156,7 @@ export default function SettingsScreen() {
             >
               <Sun
                 size={20}
-                color={theme === "light" ? "#10B981" : colors.textSecondary}
+                color={theme === "light" ? EMERALD[500] : colors.textSecondary}
               />
               <Text
                 numberOfLines={1}
@@ -167,7 +168,7 @@ export default function SettingsScreen() {
                   width: "100%",
                   minWidth: 0,
                   color:
-                    theme === "light" ? "#10B981" : colors.textPrimary,
+                    theme === "light" ? EMERALD[500] : colors.textPrimary,
                 }}
               >
                 {t("settings.light")}
@@ -184,7 +185,7 @@ export default function SettingsScreen() {
                 borderRadius: 16,
                 backgroundColor: colors.card,
                 borderWidth: 2,
-                borderColor: theme === "dark" ? "#10B981" : colors.cardBorder,
+                borderColor: theme === "dark" ? EMERALD[500] : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 overflow: "hidden",
@@ -192,7 +193,7 @@ export default function SettingsScreen() {
             >
               <Moon
                 size={20}
-                color={theme === "dark" ? "#34D399" : colors.textSecondary}
+                color={theme === "dark" ? EMERALD[400] : colors.textSecondary}
               />
               <Text
                 numberOfLines={1}
@@ -204,7 +205,7 @@ export default function SettingsScreen() {
                   width: "100%",
                   minWidth: 0,
                   color:
-                    theme === "dark" ? "#34D399" : colors.textPrimary,
+                    theme === "dark" ? EMERALD[400] : colors.textPrimary,
                 }}
               >
                 {t("settings.dark")}
@@ -302,7 +303,7 @@ export default function SettingsScreen() {
                 backgroundColor: colors.card,
                 borderWidth: 2,
                 borderColor:
-                  ingredientPriority === "balanced" ? "#10B981" : colors.cardBorder,
+                  ingredientPriority === "balanced" ? EMERALD[500] : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 overflow: "hidden",
@@ -311,7 +312,7 @@ export default function SettingsScreen() {
               <Scale
                 size={20}
                 color={
-                  ingredientPriority === "balanced" ? "#10B981" : colors.textSecondary
+                  ingredientPriority === "balanced" ? EMERALD[500] : colors.textSecondary
                 }
               />
               <Text
@@ -324,7 +325,7 @@ export default function SettingsScreen() {
                   width: "100%",
                   minWidth: 0,
                   color:
-                    ingredientPriority === "balanced" ? "#10B981" : colors.textPrimary,
+                    ingredientPriority === "balanced" ? EMERALD[500] : colors.textPrimary,
                 }}
               >
                 {t("settings.priorityBalanced")}
@@ -342,7 +343,7 @@ export default function SettingsScreen() {
                 backgroundColor: colors.card,
                 borderWidth: 2,
                 borderColor:
-                  ingredientPriority === "fridge" ? "#10B981" : colors.cardBorder,
+                  ingredientPriority === "fridge" ? EMERALD[500] : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 overflow: "hidden",
@@ -351,7 +352,7 @@ export default function SettingsScreen() {
               <Refrigerator
                 size={20}
                 color={
-                  ingredientPriority === "fridge" ? "#34D399" : colors.textSecondary
+                  ingredientPriority === "fridge" ? EMERALD[400] : colors.textSecondary
                 }
               />
               <Text
@@ -364,7 +365,7 @@ export default function SettingsScreen() {
                   width: "100%",
                   minWidth: 0,
                   color:
-                    ingredientPriority === "fridge" ? "#34D399" : colors.textPrimary,
+                    ingredientPriority === "fridge" ? EMERALD[400] : colors.textPrimary,
                 }}
               >
                 {t("settings.priorityFridge")}
@@ -382,7 +383,7 @@ export default function SettingsScreen() {
                 backgroundColor: colors.card,
                 borderWidth: 2,
                 borderColor:
-                  ingredientPriority === "pantry" ? "#10B981" : colors.cardBorder,
+                  ingredientPriority === "pantry" ? EMERALD[500] : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 overflow: "hidden",
@@ -391,7 +392,7 @@ export default function SettingsScreen() {
               <Package
                 size={20}
                 color={
-                  ingredientPriority === "pantry" ? "#10B981" : colors.textSecondary
+                  ingredientPriority === "pantry" ? EMERALD[500] : colors.textSecondary
                 }
               />
               <Text
@@ -404,7 +405,7 @@ export default function SettingsScreen() {
                   width: "100%",
                   minWidth: 0,
                   color:
-                    ingredientPriority === "pantry" ? "#10B981" : colors.textPrimary,
+                    ingredientPriority === "pantry" ? EMERALD[500] : colors.textPrimary,
                 }}
               >
                 {t("settings.priorityPantry")}
@@ -516,8 +517,8 @@ export default function SettingsScreen() {
             <Switch
               value={isPro}
               onValueChange={(next) => (next ? activatePro() : deactivatePro())}
-              trackColor={{ false: colors.cardBorder, true: "#10B981" }}
-              thumbColor="#FFFFFF"
+              trackColor={{ false: colors.cardBorder, true: EMERALD[500] }}
+              thumbColor={WHITE}
             />
           </View>
 
@@ -604,7 +605,7 @@ export default function SettingsScreen() {
             onPress={() => setActiveTab("scanner")}
             activeOpacity={0.88}
             style={{
-              backgroundColor: "#10B981",
+              backgroundColor: EMERALD[500],
               borderRadius: 18,
               paddingVertical: 16,
               alignItems: "center",
@@ -616,7 +617,7 @@ export default function SettingsScreen() {
               shadowOffset: { width: 0, height: 0 },
             }}
           >
-            <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 16 }}>
+            <Text style={{ color: WHITE, fontWeight: "700", fontSize: 16 }}>
               {t("settings.done")}
             </Text>
           </TouchableOpacity>
@@ -731,12 +732,12 @@ export default function SettingsScreen() {
                         width: 22,
                         height: 22,
                         borderRadius: 11,
-                        backgroundColor: "#10B981",
+                        backgroundColor: EMERALD[500],
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      <Check size={14} color="#FFFFFF" strokeWidth={2.5} />
+                      <Check size={14} color={WHITE} strokeWidth={2.5} />
                     </View>
                   ) : (
                     <View
@@ -842,12 +843,12 @@ export default function SettingsScreen() {
                       width: 22,
                       height: 22,
                       borderRadius: 11,
-                      backgroundColor: "#10B981",
+                      backgroundColor: EMERALD[500],
                       alignItems: "center",
                       justifyContent: "center",
                     }}
                   >
-                    <Check size={14} color="#FFFFFF" strokeWidth={2.5} />
+                    <Check size={14} color={WHITE} strokeWidth={2.5} />
                   </View>
                 ) : (
                   <View

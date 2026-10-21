@@ -5,6 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useModalState } from "../context/ModalContext";
 import { useEntitlements } from "../context/EntitlementsContext";
 import { useLanguage } from "../context/LanguageContext";
+import { EMERALD, WHITE } from "../theme/palette";
 
 // Same amber accent as the PRO paywall's own crown badge
 // (ProSubscriptionModal.jsx) — kept as local literals here rather than a
@@ -56,7 +57,7 @@ export default function Header() {
   const headerStyle = [
     styles.base,
     {
-      backgroundColor: colors.bg || "#FFFFFF",
+      backgroundColor: colors.bg || WHITE,
     },
   ];
 
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     marginTop: 24,
     overflow: "hidden",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: WHITE,
     borderBottomWidth: 0,
     borderBottomColor: "transparent",
     elevation: 0,
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.6,
   },
   brandTextAccent: {
-    color: "#10B981",
+    color: EMERALD[500],
   },
   proButton: {
     flexDirection: "row",

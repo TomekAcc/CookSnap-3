@@ -4,6 +4,7 @@ import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { DS } from "../utils/designSystem";
 import { useTheme } from "../context/ThemeContext";
 import StandardModal from "./StandardModal";
+import { SLATE } from "../theme/palette";
 
 /**
  * StandardSmoothModal — themed chrome on top of StandardModal.
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "800",
     letterSpacing: -0.4,
-    color: "#0F172A",
+    color: SLATE[900],
   },
   // 13/500 to match the screen headers (Pantry & Staples, Saved Recipes,
   // Settings, Profile). titleText above is already byte-identical to those
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 2,
     lineHeight: 18,
-    color: "#64748B",
+    color: SLATE[500],
   },
   scrollContent: {
     paddingTop: 4,

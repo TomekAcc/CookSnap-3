@@ -5,6 +5,7 @@ import { Check, AlertTriangle, Info, Crown } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { toastStore } from "../utils/toastStore";
 import { hideToast } from "../utils/toast";
+import { AMBER, APPLE, EMERALD, RED, SLATE } from "../theme/palette";
 
 // A solid card on the app's normal surface, with a small vector icon in a
 // tinted disc carrying the variant colour. It used to be a see-through mint /
@@ -14,10 +15,10 @@ import { hideToast } from "../utils/toast";
 // in the app. "pro" is the brand moment (trial started / PRO activated) and
 // gets the amber crown instead of a generic check.
 const VARIANTS = {
-  success: { Icon: Check, color: "#059669", tint: "rgba(16,185,129,0.14)", fill: false },
-  error: { Icon: AlertTriangle, color: "#DC2626", tint: "rgba(239,68,68,0.14)", fill: false },
-  info: { Icon: Info, color: "#D97706", tint: "rgba(245,158,11,0.16)", fill: false },
-  pro: { Icon: Crown, color: "#FF9F0A", tint: "rgba(255,159,10,0.16)", fill: true },
+  success: { Icon: Check, color: EMERALD[600], tint: "rgba(16,185,129,0.14)", fill: false },
+  error: { Icon: AlertTriangle, color: RED[600], tint: "rgba(239,68,68,0.14)", fill: false },
+  info: { Icon: Info, color: AMBER[600], tint: "rgba(245,158,11,0.16)", fill: false },
+  pro: { Icon: Crown, color: APPLE.orange, tint: "rgba(255,159,10,0.16)", fill: true },
 };
 
 // Messages carry a leading emoji from the i18n layer ("🎉 Trial started…").
@@ -115,7 +116,7 @@ export default function Toast() {
           paddingRight: 16,
           flexDirection: "row",
           alignItems: "center",
-          shadowColor: "#0F172A",
+          shadowColor: SLATE[900],
           shadowOpacity: isDark ? 0.45 : 0.14,
           shadowRadius: 16,
           shadowOffset: { width: 0, height: 6 },

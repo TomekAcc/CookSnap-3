@@ -8,6 +8,7 @@ import { animateLayout } from "../utils/layoutMotion";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "../context/LanguageContext";
 import { emojiLine } from "../theme/tokens";
+import { EMERALD, WHITE } from "../theme/palette";
 
 // How long the checked state (filled circle, strikethrough) holds before the
 // row starts fading, and how long that fade takes. Tuned from tester
@@ -172,12 +173,12 @@ export default function ShoppingListModal({
             style={[
               styles.emptyIcon,
               {
-                backgroundColor: colors.accentGreenSoft || "#ECFDF5",
-                borderColor: colors.accentGreenBorder || "#D1FAE5",
+                backgroundColor: colors.accentGreenSoft || EMERALD[50],
+                borderColor: colors.accentGreenBorder || EMERALD[100],
               },
             ]}
           >
-            <PackageCheck size={28} color={colors.accentGreen || "#10B981"} />
+            <PackageCheck size={28} color={colors.accentGreen || EMERALD[500]} />
           </View>
           <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
             {t("shoppingList.listClear")}
@@ -199,7 +200,7 @@ export default function ShoppingListModal({
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={styles.shareBtn}
             >
-              <Share2 size={15} color="#059669" strokeWidth={2.4} />
+              <Share2 size={15} color={EMERALD[600]} strokeWidth={2.4} />
               <Text style={styles.shareText} numberOfLines={1}>
                 {t("shoppingList.share")}
               </Text>
@@ -249,10 +250,10 @@ export default function ShoppingListModal({
                       <View
                         style={[
                           styles.checkCircleActive,
-                          { backgroundColor: colors.accentGreen || "#10B981" },
+                          { backgroundColor: colors.accentGreen || EMERALD[500] },
                         ]}
                       >
-                        <Check size={14} color="#FFFFFF" strokeWidth={3} />
+                        <Check size={14} color={WHITE} strokeWidth={3} />
                       </View>
                     ) : (
                       <Circle
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
   shareText: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#059669",
+    color: EMERALD[600],
   },
   listCard: {
     borderRadius: 20,
@@ -342,13 +343,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: DS.spacing.md,
     marginBottom: DS.spacing.xs,
-    backgroundColor: "#059669",
+    backgroundColor: EMERALD[600],
   },
   doneButtonText: {
     fontSize: 16,
     fontWeight: "600",
     letterSpacing: -0.2,
-    color: "#FFFFFF",
+    color: WHITE,
   },
   emptyContainer: {
     paddingVertical: 20,

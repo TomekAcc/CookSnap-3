@@ -12,6 +12,7 @@ import { useEntitlements } from "../context/EntitlementsContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useLibrary } from "../context/LibraryContext";
 import { useRecipes } from "../context/RecipesContext";
+import { AMBER, APPLE, EMERALD } from "../theme/palette";
 
 export default function RecipeFeed({ onSelectRecipe } = {}) {
   const {
@@ -80,10 +81,10 @@ export default function RecipeFeed({ onSelectRecipe } = {}) {
             >
               <TriangleAlert
                 size={36}
-                color={colors.danger || "#FF3B30"}
+                color={colors.danger || APPLE.red}
                 strokeWidth={2}
               />
-              <EmptyStateSparkle color={colors.danger || "#FF3B30"} />
+              <EmptyStateSparkle color={colors.danger || APPLE.red} />
             </View>
             <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
               {t("recipeFeed.errorTitle")}
@@ -128,9 +129,9 @@ export default function RecipeFeed({ onSelectRecipe } = {}) {
             preferences screen, that one actually carries meaning. */}
         <View style={styles.usage}>
           {isPro ? (
-            <Crown size={13} color="#D97706" strokeWidth={ICON.strokeSmall} />
+            <Crown size={13} color={AMBER[600]} strokeWidth={ICON.strokeSmall} />
           ) : (
-            <Sparkles size={13} color="#059669" strokeWidth={ICON.strokeSmall} />
+            <Sparkles size={13} color={EMERALD[600]} strokeWidth={ICON.strokeSmall} />
           )}
           <Text
             numberOfLines={2}
@@ -212,14 +213,14 @@ const styles = StyleSheet.create({
     marginTop: SPACE.xs - 1,
   },
   usageCaption: {
-    color: "#059669",
+    color: EMERALD[600],
     fontSize: 12,
     fontWeight: "700",
     letterSpacing: -0.1,
     flexShrink: 1,
   },
   usageCaptionPro: {
-    color: "#D97706",
+    color: AMBER[600],
   },
   // Matches the shared section-title treatment used by "Meal Preferences" /
   // "Hunger Level" in MealPreferences.jsx (fontSize 18 / weight 800), so the

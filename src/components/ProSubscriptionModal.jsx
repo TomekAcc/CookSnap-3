@@ -22,6 +22,7 @@ import StandardModal from "./StandardModal";
 import { useEntitlements } from "../context/EntitlementsContext";
 import { useLanguage } from "../context/LanguageContext";
 import { showToast } from "../utils/toast";
+import { APPLE, EMERALD, WHITE } from "../theme/palette";
 
 // Amber is a fixed accent (ThemeContext's accentAmber is the SAME hex in
 // both LIGHT_COLORS and DARK_COLORS), so its derived tints are safe as
@@ -30,7 +31,7 @@ import { showToast } from "../utils/toast";
 // text/icons for contrast — that's true regardless of which theme is
 // active, so ON_AMBER is also a fixed value, not a `colors.*` lookup.
 const AMBER_TINT_SOFT = "rgba(255,159,10,0.10)";
-const ON_AMBER = "#1D1D1F";
+const ON_AMBER = APPLE.label;
 // Distance from the sheet's true top edge to where the ScrollView's content
 // (and so the hero block) begins: StandardModal's sheet paddingTop (6) +
 // the grab handle's height and vertical margins (4.5 + 4 + 4) + the
@@ -209,7 +210,7 @@ export default function ProSubscriptionModal() {
       <View key={p.id} style={styles.ctaSection}>
         {p.trial ? (
           <View style={[styles.guaranteeRow, { marginBottom: 6 }]}>
-            <Check size={15} color="#059669" strokeWidth={3} />
+            <Check size={15} color={EMERALD[600]} strokeWidth={3} />
             <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
               {t("pro.noPaymentToday")}
             </Text>
@@ -451,7 +452,7 @@ export default function ProSubscriptionModal() {
               { backgroundColor: colors.accentAmber },
             ]}
           >
-            <Crown size={22} color="#FFFFFF" fill="#FFFFFF" />
+            <Crown size={22} color={WHITE} fill={WHITE} />
           </View>
           <Text style={[styles.title, { color: colors.textPrimary }]}>
             {t("pro.unlockTitle")}
@@ -700,7 +701,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.55)",
-    shadowColor: "#FF9F0A",
+    shadowColor: APPLE.orange,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.38,
     shadowRadius: 10,

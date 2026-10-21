@@ -34,9 +34,14 @@ Versioning · CI/CD · Cross-Platform · AI Integration
 - Prefer `position: "absolute"` floating overlays over flex-sibling
   "reserved space" patterns for floating CTAs/bottom bars — reserved-space
   layouts leave variable-size gaps that read as stray background color.
-- Theme colors always come from `useTheme()`'s `colors` object, with an
-  explicit fallback (`colors.card || "#FFFFFF"`) — never hardcode a color
-  that should adapt to dark mode.
+- Colors: no hex literals outside `src/theme/` (lint-enforced; the dish-badge
+  table in `utils/imageUtils.js` is the one exception). Anything that differs
+  between light and dark is a role in `src/theme/colors.js` and is read as
+  `useTheme().colors.<role>` (`outline`, `ink`, `greenStrong`, `amberStrong`...);
+  never write `isDark ? "#…" : "#…"` in a component. A color that is the same in
+  both themes (white text on a green button) imports its name from
+  `src/theme/palette.js`. Need a new role? Add it to BOTH `LIGHT_COLORS` and
+  `DARK_COLORS` (`__tests__/theme.test.js` checks they match).
 
 ### Component structure
 - A screen-sized component is a thin composition. Timelines, permissions and

@@ -26,6 +26,7 @@ import { translateCount } from "../i18n";
 import StandardSmoothModal from "./StandardSmoothModal";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
+import { EMERALD, GRAY, SLATE, WHITE } from "../theme/palette";
 
 // Every option on this screen is text only, and every selected option looks
 // the same: solid emerald with a white bold label. (A white "raised pill"
@@ -58,7 +59,7 @@ const CRAVING_TAGS = [
   { id: "comfort", labelKey: "mealPrefs.cravingComfort", Icon: Soup },
 ];
 
-const EMERALD = "#10B981";
+const ACCENT = EMERALD[500];
 
 function cardStyle(isDark, colors) {
   return {
@@ -68,7 +69,7 @@ function cardStyle(isDark, colors) {
     borderColor: colors.outlineCard,
     padding: 18,
     // Soft lift so the cards read as separate surfaces on the grey page.
-    shadowColor: "#0F172A",
+    shadowColor: SLATE[900],
     shadowOpacity: isDark ? 0 : 0.05,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 3 },
@@ -108,16 +109,16 @@ function CravingGrid({ tags, selectedIds, onToggle, t }) {
                 activeOpacity={0.85}
                 accessibilityRole="button"
                 accessibilityState={{ selected }}
-                style={[styles.cell, { backgroundColor: selected ? EMERALD : p.idleBg }]}
+                style={[styles.cell, { backgroundColor: selected ? ACCENT : p.idleBg }]}
               >
-                <Icon size={18} color={selected ? "#FFFFFF" : p.muted} strokeWidth={2.2} />
+                <Icon size={18} color={selected ? WHITE : p.muted} strokeWidth={2.2} />
                 <Text
                   numberOfLines={1}
                   adjustsFontSizeToFit
                   minimumFontScale={0.8}
                   style={[
                     styles.cellLabel,
-                    { color: selected ? "#FFFFFF" : p.idleInk, fontWeight: selected ? "700" : "600" },
+                    { color: selected ? WHITE : p.idleInk, fontWeight: selected ? "700" : "600" },
                   ]}
                 >
                   {t(tag.labelKey)}
@@ -368,12 +369,12 @@ export default function MealPreferences() {
                   <Text
                     style={[
                       styles.optionText,
-                      { color: selected ? "#059669" : colors.textPrimary, fontWeight: selected ? "700" : "600" },
+                      { color: selected ? EMERALD[600] : colors.textPrimary, fontWeight: selected ? "700" : "600" },
                     ]}
                   >
                     {t(o.labelKey)}
                   </Text>
-                  {selected ? <Check size={20} color="#059669" strokeWidth={3} /> : null}
+                  {selected ? <Check size={20} color={EMERALD[600]} strokeWidth={3} /> : null}
                 </TouchableOpacity>
               );
             })
@@ -415,8 +416,8 @@ export default function MealPreferences() {
             value={includePantryStaples}
             onValueChange={setIncludePantryStaples}
             pointerEvents="none"
-            trackColor={{ false: "#E5E7EB", true: "#10B981" }}
-            thumbColor="#FFFFFF"
+            trackColor={{ false: GRAY[200], true: EMERALD[500] }}
+            thumbColor={WHITE}
           />
         </TouchableOpacity>
 
@@ -562,12 +563,12 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     height: 48,
     borderRadius: 14,
-    backgroundColor: "#059669",
+    backgroundColor: EMERALD[600],
     alignItems: "center",
     justifyContent: "center",
   },
   doneText: {
-    color: "#FFFFFF",
+    color: WHITE,
     fontSize: 16,
     fontWeight: "600",
   },

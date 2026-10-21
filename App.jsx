@@ -33,6 +33,7 @@ import OnboardingScreen from "./src/screens/OnboardingScreen";
 import { useLanguage } from "./src/context/LanguageContext";
 import { useNavigation } from "./src/context/NavigationContext";
 import { useOnboarding } from "./src/context/OnboardingContext";
+import { APPLE } from "./src/theme/palette";
 
 // Runs once, before the first Text renders — see globalFont.js for why this
 // has to patch the JSX runtime rather than Text.render or createElement.
@@ -224,7 +225,7 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: "#F5F5F7" }} />;
+    return <View style={{ flex: 1, backgroundColor: APPLE.canvas }} />;
   }
 
   return (

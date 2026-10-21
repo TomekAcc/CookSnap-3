@@ -14,6 +14,7 @@
  * isn't here, that's a design decision worth making deliberately — widen
  * the scale here rather than inventing a one-off at the call site.
  */
+import { EMERALD } from "./palette";
 
 /**
  * Type scale — six steps, each far enough from its neighbour to read as a
@@ -116,14 +117,14 @@ export function emojiLine(fontSize) {
  * matches the CookSnap wordmark.
  */
 export const GREEN = {
-  primary: "#10B981", // accents, selected states, the wordmark
-  deep: "#059669", // filled buttons, icons on white
-  ink: "#047857", // green text on a soft green ground
-  soft: "#ECFDF5", // soft fill (light)
-  softBorder: "#D1FAE5", // soft border (light)
-  darkSoft: "#064E3B", // soft fill (dark)
-  darkBorder: "#065F46", // soft border (dark)
-  darkInk: "#6EE7B7", // green text (dark)
+  primary: EMERALD[500], // accents, selected states, the wordmark
+  deep: EMERALD[600], // filled buttons, icons on white
+  ink: EMERALD[700], // green text on a soft green ground
+  soft: EMERALD[50], // soft fill (light)
+  softBorder: EMERALD[100], // soft border (light)
+  darkSoft: EMERALD[900], // soft fill (dark)
+  darkBorder: EMERALD[800], // soft border (dark)
+  darkInk: EMERALD[300], // green text (dark)
 };
 
 export default { TYPE, WEIGHT, RADIUS, SPACE, ICON, GREEN, strokeFor };

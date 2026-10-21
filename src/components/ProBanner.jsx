@@ -4,8 +4,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Crown, ChevronRight } from "../icons";
 import { useTranslation } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
+import { APPLE, WHITE } from "../theme/palette";
 
-const ON_AMBER = "#1D1D1F";
+const ON_AMBER = APPLE.label;
 
 // The paywall benefit strings carry a leading emoji (the sheet swaps it for a
 // vector icon). Same surrogate-pair match ProSubscriptionModal uses — proven
@@ -57,7 +58,7 @@ export default function ProBanner({ onOpenProModal, usedUp = false, limit = 0 })
       />
       <View style={styles.topRow}>
         <View style={[styles.crownDisc, { backgroundColor: colors.accentAmber }]}>
-          <Crown size={16} color="#FFFFFF" fill="#FFFFFF" />
+          <Crown size={16} color={WHITE} fill={WHITE} />
         </View>
         <Text style={[styles.brandLabel, { color: colors.amberStrong }]}>
           {t("proBanner.brandLabel")}

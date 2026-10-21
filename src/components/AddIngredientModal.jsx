@@ -16,6 +16,7 @@ import StandardSmoothModal from "./StandardSmoothModal";
 import PillTag from "./PillTag";
 import { useInventory } from "../context/InventoryContext";
 import { useLanguage } from "../context/LanguageContext";
+import { SLATE, WHITE } from "../theme/palette";
 
 /**
  * Add Custom Ingredient — StandardSmoothModal center card (synced animation).
@@ -82,7 +83,7 @@ export default function AddIngredientModal() {
             ]}
             activeOpacity={0.8}
           >
-            <Plus size={20} color="#FFFFFF" strokeWidth={2.5} />
+            <Plus size={20} color={WHITE} strokeWidth={2.5} />
           </TouchableOpacity>
         </View>
 
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 16,
-    backgroundColor: "#1E293B",
+    backgroundColor: SLATE[800],
     alignItems: "center",
     justifyContent: "center",
   },

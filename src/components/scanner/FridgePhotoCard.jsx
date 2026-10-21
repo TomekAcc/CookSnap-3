@@ -9,6 +9,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useScan } from "../../context/ScanContext";
 import { useInventory } from "../../context/InventoryContext";
+import { EMERALD, SLATE, WHITE } from "../../theme/palette";
 
 /** The scanned photo: laser overlay while scanning, then the compact header with the items-found badge, Scan More and start-over controls. */
 export default function FridgePhotoCard({
@@ -36,7 +37,7 @@ export default function FridgePhotoCard({
           height: photoHeightAnim,
           borderRadius: 28,
           overflow: "hidden",
-          backgroundColor: "#1E293B",
+          backgroundColor: SLATE[800],
           marginBottom: 0,
           position: "relative",
         },
@@ -112,7 +113,7 @@ export default function FridgePhotoCard({
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: "#FFFFFF",
+          backgroundColor: WHITE,
           opacity: completionFlash,
           zIndex: 15,
         }}
@@ -140,7 +141,7 @@ export default function FridgePhotoCard({
             bottom: 12,
             left: 12,
             zIndex: 20,
-            backgroundColor: "#059669",
+            backgroundColor: EMERALD[600],
             paddingHorizontal: 11,
             paddingVertical: 6,
             borderRadius: 999,
@@ -151,10 +152,10 @@ export default function FridgePhotoCard({
             transform: [{ translateY: ingredientsTranslate }],
           }}
         >
-          <CheckCircle2 size={12} color="#FFFFFF" />
+          <CheckCircle2 size={12} color={WHITE} />
           <Text
             style={{
-              color: "#FFFFFF",
+              color: WHITE,
               fontSize: 12,
               fontWeight: "700",
               marginLeft: 5,
@@ -203,7 +204,7 @@ export default function FridgePhotoCard({
         >
           <Text
             style={{
-              color: "#0F172A",
+              color: SLATE[900],
               fontSize: 12,
               fontWeight: "700",
               letterSpacing: 0.2,

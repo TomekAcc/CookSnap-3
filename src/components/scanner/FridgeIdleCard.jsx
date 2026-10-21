@@ -7,6 +7,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useOnboarding } from "../../context/OnboardingContext";
 import { useScan } from "../../context/ScanContext";
+import { EMERALD, WHITE } from "../../theme/palette";
 
 /** Idle state: "Take Photo" / "From Gallery" call to action, with the one-time first-scan hint glow. */
 export default function FridgeIdleCard({
@@ -52,20 +53,20 @@ export default function FridgeIdleCard({
             width: 52,
             height: 52,
             borderRadius: 16,
-            backgroundColor: "#064E3B",
+            backgroundColor: EMERALD[900],
             borderWidth: 1,
-            borderColor: "#065F46",
+            borderColor: EMERALD[800],
             alignItems: "center",
             justifyContent: "center",
             marginBottom: 12,
-            shadowColor: "#059669",
+            shadowColor: EMERALD[600],
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.18,
             shadowRadius: 6,
             elevation: 3,
           }}
         >
-          <Camera size={22} color="#34D399" />
+          <Camera size={22} color={EMERALD[400]} />
         </View>
       ) : (
         // Split into two views on purpose: LinearGradient needs
@@ -96,7 +97,7 @@ export default function FridgeIdleCard({
             height: 52,
             borderRadius: 16,
             marginBottom: 12,
-            shadowColor: "#059669",
+            shadowColor: EMERALD[600],
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.12,
             shadowRadius: 5,
@@ -104,7 +105,7 @@ export default function FridgeIdleCard({
           }}
         >
           <LinearGradient
-            colors={["#D1FAE5", "#A7F3D0"]}
+            colors={[EMERALD[100], EMERALD[200]]}
             start={{ x: 0.15, y: 0 }}
             end={{ x: 0.85, y: 1 }}
             style={{
@@ -116,7 +117,7 @@ export default function FridgeIdleCard({
               justifyContent: "center",
             }}
           >
-            <Camera size={22} color="#059669" />
+            <Camera size={22} color={EMERALD[600]} />
           </LinearGradient>
         </View>
       )}
@@ -170,7 +171,7 @@ export default function FridgeIdleCard({
                 left: -6,
                 right: -6,
                 borderRadius: 19,
-                backgroundColor: "#059669",
+                backgroundColor: EMERALD[600],
                 opacity: firstScanHintPulse.interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 0.35],
@@ -194,17 +195,17 @@ export default function FridgeIdleCard({
             activeOpacity={0.9}
             style={{
               height: 46,
-              backgroundColor: "#059669",
+              backgroundColor: EMERALD[600],
               borderRadius: 13,
               alignItems: "center",
               flexDirection: "row",
               justifyContent: "center",
             }}
           >
-            <Camera size={16} color="#FFFFFF" />
+            <Camera size={16} color={WHITE} />
             <Text
               style={{
-                color: "#FFFFFF",
+                color: WHITE,
                 fontSize: 15,
                 fontWeight: "600",
                 marginLeft: 8,
@@ -234,7 +235,7 @@ export default function FridgeIdleCard({
             justifyContent: "center",
           }}
         >
-          <ImageIcon size={15} color="#059669" />
+          <ImageIcon size={15} color={EMERALD[600]} />
           <Text
             style={{
               color: colors.ink,

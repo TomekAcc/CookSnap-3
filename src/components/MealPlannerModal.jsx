@@ -41,6 +41,7 @@ import { useNavigation } from "../context/NavigationContext";
 import { useRecipes } from "../context/RecipesContext";
 import { useScan } from "../context/ScanContext";
 import { showToast } from "../utils/toast";
+import { AMBER, EMERALD, MISC, ROSE, SLATE, WHITE } from "../theme/palette";
 
 
 // This modal's own native Modal (via StandardSmoothModal) stays mounted for
@@ -568,7 +569,7 @@ export default function MealPlannerModal() {
           { backgroundColor: colors.accentGreenSoft },
         ]}
       >
-        <Refrigerator size={28} color="#059669" />
+        <Refrigerator size={28} color={EMERALD[600]} />
       </View>
       <Text style={[styles.emptyFridgeTitle, { color: colors.textPrimary }]}>
         {t("mealPlanner.fridgeEmptyTitle")}
@@ -583,7 +584,7 @@ export default function MealPlannerModal() {
         accessibilityRole="button"
         accessibilityLabel={t("a11y.scanFridge")}
       >
-        <Camera size={18} color="#FFFFFF" />
+        <Camera size={18} color={WHITE} />
         <Text style={styles.scanCtaText}>{t("scanner.title")}</Text>
       </TouchableOpacity>
     </View>
@@ -608,7 +609,7 @@ export default function MealPlannerModal() {
             style={styles.actionRow}
             activeOpacity={0.8}
           >
-            <BookOpen size={18} color="#059669" />
+            <BookOpen size={18} color={EMERALD[600]} />
             <Text style={[styles.actionText, { color: colors.textPrimary }]}>
               {t("mealPlanner.viewFullRecipe")}
             </Text>
@@ -620,9 +621,9 @@ export default function MealPlannerModal() {
             disabled={fridgeEmpty || isDayLoading}
           >
             {isDayLoading ? (
-              <ActivityIndicator size="small" color="#D97706" />
+              <ActivityIndicator size="small" color={AMBER[600]} />
             ) : (
-              <RefreshCw size={18} color="#D97706" />
+              <RefreshCw size={18} color={AMBER[600]} />
             )}
             <Text style={[styles.actionText, { color: colors.textPrimary }]}>
               {isDayLoading ? t("mealPlanner.askingCookSnap") : t("mealPlanner.swapMealWithAI")}
@@ -633,8 +634,8 @@ export default function MealPlannerModal() {
             style={[styles.actionRow, styles.actionRowLast]}
             activeOpacity={0.8}
           >
-            <Trash2 size={18} color="#E11D48" />
-            <Text style={[styles.actionText, { color: "#E11D48" }]}>
+            <Trash2 size={18} color={ROSE[600]} />
+            <Text style={[styles.actionText, { color: ROSE[600] }]}>
               {t("mealPlanner.clearDay")}
             </Text>
           </TouchableOpacity>
@@ -651,9 +652,9 @@ export default function MealPlannerModal() {
           disabled={fridgeEmpty || isDayLoading}
         >
           {isDayLoading ? (
-            <ActivityIndicator size="small" color="#059669" />
+            <ActivityIndicator size="small" color={EMERALD[600]} />
           ) : (
-            <Sparkles size={18} color="#059669" />
+            <Sparkles size={18} color={EMERALD[600]} />
           )}
           <Text style={[styles.actionText, { color: colors.textPrimary }]}>
             {isDayLoading
@@ -665,7 +666,7 @@ export default function MealPlannerModal() {
         {savedRecipes?.length > 0 && (
           <View style={styles.savedSection}>
             <View style={styles.savedLabelRow}>
-              <Star size={14} color="#D97706" />
+              <Star size={14} color={AMBER[600]} />
               <Text style={[styles.savedLabel, { color: colors.textSecondary }]}>
                 {t("mealPlanner.chooseFromSaved")}
               </Text>
@@ -731,7 +732,7 @@ export default function MealPlannerModal() {
             ]}
             activeOpacity={0.85}
           >
-            <Plus size={18} color="#FFFFFF" strokeWidth={2.5} />
+            <Plus size={18} color={WHITE} strokeWidth={2.5} />
           </TouchableOpacity>
         </View>
       </View>
@@ -809,13 +810,13 @@ export default function MealPlannerModal() {
               ]}
             >
               {isGeneratingWeek ? (
-                <ActivityIndicator size="small" color="#059669" />
+                <ActivityIndicator size="small" color={EMERALD[600]} />
               ) : !hasScanned || !isPro ? (
                 <Sparkles size={17} color={colors.textSecondary} />
               ) : plannedCount === 7 ? (
-                <RefreshCw size={17} color="#059669" />
+                <RefreshCw size={17} color={EMERALD[600]} />
               ) : (
-                <Sparkles size={17} color="#059669" />
+                <Sparkles size={17} color={EMERALD[600]} />
               )}
             </View>
             <View style={{ flex: 1, minWidth: 0 }}>
@@ -853,15 +854,15 @@ export default function MealPlannerModal() {
           {!isPro ? (
             <View style={styles.generationUsageRow}>
               {isPro ? (
-                <Crown size={12} color="#D97706" />
+                <Crown size={12} color={AMBER[600]} />
               ) : (
-                <Sparkles size={12} color="#059669" />
+                <Sparkles size={12} color={EMERALD[600]} />
               )}
               <Text
                 style={[
                   styles.generationUsageText,
                   { color: colors.textMuted },
-                  isPro ? { color: "#D97706" } : null,
+                  isPro ? { color: AMBER[600] } : null,
                 ]}
               >
                 {isPro
@@ -902,13 +903,13 @@ export default function MealPlannerModal() {
                     <View
                       style={[
                         styles.dayBadge,
-                        day.id === todayId && { backgroundColor: "#10B981", borderColor: "#10B981" },
+                        day.id === todayId && { backgroundColor: EMERALD[500], borderColor: EMERALD[500] },
                       ]}
                     >
                       <Text
                         style={[
                           styles.dayBadgeText,
-                          { color: day.id === todayId ? "#FFFFFF" : colors.textSecondary },
+                          { color: day.id === todayId ? WHITE : colors.textSecondary },
                         ]}
                       >
                         {t(day.nameKey)}
@@ -1048,7 +1049,7 @@ export default function MealPlannerModal() {
                           {t("mealPlanner.notPlannedYet")}
                         </Text>
                         <View style={styles.addPill}>
-                          <Plus size={14} color="#059669" strokeWidth={2.6} />
+                          <Plus size={14} color={EMERALD[600]} strokeWidth={2.6} />
                           <Text style={styles.addPillText}>{t("scanner.add")}</Text>
                         </View>
                       </TouchableOpacity>
@@ -1070,10 +1071,10 @@ const styles = StyleSheet.create({
   emptyFridgeCard: {
     marginTop: 4,
     marginBottom: 12,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: SLATE[50],
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: SLATE[200],
     paddingVertical: 20,
     paddingHorizontal: 16,
     alignItems: "center",
@@ -1082,7 +1083,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: "#ECFDF5",
+    backgroundColor: EMERALD[50],
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
@@ -1091,13 +1092,13 @@ const styles = StyleSheet.create({
   emptyFridgeTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#0F172A",
+    color: SLATE[900],
     marginBottom: 6,
   },
   emptyFridgeBody: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#64748B",
+    color: SLATE[500],
     textAlign: "center",
     lineHeight: 18,
     marginBottom: 14,
@@ -1106,14 +1107,14 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 18,
     borderRadius: 14,
-    backgroundColor: "#059669",
+    backgroundColor: EMERALD[600],
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
   },
   scanCtaText: {
-    color: "#FFFFFF",
+    color: WHITE,
     fontSize: 15,
     fontWeight: "600",
   },
@@ -1121,9 +1122,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: SLATE[50],
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "#E2E8F0",
+    borderColor: SLATE[200],
     borderRadius: 16,
     padding: 10,
     marginBottom: 10,
@@ -1133,7 +1134,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#F3F5F8",
+    backgroundColor: MISC.mutedFill,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -1141,12 +1142,12 @@ const styles = StyleSheet.create({
   autoFillTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#0F172A",
+    color: SLATE[900],
   },
   autoFillSubtitle: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#64748B",
+    color: SLATE[500],
     marginTop: 2,
   },
   proTag: {
@@ -1194,7 +1195,7 @@ const styles = StyleSheet.create({
   dayBadgeText: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#0F172A",
+    color: SLATE[900],
   },
   assignedMealCard: {
     flex: 1,
@@ -1204,10 +1205,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 8,
     paddingHorizontal: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: WHITE,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: SLATE[200],
     minHeight: 56,
   },
   mealInfoGroup: {
@@ -1220,7 +1221,7 @@ const styles = StyleSheet.create({
   mealTitle: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#0F172A",
+    color: SLATE[900],
     lineHeight: 20,
     letterSpacing: -0.2,
   },
@@ -1234,17 +1235,17 @@ const styles = StyleSheet.create({
   mealTime: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#64748B",
+    color: SLATE[500],
   },
   mealCalories: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#64748B",
+    color: SLATE[500],
   },
   mealMacros: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#64748B",
+    color: SLATE[500],
     marginTop: 3,
   },
   emptyMealCard: {
@@ -1255,17 +1256,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 10,
     paddingHorizontal: 10,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: SLATE[50],
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: SLATE[200],
     borderStyle: "dashed",
     minHeight: 52,
   },
   emptyText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94A3B8",
+    color: SLATE[400],
   },
   addPill: {
     flexDirection: "row",
@@ -1277,19 +1278,19 @@ const styles = StyleSheet.create({
   addPillText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#059669",
+    color: EMERALD[600],
   },
   cardExpanded: {
-    borderColor: "#10B981",
+    borderColor: EMERALD[500],
   },
   actionPanel: {
     marginLeft: 52,
     marginTop: 6,
     marginBottom: 2,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: SLATE[50],
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: SLATE[200],
     paddingHorizontal: 10,
     overflow: "hidden",
   },
@@ -1300,7 +1301,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     minHeight: 44,
     borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
+    borderBottomColor: SLATE[200],
   },
   actionRowLast: {
     borderBottomWidth: 0,
@@ -1308,13 +1309,13 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#0F172A",
+    color: SLATE[900],
     flex: 1,
   },
   savedSection: {
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#E2E8F0",
+    borderBottomColor: SLATE[200],
   },
   savedLabelRow: {
     flexDirection: "row",
@@ -1325,15 +1326,15 @@ const styles = StyleSheet.create({
   savedLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#92400E",
+    color: AMBER[800],
   },
   savedChip: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "#FFFBEB",
+    backgroundColor: AMBER[50],
     borderWidth: 1,
-    borderColor: "#FDE68A",
+    borderColor: AMBER[200],
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -1343,7 +1344,7 @@ const styles = StyleSheet.create({
   savedChipText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#0F172A",
+    color: SLATE[900],
   },
   customRow: {
     flexDirection: "row",
@@ -1354,22 +1355,22 @@ const styles = StyleSheet.create({
   customInput: {
     flex: 1,
     minWidth: 0,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: WHITE,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
+    borderColor: SLATE[200],
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 10,
     fontSize: 13,
     fontWeight: "600",
-    color: "#0F172A",
+    color: SLATE[900],
     minHeight: 44,
   },
   customAddBtn: {
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: "#059669",
+    backgroundColor: EMERALD[600],
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,

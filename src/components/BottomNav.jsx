@@ -12,6 +12,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useRecipes } from "../context/RecipesContext";
 import { useScan } from "../context/ScanContext";
+import { APPLE, EMERALD, WHITE } from "../theme/palette";
 
 // Same delayed-flatten pattern as Header.jsx: a live BlurView is one of the
 // more GPU-expensive effects to keep compositing every frame, and this one
@@ -38,7 +39,7 @@ const ICON_SIZE = 22;
 // this same emerald (light/dark split matches the established convention
 // used throughout, e.g. FridgeScannerHero, PantryTab: #10B981/#059669 in
 // light mode, #34D399 in dark).
-const INACTIVE = "#8E8E93";
+const INACTIVE = APPLE.gray;
 
 export default function BottomNav() {
   const { activeTab, setActiveTab } = useNavigation();
@@ -103,7 +104,7 @@ export default function BottomNav() {
           StyleSheet.absoluteFill,
           {
             backgroundColor: flattened
-              ? colors.card || colors.bg || "#FFFFFF"
+              ? colors.card || colors.bg || WHITE
               : colors.navBg || "rgba(255,255,255,0.72)",
           },
         ]}
@@ -146,7 +147,7 @@ export default function BottomNav() {
                       width: 9,
                       height: 9,
                       borderRadius: 4.5,
-                      backgroundColor: "#10B981",
+                      backgroundColor: EMERALD[500],
                       borderWidth: 1.5,
                       borderColor: colors.card,
                     }}

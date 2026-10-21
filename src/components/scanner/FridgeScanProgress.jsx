@@ -5,6 +5,7 @@ import { SCAN_STATUS_KEYS } from "../../constants/scanChoreography";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useScan } from "../../context/ScanContext";
+import { EMERALD } from "../../theme/palette";
 
 /** "Vision Radar" panel shown while the AI works: rotating status line and the progress bar. */
 export default function FridgeScanProgress({
@@ -65,7 +66,7 @@ export default function FridgeScanProgress({
               transform: [{ scale: iconPulse }],
             }}
           >
-            <Zap size={20} color="#059669" />
+            <Zap size={20} color={EMERALD[600]} />
           </Animated.View>
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text
@@ -115,7 +116,7 @@ export default function FridgeScanProgress({
                 width: barWidth,
                 height: "100%",
                 borderRadius: 999,
-                backgroundColor: "#10B981",
+                backgroundColor: EMERALD[500],
                 transform: [
                   {
                     translateX: progressBarAnim.interpolate({

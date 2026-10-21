@@ -7,6 +7,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useScan } from "../../context/ScanContext";
 import { useInventory } from "../../context/InventoryContext";
+import { EMERALD, WHITE } from "../../theme/palette";
 
 // Placeholders the vision model is told never to use but sometimes does; a
 // chip with no emoji reads better than a generic jar or box.
@@ -153,7 +154,7 @@ export default function DetectedIngredientsCard({
             onPress={handleAddItem}
             activeOpacity={0.85}
             style={{
-              backgroundColor: "#10B981",
+              backgroundColor: EMERALD[500],
               paddingHorizontal: 16,
               justifyContent: "center",
               borderRadius: 12,
@@ -161,7 +162,7 @@ export default function DetectedIngredientsCard({
           >
             <Text
               style={{
-                color: "#FFFFFF",
+                color: WHITE,
                 fontWeight: "700",
                 fontSize: 12,
               }}

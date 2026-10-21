@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { X } from "../icons";
+import { SLATE } from "../theme/palette";
 
 /** Apple HIG-friendly tap target (visual 38pt, hit area expanded). */
 const BTN_SIZE = 38;
@@ -56,7 +57,7 @@ export default function PerfectCloseButton({
       ]}
     >
       <View pointerEvents="none">
-        <X size={ICON_SIZE} color="#0F172A" strokeWidth={2.5} />
+        <X size={ICON_SIZE} color={SLATE[900]} strokeWidth={2.5} />
       </View>
     </TouchableOpacity>
   );
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     elevation: 8,
     ...Platform.select({
       ios: {
-        shadowColor: "#0f172a",
+        shadowColor: SLATE[900],
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 8,

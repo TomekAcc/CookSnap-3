@@ -26,6 +26,7 @@ import { useScanCapture } from "./scanner/useScanCapture";
 import { useInventory } from "../context/InventoryContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useScan } from "../context/ScanContext";
+import { EMERALD, SLATE, WHITE } from "../theme/palette";
 
 /** Compact height for the captured photo once a scan finishes. */
 const COMPACT_HEIGHT = 130;
@@ -424,7 +425,7 @@ export default function PantryScannerHero() {
               // Matches FridgeScannerHero's "Take Photo" button — same
               // primary scan action, was the old dark-navy+amber pairing
               // left over from before that redesign shipped.
-              backgroundColor: "#059669",
+              backgroundColor: EMERALD[600],
               paddingHorizontal: 14,
               borderRadius: 13,
               flexDirection: "row",
@@ -432,9 +433,9 @@ export default function PantryScannerHero() {
               justifyContent: "center",
             }}
           >
-            <Camera size={16} color="#FFFFFF" />
+            <Camera size={16} color={WHITE} />
             <Text
-              style={{ color: "#FFFFFF", fontSize: 15, fontWeight: "600", marginLeft: 8 }}
+              style={{ color: WHITE, fontSize: 15, fontWeight: "600", marginLeft: 8 }}
               numberOfLines={1}
             >
               {t("pantry.scanPantry")}
@@ -461,7 +462,7 @@ export default function PantryScannerHero() {
             }}
             accessibilityLabel={t("a11y.pickPantryPhoto")}
           >
-            <ImageIcon size={15} color="#059669" />
+            <ImageIcon size={15} color={EMERALD[600]} />
             <Text
               style={{
                 color: colors.ink,
@@ -485,7 +486,7 @@ export default function PantryScannerHero() {
                 height: photoHeightAnim,
                 borderRadius: 22,
                 overflow: "hidden",
-                backgroundColor: "#1E293B",
+                backgroundColor: SLATE[800],
                 position: "relative",
               },
               Platform.select({
@@ -517,7 +518,7 @@ export default function PantryScannerHero() {
                   bottom: 12,
                   left: 12,
                   zIndex: 20,
-                  backgroundColor: "#059669",
+                  backgroundColor: EMERALD[600],
                   paddingHorizontal: 11,
                   paddingVertical: 6,
                   borderRadius: 999,
@@ -528,9 +529,9 @@ export default function PantryScannerHero() {
                   transform: [{ translateY: badgeTranslate }],
                 }}
               >
-                <CheckCircle2 size={12} color="#FFFFFF" />
+                <CheckCircle2 size={12} color={WHITE} />
                 <Text
-                  style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "700", marginLeft: 5 }}
+                  style={{ color: WHITE, fontSize: 12, fontWeight: "700", marginLeft: 5 }}
                   numberOfLines={1}
                 >
                   {itemCount === 1
@@ -579,7 +580,7 @@ export default function PantryScannerHero() {
               >
                 <Text
                   style={{
-                    color: "#0F172A",
+                    color: SLATE[900],
                     fontSize: 11,
                     fontWeight: "700",
                     letterSpacing: 0.2,
@@ -657,7 +658,7 @@ export default function PantryScannerHero() {
                     <Text style={{ color: colors.textSecondary, fontSize: 10, fontWeight: "700" }}>
                       {t("scanner.scanProgress")}
                     </Text>
-                    <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700" }}>
+                    <Text style={{ color: EMERALD[600], fontSize: 12, fontWeight: "700" }}>
                       {progressPct}%
                     </Text>
                   </View>
@@ -674,7 +675,7 @@ export default function PantryScannerHero() {
                       style={{
                         height: "100%",
                         borderRadius: 999,
-                        backgroundColor: "#10B981",
+                        backgroundColor: EMERALD[500],
                         width: progressBarAnim.interpolate({
                           inputRange: [0, 1],
                           outputRange: ["0%", "100%"],

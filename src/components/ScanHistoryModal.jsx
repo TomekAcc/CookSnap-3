@@ -11,6 +11,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useRecipes } from "../context/RecipesContext";
 import { useScan } from "../context/ScanContext";
 import { showToast } from "../utils/toast";
+import { EMERALD } from "../theme/palette";
 
 const SOURCE_ICON = { camera: Camera, gallery: ImageIcon, demo: Sparkles };
 
@@ -83,13 +84,13 @@ export default function ScanHistoryModal() {
             style={[
               styles.emptyIcon,
               {
-                backgroundColor: colors.accentGreenSoft || "#ECFDF5",
-                borderColor: colors.accentGreenBorder || "#D1FAE5",
+                backgroundColor: colors.accentGreenSoft || EMERALD[50],
+                borderColor: colors.accentGreenBorder || EMERALD[100],
               },
             ]}
           >
-            <History size={28} color={colors.accentGreen || "#10B981"} />
-            <EmptyStateSparkle color={colors.accentGreen || "#10B981"} />
+            <History size={28} color={colors.accentGreen || EMERALD[500]} />
+            <EmptyStateSparkle color={colors.accentGreen || EMERALD[500]} />
           </View>
           <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
             {t("scanHistory.emptyTitle")}

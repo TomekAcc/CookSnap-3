@@ -10,6 +10,7 @@ import { useTheme } from "../context/ThemeContext";
 import StandardSmoothModal from "./StandardSmoothModal";
 import { useLanguage } from "../context/LanguageContext";
 import { showToast } from "../utils/toast";
+import { EMERALD, WHITE } from "../theme/palette";
 
 /**
  * Help & Feedback — StandardSmoothModal bottom-sheet (slide, synced with all sheets).
@@ -67,7 +68,7 @@ export default function HelpFeedbackModal() {
         style={[
           styles.sendButton,
           {
-            backgroundColor: "#059669",
+            backgroundColor: EMERALD[600],
             opacity: message.trim() ? 1 : 0.45,
           },
         ]}
@@ -76,7 +77,7 @@ export default function HelpFeedbackModal() {
         <Text
           style={[
             styles.sendButtonText,
-            { color: "#FFFFFF" },
+            { color: WHITE },
           ]}
         >
           {t("help.sendFeedback")}

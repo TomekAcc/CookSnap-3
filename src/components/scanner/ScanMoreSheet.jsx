@@ -20,6 +20,7 @@ import { useEntitlements } from "../../context/EntitlementsContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useScan } from "../../context/ScanContext";
 import { showToast } from "../../utils/toast";
+import { BLACK } from "../../theme/palette";
 
 // launchImageLibraryAsync presents a real native iOS view controller.
 // Confirmed via device logs: calling it right after this popover's own
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     ...Platform.select({
       ios: {
-        shadowColor: "#000000",
+        shadowColor: BLACK,
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.14,
         shadowRadius: 16,

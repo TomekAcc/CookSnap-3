@@ -28,8 +28,9 @@ import { log } from "../utils/log";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
 import { useScan } from "../context/ScanContext";
+import { EMERALD, MISC, SLATE, WHITE } from "../theme/palette";
 
-const GREEN = "#059669";
+const GREEN = EMERALD[600];
 
 // The sample card takes the height the screen has left after the header, the
 // language row and the buttons (about 440pt), so a tall phone shows more of the
@@ -245,7 +246,7 @@ export default function OnboardingScreen({ onContinue }) {
             height: sampleCard.cardHeight,
             borderRadius: 24,
             overflow: "hidden",
-            backgroundColor: "#E6EDF2",
+            backgroundColor: MISC.paleBlueGray,
             borderWidth: 1,
             borderColor: colors.cardBorder,
             marginBottom: 16,
@@ -274,7 +275,7 @@ export default function OnboardingScreen({ onContinue }) {
               paddingVertical: 5,
             }}
           >
-            <Text style={{ fontSize: 12, fontWeight: "700", color: "#0F172A" }}>
+            <Text style={{ fontSize: 12, fontWeight: "700", color: SLATE[900] }}>
               {t("onboarding.sampleLabel")}
             </Text>
           </View>
@@ -422,12 +423,12 @@ export default function OnboardingScreen({ onContinue }) {
                             width: 22,
                             height: 22,
                             borderRadius: 11,
-                            backgroundColor: "#10B981",
+                            backgroundColor: EMERALD[500],
                             alignItems: "center",
                             justifyContent: "center",
                           }}
                         >
-                          <Check size={14} color="#FFFFFF" strokeWidth={2.5} />
+                          <Check size={14} color={WHITE} strokeWidth={2.5} />
                         </View>
                       ) : (
                         <View
@@ -500,8 +501,8 @@ export default function OnboardingScreen({ onContinue }) {
             gap: 8,
           }}
         >
-          <Sparkles size={18} color="#FFFFFF" />
-          <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 17, flexShrink: 1 }}>
+          <Sparkles size={18} color={WHITE} />
+          <Text style={{ color: WHITE, fontWeight: "700", fontSize: 17, flexShrink: 1 }}>
             {t("onboarding.trySample")}
           </Text>
         </TouchableOpacity>

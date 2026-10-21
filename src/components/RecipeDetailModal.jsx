@@ -45,6 +45,7 @@ import { useLibrary } from "../context/LibraryContext";
 import { usePreferences } from "../context/PreferencesContext";
 import { useRecipes } from "../context/RecipesContext";
 import { showToast } from "../utils/toast";
+import { AMBER, EMERALD, INDIGO, ROSE, SKY, SLATE, WHITE } from "../theme/palette";
 
 /** Hermes-safe emoji strip (no /u flag). */
 function stripInlineEmojis(str) {
@@ -469,7 +470,7 @@ export default function RecipeDetailModal() {
               {formatTimeLabel(recipe?.prepTime, minUnit, `5 ${minUnit}`)}
             </Text>
             <View style={styles.metaLabelRow}>
-              <Clock size={11} color="#059669" strokeWidth={2.5} />
+              <Clock size={11} color={EMERALD[600]} strokeWidth={2.5} />
               <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
                 {t("recipeDetail.prepLabel")}
               </Text>
@@ -484,9 +485,9 @@ export default function RecipeDetailModal() {
             </Text>
             <View style={styles.metaLabelRow}>
               {isNoCook ? (
-                <Snowflake size={11} color="#4F46E5" strokeWidth={2.5} />
+                <Snowflake size={11} color={INDIGO[600]} strokeWidth={2.5} />
               ) : (
-                <Flame size={11} color="#F59E0B" strokeWidth={2.5} />
+                <Flame size={11} color={AMBER[500]} strokeWidth={2.5} />
               )}
               <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
                 {isNoCook ? t("recipeDetail.coldLabel") : t("recipeDetail.cookLabel")}
@@ -505,8 +506,8 @@ export default function RecipeDetailModal() {
               <>
                 <Text style={styles.metaValuePro}>{t("menu.proBadge")}</Text>
                 <View style={styles.metaLabelRow}>
-                  <Lock size={10} color="#B45309" strokeWidth={2.5} />
-                  <Text style={[styles.metaLabel, { color: "#B45309" }]}>
+                  <Lock size={10} color={AMBER[700]} strokeWidth={2.5} />
+                  <Text style={[styles.metaLabel, { color: AMBER[700] }]}>
                     {t("recipeDetail.unlockLabel")}
                   </Text>
                 </View>
@@ -517,7 +518,7 @@ export default function RecipeDetailModal() {
                   {recipe?.calories || t("recipeDetail.caloriesFallback")}
                 </Text>
                 <View style={styles.metaLabelRow}>
-                  <Sparkles size={11} color="#D97706" strokeWidth={2.5} />
+                  <Sparkles size={11} color={AMBER[600]} strokeWidth={2.5} />
                   <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
                     {t("recipeDetail.caloriesLabel")}
                   </Text>
@@ -546,7 +547,7 @@ export default function RecipeDetailModal() {
             <View style={styles.metaRow}>
               {recipe?.protein ? (
                 <View style={styles.metaCol}>
-                  <Text style={[styles.metaValueMacro, { color: "#E11D48" }]}>
+                  <Text style={[styles.metaValueMacro, { color: ROSE[600] }]}>
                     {recipe.protein}
                   </Text>
                   <Text
@@ -561,7 +562,7 @@ export default function RecipeDetailModal() {
               ) : null}
               {recipe?.carbs ? (
                 <View style={styles.metaCol}>
-                  <Text style={[styles.metaValueMacro, { color: "#D97706" }]}>
+                  <Text style={[styles.metaValueMacro, { color: AMBER[600] }]}>
                     {recipe.carbs}
                   </Text>
                   <Text
@@ -576,7 +577,7 @@ export default function RecipeDetailModal() {
               ) : null}
               {recipe?.fat ? (
                 <View style={styles.metaCol}>
-                  <Text style={[styles.metaValueMacro, { color: "#0284C7" }]}>
+                  <Text style={[styles.metaValueMacro, { color: SKY[600] }]}>
                     {recipe.fat}
                   </Text>
                   <Text
@@ -615,7 +616,7 @@ export default function RecipeDetailModal() {
               ]}
             >
               <View style={styles.modifierIconBox}>
-                <Crown size={16} color="#F59E0B" fill="#FDE68A" />
+                <Crown size={16} color={AMBER[500]} fill={AMBER[200]} />
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
                 <Text
@@ -636,7 +637,7 @@ export default function RecipeDetailModal() {
                   {t("recipeDetail.modifyProDesc")}
                 </Text>
               </View>
-              <Lock size={16} color="#B45309" />
+              <Lock size={16} color={AMBER[700]} />
             </TouchableOpacity>
           ) : modifierOpen ? (
             <View
@@ -644,12 +645,12 @@ export default function RecipeDetailModal() {
                 styles.modifierOpenCard,
                 {
                   backgroundColor: colors.amberFaint,
-                  borderColor: "#FBBF24",
+                  borderColor: AMBER[400],
                 },
               ]}
             >
               <View style={styles.modifierOpenHeader}>
-                <Sparkles size={15} color="#D97706" />
+                <Sparkles size={15} color={AMBER[600]} />
                 <Text
                   style={[
                     styles.modifierOpenTitle,
@@ -706,7 +707,7 @@ export default function RecipeDetailModal() {
                   ]}
                 >
                   {isModifying ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
+                    <ActivityIndicator size="small" color={WHITE} />
                   ) : (
                     <Text style={styles.modifierSendText}>{t("recipeDetail.apply")}</Text>
                   )}
@@ -721,7 +722,7 @@ export default function RecipeDetailModal() {
                 styles.modifierRow,
                 {
                   backgroundColor: colors.amberFaint,
-                  borderColor: "#FDE68A",
+                  borderColor: AMBER[200],
                 },
               ]}
             >
@@ -756,7 +757,7 @@ export default function RecipeDetailModal() {
                   {
                     color:
                       checkedCount === rawIngredients.length
-                        ? colors.accentGreen || "#10B981"
+                        ? colors.accentGreen || EMERALD[500]
                         : colors.textSecondary,
                   },
                 ]}
@@ -861,7 +862,7 @@ export default function RecipeDetailModal() {
                       ]}
                     >
                       {isChecked ? (
-                        <Check size={14} color="#FFFFFF" strokeWidth={2.5} />
+                        <Check size={14} color={WHITE} strokeWidth={2.5} />
                       ) : null}
                     </View>
                   </View>
@@ -923,7 +924,7 @@ export default function RecipeDetailModal() {
                 {upgradeAdded ? (
                   <Check size={14} color={colors.greenStrong} strokeWidth={2.5} />
                 ) : (
-                  <ShoppingCart size={14} color="#FFFFFF" />
+                  <ShoppingCart size={14} color={WHITE} />
                 )}
                 <Text
                   style={[
@@ -962,7 +963,7 @@ export default function RecipeDetailModal() {
                   {
                     color:
                       stepsCheckedCount === steps.length
-                        ? colors.accentGreen || "#10B981"
+                        ? colors.accentGreen || EMERALD[500]
                         : colors.textSecondary,
                   },
                 ]}
@@ -1013,7 +1014,7 @@ export default function RecipeDetailModal() {
                     ]}
                   >
                     {isChecked ? (
-                      <Check size={12} color="#FFFFFF" strokeWidth={3} />
+                      <Check size={12} color={WHITE} strokeWidth={3} />
                     ) : (
                       <Text
                         style={[
@@ -1078,7 +1079,7 @@ export default function RecipeDetailModal() {
           <Animated.View style={{ transform: [{ scale: heartScaleAnim }] }}>
             <Heart
               size={16}
-              color={isFavorite ? (colors.greenStrong) : "#FFFFFF"}
+              color={isFavorite ? (colors.greenStrong) : WHITE}
               fill={isFavorite ? (colors.greenStrong) : "transparent"}
             />
           </Animated.View>
@@ -1113,7 +1114,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
+    borderBottomColor: SLATE[100],
     paddingBottom: 14,
     marginBottom: 8,
     gap: 12,
@@ -1148,7 +1149,7 @@ const styles = StyleSheet.create({
   },
   headerTitles: { flex: 1, minWidth: 0 },
   recipeTitle: {
-    color: "#0F172A",
+    color: SLATE[900],
     fontSize: 18,
     fontWeight: "700",
     lineHeight: 23,
@@ -1161,7 +1162,7 @@ const styles = StyleSheet.create({
     marginTop: SPACE.sm - 2,
   },
   recipeSubtitle: {
-    color: "#64748B",
+    color: SLATE[500],
     fontSize: 12,
     fontWeight: "600",
     lineHeight: 15,
@@ -1201,27 +1202,27 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   metaLabel: {
-    color: "#94A3B8",
+    color: SLATE[400],
     fontSize: 9,
     fontWeight: "700",
     letterSpacing: 0.5,
     textTransform: "uppercase",
     marginLeft: 3,
   },
-  metaValueEmerald: { color: "#059669", fontSize: 18, fontWeight: "700" },
-  metaValueAmber: { color: "#D97706", fontSize: 18, fontWeight: "700" },
-  metaValueIndigo: { color: "#4F46E5", fontSize: 15, fontWeight: "700" },
+  metaValueEmerald: { color: EMERALD[600], fontSize: 18, fontWeight: "700" },
+  metaValueAmber: { color: AMBER[600], fontSize: 18, fontWeight: "700" },
+  metaValueIndigo: { color: INDIGO[600], fontSize: 15, fontWeight: "700" },
   metaValueDark: { fontSize: 18, fontWeight: "700" },
-  metaValuePro: { color: "#B45309", fontSize: 15, fontWeight: "700" },
+  metaValuePro: { color: AMBER[700], fontSize: 15, fontWeight: "700" },
   metaValueMacro: { fontSize: 16, fontWeight: "700" },
   modifierSection: { marginTop: 0 },
   modifierLockedRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    backgroundColor: "#FFFBEB",
+    backgroundColor: AMBER[50],
     borderWidth: 1,
-    borderColor: "#FDE68A",
+    borderColor: AMBER[200],
     borderRadius: 16,
     paddingVertical: 10,
     paddingHorizontal: 14,
@@ -1235,11 +1236,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexShrink: 0,
   },
-  modifierLockedTitle: { fontSize: 13, fontWeight: "700", color: "#78350F" },
+  modifierLockedTitle: { fontSize: 13, fontWeight: "700", color: AMBER[900] },
   modifierLockedSubtitle: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#92400E",
+    color: AMBER[800],
     marginTop: 1,
   },
   modifierRow: {
@@ -1251,7 +1252,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 11,
   },
-  modifierRowText: { fontSize: 13, fontWeight: "700", color: "#D97706" },
+  modifierRowText: { fontSize: 13, fontWeight: "700", color: AMBER[600] },
   modifierOpenCard: {
     borderWidth: 1.5,
     borderRadius: 16,
@@ -1263,7 +1264,7 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 8,
   },
-  modifierOpenTitle: { fontSize: 13, fontWeight: "700", color: "#92400E" },
+  modifierOpenTitle: { fontSize: 13, fontWeight: "700", color: AMBER[800] },
   modifierInput: {
     borderWidth: 1,
     borderRadius: 12,
@@ -1281,16 +1282,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  modifierCancelText: { fontSize: 12, fontWeight: "700", color: "#78350F" },
+  modifierCancelText: { fontSize: 12, fontWeight: "700", color: AMBER[900] },
   modifierSendBtn: {
     flex: 1,
     height: 40,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#D97706",
+    backgroundColor: AMBER[600],
   },
-  modifierSendText: { fontSize: 12, fontWeight: "700", color: "#FFFFFF" },
+  modifierSendText: { fontSize: 12, fontWeight: "700", color: WHITE },
   sectionContainer: { marginTop: 10 },
   /** Cooking Area — airy gap after Ingredients */
   instructionsSection: { marginTop: 24 },
@@ -1343,7 +1344,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   upgradeTipButtonText: {
-    color: "#FFFFFF",
+    color: WHITE,
     fontSize: 12.5,
     fontWeight: "700",
   },
@@ -1362,8 +1363,8 @@ const styles = StyleSheet.create({
     borderColor: DS.colors.border,
   },
   ingredientChecked: {
-    backgroundColor: "#ECFDF5",
-    borderColor: "#D1FAE5",
+    backgroundColor: EMERALD[50],
+    borderColor: EMERALD[100],
   },
   ingredientLeft: {
     flexDirection: "row",
@@ -1376,7 +1377,7 @@ const styles = StyleSheet.create({
   ingredientName: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#1E293B",
+    color: SLATE[800],
     flex: 1,
   },
   assumedStapleIconBtn: {
@@ -1389,7 +1390,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   ingredientNameChecked: {
-    color: "#94A3B8",
+    color: SLATE[400],
     textDecorationLine: "line-through",
   },
   ingredientRight: {
@@ -1400,7 +1401,7 @@ const styles = StyleSheet.create({
   ingredientQty: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#64748B",
+    color: SLATE[500],
     marginRight: 8,
   },
   checkCircle: {
@@ -1412,12 +1413,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   checkCircleInactive: {
-    borderColor: "#CBD5E1",
-    backgroundColor: "#FFFFFF",
+    borderColor: SLATE[300],
+    backgroundColor: WHITE,
   },
   checkCircleActive: {
-    borderColor: "#10B981",
-    backgroundColor: "#10B981",
+    borderColor: EMERALD[500],
+    backgroundColor: EMERALD[500],
   },
   checkCircleNumber: {
     fontSize: 11,
@@ -1436,12 +1437,12 @@ const styles = StyleSheet.create({
     minHeight: 64,
   },
   stepCardInactive: {
-    backgroundColor: "#FFFFFF",
-    borderColor: "#E2E8F0",
+    backgroundColor: WHITE,
+    borderColor: SLATE[200],
   },
   stepCardActive: {
-    backgroundColor: "#FFFBEB",
-    borderColor: "#FBBF24",
+    backgroundColor: AMBER[50],
+    borderColor: AMBER[400],
     borderWidth: 1.5,
   },
   stepBadge: {
@@ -1461,16 +1462,16 @@ const styles = StyleSheet.create({
   // (applied inline above, isDark-aware) so the amber one actually leads.
   // Ties to the same amber as stepCardActive so the "this one's selected"
   // language is consistent card-to-badge.
-  stepBadgeActive: { backgroundColor: "#D97706" },
+  stepBadgeActive: { backgroundColor: AMBER[600] },
   stepBadgeText: {
-    color: "#FFFFFF",
+    color: WHITE,
     fontSize: 12,
     fontWeight: "700",
   },
   stepText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1E293B",
+    color: SLATE[800],
     lineHeight: 28,
     flex: 1,
     flexShrink: 1,
@@ -1501,9 +1502,9 @@ const styles = StyleSheet.create({
   // every other primary CTA in the app. The saved state's lighter
   // confirmation colors are applied inline above, since they're
   // isDark-aware.
-  favoritePrimary: { backgroundColor: "#059669" },
+  favoritePrimary: { backgroundColor: EMERALD[600] },
   favoriteButtonText: {
-    color: "#FFFFFF",
+    color: WHITE,
     fontSize: 12,
     fontWeight: "700",
     letterSpacing: 0.8,

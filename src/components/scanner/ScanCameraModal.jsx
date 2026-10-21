@@ -4,6 +4,7 @@ import { CameraView } from "expo-camera";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLanguage } from "../../context/LanguageContext";
 import PerfectCloseButton from "../PerfectCloseButton";
+import { BLACK, EMERALD, WHITE } from "../../theme/palette";
 
 /** Full-screen camera with a close button, a hint line and the shutter. Props come from `useScanCapture().camera`. */
 export default function ScanCameraModal({ open, cameraRef, onClose, onCapture, hint }) {
@@ -21,7 +22,7 @@ export default function ScanCameraModal({ open, cameraRef, onClose, onCapture, h
       presentationStyle="fullScreen"
       onRequestClose={onClose}
     >
-      <View style={{ flex: 1, backgroundColor: "#000000" }}>
+      <View style={{ flex: 1, backgroundColor: BLACK }}>
         <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
 
         <PerfectCloseButton isFullScreen onPress={onClose} accessibilityLabel={t("a11y.closeCamera")} />
@@ -39,7 +40,7 @@ export default function ScanCameraModal({ open, cameraRef, onClose, onCapture, h
         >
           <Text
             style={{
-              color: "#FFFFFF",
+              color: WHITE,
               fontWeight: "700",
               fontSize: 17,
               marginBottom: 24,
@@ -56,14 +57,14 @@ export default function ScanCameraModal({ open, cameraRef, onClose, onCapture, h
               width: 80,
               height: 80,
               borderRadius: 40,
-              backgroundColor: "#FFFFFF",
+              backgroundColor: WHITE,
               alignItems: "center",
               justifyContent: "center",
               borderWidth: 4,
-              borderColor: "#10B981",
+              borderColor: EMERALD[500],
             }}
           >
-            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: "#10B981" }} />
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: EMERALD[500] }} />
           </TouchableOpacity>
         </View>
       </View>

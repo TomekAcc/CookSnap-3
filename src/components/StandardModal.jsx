@@ -27,6 +27,7 @@ import {
   EXIT_ANIM_MS,
   useModalPresence,
 } from "../utils/bottomSheet";
+import { SLATE, WHITE } from "../theme/palette";
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const ENTER_DURATION_MS = 300;
@@ -262,8 +263,8 @@ export default function StandardModal({
         isBottom ? styles.bottomSheet : styles.centerSheet,
         maxHeight != null ? { maxHeight } : null,
         {
-          backgroundColor: colors.card || "#FFFFFF",
-          borderColor: colors.cardBorder || "#F1F5F9",
+          backgroundColor: colors.card || WHITE,
+          borderColor: colors.cardBorder || SLATE[100],
           paddingBottom: isBottom
             ? Math.max(
                 (insets?.bottom || 0) + (compactBottom ? 4 : 16),

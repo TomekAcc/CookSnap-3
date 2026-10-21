@@ -12,6 +12,7 @@ import SwipeToDeleteRow from "../components/SwipeToDeleteRow";
 import { RADIUS } from "../theme/tokens";
 import { useLanguage } from "../context/LanguageContext";
 import { useLibrary } from "../context/LibraryContext";
+import { APPLE, EMERALD, WHITE } from "../theme/palette";
 
 // Meal types worth filtering by, in the order they appear in a day. Only the
 // ones with a translation and at least one saved recipe become chips.
@@ -141,10 +142,10 @@ export default function SavedScreen() {
             >
               <Heart
                 size={36}
-                color={colors.textTertiary || "#86868B"}
+                color={colors.textTertiary || APPLE.tertiary}
                 strokeWidth={2}
               />
-              <EmptyStateSparkle color={colors.danger || "#FF3B30"} />
+              <EmptyStateSparkle color={colors.danger || APPLE.red} />
             </View>
             <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
               {t("saved.emptyTitle")}
@@ -176,7 +177,7 @@ export default function SavedScreen() {
                       style={[
                         styles.chip,
                         selected
-                          ? { backgroundColor: "#059669", borderColor: "#059669" }
+                          ? { backgroundColor: EMERALD[600], borderColor: EMERALD[600] }
                           : { backgroundColor: colors.card, borderColor: colors.cardBorder },
                       ]}
                     >
@@ -184,7 +185,7 @@ export default function SavedScreen() {
                         style={{
                           fontSize: 14,
                           fontWeight: "600",
-                          color: selected ? "#FFFFFF" : colors.textPrimary,
+                          color: selected ? WHITE : colors.textPrimary,
                         }}
                       >
                         {t(`mealType.${id}`)}

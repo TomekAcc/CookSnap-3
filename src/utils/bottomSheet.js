@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { log } from "./log";
+import { BLACK, SLATE, WHITE } from "../theme/palette";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -243,17 +244,17 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
   sheetCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: WHITE,
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingHorizontal: 20,
     paddingTop: 6,
     maxHeight: "78%",
     borderTopWidth: 1,
-    borderTopColor: "#F1F5F9",
+    borderTopColor: SLATE[100],
     ...Platform.select({
       ios: {
-        shadowColor: "#0f172a",
+        shadowColor: SLATE[900],
         shadowOffset: { width: 0, height: -8 },
         shadowOpacity: 0.1,
         shadowRadius: 20,
@@ -262,17 +263,17 @@ const styles = StyleSheet.create({
     }),
   },
   sheetCardDark: {
-    backgroundColor: "#0F172A",
+    backgroundColor: SLATE[900],
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
     paddingHorizontal: 20,
     paddingTop: 6,
     maxHeight: "78%",
     borderTopWidth: 1,
-    borderTopColor: "#1E293B",
+    borderTopColor: SLATE[800],
     ...Platform.select({
       ios: {
-        shadowColor: "#000000",
+        shadowColor: BLACK,
         shadowOffset: { width: 0, height: -8 },
         shadowOpacity: 0.22,
         shadowRadius: 20,
@@ -283,13 +284,13 @@ const styles = StyleSheet.create({
   grabHandle: {
     width: 40,
     height: 4.5,
-    backgroundColor: "#E2E8F0",
+    backgroundColor: SLATE[200],
     borderRadius: 3,
     alignSelf: "center",
     marginVertical: 8,
   },
   grabHandleDark: {
-    backgroundColor: "#334155",
+    backgroundColor: SLATE[700],
   },
 });
 

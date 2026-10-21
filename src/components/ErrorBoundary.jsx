@@ -5,6 +5,7 @@ import { translate } from "../i18n";
 import { DEFAULT_LANGUAGE_ID } from "../data/languageOptions";
 import { log } from "../utils/log";
 import { STORAGE_KEYS } from "../storage/keys";
+import { SLATE, WHITE } from "../theme/palette";
 
 // Reads the saved language straight from AsyncStorage (not through
 // the app-state contexts / the hooks) on purpose, so the crash screen still renders in
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     zIndex: 999,
     elevation: 999,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: SLATE[50],
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
@@ -112,41 +113,41 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    color: "#0F172A",
+    color: SLATE[900],
     fontWeight: "800",
     fontSize: 20,
     textAlign: "center",
     marginBottom: 8,
   },
   body: {
-    color: "#64748B",
+    color: SLATE[500],
     fontSize: 14,
     textAlign: "center",
     marginBottom: 24,
     lineHeight: 20,
   },
   errorBox: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: WHITE,
     borderRadius: 16,
     padding: 12,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: "#F1F5F9",
+    borderColor: SLATE[100],
     maxWidth: "100%",
   },
   errorText: {
-    color: "#94A3B8",
+    color: SLATE[400],
     fontSize: 12,
     fontFamily: "Courier",
   },
   button: {
-    backgroundColor: "#1E293B",
+    backgroundColor: SLATE[800],
     borderRadius: 16,
     paddingHorizontal: 32,
     paddingVertical: 16,
   },
   buttonText: {
-    color: "#FFFFFF",
+    color: WHITE,
     fontWeight: "700",
     fontSize: 14,
   },

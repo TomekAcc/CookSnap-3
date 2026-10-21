@@ -2,13 +2,14 @@ import {
   getDishEmojiAndStyle,
 } from "../utils/imageUtils";
 import { log } from "../utils/log";
+import { AMBER, EMERALD, ORANGE, PINK, SLATE, TW_GREEN } from "../theme/palette";
 
 export const CATEGORY_STYLE = {
-  breakfast: { emoji: "🥐", colors: ["#F59E0B", "#EA580C"] },
-  lunch: { emoji: "🍲", colors: ["#10B981", "#059669"] },
-  dinner: { emoji: "🌙", colors: ["#0F172A", "#1E293B"] },
-  snack: { emoji: "🥗", colors: ["#22C55E", "#16A34A"] },
-  dessert: { emoji: "🍰", colors: ["#EC4899", "#BE185D"] },
+  breakfast: { emoji: "🥐", colors: [AMBER[500], ORANGE[600]] },
+  lunch: { emoji: "🍲", colors: [EMERALD[500], EMERALD[600]] },
+  dinner: { emoji: "🌙", colors: [SLATE[900], SLATE[800]] },
+  snack: { emoji: "🥗", colors: [TW_GREEN[500], TW_GREEN[600]] },
+  dessert: { emoji: "🍰", colors: [PINK[500], PINK[700]] },
 };
 
 export const MEAL_TYPES = [

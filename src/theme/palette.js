@@ -37,7 +37,7 @@ export const EMERALD = {
   800: "#065F46",
   900: "#064E3B",
 };
-export const GREEN = { 500: "#22C55E", 600: "#16A34A" };
+export const TW_GREEN = { 500: "#22C55E", 600: "#16A34A" };
 export const AMBER = {
   50: "#FFFBEB",
   100: "#FEF3C7",

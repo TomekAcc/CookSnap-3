@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Trash2 } from "../icons";
 import { useTranslation } from "../context/LanguageContext";
+import { RED, WHITE } from "../theme/palette";
 
 const DELETE_WIDTH = 76;
 const OPEN_X = -DELETE_WIDTH;
@@ -132,7 +133,7 @@ export default function SwipeToDeleteRow({
           accessibilityLabel={t("a11y.deleteItem")}
           accessibilityRole="button"
         >
-          <Trash2 size={20} color="#FFFFFF" strokeWidth={2} />
+          <Trash2 size={20} color={WHITE} strokeWidth={2} />
         </TouchableOpacity>
       </Animated.View>
       <Animated.View
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     right: 0,
     width: DELETE_WIDTH,
     overflow: "hidden",
-    backgroundColor: "#EF4444",
+    backgroundColor: RED[500],
     alignItems: "flex-end",
     justifyContent: "center",
   },

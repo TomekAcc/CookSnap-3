@@ -41,6 +41,7 @@ import { useLanguage, useTranslation } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useRecipes } from "../context/RecipesContext";
 import { showToast } from "../utils/toast";
+import { APPLE, EMERALD, SLATE, WHITE } from "../theme/palette";
 
 // PANTRY_CATEGORIES' own values stay English (they're also the actual
 // matching key against each pantry item's stored `category`, set by the
@@ -131,13 +132,13 @@ const InStockRow = memo(function InStockRow({ item, isOpen, setOpenSwipeId, onTo
             width: 28,
             height: 28,
             borderRadius: 9,
-            backgroundColor: "#10B981",
+            backgroundColor: EMERALD[500],
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
           }}
         >
-          <Check size={15} color="#FFFFFF" strokeWidth={3} />
+          <Check size={15} color={WHITE} strokeWidth={3} />
         </TouchableOpacity>
       </View>
     </SwipeToDeleteRow>
@@ -532,7 +533,7 @@ export default function PantryTab() {
               style={{ position: "absolute", right: 14 }}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <X size={14} color="#94A3B8" />
+              <X size={14} color={SLATE[400]} />
             </TouchableOpacity>
           )}
         </View>
@@ -552,7 +553,7 @@ export default function PantryTab() {
               borderColor: colors.cardBorder,
             }}
           >
-            <Plus size={16} color="#059669" strokeWidth={2.6} />
+            <Plus size={16} color={EMERALD[600]} strokeWidth={2.6} />
             <Text
               numberOfLines={1}
               style={{ color: colors.textPrimary, fontSize: 13, fontWeight: "600", marginLeft: 5 }}
@@ -608,7 +609,7 @@ export default function PantryTab() {
               paddingHorizontal: 14,
             }}
           >
-            <ShoppingCart size={18} color="#059669" />
+            <ShoppingCart size={18} color={EMERALD[600]} />
             <Text style={{ flex: 1 }} numberOfLines={1}>
               <Text style={{ color: colors.textPrimary, fontWeight: "700", fontSize: 14 }}>
                 {t("pantry.shoppingListTitle")}
@@ -682,7 +683,7 @@ export default function PantryTab() {
                   width: 88,
                   height: 88,
                   borderRadius: 28,
-                  backgroundColor: colors.inputBg || "#F5F5F7",
+                  backgroundColor: colors.inputBg || APPLE.canvas,
                   alignItems: "center",
                   justifyContent: "center",
                   marginBottom: 20,
@@ -690,7 +691,7 @@ export default function PantryTab() {
               >
                 <Package
                   size={36}
-                  color={colors.textTertiary || "#86868B"}
+                  color={colors.textTertiary || APPLE.tertiary}
                   strokeWidth={2}
                 />
               </View>
@@ -788,7 +789,7 @@ export default function PantryTab() {
                   width: 88,
                   height: 88,
                   borderRadius: 28,
-                  backgroundColor: colors.inputBg || "#F5F5F7",
+                  backgroundColor: colors.inputBg || APPLE.canvas,
                   alignItems: "center",
                   justifyContent: "center",
                   marginBottom: 20,
@@ -796,7 +797,7 @@ export default function PantryTab() {
               >
                 <PackageOpen
                   size={36}
-                  color={colors.textTertiary || "#86868B"}
+                  color={colors.textTertiary || APPLE.tertiary}
                   strokeWidth={2}
                 />
               </View>
@@ -924,16 +925,16 @@ export default function PantryTab() {
               paddingHorizontal: 16,
               flexShrink: 0,
               borderRadius: 14,
-              backgroundColor: "#059669",
+              backgroundColor: EMERALD[600],
               alignItems: "center",
               justifyContent: "center",
               opacity: newItemName.trim() ? 1 : 0.45,
             }}
           >
             {isClassifying ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
+              <ActivityIndicator color={WHITE} size="small" />
             ) : (
-              <Text style={{ color: "#FFFFFF", fontSize: 14, fontWeight: "600" }} numberOfLines={1}>
+              <Text style={{ color: WHITE, fontSize: 14, fontWeight: "600" }} numberOfLines={1}>
                 {t("scanner.add")}
               </Text>
             )}
@@ -988,7 +989,7 @@ export default function PantryTab() {
             accessibilityRole="button"
             style={{
               width: "100%",
-              backgroundColor: "#059669",
+              backgroundColor: EMERALD[600],
               paddingVertical: 17,
               borderRadius: 18,
               flexDirection: "row",
@@ -997,8 +998,8 @@ export default function PantryTab() {
               gap: 8,
             }}
           >
-            <Sparkles size={16} color="#FFFFFF" />
-            <Text style={{ color: "#FFFFFF", fontWeight: "600", fontSize: 17, letterSpacing: -0.3 }} numberOfLines={1}>
+            <Sparkles size={16} color={WHITE} />
+            <Text style={{ color: WHITE, fontWeight: "600", fontSize: 17, letterSpacing: -0.3 }} numberOfLines={1}>
               {t("pantry.generateCtaBtn")}
             </Text>
           </TouchableOpacity>

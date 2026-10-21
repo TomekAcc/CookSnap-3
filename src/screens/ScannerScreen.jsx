@@ -25,6 +25,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useRecipes } from "../context/RecipesContext";
 import { useScan } from "../context/ScanContext";
+import { EMERALD, WHITE } from "../theme/palette";
 
 // Generation takes ~10-15 s. A spinner alone makes that feel open-ended, so
 // the button also fills left to right: quick at first, easing toward 92% and
@@ -229,21 +230,21 @@ export default function ScannerScreen() {
             <GenerationProgress active={isGeneratingRecipes} />
             {isGeneratingRecipes ? (
               <>
-                <ActivityIndicator color="#FFFFFF" size="small" />
+                <ActivityIndicator color={WHITE} size="small" />
                 <Text style={styles.ctaPrimaryText} numberOfLines={1}>
                   {t("scanner.creatingRecipes")}
                 </Text>
               </>
             ) : hasGeneratedOnce ? (
               <>
-                <RefreshCw size={16} color="#FFFFFF" />
+                <RefreshCw size={16} color={WHITE} />
                 <Text style={styles.ctaPrimaryText} numberOfLines={1}>
                   {t("scanner.regenerateRecipes")}
                 </Text>
               </>
             ) : (
               <>
-                <Sparkles size={16} color="#FFFFFF" />
+                <Sparkles size={16} color={WHITE} />
                 <Text style={styles.ctaPrimaryText} numberOfLines={1}>
                   {t("scanner.generateRecipes")}
                 </Text>
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
     // Emerald, not navy — matches "Take Photo" in FridgeScannerHero now
     // too, so this screen has one consistent primary-action color instead
     // of navy and the app's actual brand green both reading as "primary."
-    backgroundColor: "#059669",
+    backgroundColor: EMERALD[600],
     paddingVertical: 17,
     borderRadius: 18,
     overflow: "hidden",
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.22)",
   },
   ctaPrimaryText: {
-    color: "#FFFFFF",
+    color: WHITE,
     fontWeight: "600",
     fontSize: 17,
     letterSpacing: -0.3,
