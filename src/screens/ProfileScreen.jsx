@@ -241,7 +241,7 @@ export default function ProfileScreen() {
               <Text
                 style={{
                   color: colors.textPrimary,
-                  fontWeight: "900",
+                  fontWeight: "700",
                   fontSize: 17,
                   letterSpacing: -0.3,
                 }}
@@ -279,7 +279,7 @@ export default function ProfileScreen() {
           <Text
             style={{
               color: colors.textPrimary,
-              fontWeight: "800",
+              fontWeight: "700",
               fontSize: 13,
               letterSpacing: -0.1,
             }}
@@ -350,7 +350,7 @@ export default function ProfileScreen() {
               <Text
                 style={{
                   color: colors.textPrimary,
-                  fontWeight: "900",
+                  fontWeight: "700",
                   fontSize: 16,
                   letterSpacing: -0.2,
                 }}
@@ -382,7 +382,7 @@ export default function ProfileScreen() {
         <Text
           style={{
             color: colors.textPrimary,
-            fontWeight: "800",
+            fontWeight: "700",
             fontSize: 13,
             letterSpacing: -0.1,
             marginBottom: 12,
@@ -401,7 +401,7 @@ export default function ProfileScreen() {
           }}
         >
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "900", fontSize: 22 }}>
+            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "800", fontSize: 22 }}>
               {savedCount}
             </Text>
             <Text
@@ -424,7 +424,7 @@ export default function ProfileScreen() {
             }}
           />
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "900", fontSize: 22 }}>
+            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "800", fontSize: 22 }}>
               {pantryItems.length}
             </Text>
             <Text
@@ -447,7 +447,7 @@ export default function ProfileScreen() {
             }}
           />
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "900", fontSize: 22 }}>
+            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "800", fontSize: 22 }}>
               {scanHistory.length}
             </Text>
             <Text
@@ -469,7 +469,7 @@ export default function ProfileScreen() {
         <Text
           style={{
             color: colors.textPrimary,
-            fontWeight: "800",
+            fontWeight: "700",
             fontSize: 13,
             letterSpacing: -0.1,
             marginTop: 24,

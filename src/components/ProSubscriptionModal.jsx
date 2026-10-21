@@ -741,7 +741,7 @@ const styles = StyleSheet.create({
   },
   planBadgeText: {
     fontSize: 9,
-    fontWeight: "900",
+    fontWeight: "700",
     color: ON_AMBER,
     letterSpacing: 0.3,
   },
@@ -836,7 +836,7 @@ const styles = StyleSheet.create({
   ctaButtonText: {
     color: ON_AMBER,
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: -0.2,
     textAlign: "center",
     // Lets a long translation wrap to a second line (the button's minHeight

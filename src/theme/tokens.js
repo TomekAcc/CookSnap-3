@@ -39,7 +39,7 @@ export const TYPE = {
 export const WEIGHT = {
   regular: "500",
   medium: "600", // chips, secondary labels, meta text
-  bold: "800", // titles, headings, emphasis
+  bold: "700", // titles, headings, emphasis (800 is reserved for the largest display titles)
 };
 
 /**

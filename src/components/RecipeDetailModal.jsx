@@ -1156,7 +1156,7 @@ const styles = StyleSheet.create({
   recipeTitle: {
     color: "#0F172A",
     fontSize: 18,
-    fontWeight: "800",
+    fontWeight: "700",
     lineHeight: 23,
     letterSpacing: -0.3,
   },
@@ -1209,17 +1209,17 @@ const styles = StyleSheet.create({
   metaLabel: {
     color: "#94A3B8",
     fontSize: 9,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 0.5,
     textTransform: "uppercase",
     marginLeft: 3,
   },
-  metaValueEmerald: { color: "#059669", fontSize: 18, fontWeight: "800" },
-  metaValueAmber: { color: "#D97706", fontSize: 18, fontWeight: "800" },
-  metaValueIndigo: { color: "#4F46E5", fontSize: 15, fontWeight: "800" },
-  metaValueDark: { fontSize: 18, fontWeight: "800" },
-  metaValuePro: { color: "#B45309", fontSize: 15, fontWeight: "900" },
-  metaValueMacro: { fontSize: 16, fontWeight: "800" },
+  metaValueEmerald: { color: "#059669", fontSize: 18, fontWeight: "700" },
+  metaValueAmber: { color: "#D97706", fontSize: 18, fontWeight: "700" },
+  metaValueIndigo: { color: "#4F46E5", fontSize: 15, fontWeight: "700" },
+  metaValueDark: { fontSize: 18, fontWeight: "700" },
+  metaValuePro: { color: "#B45309", fontSize: 15, fontWeight: "700" },
+  metaValueMacro: { fontSize: 16, fontWeight: "700" },
   modifierSection: { marginTop: 0 },
   modifierLockedRow: {
     flexDirection: "row",
@@ -1241,7 +1241,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexShrink: 0,
   },
-  modifierLockedTitle: { fontSize: 13, fontWeight: "800", color: "#78350F" },
+  modifierLockedTitle: { fontSize: 13, fontWeight: "700", color: "#78350F" },
   modifierLockedSubtitle: {
     fontSize: 11,
     fontWeight: "600",
@@ -1257,7 +1257,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 11,
   },
-  modifierRowText: { fontSize: 13, fontWeight: "800", color: "#D97706" },
+  modifierRowText: { fontSize: 13, fontWeight: "700", color: "#D97706" },
   modifierOpenCard: {
     borderWidth: 1.5,
     borderRadius: 16,
@@ -1269,7 +1269,7 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 8,
   },
-  modifierOpenTitle: { fontSize: 13, fontWeight: "800", color: "#92400E" },
+  modifierOpenTitle: { fontSize: 13, fontWeight: "700", color: "#92400E" },
   modifierInput: {
     borderWidth: 1,
     borderRadius: 12,
@@ -1288,7 +1288,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "rgba(120,53,15,0.08)",
   },
-  modifierCancelText: { fontSize: 12, fontWeight: "800", color: "#78350F" },
+  modifierCancelText: { fontSize: 12, fontWeight: "700", color: "#78350F" },
   modifierSendBtn: {
     flex: 1,
     height: 40,
@@ -1297,7 +1297,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#D97706",
   },
-  modifierSendText: { fontSize: 12, fontWeight: "800", color: "#FFFFFF" },
+  modifierSendText: { fontSize: 12, fontWeight: "700", color: "#FFFFFF" },
   sectionContainer: { marginTop: 10 },
   /** Cooking Area — airy gap after Ingredients */
   instructionsSection: { marginTop: 24 },
@@ -1332,7 +1332,7 @@ const styles = StyleSheet.create({
   },
   upgradeTipLabel: {
     fontSize: 13,
-    fontWeight: "800",
+    fontWeight: "700",
     flexShrink: 1,
   },
   upgradeTipNote: {
@@ -1472,7 +1472,7 @@ const styles = StyleSheet.create({
   stepBadgeText: {
     color: "#FFFFFF",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
   },
   stepText: {
     fontSize: 16,
@@ -1512,7 +1512,7 @@ const styles = StyleSheet.create({
   favoriteButtonText: {
     color: "#FFFFFF",
     fontSize: 12,
-    fontWeight: "900",
+    fontWeight: "700",
     letterSpacing: 0.8,
     marginLeft: 8,
   },

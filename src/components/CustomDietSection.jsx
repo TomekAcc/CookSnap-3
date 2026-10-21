@@ -38,7 +38,7 @@ export default function CustomDietSection() {
       <Text
         style={{
           fontSize: 13,
-          fontWeight: "800",
+          fontWeight: "700",
           color: colors.textPrimary,
           marginBottom: 8,
           letterSpacing: -0.2,
@@ -109,7 +109,7 @@ export default function CustomDietSection() {
             <Text
               style={{
                 fontSize: 11,
-                fontWeight: "800",
+                fontWeight: "700",
                 letterSpacing: 0.5,
                 color: isDark ? "#FCD34D" : "#B45309",
               }}
@@ -133,7 +133,7 @@ export default function CustomDietSection() {
             <Text
               style={{
                 fontSize: 13,
-                fontWeight: "800",
+                fontWeight: "700",
                 color: colors.textPrimary,
                 marginBottom: 4,
               }}
@@ -174,7 +174,7 @@ export default function CustomDietSection() {
             <Text
               style={{
                 fontSize: 13,
-                fontWeight: "800",
+                fontWeight: "700",
                 color: colors.textPrimary,
                 marginBottom: 4,
               }}

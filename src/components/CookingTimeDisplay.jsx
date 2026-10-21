@@ -69,7 +69,7 @@ export default function CookingTimeDisplay({
         <Text
           style={{
             color: colors.textPrimary,
-            fontWeight: "800",
+            fontWeight: "700",
             fontSize: 14,
             marginBottom: 6,
           }}

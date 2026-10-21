@@ -368,7 +368,7 @@ export default function MealPreferences() {
                   <Text
                     style={[
                       styles.optionText,
-                      { color: selected ? "#059669" : colors.textPrimary, fontWeight: selected ? "800" : "600" },
+                      { color: selected ? "#059669" : colors.textPrimary, fontWeight: selected ? "700" : "600" },
                     ]}
                   >
                     {t(o.labelKey)}
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   sectionTitle: {
-    fontWeight: "800",
+    fontWeight: "700",
     fontSize: 18,
     letterSpacing: -0.3,
     marginBottom: 2,

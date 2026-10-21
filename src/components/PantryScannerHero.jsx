@@ -23,6 +23,7 @@ import { startAsymptoticCreep } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
+import PrivacyNote from "./PrivacyNote";
 import PantryScanMoreSheet from "./PantryScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -527,6 +528,7 @@ export default function PantryScannerHero() {
             </Text>
           </TouchableOpacity>
         </View>
+        {(pantryItems || []).length === 0 ? <PrivacyNote style={{ marginTop: 10 }} /> : null}
         </View>
       ) : (
         <View style={{ marginBottom: 16 }}>
@@ -632,7 +634,7 @@ export default function PantryScannerHero() {
                   style={{
                     color: "#0F172A",
                     fontSize: 11,
-                    fontWeight: "800",
+                    fontWeight: "700",
                     letterSpacing: 0.2,
                   }}
                 >
@@ -690,7 +692,7 @@ export default function PantryScannerHero() {
                     {PANTRY_SCAN_STEPS[currentStepIdx].icon}
                   </Text>
                   <Text
-                    style={{ color: colors.textPrimary, fontWeight: "800", fontSize: 12, flex: 1 }}
+                    style={{ color: colors.textPrimary, fontWeight: "700", fontSize: 12, flex: 1 }}
                   >
                     {t(PANTRY_SCAN_STEPS[currentStepIdx].textKey) || t("pantry.analyzingLabel")}
                   </Text>
@@ -708,7 +710,7 @@ export default function PantryScannerHero() {
                     <Text style={{ color: colors.textSecondary, fontSize: 10, fontWeight: "700" }}>
                       {t("scanner.scanProgress")}
                     </Text>
-                    <Text style={{ color: "#059669", fontSize: 12, fontWeight: "900" }}>
+                    <Text style={{ color: "#059669", fontSize: 12, fontWeight: "700" }}>
                       {progressPct}%
                     </Text>
                   </View>

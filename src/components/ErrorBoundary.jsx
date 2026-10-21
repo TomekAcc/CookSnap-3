@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#0F172A",
-    fontWeight: "900",
+    fontWeight: "800",
     fontSize: 20,
     textAlign: "center",
     marginBottom: 8,
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#FFFFFF",
-    fontWeight: "900",
+    fontWeight: "700",
     fontSize: 14,
   },
 });

@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 16,
-    fontWeight: "800",
+    fontWeight: "700",
     letterSpacing: -0.2,
     textAlign: "center",
   },

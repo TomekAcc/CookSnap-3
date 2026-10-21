@@ -71,9 +71,17 @@ browsing, not a recipe box to build over years.
   densely stacked dry goods, spices, oils, and canned goods.
 - Manual "add ingredient" for anything the camera missed.
 - Zero-guessing policy: ambiguous or hidden items are skipped, never invented.
+- **Sample scan (first launch):** onboarding opens on a bundled illustration of
+  a fridge and offers to scan it — the real scan animation, then real recipe
+  generation — so someone installing away from their kitchen sees the product
+  work first. It never calls the vision API, never uses a daily free scan and
+  is never saved; the user's own scan replaces it.
+- A one-line privacy note under the camera / gallery buttons until the first
+  scan: photos are sent to Google's AI to find ingredients and are stored only
+  on the phone.
 
 ### Recipe Generation
-- Always exactly 5 recipes per generation request.
+- 5 recipes per generation for PRO, 3 for free users.
 - Strict inventory lock — recipes only use what's actually on hand (plus
   assumed basics: water, oil/butter, salt, pepper).
 - Flavor-harmony rule — the AI selects a coherent 3–5 item subset per dish
@@ -112,6 +120,9 @@ browsing, not a recipe box to build over years.
 - Scan history — revisit and regenerate from a previous fridge inventory.
 
 ### Account & Settings
+- First launch: sample scan first; language and units start from the device's
+  own settings and sit in one collapsed row ("Language & units") instead of
+  being asked up front.
 - Light/dark theme.
 - Notifications drawer.
 - Help & feedback.
@@ -119,8 +130,9 @@ browsing, not a recipe box to build over years.
   across sessions.
 
 ### Monetization — Cook AI PRO
-- **Free tier:** 3 fridge scans/day, 5 AI recipes per generation, full
-  recipe detail, calories.
+- **Free tier:** 2 fridge scans/day, 2 recipe generations/day (3 recipes
+  each), full recipe detail, calories. Hitting a limit opens the paywall
+  naming the exact limit that was reached.
 - **PRO tier:** unlimited fridge scans, AI Recipe Modifier, full macro
   breakdown, AI-generated Meal Planner.
 - **Pricing:** Monthly $4.99/mo · Annual $24.99/yr (≈$2.08/mo, ~58% cheaper

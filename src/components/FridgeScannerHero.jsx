@@ -31,6 +31,8 @@ import { getIngredientStyle } from "../utils/imageUtils";
 import { startAsymptoticCreep } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
 import PillTag from "./PillTag";
+import PrivacyNote from "./PrivacyNote";
+import { sampleFridgeFitHeight } from "../constants/sampleFridge";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import ScanMoreSheet from "./ScanMoreSheet";
@@ -151,6 +153,7 @@ export default function FridgeScannerHero() {
     scanHistory,
     hasScanned,
     completeScan,
+    scanIsDemo,
     endScanChoreography,
     resetScan,
     showToast,
@@ -207,7 +210,11 @@ export default function FridgeScannerHero() {
   // image shorter) instead of always cropping it into one fixed frame: the
   // height the photo needs at the card's width, never above the screen cap.
   // Purely visual — the AI always receives the full original photo.
-  const [photoFitHeight, setPhotoFitHeight] = useState(null);
+  // Starting straight into the onboarding sample: its size is known up front, so
+  // the frame opens at its final height instead of resizing after the load.
+  const [photoFitHeight, setPhotoFitHeight] = useState(() =>
+    scanIsDemo ? sampleFridgeFitHeight(Dimensions.get("window").width - 40) : null
+  );
   useEffect(() => {
     if (!fridgePhoto) {
       setPhotoFitHeight(null);
@@ -997,6 +1004,7 @@ export default function FridgeScannerHero() {
                 </Text>
               </TouchableOpacity>
             </View>
+            {(scanHistory || []).length === 0 ? <PrivacyNote /> : null}
           </View>
         )}
 
@@ -1146,7 +1154,7 @@ export default function FridgeScannerHero() {
 
               {/* With nothing detected, Take Photo / From Gallery in the card below
                   already do what Scan More would, so it would only be a duplicate. */}
-              {scanStage === "completed" && hasFood ? (
+              {scanStage === "completed" && hasFood && !scanIsDemo ? (
                 <TouchableOpacity
                   ref={scanMoreButtonRef}
                   onPress={handleScanMore}
@@ -1177,7 +1185,7 @@ export default function FridgeScannerHero() {
                     style={{
                       color: "#0F172A",
                       fontSize: 12,
-                      fontWeight: "800",
+                      fontWeight: "700",
                       letterSpacing: 0.2,
                       flexShrink: 1,
                     }}
@@ -1247,7 +1255,7 @@ export default function FridgeScannerHero() {
                       <Text
                         style={{
                           color: colors.textPrimary,
-                          fontWeight: "800",
+                          fontWeight: "700",
                           fontSize: 16,
                           letterSpacing: -0.2,
                         }}
@@ -1347,7 +1355,7 @@ export default function FridgeScannerHero() {
                       style={{
                         color: colors.textPrimary,
                         fontSize: 17,
-                        fontWeight: "800",
+                        fontWeight: "700",
                         letterSpacing: -0.2,
                         textAlign: "center",
                       }}
@@ -1559,7 +1567,7 @@ export default function FridgeScannerHero() {
                         <Text
                           style={{
                             color: colors.textPrimary,
-                            fontWeight: "800",
+                            fontWeight: "700",
                             fontSize: 16,
                             letterSpacing: -0.2,
                           }}
@@ -1666,7 +1674,19 @@ export default function FridgeScannerHero() {
                         only for the first 3 scans (scanHistory is persisted):
                         after that people know the list is editable (the × and
                         Add are right there) and the line is just noise. */}
-                    {(scanHistory || []).length <= 3 ? (
+                    {scanIsDemo ? (
+                      <Text
+                        style={{
+                          color: colors.textSecondary,
+                          fontSize: 13,
+                          fontWeight: "600",
+                          lineHeight: 18,
+                          marginBottom: 12,
+                        }}
+                      >
+                        {t("scanner.sampleNote")}
+                      </Text>
+                    ) : (scanHistory || []).length <= 3 ? (
                       <Text
                         style={{
                           color: colors.textSecondary,

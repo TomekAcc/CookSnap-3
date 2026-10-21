@@ -9,7 +9,6 @@ import { useCookAI } from "../context/CookAIContext";
 // (ProSubscriptionModal.jsx) — kept as local literals here rather than a
 // shared import since that file doesn't export them, same pattern that
 // file itself uses for its own constants.
-const AMBER_TINT_BADGE = "rgba(255,159,10,0.14)";
 const AMBER_TINT_BADGE_BORDER = "rgba(255,159,10,0.35)";
 
 /**
@@ -109,10 +108,16 @@ export default function Header() {
           accessibilityLabel={t("profile.upgradeToPro")}
           style={[
             styles.proButton,
-            { backgroundColor: AMBER_TINT_BADGE, borderColor: AMBER_TINT_BADGE_BORDER },
+            { backgroundColor: isDark ? "rgba(245,158,11,0.16)" : "#FEF3C7", borderColor: AMBER_TINT_BADGE_BORDER },
           ]}
         >
-          <Crown size={18} color={colors.accentAmber} fill={colors.accentAmber} />
+          {/* A labelled pill, not a lone crown: an unlabelled icon is a weak
+              call to action and gives no hint it opens the upgrade sheet.
+              "PRO" is the same word in every language, so it needs no
+              translation; the text colour is the darker amber the other PRO
+              tags use (4.5:1 on the pill), the crown keeps the bright amber. */}
+          <Crown size={14} color={colors.accentAmber} fill={colors.accentAmber} />
+          <Text style={[styles.proButtonText, { color: isDark ? "#FCD34D" : "#B45309" }]}>PRO</Text>
         </TouchableOpacity>
       ) : null}
     </View>
@@ -165,11 +170,18 @@ const styles = StyleSheet.create({
     color: "#10B981",
   },
   proButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderWidth: 1,
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    gap: 6,
+    height: 34,
+    paddingHorizontal: 12,
+    borderRadius: 17,
+    borderWidth: 1,
   },
+  proButtonText: {
+    fontSize: 13,
+    fontWeight: "700",
+    letterSpacing: 0.6,
+  },
+
 });

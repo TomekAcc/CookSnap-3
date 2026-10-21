@@ -1118,7 +1118,7 @@ const styles = StyleSheet.create({
   },
   emptyFridgeTitle: {
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "700",
     color: "#0F172A",
     marginBottom: 6,
   },
@@ -1188,7 +1188,7 @@ const styles = StyleSheet.create({
   },
   proTagText: {
     fontSize: 11,
-    fontWeight: "800",
+    fontWeight: "700",
     letterSpacing: 0.5,
   },
   generationUsageRow: {
@@ -1352,7 +1352,7 @@ const styles = StyleSheet.create({
   },
   savedLabel: {
     fontSize: 11,
-    fontWeight: "800",
+    fontWeight: "700",
     color: "#92400E",
   },
   savedChip: {

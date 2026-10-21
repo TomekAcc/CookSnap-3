@@ -78,7 +78,7 @@ function TargetBox({ box, pulse }) {
           paddingVertical: 1.5,
         }}
       >
-        <Text style={{ color: "#FFFFFF", fontSize: 9, fontWeight: "800" }}>
+        <Text style={{ color: "#FFFFFF", fontSize: 9, fontWeight: "700" }}>
           Detecting...
         </Text>
       </View>

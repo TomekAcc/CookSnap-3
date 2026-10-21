@@ -31,8 +31,29 @@ import {
 import { translate } from "../i18n";
 import { useModalState } from "./ModalContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
+import { SAMPLE_FRIDGE_ITEMS } from "../constants/sampleFridge";
 
 const CookAIContext = createContext(null);
+
+/**
+ * Measurement system to start from when nothing is saved yet: the device's own
+ * setting (expo-localization), falling back to its region. Onboarding no longer
+ * makes everyone pick units up front, so a Polish phone has to start on metric
+ * rather than on the old US default.
+ */
+function detectUnitSystem() {
+  try {
+    const locale = Localization.getLocales?.()?.[0];
+    const system = locale?.measurementSystem;
+    if (system === "us") return "us";
+    if (system === "metric" || system === "uk") return "metric";
+    const region = locale?.regionCode;
+    if (region) return ["US", "LR", "MM"].includes(region) ? "us" : "metric";
+  } catch {
+    // fall through to the historical default
+  }
+  return "us";
+}
 
 const PANTRY_STORAGE_KEY = "cookai:pantryItems:v1";
 const PRO_STORAGE_KEY = "cookai:isPro:v1";
@@ -788,6 +809,14 @@ export function CookAIProvider({ children }) {
   const [scanningLabel, setScanningLabel] = useState(null);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [fridgePhoto, setFridgePhoto] = useState(null);
+  // True while the onboarding sample fridge is on screen (see completeDemoScan).
+  // Its photo and list are never persisted, and a real scan replaces them.
+  const [scanIsDemo, setScanIsDemo] = useState(false);
+  const scanIsDemoRef = useRef(false);
+  const markScanDemo = useCallback((on) => {
+    scanIsDemoRef.current = on;
+    setScanIsDemo(on);
+  }, []);
   // See the comment on scanRevealActive above: this is the single place
   // that decides "the real scan just finished, hold the completed state
   // for a beat before anything outside the scan card treats it as done."
@@ -884,6 +913,9 @@ export function CookAIProvider({ children }) {
 
   useEffect(() => {
     if (!scanDataHydrated) return;
+    // The onboarding sample is never saved: its photo is a bundled asset whose
+    // path changes between updates, and its list is not the user's fridge.
+    if (scanIsDemoRef.current) return;
     AsyncStorage.setItem(
       FRIDGE_PHOTO_STORAGE_KEY,
       JSON.stringify(fridgePhoto)
@@ -904,6 +936,7 @@ export function CookAIProvider({ children }) {
 
   useEffect(() => {
     if (!scanDataHydrated) return;
+    if (scanIsDemoRef.current) return;
     AsyncStorage.setItem(
       INGREDIENTS_STORAGE_KEY,
       JSON.stringify(ingredients)
@@ -1132,6 +1165,8 @@ export function CookAIProvider({ children }) {
         const raw = await AsyncStorage.getItem(UNIT_SYSTEM_STORAGE_KEY);
         if (!cancelled && (raw === "metric" || raw === "us")) {
           setUnitSystemState(raw);
+        } else if (!cancelled) {
+          setUnitSystemState(detectUnitSystem());
         }
       } catch (err) {
         console.warn("[Cook AI] unit system hydrate failed:", err?.message);
@@ -1275,6 +1310,11 @@ export function CookAIProvider({ children }) {
     (key, vars) => translate(recipeLanguageId, key, vars),
     [recipeLanguageId]
   );
+  // Always the newest translator, for callbacks that outlive the render that
+  // created them (the onboarding sample names are looked up a moment after the
+  // language may have just been changed on that same screen).
+  const tLatestRef = useRef(t);
+  tLatestRef.current = t;
 
   // First-launch onboarding gate — App.jsx shows a language + units picker
   // instead of the main shell until this flips true. `onboardingHydrated`
@@ -1532,6 +1572,7 @@ export function CookAIProvider({ children }) {
     (scanId) => {
       const entry = scanHistory.find((s) => s.id === scanId);
       if (!entry) return;
+      markScanDemo(false);
       setFridgePhoto(entry.photoUri);
       if (entry.ingredients?.length) setIngredients(entry.ingredients);
       setGeneratedRecipes(null);
@@ -1539,7 +1580,7 @@ export function CookAIProvider({ children }) {
       scanMetaRef.current = { photoUri: entry.photoUri, source: entry.source || "camera" };
       setActiveTab("scanner");
     },
-    [scanHistory]
+    [scanHistory, markScanDemo]
   );
 
   /** Remove one past scan (and its stored photo) from the history. */
@@ -1577,6 +1618,7 @@ export function CookAIProvider({ children }) {
       }, EXIT_DURATION_MS + 40);
       return;
     }
+    markScanDemo(false);
     // Copy into permanent app storage immediately — the original camera/
     // gallery URI lives in an OS-managed cache/temp location that isn't
     // guaranteed to survive an app restart. Everything downstream (vision
@@ -1637,7 +1679,52 @@ export function CookAIProvider({ children }) {
       pendingDetectedRef.current = [];
       showToast(t("errors.readPhotoFailed"), "error", 4200);
     }
-  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen]);
+  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen, markScanDemo]);
+
+  /**
+   * The onboarding "sample scan". Runs the same choreography as a real scan on
+   * a bundled illustration, with a fixed list as the "detection" — no vision
+   * call, no daily free scan used, no scan-history entry (photoUri stays null)
+   * and nothing saved (see the persistence guards). A real scan afterwards drops
+   * the sample items instead of merging into them (endScanChoreography).
+   */
+  const completeDemoScan = useCallback(
+    (photoUri) => {
+      if (!photoUri || typeof photoUri !== "string") return;
+      markScanDemo(true);
+      scanAppendModeRef.current = false;
+      setFridgePhoto(photoUri);
+      setIngredients([]);
+      setGeneratedRecipes(null);
+      setIsGeneratingRecipes(false);
+
+      const sessionId = Date.now();
+      scanSessionIdRef.current = sessionId;
+      if (scanAwaitTimerRef.current) {
+        clearInterval(scanAwaitTimerRef.current);
+        scanAwaitTimerRef.current = null;
+      }
+      pendingDetectedRef.current = null;
+      ingredientsCommittedRef.current = false;
+      scanMetaRef.current = { photoUri: null, source: "demo", append: false };
+      setScanStartedAt(sessionId);
+      setIsScanning(true);
+      setScanningLabel(null);
+
+      // The "detection" lands after a believable beat; the on-screen scan
+      // choreography decides when it is actually committed.
+      setTimeout(() => {
+        if (scanSessionIdRef.current !== sessionId || ingredientsCommittedRef.current) return;
+        pendingDetectedRef.current = SAMPLE_FRIDGE_ITEMS.map((item) => ({
+          id: `sample-${item.id}`,
+          name: tLatestRef.current(`sampleFridge.${item.id}`),
+          icon: item.icon,
+          emoji: item.icon,
+        }));
+      }, 1400);
+    },
+    [markScanDemo]
+  );
 
   /**
    * Called when laser/radar progress hits 100%.
@@ -1700,11 +1787,19 @@ export function CookAIProvider({ children }) {
     // is deferred), so `mergedIngredients` is populated by the time
     // setIngredients() returns below, preserving the original need for a
     // synchronous merged list to snapshot into scan history right after.
-    const newScannedItems = fullList.map((i) => ({ ...i, source: "scan" }));
+    const isDemoRun = scanMetaRef.current?.source === "demo";
+    const newScannedItems = fullList.map((i) => ({
+      ...i,
+      source: isDemoRun ? "demo" : "scan",
+    }));
     const normalizeName = (n) => String(n || "").toLowerCase().trim();
 
     let mergedIngredients = [];
-    setIngredients((prevItems) => {
+    setIngredients((rawPrevItems) => {
+      // A real scan replaces leftover sample items rather than merging into them.
+      const prevItems = isDemoRun
+        ? rawPrevItems
+        : rawPrevItems.filter((item) => item?.source !== "demo");
       // A name match against an existing item still gets its ICON refreshed
       // from this fresh detection — a rescan re-photographs the same food,
       // so the new icon is at least as trustworthy as whatever was stored
@@ -1766,6 +1861,7 @@ export function CookAIProvider({ children }) {
       scanAwaitTimerRef.current = null;
     }
     scanAppendModeRef.current = false;
+    markScanDemo(false);
     setFridgePhoto(null);
     setIngredients([]);
     setIsGeneratingRecipes(false);
@@ -1776,7 +1872,7 @@ export function CookAIProvider({ children }) {
     ingredientsCommittedRef.current = false;
     scanMetaRef.current = { photoUri: null, source: "camera" };
     setScanStartedAt(null);
-  }, []);
+  }, [markScanDemo]);
 
   const toggleSaveRecipe = useCallback((recipe) => {
     if (!recipe || recipe.id == null) return;
@@ -2492,6 +2588,8 @@ export function CookAIProvider({ children }) {
       fridgePhoto,
       hasScanned,
       completeScan,
+      completeDemoScan,
+      scanIsDemo,
       endScanChoreography,
       resetScan,
       isPantryScanning,
@@ -2602,6 +2700,8 @@ export function CookAIProvider({ children }) {
       fridgePhoto,
       hasScanned,
       completeScan,
+      completeDemoScan,
+      scanIsDemo,
       endScanChoreography,
       resetScan,
       isPantryScanning,

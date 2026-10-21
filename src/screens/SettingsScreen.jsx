@@ -131,7 +131,7 @@ export default function SettingsScreen() {
           <Text
             style={{
               fontSize: 13,
-              fontWeight: "800",
+              fontWeight: "700",
               color: colors.textPrimary,
               marginBottom: 8,
             }}
@@ -169,7 +169,7 @@ export default function SettingsScreen() {
                 ellipsizeMode="tail"
                 style={{
                   fontSize: 12,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   textAlign: "center",
                   width: "100%",
                   minWidth: 0,
@@ -206,7 +206,7 @@ export default function SettingsScreen() {
                 ellipsizeMode="tail"
                 style={{
                   fontSize: 12,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   textAlign: "center",
                   width: "100%",
                   minWidth: 0,
@@ -235,7 +235,7 @@ export default function SettingsScreen() {
           <Text
             style={{
               fontSize: 13,
-              fontWeight: "800",
+              fontWeight: "700",
               color: colors.textPrimary,
               marginBottom: 8,
             }}
@@ -267,7 +267,7 @@ export default function SettingsScreen() {
               <Text
                 style={{
                   fontSize: 15,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   color: colors.textPrimary,
                 }}
               >
@@ -289,7 +289,7 @@ export default function SettingsScreen() {
           <Text
             style={{
               fontSize: 13,
-              fontWeight: "800",
+              fontWeight: "700",
               color: colors.textPrimary,
               marginBottom: 8,
             }}
@@ -326,7 +326,7 @@ export default function SettingsScreen() {
                 ellipsizeMode="tail"
                 style={{
                   fontSize: 11,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   textAlign: "center",
                   width: "100%",
                   minWidth: 0,
@@ -366,7 +366,7 @@ export default function SettingsScreen() {
                 ellipsizeMode="tail"
                 style={{
                   fontSize: 11,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   textAlign: "center",
                   width: "100%",
                   minWidth: 0,
@@ -406,7 +406,7 @@ export default function SettingsScreen() {
                 ellipsizeMode="tail"
                 style={{
                   fontSize: 11,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   textAlign: "center",
                   width: "100%",
                   minWidth: 0,
@@ -430,7 +430,7 @@ export default function SettingsScreen() {
           <Text
             style={{
               fontSize: 13,
-              fontWeight: "800",
+              fontWeight: "700",
               color: colors.textPrimary,
               marginBottom: 8,
             }}
@@ -458,7 +458,7 @@ export default function SettingsScreen() {
               <Text
                 style={{
                   fontSize: 15,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   color: colors.textPrimary,
                 }}
               >
@@ -479,7 +479,7 @@ export default function SettingsScreen() {
           <Text
             style={{
               fontSize: 13,
-              fontWeight: "800",
+              fontWeight: "700",
               color: colors.textPrimary,
               marginBottom: 8,
             }}
@@ -503,7 +503,7 @@ export default function SettingsScreen() {
               <Text
                 style={{
                   fontSize: 15,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   color: colors.textPrimary,
                 }}
               >
@@ -548,7 +548,7 @@ export default function SettingsScreen() {
               <Text
                 style={{
                   fontSize: 15,
-                  fontWeight: "800",
+                  fontWeight: "700",
                   color: colors.textPrimary,
                 }}
               >
@@ -623,7 +623,7 @@ export default function SettingsScreen() {
               shadowOffset: { width: 0, height: 0 },
             }}
           >
-            <Text style={{ color: "#FFFFFF", fontWeight: "800", fontSize: 16 }}>
+            <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 16 }}>
               {t("settings.done")}
             </Text>
           </TouchableOpacity>
@@ -660,7 +660,7 @@ export default function SettingsScreen() {
         <Text
           style={{
             fontSize: 18,
-            fontWeight: "800",
+            fontWeight: "700",
             color: colors.textPrimary,
             paddingHorizontal: 20,
             marginBottom: 12,
@@ -724,7 +724,7 @@ export default function SettingsScreen() {
                     <Text
                       style={{
                         fontSize: 15,
-                        fontWeight: "800",
+                        fontWeight: "700",
                         color: colors.textPrimary,
                       }}
                     >
@@ -786,7 +786,7 @@ export default function SettingsScreen() {
         <Text
           style={{
             fontSize: 18,
-            fontWeight: "800",
+            fontWeight: "700",
             color: colors.textPrimary,
             paddingHorizontal: 20,
             marginBottom: 12,
@@ -836,7 +836,7 @@ export default function SettingsScreen() {
                   <Text
                     style={{
                       fontSize: 15,
-                      fontWeight: "800",
+                      fontWeight: "700",
                       color: colors.textPrimary,
                     }}
                   >

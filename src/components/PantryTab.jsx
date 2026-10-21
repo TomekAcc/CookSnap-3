@@ -439,7 +439,7 @@ export default function PantryTab() {
             <Text
               style={{
                 color: colors.textPrimary,
-                fontWeight: "800",
+                fontWeight: "700",
                 fontSize: 13,
                 letterSpacing: -0.1,
               }}
@@ -620,7 +620,7 @@ export default function PantryTab() {
             <Text
               style={{
                 color: colors.textSecondary,
-                fontWeight: "800",
+                fontWeight: "700",
                 fontSize: 13,
                 letterSpacing: -0.1,
               }}
@@ -791,7 +791,7 @@ export default function PantryTab() {
                         style={{
                           color: isDark ? "#34D399" : "#047857",
                           fontSize: 12,
-                          fontWeight: "800",
+                          fontWeight: "700",
                           marginLeft: 4,
                           letterSpacing: 0.3,
                           textTransform: "uppercase",

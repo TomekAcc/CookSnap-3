@@ -28,15 +28,15 @@ function noOrphan(text) {
  * app's normal card surface instead of the old dark-navy block that matched
  * nothing else in the app.
  *
- * The copy is true and concrete: free users get 3 recipes per generation and
- * PRO gets 5. It used to say "Unlock the full recipe library" (there is no
- * library — recipes are generated) next to a hardcoded "+12 MORE" pill that
- * was not a real number. Both lines reuse the paywall's own benefit strings,
- * so every language is already translated.
+ * The copy is true and concrete: PRO gets 5 recipes per generation (free gets
+ * 3) and unlimited scans. It used to say "Unlock the full recipe library"
+ * (there is no library — recipes are generated) next to a hardcoded "+12 MORE"
+ * pill that was not a real number. Both lines reuse the paywall's own benefit
+ * strings, so every language is already translated.
  */
-export default function ProBanner({ onOpenProModal }) {
+export default function ProBanner({ onOpenProModal, usedUp = false, limit = 0 }) {
   const { t } = useCookAI();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   return (
     <TouchableOpacity
       onPress={() => onOpenProModal?.()}
@@ -59,16 +59,21 @@ export default function ProBanner({ onOpenProModal }) {
         <View style={[styles.crownDisc, { backgroundColor: colors.accentAmber }]}>
           <Crown size={16} color="#FFFFFF" fill="#FFFFFF" />
         </View>
-        <Text style={[styles.brandLabel, { color: colors.accentAmber }]}>
+        <Text style={[styles.brandLabel, { color: isDark ? "#FCD34D" : "#B45309" }]}>
           {t("proBanner.brandLabel")}
         </Text>
       </View>
 
+      {/* At the moment the daily free generations run out, say exactly that
+          (with the real number) instead of the generic pitch — it is the
+          warmest moment to ask. Otherwise lead with the concrete benefit. */}
       <Text style={[styles.headline, { color: colors.textPrimary }]}>
-        {noOrphan(withoutLeadingEmoji(t("pro.benefitFiveRecipes")))}
+        {usedUp
+          ? noOrphan(t("profile.generationsUsedUp", { count: limit }))
+          : noOrphan(withoutLeadingEmoji(t("pro.benefitFiveRecipes")))}
       </Text>
       <Text style={[styles.body, { color: colors.textSecondary }]}>
-        {withoutLeadingEmoji(t("pro.benefitUnlimitedScans"))}
+        {withoutLeadingEmoji(t(usedUp ? "pro.benefitAutoPlan" : "pro.benefitUnlimitedScans"))}
       </Text>
 
       <View style={[styles.cta, { backgroundColor: colors.accentAmber }]}>
@@ -103,11 +108,11 @@ const styles = StyleSheet.create({
   },
   brandLabel: {
     fontSize: 11,
-    fontWeight: "800",
+    fontWeight: "700",
     letterSpacing: 0.8,
   },
   headline: {
-    fontWeight: "800",
+    fontWeight: "700",
     fontSize: 17,
     lineHeight: 22,
     letterSpacing: -0.3,
@@ -131,7 +136,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     color: ON_AMBER,
-    fontWeight: "800",
+    fontWeight: "700",
     fontSize: 15,
     textAlign: "center",
     flexShrink: 1,

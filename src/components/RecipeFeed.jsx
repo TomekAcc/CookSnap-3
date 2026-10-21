@@ -169,7 +169,11 @@ export default function RecipeFeed({ onSelectRecipe } = {}) {
           already have it, which is both wasted screen space and a real
           "this app doesn't know I paid" moment. Only place it renders. */}
       {!isPro ? (
-        <ProBanner onOpenProModal={() => setProModalOpen(true)} />
+        <ProBanner
+          onOpenProModal={() => setProModalOpen(true)}
+          usedUp={remainingGenerations === 0}
+          limit={freeDailyRecipeGenerations}
+        />
       ) : null}
     </View>
   );
@@ -217,7 +221,7 @@ const styles = StyleSheet.create({
   // hierarchy between section headers on this screen stays consistent.
   title: {
     fontSize: 18,
-    fontWeight: "800",
+    fontWeight: "700",
     letterSpacing: -0.3,
   },
   subtitle: {

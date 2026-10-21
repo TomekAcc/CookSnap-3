@@ -65,7 +65,7 @@ export default function DietList({ showDescriptions = true }) {
                 <Text
                   style={{
                     fontSize: 15,
-                    fontWeight: "800",
+                    fontWeight: "700",
                     color: colors.textPrimary,
                   }}
                 >
