@@ -140,7 +140,7 @@ export default function OnboardingScreen({ onContinue }) {
   // and the long translated name ("Метрические", "Metryczne") only truncated.
   const unitsFull = t(effectiveUnits === "metric" ? "settings.metricUnits" : "settings.usUnits");
   const unitsLabel = (unitsFull.match(/[(（]([^)）]+)[)）]/)?.[1] || unitsFull).trim();
-  const green = isDark ? "#34D399" : GREEN;
+  const green = colors.greenStrong;
 
   const unitButton = (id, Icon, label) => {
     const selected = effectiveUnits === id;
@@ -205,7 +205,7 @@ export default function OnboardingScreen({ onContinue }) {
               width: 56,
               height: 56,
               borderRadius: 20,
-              backgroundColor: isDark ? "rgba(16,185,129,0.16)" : "#ECFDF5",
+              backgroundColor: colors.greenWash,
               alignItems: "center",
               justifyContent: "center",
               marginBottom: 14,
@@ -308,7 +308,7 @@ export default function OnboardingScreen({ onContinue }) {
               width: 36,
               height: 36,
               borderRadius: 12,
-              backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "#F1F5F9",
+              backgroundColor: colors.neutralWash,
               alignItems: "center",
               justifyContent: "center",
             }}

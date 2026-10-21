@@ -40,11 +40,11 @@ const DIET_ICONS = {
  * a white icon — the selected state.
  */
 export default function DietIcon({ id, size = 32, active = false }) {
-  const { isDark } = useTheme();
+  const { colors } = useTheme();
   const Icon = DIET_ICONS[id] || Carrot;
-  const tint = isDark ? "#064E3B" : "#ECFDF5";
-  const border = isDark ? "#065F46" : "#A7F3D0";
-  const ink = isDark ? "#34D399" : "#059669";
+  const tint = colors.accentGreenSoft;
+  const border = colors.greenRing;
+  const ink = colors.greenStrong;
   return (
     <View
       style={{

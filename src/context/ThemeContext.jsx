@@ -3,87 +3,9 @@ import { useColorScheme as useDeviceColorScheme } from "react-native";
 import { enumCodec } from "../storage/codecs";
 import { STORAGE_KEYS } from "../storage/keys";
 import { usePersistedState } from "../hooks/usePersistedState";
+import { DARK_COLORS, LIGHT_COLORS } from "../theme/colors";
 
 const ThemeContext = createContext(null);
-
-/** Ultimate Premium Native — #F5F5F7 spatial canvas, pure white cards, glass chrome */
-const LIGHT_COLORS = {
-  bg: "#F5F5F7",
-  card: "#FFFFFF",
-  cardBorder: "rgba(0, 0, 0, 0.06)",
-  cardSurface: "#FFFFFF",
-  cardSurfaceInner: "#F5F5F7",
-  borderSubtle: "rgba(0, 0, 0, 0.08)",
-  textPrimary: "#1D1D1F",
-  textSecondary: "#6E6E73",
-  textTertiary: "#86868B",
-  inputBg: "#F5F5F7",
-  chrome: "rgba(245, 245, 247, 0.72)",
-  chromeBorder: "rgba(0, 0, 0, 0.08)",
-  navBg: "rgba(255, 255, 255, 0.72)",
-  navBorder: "rgba(0, 0, 0, 0.08)",
-  // Emerald, matching GREEN in src/theme/tokens.js. These were iOS system
-  // green (#34C759) while every component rendered Tailwind emerald — the
-  // theme file and the UI disagreed about what "the app's green" was.
-  accentGreen: "#10B981",
-  accentGreenSoft: "#ECFDF5",
-  accentGreenBorder: "#D1FAE5",
-  accentPrimary: "#007AFF",
-  accentPrimarySoft: "#EAF2FF",
-  accentPrimaryBorder: "#B3D4FF",
-  accentAmber: "#FF9F0A",
-  accentCharcoal: "#1D1D1F",
-  backdrop: "rgba(15, 23, 42, 0.58)",
-  sheetHandle: "#D2D2D7",
-  danger: "#FF3B30",
-  dangerSoft: "#FFECEA",
-  dangerBorder: "#FFC4C0",
-  pillSelected: "#007AFF",
-  pillSelectedText: "#FFFFFF",
-  stockInBg: "#ECFDF5",
-  stockInText: "#047857",
-  stockOutBg: "#FFECEA",
-  stockOutText: "#D70015",
-};
-
-const DARK_COLORS = {
-  bg: "#000000",
-  card: "#1C1C1E",
-  cardBorder: "rgba(255, 255, 255, 0.12)",
-  cardSurface: "#1C1C1E",
-  cardSurfaceInner: "#2C2C2E",
-  borderSubtle: "rgba(255, 255, 255, 0.16)",
-  textPrimary: "#F5F5F7",
-  textSecondary: "#A1A1A6",
-  textTertiary: "#86868B",
-  inputBg: "#2C2C2E",
-  chrome: "rgba(28, 28, 30, 0.72)",
-  chromeBorder: "rgba(255, 255, 255, 0.12)",
-  navBg: "rgba(28, 28, 30, 0.72)",
-  navBorder: "rgba(255, 255, 255, 0.12)",
-  accentGreen: "#10B981",
-  accentGreenSoft: "#064E3B",
-  accentGreenBorder: "#065F46",
-  accentPrimary: "#0A84FF",
-  accentPrimarySoft: "#0A2540",
-  accentPrimaryBorder: "#0A4A8A",
-  accentAmber: "#FF9F0A",
-  accentCharcoal: "#F5F5F7",
-  backdrop: "rgba(15, 23, 42, 0.58)",
-  sheetHandle: "#636366",
-  danger: "#FF453A",
-  dangerSoft: "#3A0A08",
-  dangerBorder: "#8A1C16",
-  pillSelected: "#0A84FF",
-  pillSelectedText: "#FFFFFF",
-  // darkInk, not the primary green: emerald-500 on an emerald-900 ground
-  // is too low-contrast for small text — green TEXT in dark mode needs the
-  // brighter tint even though green FILLS use the primary.
-  stockInBg: "#064E3B",
-  stockInText: "#6EE7B7",
-  stockOutBg: "#3A0A08",
-  stockOutText: "#FF453A",
-};
 
 export function ThemeProvider({ children }) {
   // This hook's result used to be called and thrown away, so a phone already

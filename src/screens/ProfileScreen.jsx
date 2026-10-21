@@ -36,7 +36,7 @@ export default function ProfileScreen() {
   const { t } = useLanguage();
   const { setProModalOpen, setMealPlannerOpen, setScanHistoryOpen, setHelpModalOpen } =
     useModalState();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   // Meal Planner / Scan History / Help were previously reachable only
   // through the hamburger drawer — the same "buried" problem Settings had
@@ -400,7 +400,7 @@ export default function ProfileScreen() {
           }}
         >
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "800", fontSize: 22 }}>
+            <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
               {savedCount}
             </Text>
             <Text
@@ -423,7 +423,7 @@ export default function ProfileScreen() {
             }}
           />
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "800", fontSize: 22 }}>
+            <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
               {pantryItems.length}
             </Text>
             <Text
@@ -446,7 +446,7 @@ export default function ProfileScreen() {
             }}
           />
           <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: isDark ? "#34D399" : "#059669", fontWeight: "800", fontSize: 22 }}>
+            <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
               {scanHistory.length}
             </Text>
             <Text

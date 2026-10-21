@@ -28,8 +28,8 @@ function getDetectedPillStyle(isDark, colors) {
   return {
     paddingVertical: 5,
     paddingHorizontal: 11,
-    backgroundColor: isDark ? colors.inputBg : "rgba(241, 245, 249, 0.7)",
-    borderColor: isDark ? colors.cardBorder : "rgba(226, 232, 240, 0.8)",
+    backgroundColor: colors.chipBg,
+    borderColor: colors.chipBorder,
   };
 }
 
@@ -287,7 +287,7 @@ export default function DetectedIngredientsCard({
                 flex: 1,
                 minWidth: 0,
                 overflow: "hidden",
-                color: isDark ? colors.textPrimary : "#1E293B",
+                color: colors.inkSoft,
               }}
             />
             </Animated.View>

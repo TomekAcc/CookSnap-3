@@ -48,7 +48,7 @@ const MENU_WIDTH = 200;
  * it uses and which scan functions and daily limit it calls.
  */
 export default function ScanMoreSheet({ kind = "fridge", anchor }) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useLanguage();
   const scan = useScan();
   const entitlements = useEntitlements();
@@ -164,8 +164,8 @@ export default function ScanMoreSheet({ kind = "fridge", anchor }) {
             top,
             right,
             width: MENU_WIDTH,
-            backgroundColor: isDark ? colors.card : "#FFFFFF",
-            borderColor: isDark ? colors.cardBorder : "#E2E8F0",
+            backgroundColor: colors.card,
+            borderColor: colors.outline,
             opacity,
             transform: [{ scale }],
           },
@@ -185,7 +185,7 @@ export default function ScanMoreSheet({ kind = "fridge", anchor }) {
         </TouchableOpacity>
 
         <View
-          style={[styles.divider, { backgroundColor: isDark ? colors.cardBorder : "#F1F5F9" }]}
+          style={[styles.divider, { backgroundColor: colors.outlineFaint }]}
         />
 
         <TouchableOpacity

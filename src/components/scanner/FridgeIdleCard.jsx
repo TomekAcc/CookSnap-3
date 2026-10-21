@@ -21,11 +21,11 @@ export default function FridgeIdleCard({
   return (
     <View
       style={{
-        backgroundColor: isDark ? colors.card : "#FFFFFF",
+        backgroundColor: colors.card,
         borderRadius: 22,
         padding: 20,
         borderWidth: 1,
-        borderColor: isDark ? colors.cardBorder : "rgba(0,0,0,0.06)",
+        borderColor: colors.cardBorder,
         alignItems: "center",
       }}
     >
@@ -225,9 +225,9 @@ export default function FridgeIdleCard({
           style={{
             flex: 1,
             height: 46,
-            backgroundColor: isDark ? colors.card : "#FFFFFF",
+            backgroundColor: colors.card,
             borderWidth: 1,
-            borderColor: isDark ? colors.cardBorder : "#E2E8F0",
+            borderColor: colors.outline,
             borderRadius: 13,
             alignItems: "center",
             flexDirection: "row",
@@ -237,7 +237,7 @@ export default function FridgeIdleCard({
           <ImageIcon size={15} color="#059669" />
           <Text
             style={{
-              color: isDark ? colors.textPrimary : "#0F172A",
+              color: colors.ink,
               fontSize: 15,
               fontWeight: "600",
               marginLeft: 8,

@@ -38,8 +38,6 @@ const ICON_SIZE = 22;
 // this same emerald (light/dark split matches the established convention
 // used throughout, e.g. FridgeScannerHero, PantryTab: #10B981/#059669 in
 // light mode, #34D399 in dark).
-const ACTIVE = "#10B981";
-const ACTIVE_DARK = "#34D399";
 const INACTIVE = "#8E8E93";
 
 export default function BottomNav() {
@@ -77,7 +75,7 @@ export default function BottomNav() {
   // away) a few hundred ms before the scan card actually finishes revealing.
   if (isScanning || scanRevealActive) return null;
 
-  const activeColor = isDark ? ACTIVE_DARK : ACTIVE;
+  const activeColor = colors.greenBright;
   const bottomPad = Math.max(insets.bottom, 8);
 
   return (

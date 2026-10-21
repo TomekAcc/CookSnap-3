@@ -19,9 +19,9 @@ const STEPS = [
  */
 export default function ScanSteps() {
   const { t } = useTranslation();
-  const { colors, isDark } = useTheme();
-  const dot = isDark ? "#064E3B" : "#ECFDF5";
-  const ink = isDark ? "#34D399" : "#059669";
+  const { colors } = useTheme();
+  const dot = colors.accentGreenSoft;
+  const ink = colors.greenStrong;
 
   return (
     <View style={styles.root}>

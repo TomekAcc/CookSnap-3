@@ -48,7 +48,7 @@ export const HEADER_SHADOW_KILL = Object.freeze({
  * this is just a normal top-of-list block with ordinary padding.
  */
 export default function Header() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { setProModalOpen } = useModalState();
   const { isPro } = useEntitlements();
   const { t } = useLanguage();
@@ -86,7 +86,7 @@ export default function Header() {
           <Text
             style={[
               styles.brandText,
-              { color: isDark ? colors.textPrimary : "#0F172A" },
+              { color: colors.ink },
             ]}
           >
             Cook
@@ -110,7 +110,7 @@ export default function Header() {
           accessibilityLabel={t("profile.upgradeToPro")}
           style={[
             styles.proButton,
-            { backgroundColor: isDark ? "rgba(245,158,11,0.16)" : "#FEF3C7", borderColor: AMBER_TINT_BADGE_BORDER },
+            { backgroundColor: colors.amberSoft, borderColor: AMBER_TINT_BADGE_BORDER },
           ]}
         >
           {/* A labelled pill, not a lone crown: an unlabelled icon is a weak
@@ -119,7 +119,7 @@ export default function Header() {
               translation; the text colour is the darker amber the other PRO
               tags use (4.5:1 on the pill), the crown keeps the bright amber. */}
           <Crown size={14} color={colors.accentAmber} fill={colors.accentAmber} />
-          <Text style={[styles.proButtonText, { color: isDark ? "#FCD34D" : "#B45309" }]}>PRO</Text>
+          <Text style={[styles.proButtonText, { color: colors.amberStrong }]}>PRO</Text>
         </TouchableOpacity>
       ) : null}
     </View>

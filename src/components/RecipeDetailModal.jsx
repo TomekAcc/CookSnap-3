@@ -552,7 +552,7 @@ export default function RecipeDetailModal() {
                   <Text
                     style={[
                       styles.metaLabel,
-                      { color: isDark ? "#FDA4AF" : "#BE123C" },
+                      { color: colors.roseText },
                     ]}
                   >
                     {t("recipeDetail.proteinLabel")}
@@ -567,7 +567,7 @@ export default function RecipeDetailModal() {
                   <Text
                     style={[
                       styles.metaLabel,
-                      { color: isDark ? "#FCD34D" : "#B45309" },
+                      { color: colors.amberStrong },
                     ]}
                   >
                     {t("recipeDetail.carbsLabel")}
@@ -582,7 +582,7 @@ export default function RecipeDetailModal() {
                   <Text
                     style={[
                       styles.metaLabel,
-                      { color: isDark ? "#7DD3FC" : "#0369A1" },
+                      { color: colors.skyText },
                     ]}
                   >
                     {t("recipeDetail.fatLabel")}
@@ -609,8 +609,8 @@ export default function RecipeDetailModal() {
               style={[
                 styles.modifierLockedRow,
                 {
-                  backgroundColor: isDark ? "rgba(245,158,11,0.14)" : "#FFFBEB",
-                  borderColor: isDark ? "rgba(245,158,11,0.35)" : "#FDE68A",
+                  backgroundColor: colors.amberTint,
+                  borderColor: colors.amberRing,
                 },
               ]}
             >
@@ -621,7 +621,7 @@ export default function RecipeDetailModal() {
                 <Text
                   style={[
                     styles.modifierLockedTitle,
-                    { color: isDark ? "#FCD34D" : "#78350F" },
+                    { color: colors.amberDeep },
                   ]}
                 >
                   {t("recipeDetail.modifyWithAI")}
@@ -629,7 +629,7 @@ export default function RecipeDetailModal() {
                 <Text
                   style={[
                     styles.modifierLockedSubtitle,
-                    { color: isDark ? "#FBBF24" : "#92400E" },
+                    { color: colors.amberCopy },
                   ]}
                   numberOfLines={2}
                 >
@@ -643,7 +643,7 @@ export default function RecipeDetailModal() {
               style={[
                 styles.modifierOpenCard,
                 {
-                  backgroundColor: isDark ? colors.inputBg : "#FFFBEB",
+                  backgroundColor: colors.amberFaint,
                   borderColor: "#FBBF24",
                 },
               ]}
@@ -653,7 +653,7 @@ export default function RecipeDetailModal() {
                 <Text
                   style={[
                     styles.modifierOpenTitle,
-                    { color: isDark ? "#FCD34D" : "#92400E" },
+                    { color: colors.amberCopyBright },
                   ]}
                 >
                   {t("recipeDetail.modifyWithAI")}
@@ -685,15 +685,12 @@ export default function RecipeDetailModal() {
                   }}
                   disabled={isModifying}
                   activeOpacity={0.8}
-                  style={[
-                    styles.modifierCancelBtn,
-                    isDark ? { backgroundColor: "rgba(245,158,11,0.14)" } : null,
-                  ]}
+                  style={[styles.modifierCancelBtn, { backgroundColor: colors.amberButton }]}
                 >
                   <Text
                     style={[
                       styles.modifierCancelText,
-                      { color: isDark ? "#FCD34D" : "#78350F" },
+                      { color: colors.amberDeep },
                     ]}
                   >
                     {t("recipeDetail.cancel")}
@@ -723,16 +720,16 @@ export default function RecipeDetailModal() {
               style={[
                 styles.modifierRow,
                 {
-                  backgroundColor: isDark ? colors.inputBg : "#FFFBEB",
+                  backgroundColor: colors.amberFaint,
                   borderColor: "#FDE68A",
                 },
               ]}
             >
-              <Sparkles size={16} color={isDark ? "#FBBF24" : "#D97706"} />
+              <Sparkles size={16} color={colors.amberAccent} />
               <Text
                 style={[
                   styles.modifierRowText,
-                  { color: isDark ? "#FBBF24" : "#D97706" },
+                  { color: colors.amberAccent },
                 ]}
               >
                 {t("recipeDetail.modifyWithAI")}
@@ -802,8 +799,8 @@ export default function RecipeDetailModal() {
                     styles.ingredientRow,
                     {
                       ...styles.ingredientUnchecked,
-                      backgroundColor: isDark ? colors.card : "#FFFFFF",
-                      borderColor: isDark ? colors.cardBorder : "#E2E8F0",
+                      backgroundColor: colors.card,
+                      borderColor: colors.outline,
                       opacity: isChecked ? 0.55 : 1,
                     },
                   ]}
@@ -885,17 +882,17 @@ export default function RecipeDetailModal() {
               style={[
                 styles.upgradeTipCard,
                 {
-                  backgroundColor: isDark ? "rgba(16,185,129,0.10)" : "#ECFDF5",
-                  borderColor: isDark ? "rgba(16,185,129,0.28)" : "#D1FAE5",
+                  backgroundColor: colors.greenTint,
+                  borderColor: colors.greenTintBorder,
                 },
               ]}
             >
               <View style={styles.upgradeTipHeaderRow}>
-                <Sparkles size={16} color={isDark ? "#34D399" : "#059669"} />
+                <Sparkles size={16} color={colors.greenStrong} />
                 <Text
                   style={[
                     styles.upgradeTipLabel,
-                    { color: isDark ? "#34D399" : "#047857" },
+                    { color: colors.greenText },
                   ]}
                 >
                   {t("recipeDetail.upgradeTipLabel", {
@@ -918,20 +915,20 @@ export default function RecipeDetailModal() {
                     ? {
                         backgroundColor: "transparent",
                         borderWidth: 1,
-                        borderColor: isDark ? "#065F46" : "#A7F3D0",
+                        borderColor: colors.greenRing,
                       }
-                    : { backgroundColor: isDark ? "#065F46" : "#059669" },
+                    : { backgroundColor: colors.greenFill },
                 ]}
               >
                 {upgradeAdded ? (
-                  <Check size={14} color={isDark ? "#34D399" : "#059669"} strokeWidth={2.5} />
+                  <Check size={14} color={colors.greenStrong} strokeWidth={2.5} />
                 ) : (
                   <ShoppingCart size={14} color="#FFFFFF" />
                 )}
                 <Text
                   style={[
                     styles.upgradeTipButtonText,
-                    upgradeAdded && { color: isDark ? "#34D399" : "#059669" },
+                    upgradeAdded && { color: colors.greenStrong },
                   ]}
                 >
                   {upgradeAdded
@@ -998,10 +995,8 @@ export default function RecipeDetailModal() {
                     styles.stepCard,
                     isChecked
                       ? {
-                          backgroundColor: isDark
-                            ? "rgba(16, 185, 129, 0.12)"
-                            : "rgba(236, 253, 245, 0.7)",
-                          borderColor: isDark ? "#10B981" : "#A7F3D0",
+                          backgroundColor: colors.greenGlass,
+                          borderColor: colors.greenRingBright,
                         }
                       : {
                           backgroundColor: colors.card,
@@ -1069,9 +1064,9 @@ export default function RecipeDetailModal() {
             // higher up the same screen, which already works this way.
             isFavorite
               ? {
-                  backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+                  backgroundColor: colors.accentGreenSoft,
                   borderWidth: 1.5,
-                  borderColor: isDark ? "#059669" : "#A7F3D0",
+                  borderColor: colors.greenRingDeep,
                 }
               : styles.favoritePrimary,
           ]}
@@ -1083,14 +1078,14 @@ export default function RecipeDetailModal() {
           <Animated.View style={{ transform: [{ scale: heartScaleAnim }] }}>
             <Heart
               size={16}
-              color={isFavorite ? (isDark ? "#34D399" : "#059669") : "#FFFFFF"}
-              fill={isFavorite ? (isDark ? "#34D399" : "#059669") : "transparent"}
+              color={isFavorite ? (colors.greenStrong) : "#FFFFFF"}
+              fill={isFavorite ? (colors.greenStrong) : "transparent"}
             />
           </Animated.View>
           <Text
             style={[
               styles.favoriteButtonText,
-              isFavorite && { color: isDark ? "#34D399" : "#059669" },
+              isFavorite && { color: colors.greenStrong },
             ]}
           >
             {isFavorite
@@ -1285,7 +1280,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(120,53,15,0.08)",
   },
   modifierCancelText: { fontSize: 12, fontWeight: "700", color: "#78350F" },
   modifierSendBtn: {

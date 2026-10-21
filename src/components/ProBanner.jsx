@@ -36,7 +36,7 @@ function noOrphan(text) {
  */
 export default function ProBanner({ onOpenProModal, usedUp = false, limit = 0 }) {
   const { t } = useTranslation();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   return (
     <TouchableOpacity
       onPress={() => onOpenProModal?.()}
@@ -59,7 +59,7 @@ export default function ProBanner({ onOpenProModal, usedUp = false, limit = 0 })
         <View style={[styles.crownDisc, { backgroundColor: colors.accentAmber }]}>
           <Crown size={16} color="#FFFFFF" fill="#FFFFFF" />
         </View>
-        <Text style={[styles.brandLabel, { color: isDark ? "#FCD34D" : "#B45309" }]}>
+        <Text style={[styles.brandLabel, { color: colors.amberStrong }]}>
           {t("proBanner.brandLabel")}
         </Text>
       </View>

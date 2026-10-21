@@ -18,7 +18,6 @@ import { emojiLine } from "../theme/tokens";
 const CHECKED_HOLD_MS = 500;
 const FADE_OUT_MS = 380;
 
-const SLATE_300 = "#CBD5E1";
 
 /**
  * Shopping List — one calm list card, emerald primary button.
@@ -29,7 +28,7 @@ export default function ShoppingListModal({
   items = [],
   onRestockItem,
 }) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const handleClose = typeof onClose === "function" ? onClose : () => {};
   const safeItems = Array.isArray(items) ? items : [];
@@ -258,7 +257,7 @@ export default function ShoppingListModal({
                     ) : (
                       <Circle
                         size={24}
-                        color={isDark ? colors.textTertiary || SLATE_300 : SLATE_300}
+                        color={colors.iconFaint}
                         strokeWidth={2}
                       />
                     )}

@@ -87,7 +87,7 @@ export default function PantryScannerHero() {
   } = useScan();
   const { t, recipeLanguageId } = useLanguage();
   const { setPantryScanOpen } = useModalState();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const scanMoreButtonRef = useRef(null);
   const [scanMoreAnchor, setScanMoreAnchor] = useState(null);
 
@@ -451,20 +451,20 @@ export default function PantryScannerHero() {
             style={{
               flex: 1,
               height: 46,
-              backgroundColor: isDark ? colors.card : "#FFFFFF",
+              backgroundColor: colors.card,
               borderRadius: 13,
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
               borderWidth: 1,
-              borderColor: isDark ? colors.cardBorder : "#E2E8F0",
+              borderColor: colors.outline,
             }}
             accessibilityLabel={t("a11y.pickPantryPhoto")}
           >
             <ImageIcon size={15} color="#059669" />
             <Text
               style={{
-                color: isDark ? colors.textPrimary : "#0F172A",
+                color: colors.ink,
                 fontSize: 15,
                 fontWeight: "600",
                 marginLeft: 8,
@@ -664,7 +664,7 @@ export default function PantryScannerHero() {
                   <View
                     style={{
                       width: "100%",
-                      backgroundColor: isDark ? "#1E293B" : "#F1F5F9",
+                      backgroundColor: colors.track,
                       height: 9,
                       borderRadius: 999,
                       overflow: "hidden",

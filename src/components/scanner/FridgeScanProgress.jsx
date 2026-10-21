@@ -18,7 +18,7 @@ export default function FridgeScanProgress({
   stepTranslate,
 }) {
   const { t } = useLanguage();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { scanningLabel } = useScan();
   const [barWidth, setBarWidth] = useState(0);
   return (
@@ -57,7 +57,7 @@ export default function FridgeScanProgress({
               width: 40,
               height: 40,
               borderRadius: 14,
-              backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+              backgroundColor: colors.accentGreenSoft,
               alignItems: "center",
               justifyContent: "center",
               marginRight: 12,
@@ -103,7 +103,7 @@ export default function FridgeScanProgress({
           onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
           style={{
             width: "100%",
-            backgroundColor: isDark ? "#1E293B" : "#F1F5F9",
+            backgroundColor: colors.track,
             height: 8,
             borderRadius: 999,
             overflow: "hidden",

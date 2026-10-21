@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { X } from "../icons";
 import { useTheme } from "../context/ThemeContext";
-import { GREEN, emojiLine } from "../theme/tokens";
+import { emojiLine } from "../theme/tokens";
 
 /**
  * Uniform ingredient / filter pill.
@@ -31,32 +31,12 @@ export default function PillTag({
   fitLabel = false,
   reserveEmojiSpace = false,
 }) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
-  const bg = selected
-    ? isDark
-      ? colors.accentGreenSoft
-      : GREEN.soft
-    : isDark
-      ? colors.inputBg
-      : "#F8FAFC";
-  const border = selected
-    ? isDark
-      ? colors.accentGreen
-      : GREEN.primary
-    : "transparent";
-  const textColor = selected
-    ? isDark
-      ? GREEN.darkInk
-      : GREEN.ink
-    : isDark
-      ? colors.textPrimary
-      : "#1E293B";
-  const mutedIcon = selected
-    ? textColor
-    : isDark
-      ? colors.textSecondary
-      : "#64748B";
+  const bg = selected ? colors.accentGreenSoft : colors.fillFaint;
+  const border = selected ? colors.accentGreen : "transparent";
+  const textColor = selected ? colors.greenInk : colors.inkSoft;
+  const mutedIcon = selected ? textColor : colors.iconSubtle;
 
   const content = (
     <>

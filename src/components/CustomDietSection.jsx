@@ -22,7 +22,7 @@ export default function CustomDietSection() {
     setCustomDietPrefer,
   } = usePreferences();
   const { setProModalOpen } = useModalState();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   // Custom Diet — PRO only. Two free-text lists rather than an
   // open-ended "describe your diet" field: "always avoid" plugs
@@ -75,7 +75,7 @@ export default function CustomDietSection() {
               width: 40,
               height: 40,
               borderRadius: 20,
-              backgroundColor: isDark ? colors.inputBg : "#F3F5F8",
+              backgroundColor: colors.fillMuted,
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
@@ -104,16 +104,16 @@ export default function CustomDietSection() {
               paddingHorizontal: 8,
               paddingVertical: 4,
               borderRadius: 8,
-              backgroundColor: isDark ? "rgba(245,158,11,0.16)" : "#FEF3C7",
+              backgroundColor: colors.amberSoft,
             }}
           >
-            <Lock size={11} color={isDark ? "#FCD34D" : "#B45309"} strokeWidth={2.6} />
+            <Lock size={11} color={colors.amberStrong} strokeWidth={2.6} />
             <Text
               style={{
                 fontSize: 11,
                 fontWeight: "700",
                 letterSpacing: 0.5,
-                color: isDark ? "#FCD34D" : "#B45309",
+                color: colors.amberStrong,
               }}
             >
               PRO

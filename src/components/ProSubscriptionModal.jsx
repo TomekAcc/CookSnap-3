@@ -177,16 +177,16 @@ export default function ProSubscriptionModal() {
     freeDailyPantryScans,
   } = useEntitlements();
   const { t } = useLanguage();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   // The app's own pastel-emerald icon-badge tokens — the same fill/border/
   // glyph colors used for the Profile, Pantry and Saved header badges and
   // the scan-card icon (see FridgeScannerHero), so the benefit icons here
   // read as part of the same system rather than a one-off.
   const benefitChipStyle = {
-    backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
-    borderColor: isDark ? "#065F46" : "#A7F3D0",
+    backgroundColor: colors.accentGreenSoft,
+    borderColor: colors.greenRing,
   };
-  const benefitIconColor = isDark ? "#34D399" : "#059669";
+  const benefitIconColor = colors.greenStrong;
   // The reason is only meaningful for this opening of the sheet.
   useEffect(() => () => setProReason?.(null), [setProReason]);
   const [selectedPlanId, setSelectedPlanId] = useState("annual");

@@ -21,7 +21,7 @@ import { usePreferences } from "../context/PreferencesContext";
 export default function DietList({ showDescriptions = true }) {
   const { t } = useLanguage();
   const { dietaryRestrictions, toggleDietaryRestriction } = usePreferences();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -92,7 +92,7 @@ export default function DietList({ showDescriptions = true }) {
               onValueChange={() => toggleDietaryRestriction(item.id)}
               pointerEvents="none"
               trackColor={{
-                false: isDark ? "#334155" : "#E2E8F0",
+                false: colors.trackStrong,
                 true: "#10B981",
               }}
               thumbColor="#FFFFFF"

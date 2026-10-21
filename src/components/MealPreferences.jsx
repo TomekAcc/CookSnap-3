@@ -62,10 +62,10 @@ const EMERALD = "#10B981";
 
 function cardStyle(isDark, colors) {
   return {
-    backgroundColor: isDark ? colors.card : "#FFFFFF",
+    backgroundColor: colors.card,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: isDark ? colors.cardBorder : "#E5E7EB",
+    borderColor: colors.outlineCard,
     padding: 18,
     // Soft lift so the cards read as separate surfaces on the grey page.
     shadowColor: "#0F172A",
@@ -79,8 +79,8 @@ function cardStyle(isDark, colors) {
 function usePalette() {
   const { colors, isDark } = useTheme();
   return {
-    idleBg: isDark ? colors.inputBg : "#F3F5F8",
-    idleInk: isDark ? colors.textPrimary : "#1E293B",
+    idleBg: colors.fillMuted,
+    idleInk: colors.inkSoft,
     muted: colors.textSecondary,
     isDark,
     colors,
@@ -431,7 +431,7 @@ export default function MealPreferences() {
         />
 
         <View style={[styles.excludeBox, { backgroundColor: palette.idleBg }]}>
-          <Sparkles size={14} color={isDark ? colors.textSecondary : "#94A3B8"} />
+          <Sparkles size={14} color={colors.iconMuted} />
           <TextInput
             value={excludeThisBatch}
             onChangeText={setExcludeThisBatch}

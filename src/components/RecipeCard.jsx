@@ -172,11 +172,11 @@ function RecipeCard({
             styles.heart,
             isFavorite
               ? {
-                  backgroundColor: isDark ? "#4C0519" : colors.dangerSoft || "#FFECEA",
-                  borderColor: isDark ? "#881337" : "#FFC4C0",
+                  backgroundColor: colors.roseSoft,
+                  borderColor: colors.roseRing,
                 }
               : {
-                  backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
+                  backgroundColor: colors.fillFaint,
                   borderColor: colors.cardBorder,
                 },
           ]}

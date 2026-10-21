@@ -201,7 +201,7 @@ export default function MealPlannerModal() {
   const minUnit = t("cookingTime.minUnit");
   const { mealPlannerOpen, setMealPlannerOpen, setSelectedRecipe, setProModalOpen } =
     useModalState();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   // Saved plan, laid over the empty week so a new field always has a default.
   // Writes wait for the read (the hook's `hydrated`), so the empty default can
@@ -565,7 +565,7 @@ export default function MealPlannerModal() {
       <View
         style={[
           styles.emptyFridgeIcon,
-          { backgroundColor: isDark ? "#064E3B" : "#ECFDF5" },
+          { backgroundColor: colors.accentGreenSoft },
         ]}
       >
         <Refrigerator size={28} color="#059669" />
@@ -803,12 +803,8 @@ export default function MealPlannerModal() {
                 {
                   backgroundColor:
                     !hasScanned || !isPro
-                      ? isDark
-                        ? colors.inputBg
-                        : "#F3F5F8"
-                      : isDark
-                        ? "#064E3B"
-                        : "#ECFDF5",
+                      ? colors.fillMuted
+                      : colors.accentGreenSoft,
                 },
               ]}
             >
@@ -846,8 +842,8 @@ export default function MealPlannerModal() {
               // on Profile; the one place this screen says PRO, instead of a
               // locked chip on every meal.
               <View style={styles.proTag}>
-                <Lock size={11} color={isDark ? "#FCD34D" : "#B45309"} strokeWidth={2.6} />
-                <Text style={[styles.proTagText, { color: isDark ? "#FCD34D" : "#B45309" }]}>
+                <Lock size={11} color={colors.amberStrong} strokeWidth={2.6} />
+                <Text style={[styles.proTagText, { color: colors.amberStrong }]}>
                   PRO
                 </Text>
               </View>
@@ -864,7 +860,7 @@ export default function MealPlannerModal() {
               <Text
                 style={[
                   styles.generationUsageText,
-                  { color: isDark ? "#94A3B8" : "#64748B" },
+                  { color: colors.textMuted },
                   isPro ? { color: "#D97706" } : null,
                 ]}
               >

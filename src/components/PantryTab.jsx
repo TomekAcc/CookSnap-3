@@ -58,7 +58,7 @@ const CATEGORY_LABEL_KEYS = {
 // search keystroke or toggling ONE item re-rendered every row (80 rows ≈ 80
 // full JSX trees per keystroke). Now only the row whose `item` changed renders.
 const InStockRow = memo(function InStockRow({ item, isOpen, setOpenSwipeId, onToggle, onRemove }) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   return (
     <SwipeToDeleteRow
       isOpen={isOpen}
@@ -68,10 +68,10 @@ const InStockRow = memo(function InStockRow({ item, isOpen, setOpenSwipeId, onTo
     >
       <View
         style={{
-          backgroundColor: isDark ? colors.card : "#FFFFFF",
+          backgroundColor: colors.card,
           borderRadius: 16,
           borderWidth: 1,
-          borderColor: isDark ? colors.cardBorder : "#F1F5F9",
+          borderColor: colors.outlineFaint,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
@@ -96,9 +96,9 @@ const InStockRow = memo(function InStockRow({ item, isOpen, setOpenSwipeId, onTo
               width: 42,
               height: 42,
               borderRadius: 12,
-              backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
+              backgroundColor: colors.fillFaint,
               borderWidth: 1,
-              borderColor: isDark ? colors.cardBorder : "#F1F5F9",
+              borderColor: colors.outlineFaint,
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
@@ -145,7 +145,7 @@ const InStockRow = memo(function InStockRow({ item, isOpen, setOpenSwipeId, onTo
 });
 
 const OutOfStockRow = memo(function OutOfStockRow({ item, isOpen, setOpenSwipeId, onToggle, onRemove }) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   return (
     <SwipeToDeleteRow
@@ -163,10 +163,10 @@ const OutOfStockRow = memo(function OutOfStockRow({ item, isOpen, setOpenSwipeId
           // Restock button in dark mode (confirmed via screenshot:
           // identical row was clean in light mode, where the
           // opaque #FFFBEB fully hid it).
-          backgroundColor: isDark ? colors.card : "#FFFFFF",
+          backgroundColor: colors.card,
           borderRadius: 20,
           borderWidth: 1,
-          borderColor: isDark ? colors.cardBorder : "#F1F5F9",
+          borderColor: colors.outlineFaint,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
@@ -191,9 +191,9 @@ const OutOfStockRow = memo(function OutOfStockRow({ item, isOpen, setOpenSwipeId
               width: 42,
               height: 42,
               borderRadius: 12,
-              backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
+              backgroundColor: colors.fillFaint,
               borderWidth: 1,
-              borderColor: isDark ? colors.cardBorder : "#F1F5F9",
+              borderColor: colors.outlineFaint,
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
@@ -225,7 +225,7 @@ const OutOfStockRow = memo(function OutOfStockRow({ item, isOpen, setOpenSwipeId
           onPress={() => onToggle(item.id)}
           activeOpacity={0.85}
           style={{
-            backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+            backgroundColor: colors.accentGreenSoft,
             paddingHorizontal: 12,
             paddingVertical: 9,
             borderRadius: 12,
@@ -234,10 +234,10 @@ const OutOfStockRow = memo(function OutOfStockRow({ item, isOpen, setOpenSwipeId
             flexShrink: 0,
           }}
         >
-          <Plus size={14} color={isDark ? "#34D399" : "#047857"} strokeWidth={2.6} />
+          <Plus size={14} color={colors.greenText} strokeWidth={2.6} />
           <Text
             style={{
-              color: isDark ? "#34D399" : "#047857",
+              color: colors.greenText,
               fontSize: 12,
               fontWeight: "700",
               marginLeft: 4,
@@ -255,7 +255,7 @@ const OutOfStockRow = memo(function OutOfStockRow({ item, isOpen, setOpenSwipeId
 
 export default function PantryTab() {
   const tabScroll = useTabScroll("pantry");
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const {
     pantryItems,
@@ -856,8 +856,8 @@ export default function PantryTab() {
                 gap: 6,
               }}
             >
-              <Trash2 size={14} color={isDark ? "#F87171" : "#DC2626"} />
-              <Text style={{ color: isDark ? "#F87171" : "#DC2626", fontSize: 13, fontWeight: "600" }}>
+              <Trash2 size={14} color={colors.redText} />
+              <Text style={{ color: colors.redText, fontSize: 13, fontWeight: "600" }}>
                 {t("pantry.clearAllButton")}
               </Text>
             </TouchableOpacity>

@@ -26,7 +26,7 @@ export default function FridgePhotoCard({
   startScanAgain,
 }) {
   const { t, recipeLanguageId } = useLanguage();
-  const { isDark } = useTheme();
+  const { colors } = useTheme();
   const { fridgePhoto } = useScan();
   const { scanIsDemo } = useInventory();
   return (
@@ -94,7 +94,7 @@ export default function FridgePhotoCard({
           bottom: 0,
           borderRadius: 28,
           borderWidth: 1,
-          borderColor: isDark ? "rgba(255,255,255,0.16)" : "rgba(15,23,42,0.14)",
+          borderColor: colors.photoBorder,
         }}
       />
 
