@@ -159,7 +159,14 @@ export default function RecipeFeed({ onSelectRecipe } = {}) {
             key={recipe.id || `recipe-${recipe.title}`}
             recipe={recipe}
             isFavorite={isFavorite(recipe.id)}
-            onToggleFavorite={toggleFavorite}
+            onToggleFavorite={(id) =>
+              toggleFavorite(
+                id,
+                (Array.isArray(generatedRecipes) ? generatedRecipes : []).find(
+                  (r) => r && String(r.id) === String(id)
+                )
+              )
+            }
             onSelect={handleSelect}
           />
         ))}

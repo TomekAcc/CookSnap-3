@@ -1,14 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useRef, useEffect } from "react";
-import {
-  RECIPES,
-  FALLBACK_RECIPES,
-} from "../data/recipes";
-import {
-  analyzeFridgeImage,
-  analyzePantryImage,
-  classifyPantryItemLocal,
-  translateIngredientNames,
-} from "../services/geminiVision";
+import { analyzeFridgeImage, analyzePantryImage } from "../services/geminiVision";
 import {
   generateRecipesWithGemini,
   generatePlannerMealsWithGemini,
@@ -16,8 +7,7 @@ import {
   RECIPES_PER_SCAN,
 } from "../services/geminiRecipes";
 import { persistPhotoToDevice } from "../utils/photoStorage";
-import { appendFeedbackLog } from "../storage/feedbackLog";
-import { enrichRecipes, safeStorageRead, safeVisibleRecipes } from "../utils/recipeLists";
+import { enrichRecipes, safeVisibleRecipes } from "../utils/recipeLists";
 import {
   FREE_DAILY_FRIDGE_SCANS,
   FREE_DAILY_PANTRY_SCANS,
@@ -31,13 +21,15 @@ import { showToast, hideToast } from "../utils/toast";
 import { STORAGE_KEYS } from "../storage/keys";
 import { arrayCodec, jsonCodec } from "../storage/codecs";
 import { usePersistedState } from "../hooks/usePersistedState";
-import { mergeUniqueIngredients, normalizePantryName } from "../utils/ingredients";
+import { mergeUniqueIngredients } from "../utils/ingredients";
 import { log } from "../utils/log";
 import { NavigationProvider, useNavigation } from "./NavigationContext";
 import { OnboardingProvider, useOnboarding } from "./OnboardingContext";
 import { LanguageProvider, useLanguage, useTranslation } from "./LanguageContext";
 import { EntitlementsProvider, useEntitlements } from "./EntitlementsContext";
 import { PreferencesProvider, usePreferences } from "./PreferencesContext";
+import { LibraryProvider, useLibrary } from "./LibraryContext";
+import { InventoryProvider, useInventory } from "./InventoryContext";
 
 const CookAIContext = createContext(null);
 
@@ -45,7 +37,7 @@ const CookAIContext = createContext(null);
 function LegacyProvider({ children }) {
   // Modal open/close state lives in its own context (see ModalContext.jsx) —
   // only pulled in here because addIngredient() needs to close its sheet.
-  const { setAddIngredientOpen, setProModalOpen, setProReason } = useModalState();
+  const { setProModalOpen, setProReason } = useModalState();
   const {
     activeTab,
     setActiveTab,
@@ -111,40 +103,35 @@ function LegacyProvider({ children }) {
     unitSystem,
     setUnitSystem,
   } = usePreferences();
-  // True while the onboarding sample scan is on screen. Its photo is a bundled
-  // asset whose path changes between updates and its list is not the user's
-  // fridge, so neither is ever written to storage (see shouldPersist below).
-  const scanIsDemoRef = useRef(false);
-  const [ingredients, setIngredients, ingredientsHydrated] = usePersistedState(STORAGE_KEYS.ingredients, {
-    initial: [],
-    codec: arrayCodec,
-    shouldPersist: () => !scanIsDemoRef.current,
-  });
-  // Favorites id list — dish #1 liked by default (🤍 → ❤️)
-  const [favorites, setFavorites, favoritesHydrated] = usePersistedState(STORAGE_KEYS.favorites, {
-    initial: [1],
-    codec: arrayCodec,
-  });
-  // Seed Saved tab with recipe #1 so heart state matches favorites
-  const [savedRecipes, setSavedRecipes, savedRecipesHydrated] = usePersistedState(STORAGE_KEYS.savedRecipes, {
-    initial: () =>
-      safeStorageRead(() => {
-        const first = (RECIPES || FALLBACK_RECIPES || []).find(
-          (r) => r && String(r.id) === "1"
-        );
-        return first ? enrichRecipes([first]) : [];
-      }, []),
-    codec: arrayCodec,
-  });
-  // Both lists load in the same batched read; the translation-on-language-change
-  // effects below wait for this before they start watching.
-  const savedHydrated = favoritesHydrated && savedRecipesHydrated;
-  // Pantry starts empty: no seeded staples for a brand-new user.
-  const [pantryItems, setPantryItems, pantryHydrated] = usePersistedState(STORAGE_KEYS.pantryItems, {
-    initial: [],
-    codec: arrayCodec,
-  });
-
+  const {
+    ingredients,
+    setIngredients,
+    removeIngredient,
+    addIngredient,
+    appendIngredients,
+    pantryItems,
+    togglePantryItem,
+    addPantryItem,
+    removePantryItem,
+    markPantryItemOutOfStock,
+    clearPantry,
+    addToShoppingList,
+    mergePantryScanResults,
+    scanIsDemo,
+    markScanDemo,
+    scanIsDemoRef,
+  } = useInventory();
+  const {
+    favorites,
+    savedRecipes: savedRecipesWithImages,
+    savedRecipesRaw: savedRecipes,
+    savedHydrated,
+    savedCount,
+    toggleFavorite,
+    toggleSaveRecipe,
+    isRecipeSaved,
+    replaceSavedRecipe,
+  } = useLibrary();
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
   const [generatedRecipes, setGeneratedRecipes] = useState(null);
   // True only when a generate/regenerate call failed AND there was no
@@ -196,18 +183,11 @@ function LegacyProvider({ children }) {
   // restored URI still resolves to a real file after an app restart. Persisting
   // the photo along with the ingredients it produced (above) matters: a photo
   // next to an empty list is a more confusing state than neither.
-  const [fridgePhoto, setFridgePhoto, fridgePhotoHydrated] = usePersistedState(STORAGE_KEYS.fridgePhoto, {
+  const [fridgePhoto, setFridgePhoto] = usePersistedState(STORAGE_KEYS.fridgePhoto, {
     initial: null,
     codec: jsonCodec(),
     shouldPersist: () => !scanIsDemoRef.current,
   });
-  // True while the onboarding sample fridge is on screen (see completeDemoScan).
-  // Its photo and list are never persisted, and a real scan replaces them.
-  const [scanIsDemo, setScanIsDemo] = useState(false);
-  const markScanDemo = useCallback((on) => {
-    scanIsDemoRef.current = on;
-    setScanIsDemo(on);
-  }, []);
   // See the comment on scanRevealActive above: this is the single place
   // that decides "the real scan just finished, hold the completed state
   // for a beat before anything outside the scan card treats it as done."
@@ -263,62 +243,10 @@ function LegacyProvider({ children }) {
   const [pantryCameraOpen, setPantryCameraOpen] = useState(false);
   const [pantryPhoto, setPantryPhoto] = useState(null);
 
-  const [scanHistory, setScanHistory, scanHistoryHydrated] = usePersistedState(STORAGE_KEYS.scanHistory, {
+  const [scanHistory, setScanHistory] = usePersistedState(STORAGE_KEYS.scanHistory, {
     initial: [],
     codec: arrayCodec,
   });
-  // The three scan-data keys load in the same batched read.
-  const scanDataHydrated = ingredientsHydrated && fridgePhotoHydrated && scanHistoryHydrated;
-
-  // Auto-translates already-scanned fridge/pantry item names when the
-  // language actually changes (not on first mount/hydration) — these are
-  // free-text AI-detected names with no translation-key system of their
-  // own, unlike the rest of the UI driven by t(), so switching the app
-  // language alone doesn't touch them; without this they'd silently stay
-  // in whatever language they were first scanned in forever. Fire-and-
-  // forget: never blocks the switch itself, and any failure just leaves
-  // the names as they were.
-  const inventoryLangTrackerRef = useRef(null);
-  useEffect(() => {
-    if (!recipeLanguageHydrated || !scanDataHydrated || !pantryHydrated) return;
-    if (inventoryLangTrackerRef.current === null) {
-      // First render after everything's hydrated — this already IS the
-      // language the current inventory was captured in (or close enough);
-      // just record it, don't fire a translate pass on mount.
-      inventoryLangTrackerRef.current = recipeLanguageId;
-      return;
-    }
-    if (inventoryLangTrackerRef.current === recipeLanguageId) return;
-    inventoryLangTrackerRef.current = recipeLanguageId;
-
-    let cancelled = false;
-    (async () => {
-      if (ingredients.length > 0) {
-        try {
-          const translated = await translateIngredientNames(ingredients, recipeLanguageName);
-          if (!cancelled) setIngredients(translated);
-        } catch (err) {
-          log.warn("[Cook AI] Fridge inventory auto-translate failed:", err?.message);
-        }
-      }
-      if (pantryItems.length > 0) {
-        try {
-          const translated = await translateIngredientNames(pantryItems, recipeLanguageName);
-          if (!cancelled) setPantryItems(translated);
-        } catch (err) {
-          log.warn("[Cook AI] Pantry auto-translate failed:", err?.message);
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-    // Deliberately keyed only on the language + hydration flags — ingredients/
-    // pantryItems are read from the closure at switch time, not tracked as
-    // triggers, so this never re-fires just because the inventory itself changed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recipeLanguageId, recipeLanguageHydrated, scanDataHydrated, pantryHydrated, recipeLanguageName]);
-
   const scanSessionIdRef = useRef(0);
   const pendingDetectedRef = useRef(null);
   const ingredientsCommittedRef = useRef(false);
@@ -354,37 +282,6 @@ function LegacyProvider({ children }) {
       ),
     [generatedRecipes, mealType, hungerLevel, isPro, ingredients]
   );
-
-  // Removing a vision-detected ingredient (as opposed to one the user typed
-  // in themselves via AddIngredientModal) is the user telling us the scan
-  // got it wrong — the same "wasn't actually there" signal
-  // docs/IMPLEMENTATION_ROADMAP.md #7 asks for, without adding a second tap
-  // target next to the X button that already does this.
-  const removeIngredient = useCallback((id) => {
-    setIngredients((prev) => {
-      const removed = prev.find((i) => i.id === id);
-      if (removed?.source === "scan") {
-        appendFeedbackLog({ type: "scanIngredientFlagged", name: removed.name });
-      }
-      return prev.filter((i) => i.id !== id);
-    });
-  }, [setIngredients]);
-
-  const addIngredient = useCallback((item) => {
-    setIngredients((prev) =>
-      mergeUniqueIngredients(prev, [{ ...item, source: "manual" }])
-    );
-    setAddIngredientOpen(false);
-  }, [setAddIngredientOpen, setIngredients]);
-
-  /** Merge new vision items — append only, never overwrite; de-dupe by name. */
-  const appendIngredients = useCallback((newItems) => {
-    const incoming = Array.isArray(newItems) ? newItems : [];
-    if (!incoming.length) return;
-    setIngredients((prev) =>
-      mergeUniqueIngredients(prev, incoming.map((i) => ({ ...i, source: "scan" })))
-    );
-  }, [setIngredients]);
 
   const pushScanHistory = useCallback((photoUri, source, itemCount, snapshotIngredients) => {
     setScanHistory((prev) => [
@@ -719,230 +616,6 @@ function LegacyProvider({ children }) {
     setScanStartedAt(null);
   }, [markScanDemo, setFridgePhoto, setIngredients]);
 
-  const toggleSaveRecipe = useCallback((recipe) => {
-    if (!recipe || recipe.id == null) return;
-    const idStr = String(recipe.id);
-
-    setFavorites((prev) => {
-      const has = (prev || []).some((id) => String(id) === idStr);
-      return has
-        ? (prev || []).filter((id) => String(id) !== idStr)
-        : [...(prev || []), recipe.id];
-    });
-
-    setSavedRecipes((prev) => {
-      try {
-        const exists = prev.some((r) => String(r.id) === idStr);
-        if (exists) return prev.filter((r) => String(r.id) !== idStr);
-        const [enriched] = enrichRecipes([recipe]);
-        return [...prev, enriched || recipe];
-      } catch {
-        return prev;
-      }
-    });
-  }, [setFavorites, setSavedRecipes]);
-
-  /** Toggle favorite by id — keeps favorites[] + savedRecipes in sync. */
-  const toggleFavorite = useCallback((recipeId) => {
-    if (recipeId == null) return;
-    const idStr = String(recipeId);
-
-    setFavorites((prev) => {
-      const list = Array.isArray(prev) ? prev : [];
-      return list.some((id) => String(id) === idStr)
-        ? list.filter((id) => String(id) !== idStr)
-        : [...list, recipeId];
-    });
-
-    setSavedRecipes((prev) => {
-      try {
-        const exists = prev.some((r) => String(r.id) === idStr);
-        if (exists) return prev.filter((r) => String(r.id) !== idStr);
-
-        const pool = [
-          ...(Array.isArray(generatedRecipes) ? generatedRecipes : []),
-          ...(Array.isArray(RECIPES) ? RECIPES : []),
-          ...(Array.isArray(FALLBACK_RECIPES) ? FALLBACK_RECIPES : []),
-        ];
-        const found = pool.find((r) => r && String(r.id) === idStr);
-        if (!found) return prev;
-        const [enriched] = enrichRecipes([found]);
-        return [...prev, enriched || found];
-      } catch {
-        return prev;
-      }
-    });
-  }, [generatedRecipes, setFavorites, setSavedRecipes]);
-
-  // Re-stamp dish emoji badges on every render of the saved list.
-  const savedRecipesWithImages = useMemo(() => {
-    try {
-      return enrichRecipes(savedRecipes);
-    } catch {
-      return Array.isArray(savedRecipes) ? savedRecipes : [];
-    }
-  }, [savedRecipes]);
-
-  const isRecipeSaved = useCallback(
-    (id) => {
-      const idStr = String(id);
-      if ((favorites || []).some((fav) => String(fav) === idStr)) return true;
-      return savedRecipes.some((r) => String(r.id) === idStr);
-    },
-    [favorites, savedRecipes]
-  );
-
-  const savedCount = useMemo(() => {
-    try {
-      const fromFavorites = Array.isArray(favorites) ? favorites.length : 0;
-      return Math.max(fromFavorites, Array.isArray(savedRecipes) ? savedRecipes.length : 0);
-    } catch {
-      return 0;
-    }
-  }, [favorites, savedRecipes]);
-
-  const togglePantryItem = useCallback((id) => {
-    setPantryItems((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, inStock: !p.inStock } : p))
-    );
-  }, [setPantryItems]);
-
-  const addPantryItem = useCallback((rawNameOrItem) => {
-    const item =
-      typeof rawNameOrItem === "string"
-        ? classifyPantryItemLocal(rawNameOrItem)
-        : rawNameOrItem;
-    if (!item?.name) return null;
-
-    setPantryItems((prev) => {
-      const existing = prev.find(
-        (p) => normalizePantryName(p.name) === normalizePantryName(item.name)
-      );
-      if (existing) {
-        return prev.map((p) =>
-          p.id === existing.id ? { ...p, inStock: true } : p
-        );
-      }
-      return [{ ...item, inStock: true }, ...prev];
-    });
-    return item;
-  }, [setPantryItems]);
-
-  const removePantryItem = useCallback((id) => {
-    if (!id) return;
-    setPantryItems((prev) => prev.filter((item) => item.id !== id));
-  }, [setPantryItems]);
-
-  // Lets the user correct a recipe ingredient the generator just assumed
-  // (salt/pepper/cooking oil — see BASIC_STAPLES in geminiRecipes.js)
-  // without leaving the recipe screen: one atomic update that either flips
-  // an existing Pantry entry to out-of-stock or creates one already marked
-  // that way, rather than addPantryItem (always forces inStock: true) +
-  // togglePantryItem (needs the real stored id, which addPantryItem's
-  // return value doesn't reliably have for an already-existing item — its
-  // id comes from a fresh classifyPantryItemLocal() call, not the matched
-  // entry). Two separate calls would also leave a render in between where
-  // the item still reads as in-stock.
-  const markPantryItemOutOfStock = useCallback((rawName) => {
-    const name = String(rawName || "").trim();
-    if (!name) return;
-    setPantryItems((prev) => {
-      const existing = prev.find(
-        (p) => normalizePantryName(p.name) === normalizePantryName(name)
-      );
-      if (existing) {
-        return prev.map((p) =>
-          p.id === existing.id ? { ...p, inStock: false } : p
-        );
-      }
-      const classified = classifyPantryItemLocal(name);
-      if (!classified?.name) return prev;
-      return [{ ...classified, inStock: false }, ...prev];
-    });
-  }, [setPantryItems]);
-
-  const clearPantry = useCallback(() => {
-    setPantryItems([]);
-  }, [setPantryItems]);
-
-  /**
-   * Append ingredient names to the Shopping List.
-   * The list is derived from out-of-stock pantry items, so each name is either
-   * marked out-of-stock (existing staple) or added as a new out-of-stock item.
-   * Names already on the list are skipped. Returns how many were added.
-   */
-  const addToShoppingList = useCallback(
-    (names = []) => {
-      const clean = [
-        ...new Set(
-          (Array.isArray(names) ? names : [])
-            .map((n) => String(n || "").trim())
-            .filter(Boolean)
-        ),
-      ];
-      if (clean.length === 0) return 0;
-
-      // Plan changes against current state so the count is reliable —
-      // setState updaters may run deferred, so counting inside one is unsafe.
-      const markOutOfStock = [];
-      const newItems = [];
-      for (const name of clean) {
-        const existing = pantryItems.find(
-          (p) => normalizePantryName(p.name) === normalizePantryName(name)
-        );
-        if (existing) {
-          // Already out of stock → already on the list, skip
-          if (existing.inStock) markOutOfStock.push(existing.id);
-        } else {
-          const item = classifyPantryItemLocal(name);
-          if (item?.name) newItems.push({ ...item, inStock: false });
-        }
-      }
-
-      if (markOutOfStock.length > 0 || newItems.length > 0) {
-        setPantryItems((prev) => [
-          ...newItems,
-          ...prev.map((p) =>
-            markOutOfStock.includes(p.id) ? { ...p, inStock: false } : p
-          ),
-        ]);
-      }
-      return markOutOfStock.length + newItems.length;
-    },
-    [pantryItems, setPantryItems]
-  );
-
-  const mergePantryScanResults = useCallback((detected = []) => {
-    if (!Array.isArray(detected) || detected.length === 0) return 0;
-    setPantryItems((prev) => {
-      const next = [...prev];
-      for (const item of detected) {
-        if (!item?.name) continue;
-        const idx = next.findIndex(
-          (p) => normalizePantryName(p.name) === normalizePantryName(item.name)
-        );
-        if (idx >= 0) {
-          // Also refresh the icon from this fresh detection — same
-          // reasoning as the fridge scan's Smart Append: a rescan
-          // re-photographs the same item, so its new icon self-heals
-          // anything stored with a worse icon from an earlier scan.
-          const freshIcon =
-            (typeof item.icon === "string" && item.icon.trim()) ||
-            (typeof item.emoji === "string" && item.emoji.trim());
-          next[idx] = {
-            ...next[idx],
-            inStock: true,
-            ...(freshIcon ? { icon: freshIcon, emoji: freshIcon } : null),
-          };
-        } else {
-          next.unshift({ ...item, inStock: true });
-        }
-      }
-      return next;
-    });
-    return detected.length;
-  }, [setPantryItems]);
-
   /**
    * Fire-and-forget, mirroring completeScan's fridge counterpart above:
    * kicks off the real Vision analysis immediately and returns, without
@@ -1243,9 +916,7 @@ function LegacyProvider({ children }) {
         recipeLanguageName
       );
       const updated = { ...recipe, ...result, id: recipe.id };
-      setSavedRecipes((prev) =>
-        prev.map((r) => (String(r.id) === String(recipe.id) ? updated : r))
-      );
+      replaceSavedRecipe(updated);
       setGeneratedRecipes((prev) =>
         Array.isArray(prev)
           ? prev.map((r) => (String(r.id) === String(recipe.id) ? updated : r))
@@ -1253,7 +924,7 @@ function LegacyProvider({ children }) {
       );
       return updated;
     },
-    [dietaryRestrictionsWithCustom, unitSystem, recipeLanguageName, setSavedRecipes]
+    [dietaryRestrictionsWithCustom, unitSystem, recipeLanguageName, replaceSavedRecipe]
   );
 
   /**
@@ -1281,16 +952,14 @@ function LegacyProvider({ children }) {
           recipeLanguageName
         );
         const updated = { ...recipe, ...translated, id: recipe.id, languageId: recipeLanguageId };
-        setSavedRecipes((prev) =>
-          prev.map((r) => (String(r.id) === String(recipe.id) ? updated : r))
-        );
+        replaceSavedRecipe(updated);
         return updated;
       } catch (err) {
         log.warn("[Cook AI] Recipe auto-translate failed:", err?.message);
         return recipe;
       }
     },
-    [recipeLanguageId, recipeLanguageName, dietaryRestrictionsWithCustom, unitSystem, setSavedRecipes]
+    [recipeLanguageId, recipeLanguageName, dietaryRestrictionsWithCustom, unitSystem, replaceSavedRecipe]
   );
 
   // Proactively translates every stale-language recipe when the language
@@ -1594,7 +1263,11 @@ export function CookAIProvider({ children }) {
         <LanguageProvider>
           <EntitlementsProvider>
             <PreferencesProvider>
-              <LegacyProvider>{children}</LegacyProvider>
+              <LibraryProvider>
+                <InventoryProvider>
+                  <LegacyProvider>{children}</LegacyProvider>
+                </InventoryProvider>
+              </LibraryProvider>
             </PreferencesProvider>
           </EntitlementsProvider>
         </LanguageProvider>
