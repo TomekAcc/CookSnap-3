@@ -10,6 +10,14 @@ import { translate } from "../i18n";
 import { LANGUAGE_OPTIONS } from "../data/languageOptions";
 import { matchesStapleCategory } from "../utils/assumedStaples";
 import { log } from "../utils/log";
+import {
+  EDITOR_MODEL,
+  RECIPE_MODELS,
+  buildGenerationConfig,
+  generateContent,
+  parseModelJson,
+  resolveApiKey,
+} from "./geminiClient";
 
 /**
  * The offline/local-template fallback (buildSmartFallbackRecipes) has no
@@ -1027,8 +1035,8 @@ function enforceExactlyFive(recipes, mealType, servings = 2, count = RECIPES_PER
 }
 
 // generateRecipesWithGemini tries up to 2 candidate models in sequence on
-// failure (buildCandidateUrls), each now retried once in place on a
-// failure (see the retry right below this in the candidateUrls loop) — so
+// failure (RECIPE_MODELS), each now retried once in place on a
+// failure (see the retry right below this in the model loop) — so
 // the real worst-case wait before falling back to the local heuristic is
 // up to 4x this value, not 2x. 45s here once meant up to 90s of a caller's
 // loading spinner with no feedback, which read as a frozen screen rather
@@ -1856,39 +1864,6 @@ function normalizeRecipe(recipe, idx, mealType, servings = 2, language = "Englis
   };
 }
 
-async function fetchWithTimeout(url, options, timeoutMs) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, { ...options, signal: controller.signal });
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-/**
- * Short, currently-verified candidate list — trimmed via
- * `node scripts/check-gemini-models.js`, which confirmed gemini-2.0-flash,
- * gemini-2.0-flash-lite, and gemini-2.5-flash-lite are all permanently
- * deprecated (HTTP 404 "no longer available"), not transient. A dead entry
- * here is pure wasted latency on every request that falls through to it —
- * see .claude/rules/ai-integration.md.
- */
-function buildCandidateUrls(apiKey) {
-  const models = ["gemini-flash-lite-latest", "gemini-flash-latest"];
-  return models.map(
-    (model) =>
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
-  );
-}
-
-// thinkingConfig is only valid on models that actually support extended
-// thinking — sending it to gemini-flash-lite-latest is a hard HTTP 400
-// ("Request contains an invalid argument"), confirmed live (same as the
-// fridge/pantry scanner in geminiVision.js). gemini-flash-lite-latest is
-// deliberately absent from this set for that reason.
-const THINKING_CAPABLE_RECIPE_MODELS = new Set(["gemini-flash-latest"]);
-
 /**
  * RECIPE QA PASS (generate -> verify -> repair) — a second, much narrower
  * model call that reads the freshly generated batch the way an editor
@@ -1909,10 +1884,9 @@ const THINKING_CAPABLE_RECIPE_MODELS = new Set(["gemini-flash-latest"]);
  * EXPO_PUBLIC_RECIPE_QA=0 turns the whole pass off.
  */
 const RECIPE_QA_ENABLED = process.env.EXPO_PUBLIC_RECIPE_QA !== "0";
-// gemini-flash-latest (thinking off) measured far better than flash-lite
-// as an editor on the same recipes: ~7% vs ~24% of recipes still carrying
-// an issue, at a median ~3.6 s vs ~1.5 s.
-const RECIPE_QA_MODEL = "gemini-flash-latest";
+// EDITOR_MODEL (gemini-flash-latest, thinking off) measured far better than
+// flash-lite as an editor on the same recipes: ~7% vs ~24% of recipes still
+// carrying an issue, at a median ~3.6 s vs ~1.5 s.
 const RECIPE_QA_TIMEOUT_MS = 12000;
 const RECIPE_QA_MAX_REJECTS = 2;
 
@@ -1955,7 +1929,7 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
     unitSystem = "us",
     inventoryText = "",
     dietText = "",
-    model = RECIPE_QA_MODEL,
+    model = EDITOR_MODEL,
     thinkingBudget = 0,
     maxRejects = RECIPE_QA_MAX_REJECTS,
   } = options;
@@ -1970,16 +1944,12 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
   }));
 
   try {
-    const generationConfig = { temperature: 0, responseMimeType: "application/json" };
-    if (THINKING_CAPABLE_RECIPE_MODELS.has(model)) {
-      generationConfig.thinkingConfig = { thinkingBudget };
-    }
-    const sendQa = () => fetchWithTimeout(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        body: JSON.stringify({
+    const sendQa = () =>
+      generateContent({
+        apiKey,
+        model,
+        timeoutMs: RECIPE_QA_TIMEOUT_MS,
+        body: {
           systemInstruction: { parts: [{ text: RECIPE_QA_SYSTEM_PROMPT }] },
           contents: [
             {
@@ -1990,23 +1960,18 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
               ],
             },
           ],
-          generationConfig,
-        }),
-      },
-      RECIPE_QA_TIMEOUT_MS
-    );
-    let response = await sendQa();
+          generationConfig: buildGenerationConfig(model, { temperature: 0 }, thinkingBudget),
+        },
+      });
+    let reply = await sendQa();
     // Google answers 503/429 under load now and then (seen live: a 0.2 s 503
     // silently skipped the whole editor pass). One short retry is cheap.
-    if (response.status === 503 || response.status === 429) {
+    if (reply.status === 503 || reply.status === 429) {
       await new Promise((resolve) => setTimeout(resolve, 600));
-      response = await sendQa();
+      reply = await sendQa();
     }
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    text = text.replace(/```json/gi, "").replace(/```/g, "").trim();
-    const verdicts = JSON.parse(text);
+    if (!reply.ok) throw new Error(`HTTP ${reply.status}`);
+    const verdicts = parseModelJson(reply.text);
     if (!Array.isArray(verdicts)) throw new Error("not an array");
 
     let fixed = 0;
@@ -2420,14 +2385,7 @@ export async function generateRecipesWithGemini(
   // fixed English tokens regardless (see LANGUAGE block in buildPrompt).
   language = "English"
 ) {
-  const apiKey = (
-    userApiKey ||
-    process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
-    process.env.GEMINI_API_KEY ||
-    ""
-  )
-    .trim()
-    .replace(/['"]/g, "");
+  const apiKey = resolveApiKey(userApiKey);
 
   if (!apiKey) {
     throw new GeminiRecipeError("Missing API key.");
@@ -2506,14 +2464,11 @@ export async function generateRecipesWithGemini(
   // One raw fetch + JSON parse against a specific model URL for a specific
   // recipe count/exclude list — shared by the main attempt and the top-up
   // retry below so both go through byte-identical request handling.
-  async function fetchRawRecipes(url, count, excludeForCall, usedDishTypesForCall = []) {
-    const modelName = url.split("models/")[1]?.split(":")[0];
-    const generationConfig = {
-      temperature: 0.2,
-      responseMimeType: "application/json",
-    };
-    if (THINKING_CAPABLE_RECIPE_MODELS.has(modelName)) {
-      // Confirmed real failure, not a hypothetical: gemini-flash-latest
+  async function fetchRawRecipes(modelName, count, excludeForCall, usedDishTypesForCall = []) {
+    // buildGenerationConfig turns the "thinking" pass off for models that
+    // support it, and only for them.
+    //
+    // Confirmed real failure, not a hypothetical: gemini-flash-latest
       // spends an unrequested "thinking" pass on a plain recipe-generation
       // call (usageMetadata.thoughtsTokenCount ~558 on an unmodified call,
       // ~8.2s), the exact same class of bug already fixed for the fridge
@@ -2521,39 +2476,27 @@ export async function generateRecipesWithGemini(
       // no observed quality change. gemini-flash-lite-latest does NOT
       // support this field at all — sending it is a hard HTTP 400,
       // confirmed live — which is why this is gated per-model rather than
-      // added to generationConfig unconditionally.
-      generationConfig.thinkingConfig = { thinkingBudget: 0 };
-    }
-    const response = await fetchWithTimeout(
-      url,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
+    // added to generationConfig unconditionally.
+    const result = await generateContent({
+      apiKey,
+      model: modelName,
+      timeoutMs: REQUEST_TIMEOUT_MS,
+      body: {
+        systemInstruction: {
+          parts: [{ text: GEMINI_RECIPE_SYSTEM_PROMPT.trim() }],
         },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: GEMINI_RECIPE_SYSTEM_PROMPT.trim() }],
-          },
-          contents: [{ parts: [{ text: buildPromptTextFor(count, excludeForCall, usedDishTypesForCall) }] }],
-          generationConfig,
-        }),
+        contents: [{ parts: [{ text: buildPromptTextFor(count, excludeForCall, usedDishTypesForCall) }] }],
+        generationConfig: buildGenerationConfig(modelName, { temperature: 0.2 }),
       },
-      REQUEST_TIMEOUT_MS
-    );
+    });
 
-    if (!response.ok) {
-      const errText = await response.text().catch(() => "");
-      throw new GeminiRecipeError(`API Error ${response.status}: ${errText}`);
+    if (!result.ok) {
+      throw new GeminiRecipeError(`API Error ${result.status}: ${result.errorText}`);
     }
 
-    const data = await response.json();
-    let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
-    rawText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
     let parsed;
     try {
-      parsed = JSON.parse(rawText);
+      parsed = parseModelJson(result.text || "[]");
     } catch {
       throw new GeminiRecipeError("Failed to process the AI response.");
     }
@@ -2688,15 +2631,11 @@ export async function generateRecipesWithGemini(
     return normalized;
   }
 
-  const candidateUrls = buildCandidateUrls(apiKey);
   let lastError = null;
 
-  for (const url of candidateUrls) {
-    const modelName = url.match(/models\/(.*?):/)?.[1] || "unknown-model";
-    const apiVersion = url.includes("/v1beta/") ? "v1beta" : "v1";
-
+  for (const modelName of RECIPE_MODELS) {
     try {
-      log.debug(`[Cook AI] Generating recipes: ${apiVersion} -> ${modelName}`);
+      log.debug(`[Cook AI] Generating recipes with ${modelName}`);
       // Ask for one spare recipe up front. Measured live: the most common
       // reason a batch ran short was a single recipe dropped by the safety
       // filters (usually a repeated dishType), and each top-up round to
@@ -2706,7 +2645,7 @@ export async function generateRecipesWithGemini(
       const mainRequestCount = recipeCount + 1;
       let rawRecipes;
       try {
-        rawRecipes = await fetchRawRecipes(url, mainRequestCount, excludeTitles);
+        rawRecipes = await fetchRawRecipes(modelName, mainRequestCount, excludeTitles);
       } catch (firstErr) {
         // One immediate retry of the SAME model before moving on — confirmed
         // real failure on an actual device, not a hypothetical: a user's own
@@ -2723,7 +2662,7 @@ export async function generateRecipesWithGemini(
         log.warn(
           `[Cook AI] ${modelName} failed once (${firstErr?.message}) — retrying the same model once before moving on.`
         );
-        rawRecipes = await fetchRawRecipes(url, mainRequestCount, excludeTitles);
+        rawRecipes = await fetchRawRecipes(modelName, mainRequestCount, excludeTitles);
       }
 
       if (Array.isArray(rawRecipes) && rawRecipes.length > 0) {
@@ -2801,7 +2740,7 @@ export async function generateRecipesWithGemini(
             // merge loop below multiple chances to find one that clears
             // both filters, without any extra round-trip.
             const requestCount = Math.min(shortfall + 2, recipeCount);
-            const retryRaw = await fetchRawRecipes(url, requestCount, retryExclude, usedDishTypesSoFar);
+            const retryRaw = await fetchRawRecipes(modelName, requestCount, retryExclude, usedDishTypesSoFar);
             const retryTitlesThisAttempt = retryRaw
               .map((r, i) => normalizeRecipe(r, i, mealType, servings, language).title)
               .filter(Boolean);
@@ -2868,7 +2807,7 @@ export async function generateRecipesWithGemini(
         // as if it were a normal, if small, result.
         if (finalBatch.length > 0) {
           log.debug(
-            `[Cook AI] Generated ${finalBatch.length} recipes using ${modelName} (${apiVersion})`
+            `[Cook AI] Generated ${finalBatch.length} recipes using ${modelName}`
           );
           return finalBatch;
         }
@@ -2919,14 +2858,7 @@ export async function modifyRecipeWithGemini(
   unitSystem = "us",
   language = "English"
 ) {
-  const apiKey = (
-    userApiKey ||
-    process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
-    process.env.GEMINI_API_KEY ||
-    ""
-  )
-    .trim()
-    .replace(/['"]/g, "");
+  const apiKey = resolveApiKey(userApiKey);
 
   if (!apiKey) {
     throw new GeminiRecipeError(
@@ -2983,48 +2915,29 @@ Return ONLY a single raw JSON object (not an array) with these exact keys:
 - "steps": array of 3 to 5 English imperative strings per the step-count rule above, each ending with a period
 `.trim();
 
-  const candidateUrls = buildCandidateUrls(apiKey);
   let lastError = null;
 
-  for (const url of candidateUrls) {
-    const modelName = url.match(/models\/(.*?):/)?.[1] || "unknown-model";
+  for (const modelName of RECIPE_MODELS) {
     try {
       log.debug(`[Cook AI] Modifying recipe via ${modelName}: "${cleanInstruction}"`);
-      const generationConfig = {
-        temperature: 0.3,
-        responseMimeType: "application/json",
-      };
-      if (THINKING_CAPABLE_RECIPE_MODELS.has(modelName)) {
-        generationConfig.thinkingConfig = { thinkingBudget: 0 };
-      }
-      const response = await fetchWithTimeout(
-        url,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": apiKey,
-          },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: promptText }] }],
-            generationConfig,
-          }),
+      const response = await generateContent({
+        apiKey,
+        model: modelName,
+        timeoutMs: REQUEST_TIMEOUT_MS,
+        body: {
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: buildGenerationConfig(modelName, { temperature: 0.3 }),
         },
-        REQUEST_TIMEOUT_MS
-      );
+      });
 
       if (!response.ok) {
         lastError = new GeminiRecipeError(`API Error ${response.status}`);
         continue;
       }
 
-      const data = await response.json();
-      let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-      rawText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
-
       let result;
       try {
-        result = JSON.parse(rawText);
+        result = parseModelJson(response.text || "{}");
       } catch {
         lastError = new GeminiRecipeError("Failed to process the AI response.");
         continue;

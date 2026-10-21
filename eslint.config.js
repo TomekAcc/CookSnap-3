@@ -9,14 +9,14 @@ module.exports = [
     rules: { "no-console": "error" },
   },
   {
-    files: ["__tests__/**/*.js"],
+    files: ["__tests__/**/*.js", "live/**/*.js"],
     languageOptions: {
       globals: { describe: "readonly", it: "readonly", test: "readonly", expect: "readonly", jest: "readonly", beforeEach: "readonly", afterEach: "readonly" },
     },
   },
   {
     // Node-side scripts and config files (CommonJS, not bundled into the app).
-    files: ["scripts/**/*.js", "*.config.js"],
-    languageOptions: { globals: { __dirname: "readonly", process: "readonly" } },
+    files: ["scripts/**/*.js", "*.config.js", "live/*.js"],
+    languageOptions: { globals: { __dirname: "readonly", process: "readonly", module: "writable", global: "writable" } },
   },
 ];

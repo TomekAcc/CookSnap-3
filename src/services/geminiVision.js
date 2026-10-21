@@ -2,32 +2,25 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { getIngredientStyle } from "../utils/imageUtils";
 import { getIngredientEmoji } from "../utils/ingredientEmoji";
 import { log } from "../utils/log";
+import {
+  VISION_MODELS,
+  EDITOR_MODEL,
+  buildGenerationConfig,
+  generateContent,
+  parseModelJson,
+  resolveApiKey,
+} from "./geminiClient";
 
-// Per-request timeout so one hung candidate model can't stall the whole
+// Per-request deadline so one hung candidate model can't stall the whole
 // scan — a bare fetch() has no built-in timeout and will otherwise wait on
 // the OS-level default (can be 60s+), multiplied by every candidate tried.
 const REQUEST_TIMEOUT_MS = 10000;
-
-function fetchWithTimeout(url, options) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-  return fetch(url, { ...options, signal: controller.signal }).finally(() =>
-    clearTimeout(timer)
-  );
-}
 
 // expo-image-manipulator has no built-in timeout either — on some devices
 // it can stall on a large/odd-format capture and never resolve or reject,
 // which would hang the whole scan before it even reaches the network call
 // (and before REQUEST_TIMEOUT_MS above ever gets a chance to matter).
 const COMPRESS_TIMEOUT_MS = 12000;
-
-// thinkingConfig is only valid on models that actually support extended
-// thinking — sending it to gemini-flash-lite-latest is a hard HTTP 400
-// ("Request contains an invalid argument"), confirmed live. Shared between
-// analyzeFridgeImage and analyzePantryImage so both build their per-model
-// request bodies from the same source of truth.
-const THINKING_CAPABLE_MODELS = new Set(["gemini-3.7-flash"]);
 
 function withTimeout(promise, ms, label) {
   return Promise.race([
@@ -193,14 +186,7 @@ export async function analyzeFridgeImage(
   // is an emoji so it's language-agnostic either way.
   language = "English"
 ) {
-  const apiKey = (
-    providedApiKey ||
-    process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
-    process.env.GEMINI_API_KEY ||
-    ""
-  )
-    .trim()
-    .replace(/['"]/g, "");
+  const apiKey = resolveApiKey(providedApiKey);
 
   if (!apiKey) {
     log.error("[Cook AI Vision] CRITICAL: Missing Gemini API Key!");
@@ -271,28 +257,22 @@ Return ONLY a JSON array of {"name","icon"} objects.
 
   // Building the request body per-candidate (rather than once, shared)
   // keeps thinkingConfig model-specific instead of poisoning the fallback
-  // request — see THINKING_CAPABLE_MODELS above.
+  // request — buildGenerationConfig only adds it for models that accept it.
   function buildPayloadFor(model) {
-    const generationConfig = {
-      // Strictly deterministic (zero variation for identical inputs)
-      temperature: 0.0,
-      topP: 1.0,
-      responseMimeType: "application/json",
-    };
-    if (THINKING_CAPABLE_MODELS.has(model)) {
-      // Confirmed real failure, not a hypothetical: gemini-3.7-flash spends
-      // an unrequested "thinking" pass before answering this vision prompt
-      // (usageMetadata.thoughtsTokenCount ~975 on an unmodified call) —
-      // measured live at 6.8-10.4s per scan, well past the fixed 3.2s
-      // choreography bar, which is exactly the "freezes at 92%" a user
-      // reported. thinkingBudget: 0 turns that off; live A/B against the
-      // same real fridge photo (4 runs) held item count at 13-15 with the
-      // same core ingredients each time, while cutting latency to
-      // 1.3-2.2s — the detection quality gemini-3.7-flash was chosen for,
-      // without paying for reasoning a single structured JSON list never
-      // needed.
-      generationConfig.thinkingConfig = { thinkingBudget: 0 };
-    }
+    // Strictly deterministic (zero variation for identical inputs).
+    //
+    // Confirmed real failure, not a hypothetical: gemini-3.7-flash spends
+    // an unrequested "thinking" pass before answering this vision prompt
+    // (usageMetadata.thoughtsTokenCount ~975 on an unmodified call) —
+    // measured live at 6.8-10.4s per scan, well past the fixed 3.2s
+    // choreography bar, which is exactly the "freezes at 92%" a user
+    // reported. thinkingBudget: 0 turns that off; live A/B against the
+    // same real fridge photo (4 runs) held item count at 13-15 with the
+    // same core ingredients each time, while cutting latency to
+    // 1.3-2.2s — the detection quality gemini-3.7-flash was chosen for,
+    // without paying for reasoning a single structured JSON list never
+    // needed.
+    const generationConfig = buildGenerationConfig(model, { temperature: 0.0, topP: 1.0 });
     return {
       systemInstruction: {
         parts: [{ text: systemPromptForRequest }],
@@ -306,58 +286,45 @@ Return ONLY a JSON array of {"name","icon"} objects.
     };
   }
 
-  // Short, verified-working list only. Each failed/rate-limited candidate
-  // Just the best model plus one fast fallback — every extra candidate in
-  // the chain is pure downside for speed (another full timeout window
-  // before falling through), so keep this as short as resilience allows.
-  const candidateModels = [
-    "gemini-3.7-flash",
-    "gemini-flash-lite-latest",
-  ];
-
-  const candidateUrls = candidateModels.map(
-    (model) =>
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`
-  );
-
+  // VISION_MODELS is deliberately short (the best model plus one fast
+  // fallback): every extra candidate is pure downside for speed, another full
+  // timeout window before falling through.
   let lastError = null;
 
-  for (const url of candidateUrls) {
-    const modelName = url.split("models/")[1].split(":")[0];
+  for (const modelName of VISION_MODELS) {
     try {
       log.debug(
         `[Cook AI Vision] Requesting deterministic ${multi ? "multi-photo" : "5-zone"} deep scan (${base64Array.length} image(s)) from ${modelName}...`
       );
 
-      const response = await fetchWithTimeout(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildPayloadFor(modelName)),
+      const result = await generateContent({
+        apiKey,
+        model: modelName,
+        body: buildPayloadFor(modelName),
+        timeoutMs: REQUEST_TIMEOUT_MS,
       });
 
       // On rate-limit, move straight to the next candidate model instead of
       // waiting out this one's cooldown (previously up to 35s) — with a
       // short, bounded candidate list, a fresh model is faster than waiting.
-      if (response.status === 429) {
+      if (result.status === 429) {
         log.warn(`[Cook AI Vision] ${modelName} rate-limited (429), trying next model...`);
         lastError = new Error(`Gemini API Error 429: rate limited`);
         continue;
       }
 
-      if (!response.ok) {
-        const errText = await response.text();
+      if (!result.ok) {
         log.warn(
-          `[Cook AI Vision] Endpoint ${modelName} returned status ${response.status}:`,
-          errText.slice(0, 280)
+          `[Cook AI Vision] Endpoint ${modelName} returned status ${result.status}:`,
+          result.errorText.slice(0, 280)
         );
         lastError = new Error(
-          `Gemini API Error ${response.status}: ${errText.slice(0, 200)}`
+          `Gemini API Error ${result.status}: ${result.errorText.slice(0, 200)}`
         );
         continue;
       }
 
-      const data = await response.json();
-      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const rawText = result.text;
 
       log.debug(`[Cook AI Vision] Raw response from ${modelName}:`, rawText);
 
@@ -440,19 +407,6 @@ export function getFallbackFridgeItems() {
 
 // --- Pantry helpers (used by CookAIContext) ---
 
-const CANDIDATE_MODELS = ["gemini-3.7-flash", "gemini-flash-lite-latest"];
-
-function resolveApiKey(providedApiKey = "") {
-  return (
-    providedApiKey ||
-    process.env.EXPO_PUBLIC_GEMINI_API_KEY ||
-    process.env.GEMINI_API_KEY ||
-    ""
-  )
-    .trim()
-    .replace(/['"]/g, "");
-}
-
 /**
  * Batch-translates a list of ingredient/pantry item names into `language`
  * in one request — used when the user switches the app language, so
@@ -478,28 +432,21 @@ ${JSON.stringify(
     items.map((i) => ({ name: i?.name || "", icon: i?.icon || i?.emoji || "" }))
   )}`;
 
-  const candidateUrls = CANDIDATE_MODELS.map(
-    (model) =>
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`
-  );
-
-  for (const url of candidateUrls) {
+  for (const model of VISION_MODELS) {
     try {
-      const response = await fetchWithTimeout(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const result = await generateContent({
+        apiKey,
+        model,
+        body: {
           contents: [{ parts: [{ text: promptText }] }],
           generationConfig: { temperature: 0.1, responseMimeType: "application/json" },
-        }),
+        },
+        timeoutMs: REQUEST_TIMEOUT_MS,
       });
-      if (!response.ok) continue;
-      const data = await response.json();
-      let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
-      raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
+      if (!result.ok) continue;
       let translated;
       try {
-        translated = JSON.parse(raw);
+        translated = parseModelJson(result.text || "[]");
       } catch {
         continue;
       }
@@ -724,44 +671,33 @@ export async function classifyPantryItemWithGemini(name, providedApiKey = "") {
   const apiKey = resolveApiKey(providedApiKey);
   if (!apiKey) return base;
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), PANTRY_CLASSIFY_TIMEOUT_MS);
   try {
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        signal: controller.signal,
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `A user typed this food or cooking item into their pantry list (any language): ${JSON.stringify(local.name)}.
+    const result = await generateContent({
+      apiKey,
+      model: EDITOR_MODEL,
+      timeoutMs: PANTRY_CLASSIFY_TIMEOUT_MS,
+      body: {
+        contents: [
+          {
+            parts: [
+              {
+                text: `A user typed this food or cooking item into their pantry list (any language): ${JSON.stringify(local.name)}.
 Pick the best "category" — EXACTLY one of: "Spices & Herbs" (spices, dried or fresh herbs, salt, pepper, seasoning blends), "Oils & Sauces" (oils, vinegars, butter, ghee, liquid sauces, stock, wine for cooking), "Grains & Baking" (flour, rice, pasta, noodles, oats, cereal, sugar, baking powder, yeast, starches), "Condiments & Jars" (everything else: canned and jarred goods, spreads, honey, jam, pickles, nuts, seeds, tea, coffee, snacks).
 Also give the single most specific food "icon" emoji for it (never a generic jar or box if a specific food emoji exists).
 Return ONLY JSON: {"category":"...","icon":"..."}`,
-                },
-              ],
-            },
-          ],
-          // No "thinking" pass (would add seconds to a one-word lookup); the
-          // small flash-lite model picked poor emoji (lettuce for balsamic
-          // vinegar), flash-latest does not.
-          generationConfig: {
-            temperature: 0,
-            responseMimeType: "application/json",
-            thinkingConfig: { thinkingBudget: 0 },
+              },
+            ],
           },
-        }),
-      }
-    );
-    if (!response.ok) return base;
-    const data = await response.json();
-    let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
-    const parsed = JSON.parse(raw);
+        ],
+        // No "thinking" pass (would add seconds to a one-word lookup; the
+        // client turns it off for this model). The small flash-lite model
+        // picked poor emoji (lettuce for balsamic vinegar), flash-latest does
+        // not.
+        generationConfig: buildGenerationConfig(EDITOR_MODEL, { temperature: 0 }),
+      },
+    });
+    if (!result.ok) return base;
+    const parsed = parseModelJson(result.text);
     const category = normalizePantryCategory(parsed?.category);
     const icon = typeof parsed?.icon === "string" ? parsed.icon.trim() : "";
     // A real emoji is short; anything long is the model talking, not an icon.
@@ -775,8 +711,6 @@ Return ONLY JSON: {"category":"...","icon":"..."}`,
   } catch (err) {
     log.warn("[Cook AI] Pantry item classification skipped:", err?.message);
     return base;
-  } finally {
-    clearTimeout(timer);
   }
 }
 
@@ -841,18 +775,11 @@ export async function analyzePantryImage(
     ? PANTRY_ANALYSIS_PROMPT
     : `${PANTRY_ANALYSIS_PROMPT}\n\nLANGUAGE (MANDATORY): write every "name" value in ${language}, not English — the real ${language} word for the item, not a transliteration. "category" stays one of the four fixed English tokens regardless, and "role" stays English too — neither is shown to the user.`;
 
-  // Same per-model split as analyzeFridgeImage above: thinkingConfig is a
-  // hard HTTP 400 on gemini-flash-lite-latest, confirmed live, so it can
-  // only go on the request body for models that actually support it.
+  // Same per-model split as analyzeFridgeImage above: buildGenerationConfig
+  // only adds thinkingConfig for models that accept it (it is a hard HTTP 400
+  // on gemini-flash-lite-latest, confirmed live).
   function buildPantryPayloadFor(model) {
-    const generationConfig = {
-      temperature: 0.0,
-      topP: 1.0,
-      responseMimeType: "application/json",
-    };
-    if (THINKING_CAPABLE_MODELS.has(model)) {
-      generationConfig.thinkingConfig = { thinkingBudget: 0 };
-    }
+    const generationConfig = buildGenerationConfig(model, { temperature: 0.0, topP: 1.0 });
     return {
       contents: [
         {
@@ -871,37 +798,27 @@ export async function analyzePantryImage(
     };
   }
 
-  const candidateUrls = CANDIDATE_MODELS.map(
-    (model) =>
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`
-  );
-
-  for (const url of candidateUrls) {
-    const endpointName = url.match(/models\/(.*?):/)?.[1] || "unknown-model";
+  for (const endpointName of VISION_MODELS) {
     try {
       log.debug(`[Cook AI Vision] Pantry attempt: ${endpointName}`);
-      const response = await fetchWithTimeout(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(buildPantryPayloadFor(endpointName)),
+      const result = await generateContent({
+        apiKey,
+        model: endpointName,
+        body: buildPantryPayloadFor(endpointName),
+        timeoutMs: REQUEST_TIMEOUT_MS,
       });
 
-      if (!response.ok) {
-        const errText = await response.text().catch(() => "");
+      if (!result.ok) {
         log.warn(
-          `[Cook AI Vision] Pantry ${endpointName} failed (${response.status}):`,
-          errText.slice(0, 280)
+          `[Cook AI Vision] Pantry ${endpointName} failed (${result.status}):`,
+          result.errorText.slice(0, 280)
         );
         continue;
       }
 
-      const data = await response.json();
-      let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "[]";
-      rawText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
-
       let items;
       try {
-        items = JSON.parse(rawText);
+        items = parseModelJson(result.text || "[]");
       } catch {
         continue;
       }

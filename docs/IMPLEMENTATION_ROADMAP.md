@@ -118,8 +118,7 @@ catches crash-level bugs, checks 4-tab navigation).
 
 **Steps:**
 1. Write a small standalone script (`scripts/check-gemini-models.js`) that
-   takes the current candidate model lists from `geminiVision.js` and
-   `geminiRecipes.js` and does one `generateContent` call per model with a
+   takes the current candidate model lists from `geminiClient.js` and does one `generateContent` call per model with a
    trivial prompt, printing pass/fail per model — this turns "manually curl
    each model when something breaks" (done ad hoc multiple times already)
    into a one-command check.

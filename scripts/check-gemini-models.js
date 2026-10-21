@@ -3,8 +3,8 @@
  * Gemini model resilience check — see .claude/rules/ai-integration.md and
  * .claude/skills/ai-prompt-tuning/SKILL.md.
  *
- * Tests every model currently listed as a candidate in geminiVision.js and
- * geminiRecipes.js with one trivial generateContent call each, and reports
+ * Tests every model listed in src/services/geminiClient.js (VISION_MODELS,
+ * RECIPE_MODELS, EDITOR_MODEL) with one trivial generateContent call each, and reports
  * pass/fail per model. The candidate lists are extracted directly from the
  * source files (not hand-copied here), so this check can never silently
  * drift out of sync with what the app actually calls.
@@ -22,12 +22,18 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 
 function loadApiKey() {
-  const envText = fs.readFileSync(path.join(ROOT, ".env"), "utf8");
-  const match = envText.match(/EXPO_PUBLIC_GEMINI_API_KEY=(.+)/);
-  return (match ? match[1] : "").trim();
+  // The shell environment (CI / cloud sessions) wins over a local .env file.
+  if (process.env.EXPO_PUBLIC_GEMINI_API_KEY) return process.env.EXPO_PUBLIC_GEMINI_API_KEY.trim();
+  try {
+    const envText = fs.readFileSync(path.join(ROOT, ".env"), "utf8");
+    const match = envText.match(/EXPO_PUBLIC_GEMINI_API_KEY=(.+)/);
+    return (match ? match[1] : "").trim().replace(/['"]/g, "");
+  } catch {
+    return "";
+  }
 }
 
-/** Pull every `["gemini-...", ...]`-shaped array out of a source file. */
+/** Pull every `["gemini-...", ...]`-shaped array (and single `X_MODEL = "gemini-..."`) out of a source file. */
 function extractModelArrays(filePath) {
   const src = fs.readFileSync(filePath, "utf8");
   const results = [];
@@ -40,15 +46,18 @@ function extractModelArrays(filePath) {
       results.push({ file: path.basename(filePath), varName, models });
     }
   }
+  for (const m of src.matchAll(/(?:const|let)\s+(\w+_MODEL)\s*=\s*"(gemini[a-zA-Z0-9.\-]*)"/g)) {
+    results.push({ file: path.basename(filePath), varName: m[1], models: [m[2]] });
+  }
   return results;
 }
 
 async function checkModel(model, apiKey, retriedOn503 = false) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
   try {
     const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({ contents: [{ parts: [{ text: "say hi" }] }] }),
     });
     if (res.ok) return { model, ok: true, status: res.status };
@@ -72,10 +81,7 @@ async function main() {
     process.exit(1);
   }
 
-  const sources = [
-    path.join(ROOT, "src/services/geminiVision.js"),
-    path.join(ROOT, "src/services/geminiRecipes.js"),
-  ];
+  const sources = [path.join(ROOT, "src/services/geminiClient.js")];
   const arrays = sources.flatMap(extractModelArrays);
 
   if (arrays.length === 0) {
@@ -83,8 +89,7 @@ async function main() {
     process.exit(1);
   }
 
-  // De-dupe models shared across lists (fridge/pantry both use the same
-  // vision candidates) so each is only checked once.
+  // De-dupe models shared across lists so each is only checked once.
   const modelToSources = new Map();
   for (const { file, varName, models } of arrays) {
     for (const model of models) {
@@ -115,7 +120,7 @@ async function main() {
     console.log(`${failed.length} of ${results.length} candidate model(s) failed:`);
     failed.forEach((r) => console.log(`  - ${r.model}`));
     console.log(
-      "\nIf any of these are genuinely deprecated (not just transient), remove them from the candidate list in the relevant service file — a dead entry in the list is pure wasted latency on every request that falls through to it."
+      "\nIf any of these are genuinely deprecated (not just transient), remove them from the lists in src/services/geminiClient.js — a dead entry in the list is pure wasted latency on every request that falls through to it."
     );
   }
 

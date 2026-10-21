@@ -371,14 +371,29 @@ touched (gesture handling, `BlurView`) are the ones most likely to diverge.
 
 ## AI Integration (Gemini)
 
+### One client for every request (`src/services/geminiClient.js`)
+- Nothing outside `geminiClient.js` may call `fetch` against Gemini, build a
+  Gemini URL, read the API key, or hold a model name. Use `generateContent`
+  (endpoint, `x-goog-api-key` header, one deadline covering connect + body),
+  `resolveApiKey`, `buildGenerationConfig` (adds `thinkingConfig` only on
+  models that accept it) and `parseModelJson` (strips ```json fences).
+- The key goes in the header, never the URL: URLs end up in logs. When the
+  key moves behind a backend proxy, `GEMINI_BASE_URL` and `authHeaders()` in
+  that file are the only things that change.
+- `geminiVision.js` / `geminiRecipes.js` keep the *what*: prompts, parsing,
+  per-call retry policy and the safety filters.
+- After any change to these files, a prompt, or the model lists, run
+  `npm run test:live` (needs `EXPO_PUBLIC_GEMINI_API_KEY`; ~25 s, a few real
+  requests). It runs every call path against the real API and fails if a path
+  silently falls back instead of getting a 200. It is not part of CI.
+
 ### Model resilience (see roadmap issue #5)
 - Gemini model versions get deprecated without much warning — this project
   has already broken in production because a hardcoded model (e.g.
   `gemini-2.0-flash-lite`) started returning 404. Always call through a
-  candidate-model list (`candidateModels` in `geminiVision.js`,
-  `CANDIDATE_MODELS`/`buildCandidateUrls` in `geminiRecipes.js`) that falls
-  through to the next model on failure — never a single hardcoded model
-  with no fallback.
+  candidate-model list (`VISION_MODELS` / `RECIPE_MODELS` in
+  `geminiClient.js`) that falls through to the next model on failure — never
+  a single hardcoded model with no fallback.
 - Before assuming a scan/generation bug is a prompt or code problem, test
   the current candidate models directly with `curl` against the Gemini
   endpoint. This has repeatedly been the fastest way to distinguish "the
@@ -389,9 +404,10 @@ touched (gesture handling, `BlurView`) are the ones most likely to diverge.
   models per request.
 
 ### Timeouts and retries
-- Every network call to Gemini goes through `fetchWithTimeout` (an
-  `AbortController`-based wrapper) — a bare `fetch()` has no timeout and
-  will hang on a stalled connection far longer than acceptable.
+- Every network call to Gemini goes through `generateContent`, whose
+  `AbortController` deadline covers the response body as well as the headers —
+  a bare `fetch()` has no timeout and will hang on a stalled connection far
+  longer than acceptable.
 - `expo-image-manipulator`'s `manipulateAsync` also has no built-in
   timeout — it's wrapped in `withTimeout`/`Promise.race` for the same
   reason. Any new native async call without a documented timeout guarantee
