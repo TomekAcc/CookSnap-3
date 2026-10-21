@@ -4,13 +4,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { translate } from "../i18n";
 import { DEFAULT_LANGUAGE_ID } from "../data/languageOptions";
 import { log } from "../utils/log";
+import { STORAGE_KEYS } from "../storage/keys";
 
-// Same key CookAIContext persists recipeLanguageId under. Duplicated
-// (not imported) on purpose — this class component deliberately reads
-// AsyncStorage directly instead of going through CookAIContext/useCookAI,
-// so the crash screen still renders correctly in the user's language even
-// if the crash happened inside CookAIProvider itself (context unavailable).
-const RECIPE_LANGUAGE_STORAGE_KEY = "cookai:recipeLanguage:v1";
+// Reads the saved language straight from AsyncStorage (not through
+// CookAIContext / the hooks) on purpose, so the crash screen still renders in
+// the user's language even if the crash happened inside CookAIProvider itself.
+// The key comes from storage/keys.js — a plain constants file with no
+// dependencies — so it cannot drift from the key the app actually writes.
+const RECIPE_LANGUAGE_STORAGE_KEY = STORAGE_KEYS.recipeLanguage;
 
 /**
  * Root-level safety net. Keep it dependency-light (StyleSheet only, no app

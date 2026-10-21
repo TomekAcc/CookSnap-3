@@ -7,14 +7,16 @@
 // anything else gets the app tag so Metro/Xcode output is easy to filter.
 const TAG = "[Cook AI]";
 
-const emit = (fn) => (...args) => {
-  if (typeof args[0] === "string" && args[0].startsWith("[")) fn(...args);
-  else fn(TAG, ...args);
+/* eslint-disable no-console */
+// The console method is looked up per call (not captured at import) so tests
+// and tooling that replace console.warn / console.error still see the output.
+const emit = (method) => (...args) => {
+  if (typeof args[0] === "string" && args[0].startsWith("[")) console[method](...args);
+  else console[method](TAG, ...args);
 };
 
-/* eslint-disable no-console */
 export const log = {
-  debug: __DEV__ ? emit(console.log) : () => {},
-  warn: emit(console.warn),
-  error: emit(console.error),
+  debug: __DEV__ ? emit("log") : () => {},
+  warn: emit("warn"),
+  error: emit("error"),
 };

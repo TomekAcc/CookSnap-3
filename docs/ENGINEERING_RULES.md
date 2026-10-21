@@ -84,14 +84,54 @@ production iOS export: following these rules took the Hermes bundle from
 
 ---
 
+## Persistence
+
+Anything that must survive an app restart goes through the persistence layer —
+never a bare `AsyncStorage` call, and never a hand-written
+"hydrate in an effect, persist in another effect, `*Hydrated` flag" block (that
+pattern was copied ~20 times in `CookAIContext` and is what this replaced).
+
+- **State:** `usePersistedState(STORAGE_KEYS.x, { initial, codec, fallback?, shouldPersist? })`
+  in `src/hooks/usePersistedState.js` returns `[value, setValue, hydrated]`. It
+  reads once on mount, validates with the codec (a missing or invalid value
+  keeps `initial`, or `fallback()` — e.g. the device language), and only writes
+  after the read has finished, so a default can never overwrite saved data.
+  `shouldPersist` keeps a value in memory only (the onboarding sample scan).
+- **Keys** live in `src/storage/keys.js`, versioned (`:v1`). Never rename a key
+  (existing installs lose that data) — add a `:v2` and migrate on read. A test
+  pins the exact strings.
+- **Codecs** (`src/storage/codecs.js`): `arrayCodec`, `objectCodec(defaults)`,
+  `enumCodec(...)`, `positiveIntCodec`, `booleanCodec`, `flagCodec` (true stored,
+  false deletes the key), `textCodec`, `jsonCodec(validate)`. Parsing never
+  throws; one corrupt key can never break startup. Prefer the strictest codec
+  that fits.
+- **Reads are batched:** `storage.getItem` calls made in the same tick become one
+  native `multiGet`, so startup is one round trip instead of ~20 and related
+  values appear together. Don't bypass it for startup reads.
+- **Daily free-tier limits:** `useFreeTierCap(key, limit, isPro)` →
+  `{ count, canUse, register }`. The count is per local day and is derived from
+  the stored date, so it also resets when midnight passes while the app is open.
+  Add a new limit with this hook, not a new state + effect block.
+- `ErrorBoundary` is the one deliberate exception: it reads the saved language
+  straight from AsyncStorage (using `STORAGE_KEYS`) so the crash screen works
+  even if the providers are what crashed.
+- A hook that stores a value is verified two ways: unit tests with the AsyncStorage
+  mock (`__tests__/usePersistedState.test.js`), and — when you move existing
+  persistence — a before/after diff of what localStorage holds across a scripted
+  sequence of actions on the web build (this is how the migration was checked).
+
+---
+
 ## Testing
 
 ### Current state of the art here (be honest about it)
 Testing is three layers, none of which replaces the others:
 1. **Unit tests** (`npm test`, Jest + `jest-expo`, files in `__tests__/`) for
-   pure logic: diet/allergy filtering, i18n lookup and plural forms, a parity
-   check that all 31 translation tables have the same keys and `{placeholders}`
-   as English, time/calorie formatting and pantry text helpers. When you move
+   pure logic and hooks: diet/allergy filtering, i18n lookup and plural forms, a
+   parity check that all 31 translation tables have the same keys and
+   `{placeholders}` as English, time/calorie formatting, pantry text helpers, the
+   Gemini client, the storage layer and persisted-state hooks (AsyncStorage is
+   mocked in `jest.setup.js`), the daily-limit counter and the ingredient merge. When you move
    logic out of a component or the context (see the refactor plan), add its
    test in the same change.
 2. A Playwright-driven **web smoke test** for crash-level JS bugs.

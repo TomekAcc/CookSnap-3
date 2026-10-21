@@ -9,7 +9,9 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { objectCodec } from "../storage/codecs";
+import { STORAGE_KEYS } from "../storage/keys";
+import { usePersistedState } from "../hooks/usePersistedState";
 import {
   Sparkles,
   Plus,
@@ -33,7 +35,6 @@ import { animateLayout } from "../utils/layoutMotion";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
 import { log } from "../utils/log";
 
-const PLANNER_STORAGE_KEY = "cookai:weeklyPlan:v1";
 
 // This modal's own native Modal (via StandardSmoothModal) stays mounted for
 // EXIT_DURATION_MS after `visible` flips false so its own exit animation can
@@ -200,7 +201,13 @@ export default function MealPlannerModal() {
     useModalState();
   const { colors, isDark } = useTheme();
 
-  const [weeklyPlan, setWeeklyPlan] = useState(EMPTY_PLAN);
+  // Saved plan, laid over the empty week so a new field always has a default.
+  // Writes wait for the read (the hook's `hydrated`), so the empty default can
+  // never overwrite a saved plan.
+  const [weeklyPlan, setWeeklyPlan, planHydrated] = usePersistedState(STORAGE_KEYS.weeklyPlan, {
+    initial: EMPTY_PLAN,
+    codec: objectCodec(EMPTY_PLAN),
+  });
   const [expandedDay, setExpandedDay] = useState(null);
   // Which day's card currently has its swipe-to-delete action revealed —
   // same "only one open at a time" pattern as PantryTab's openSwipeId.
@@ -210,43 +217,9 @@ export default function MealPlannerModal() {
   // Which single day is mid AI-generate/swap — drives inline spinners now
   // that these are real network calls instead of instant local picks.
   const [loadingDayId, setLoadingDayId] = useState(null);
-  // Gates the persist effect so we never overwrite a saved plan with the
-  // empty default before the AsyncStorage read has resolved.
-  const [planHydrated, setPlanHydrated] = useState(false);
   const handoffTimerRef = useRef(null);
   const mealPoolRef = useRef([]);
   const isMountedRef = useRef(true);
-
-  // Hydrate the saved weekly plan once on mount.
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(PLANNER_STORAGE_KEY);
-        if (!cancelled && raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && typeof parsed === "object") {
-            setWeeklyPlan({ ...EMPTY_PLAN, ...parsed });
-          }
-        }
-      } catch (err) {
-        log.warn("[Cook AI] Weekly plan hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setPlanHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Persist on every change, once hydrated.
-  useEffect(() => {
-    if (!planHydrated) return;
-    AsyncStorage.setItem(PLANNER_STORAGE_KEY, JSON.stringify(weeklyPlan)).catch(
-      (err) => log.warn("[Cook AI] Weekly plan persist failed:", err?.message)
-    );
-  }, [planHydrated, weeklyPlan]);
 
   // Confirmed real gap: CookAIContext already re-translates the Saved list
   // and the current Recipe Feed batch the moment the language changes (see

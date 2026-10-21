@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useRef, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Directory, File, Paths } from "expo-file-system";
 import {
   RECIPES,
@@ -33,6 +32,21 @@ import { useModalState } from "./ModalContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { SAMPLE_FRIDGE_ITEMS } from "../constants/sampleFridge";
 import { toastStore } from "../utils/toastStore";
+import * as storage from "../storage/storage";
+import { STORAGE_KEYS } from "../storage/keys";
+import {
+  arrayCodec,
+  booleanCodec,
+  enumCodec,
+  flagCodec,
+  jsonCodec,
+  objectCodec,
+  positiveIntCodec,
+  textCodec,
+} from "../storage/codecs";
+import { usePersistedState } from "../hooks/usePersistedState";
+import { mergeUniqueIngredients, normalizePantryName } from "../utils/ingredients";
+import { useFreeTierCap } from "../hooks/useFreeTierCap";
 import { log } from "../utils/log";
 
 const CookAIContext = createContext(null);
@@ -62,30 +76,6 @@ function detectUnitSystem() {
   return "us";
 }
 
-const PANTRY_STORAGE_KEY = "cookai:pantryItems:v1";
-const PRO_STORAGE_KEY = "cookai:isPro:v1";
-const SCAN_COUNT_STORAGE_KEY = "cookai:dailyFridgeScans:v1";
-const PANTRY_SCAN_COUNT_STORAGE_KEY = "cookai:dailyPantryScans:v1";
-const GENERATION_COUNT_STORAGE_KEY = "cookai:dailyRecipeGenCount:v1";
-const FAVORITES_STORAGE_KEY = "cookai:favorites:v1";
-const SAVED_RECIPES_STORAGE_KEY = "cookai:savedRecipes:v1";
-// Append-only signal log — no UI reads this back; it exists purely so a
-// future analytics pass (see docs/IMPLEMENTATION_ROADMAP.md #7) has real
-// "was this detection actually right" data to pull instead of guessing
-// from support messages. Capped the same way scanHistory is.
-const FEEDBACK_LOG_STORAGE_KEY = "cookai:feedbackLog:v1";
-const FRIDGE_PHOTO_STORAGE_KEY = "cookai:fridgePhoto:v1";
-const SCAN_HISTORY_STORAGE_KEY = "cookai:scanHistory:v1";
-const INGREDIENTS_STORAGE_KEY = "cookai:ingredients:v1";
-const UNIT_SYSTEM_STORAGE_KEY = "cookai:unitSystem:v1";
-const INGREDIENT_PRIORITY_STORAGE_KEY = "cookai:ingredientPriority:v1";
-const RECIPE_LANGUAGE_STORAGE_KEY = "cookai:recipeLanguage:v1";
-const ONBOARDING_STORAGE_KEY = "cookai:onboardingComplete:v1";
-const SETTINGS_DONE_HINT_STORAGE_KEY = "cookai:settingsDoneHintShown:v1";
-const FIRST_SCAN_HINT_STORAGE_KEY = "cookai:firstScanHintShown:v1";
-const DIETARY_RESTRICTIONS_STORAGE_KEY = "cookai:dietaryRestrictions:v1";
-const CUSTOM_DIET_AVOID_STORAGE_KEY = "cookai:customDietAvoid:v1";
-const CUSTOM_DIET_PREFER_STORAGE_KEY = "cookai:customDietPrefer:v1";
 
 // Craving/mood quick-tag ids → plain-English flavor-mood phrasing for the
 // prompt (never shown to the user — MealPreferences.jsx owns the
@@ -101,8 +91,6 @@ const CRAVING_PROMPT_TEXT = {
   light: "light and fresh",
   comfort: "comforting, hearty",
 };
-const SERVINGS_STORAGE_KEY = "cookai:servings:v1";
-const HUNGER_LEVEL_STORAGE_KEY = "cookai:hungerLevel:v1";
 
 /**
  * Copies a captured/picked fridge photo into a permanent, app-owned
@@ -156,73 +144,6 @@ const FREE_DAILY_RECIPE_GENERATIONS = 2;
 // — a fuller batch every time, not just more of them over time.
 const FREE_RECIPES_PER_GENERATION = 3;
 
-/** Local-date key (YYYY-MM-DD) — used to reset the free scan cap each day. */
-function todayKey() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
-// Shared duplicate-check key — trims, lowercases, and collapses whitespace so
-// "Olive Oil", " olive oil", and "olive  oil" all count as the same staple.
-function normalizePantryName(name) {
-  return String(name || "")
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, " ");
-}
-
-/**
- * Smart Append — NEVER overwrite. Strict case-insensitive dedupe.
- * Matches the mandated pattern; also strips dupes inside the incoming batch
- * and ensures stable ids for new rows.
- */
-function mergeUniqueIngredients(prevItems, newScannedItems) {
-  const existing = Array.isArray(prevItems) ? prevItems : [];
-  const incoming = Array.isArray(newScannedItems) ? newScannedItems : [];
-
-  const uniqueNew = incoming.filter(
-    (newItem) =>
-      !existing.some(
-        (existingItem) =>
-          String(existingItem?.name || "")
-            .toLowerCase()
-            .trim() ===
-          String(newItem?.name || "")
-            .toLowerCase()
-            .trim()
-      )
-  );
-
-  // Guard against duplicates within the same Gemini response
-  const seen = new Set(
-    existing.map((i) =>
-      String(i?.name || "")
-        .toLowerCase()
-        .trim()
-    )
-  );
-  const uniqueNewItems = [];
-  for (const item of uniqueNew) {
-    const key = String(item?.name || "")
-      .toLowerCase()
-      .trim();
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    uniqueNewItems.push({
-      ...item,
-      id:
-        item?.id ||
-        `ing-${Date.now()}-${existing.length + uniqueNewItems.length}-${Math.random()
-          .toString(36)
-          .slice(2, 7)}`,
-    });
-  }
-
-  return [...existing, ...uniqueNewItems];
-}
-
 /**
  * Fire-and-forget append to the local feedback/signal log (recipe ratings,
  * flagged bad detections). Never throws into the caller — a logging
@@ -233,13 +154,13 @@ function mergeUniqueIngredients(prevItems, newScannedItems) {
  */
 async function appendFeedbackLog(entry) {
   try {
-    const raw = await AsyncStorage.getItem(FEEDBACK_LOG_STORAGE_KEY);
+    const raw = await storage.getItem(STORAGE_KEYS.feedbackLog);
     const list = raw ? JSON.parse(raw) : [];
     const next = [
       { ...entry, loggedAt: new Date().toISOString() },
       ...(Array.isArray(list) ? list : []),
     ].slice(0, 200);
-    await AsyncStorage.setItem(FEEDBACK_LOG_STORAGE_KEY, JSON.stringify(next));
+    await storage.setItem(STORAGE_KEYS.feedbackLog, JSON.stringify(next));
   } catch (err) {
     log.warn("[Cook AI] feedback log append failed:", err?.message);
   }
@@ -386,7 +307,15 @@ export function CookAIProvider({ children }) {
   // only pulled in here because addIngredient() needs to close its sheet.
   const { setAddIngredientOpen, setProModalOpen, setProReason } = useModalState();
   const [activeTab, setActiveTab] = useState("scanner");
-  const [ingredients, setIngredients] = useState([]);
+  // True while the onboarding sample scan is on screen. Its photo is a bundled
+  // asset whose path changes between updates and its list is not the user's
+  // fridge, so neither is ever written to storage (see shouldPersist below).
+  const scanIsDemoRef = useRef(false);
+  const [ingredients, setIngredients, ingredientsHydrated] = usePersistedState(STORAGE_KEYS.ingredients, {
+    initial: [],
+    codec: arrayCodec,
+    shouldPersist: () => !scanIsDemoRef.current,
+  });
   // Smart default instead of always "All" — a one-tap-to-change starting
   // point that's actually relevant to when someone opened the app, rather
   // than making them filter manually every single time. Lazy initializer
@@ -400,8 +329,16 @@ export function CookAIProvider({ children }) {
     if (hour >= 16 && hour < 22) return "dinner";
     return "all";
   });
-  const [servings, setServings] = useState(2);
-  const [hungerLevel, setHungerLevel] = useState("normal");
+  // Servings and hunger level are remembered between launches (like the diet
+  // toggles below); meal type is not — it follows the time of day.
+  const [servings, setServings] = usePersistedState(STORAGE_KEYS.servings, {
+    initial: 2,
+    codec: positiveIntCodec,
+  });
+  const [hungerLevel, setHungerLevel] = usePersistedState(STORAGE_KEYS.hungerLevel, {
+    initial: "normal",
+    codec: enumCodec("light", "normal", "hungry"),
+  });
   // Craving/mood quick-tags + one-off batch exclusion — deliberately NOT
   // persisted to AsyncStorage, same as mealType above: this is "what am I
   // in the mood for right now," not a standing preference like the diet
@@ -415,145 +352,47 @@ export function CookAIProvider({ children }) {
   }, []);
   const [excludeThisBatch, setExcludeThisBatch] = useState("");
 
-  // Ingredient Source Priority — persisted standing preference, same
-  // hydrate-once-then-persist-on-change pattern as unitSystem elsewhere in
-  // this file: "balanced" (default, current behavior, never added to the
+  // Ingredient Source Priority — persisted standing preference:
+  // "balanced" (default, current behavior, never added to the
   // prompt) | "fridge" | "pantry". Soft steering only (see buildPrompt's
   // INVENTORY LOCK section in geminiRecipes.js) — it changes which list a
   // recipe leans on more, never what's allowed at all, so unlike Custom
   // Diet this needs no code-level safety net.
-  const [ingredientPriority, setIngredientPriorityState] = useState("balanced");
-  const [ingredientPriorityHydrated, setIngredientPriorityHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(INGREDIENT_PRIORITY_STORAGE_KEY);
-        if (!cancelled && (raw === "fridge" || raw === "pantry" || raw === "balanced")) {
-          setIngredientPriorityState(raw);
-        }
-      } catch (err) {
-        log.warn("[Cook AI] ingredient priority hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setIngredientPriorityHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!ingredientPriorityHydrated) return;
-    AsyncStorage.setItem(INGREDIENT_PRIORITY_STORAGE_KEY, ingredientPriority).catch((err) =>
-      log.warn("[Cook AI] ingredient priority persist failed:", err?.message)
-    );
-  }, [ingredientPriorityHydrated, ingredientPriority]);
+  const [ingredientPriority, setIngredientPriorityState] = usePersistedState(
+    STORAGE_KEYS.ingredientPriority,
+    { initial: "balanced", codec: enumCodec("fridge", "pantry", "balanced") }
+  );
 
   const setIngredientPriority = useCallback((next) => {
     setIngredientPriorityState(
       next === "fridge" || next === "pantry" ? next : "balanced"
     );
-  }, []);
+  }, [setIngredientPriorityState]);
 
   // Favorites id list — dish #1 liked by default (🤍 → ❤️)
-  const [favorites, setFavorites] = useState([1]);
+  const [favorites, setFavorites, favoritesHydrated] = usePersistedState(STORAGE_KEYS.favorites, {
+    initial: [1],
+    codec: arrayCodec,
+  });
   // Seed Saved tab with recipe #1 so heart state matches favorites
-  const [savedRecipes, setSavedRecipes] = useState(() =>
-    safeStorageRead(() => {
-      const first = (RECIPES || FALLBACK_RECIPES || []).find(
-        (r) => r && String(r.id) === "1"
-      );
-      return first ? enrichRecipes([first]) : [];
-    }, [])
-  );
-  const [pantryItems, setPantryItems] = useState(safePantryInit);
-
-  // Saved-recipe persistence — favorites[] and savedRecipes[] were
-  // previously plain useState with no AsyncStorage backing at all, so
-  // every heart tap was lost the instant the app restarted. Same
-  // hydrate-once-then-persist pattern as pantry below: `savedHydrated`
-  // gates the persist effect so a restart can't overwrite real saved data
-  // with the default single-recipe seed before the read resolves.
-  const [savedHydrated, setSavedHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [rawFavorites, rawSaved] = await Promise.all([
-          AsyncStorage.getItem(FAVORITES_STORAGE_KEY),
-          AsyncStorage.getItem(SAVED_RECIPES_STORAGE_KEY),
-        ]);
-        if (!cancelled && rawFavorites) {
-          const parsed = JSON.parse(rawFavorites);
-          if (Array.isArray(parsed)) setFavorites(parsed);
-        }
-        if (!cancelled && rawSaved) {
-          const parsed = JSON.parse(rawSaved);
-          if (Array.isArray(parsed)) setSavedRecipes(parsed);
-        }
-      } catch (err) {
-        log.warn("[Cook AI] saved recipes hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setSavedHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!savedHydrated) return;
-    AsyncStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites)).catch(
-      (err) => log.warn("[Cook AI] favorites persist failed:", err?.message)
-    );
-  }, [savedHydrated, favorites]);
-
-  useEffect(() => {
-    if (!savedHydrated) return;
-    AsyncStorage.setItem(
-      SAVED_RECIPES_STORAGE_KEY,
-      JSON.stringify(savedRecipes)
-    ).catch((err) =>
-      log.warn("[Cook AI] savedRecipes persist failed:", err?.message)
-    );
-  }, [savedHydrated, savedRecipes]);
-
-  // Pantry persistence — hydrate once from AsyncStorage on mount, then
-  // persist every subsequent change. `hydrated` gates the persist effect so
-  // we never overwrite a user's saved pantry with the default seed before
-  // the read has resolved.
-  const [pantryHydrated, setPantryHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(PANTRY_STORAGE_KEY);
-        if (!cancelled && raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) setPantryItems(parsed);
-        }
-      } catch (err) {
-        log.warn("[Cook AI] pantry hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setPantryHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!pantryHydrated) return;
-    AsyncStorage.setItem(PANTRY_STORAGE_KEY, JSON.stringify(pantryItems)).catch(
-      (err) => log.warn("[Cook AI] pantry persist failed:", err?.message)
-    );
-  }, [pantryHydrated, pantryItems]);
+  const [savedRecipes, setSavedRecipes, savedRecipesHydrated] = usePersistedState(STORAGE_KEYS.savedRecipes, {
+    initial: () =>
+      safeStorageRead(() => {
+        const first = (RECIPES || FALLBACK_RECIPES || []).find(
+          (r) => r && String(r.id) === "1"
+        );
+        return first ? enrichRecipes([first]) : [];
+      }, []),
+    codec: arrayCodec,
+  });
+  // Both lists load in the same batched read; the translation-on-language-change
+  // effects below wait for this before they start watching.
+  const savedHydrated = favoritesHydrated && savedRecipesHydrated;
+  // Pantry starts empty: no seeded staples for a brand-new user.
+  const [pantryItems, setPantryItems, pantryHydrated] = usePersistedState(STORAGE_KEYS.pantryItems, {
+    initial: safePantryInit,
+    codec: arrayCodec,
+  });
 
   // ─── PRO entitlement (LOCAL MOCK — no real payment processor wired up) ───
   // `isPro` here is a locally-persisted flag flipped by activatePro(), which
@@ -562,37 +401,15 @@ export function CookAIProvider({ children }) {
   // real payment SDK requires App Store Connect product IDs and API
   // credentials that live outside this codebase. activatePro() is the exact
   // spot a real `Purchases.purchasePackage(...)` call would replace this.
-  const [isPro, setIsPro] = useState(false);
-  const [proHydrated, setProHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(PRO_STORAGE_KEY);
-        if (!cancelled && raw === "true") setIsPro(true);
-      } catch (err) {
-        log.warn("[Cook AI] pro entitlement hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setProHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!proHydrated) return;
-    AsyncStorage.setItem(PRO_STORAGE_KEY, isPro ? "true" : "false").catch((err) =>
-      log.warn("[Cook AI] pro entitlement persist failed:", err?.message)
-    );
-  }, [proHydrated, isPro]);
+  const [isPro, setIsPro] = usePersistedState(STORAGE_KEYS.isPro, {
+    initial: false,
+    codec: booleanCodec,
+  });
 
   /** Mock trial activation — see the PRO entitlement note above. */
   const activatePro = useCallback(() => {
     setIsPro(true);
-  }, []);
+  }, [setIsPro]);
 
   /**
    * Testing-only reset — there's no real subscription to cancel yet (see
@@ -604,164 +421,38 @@ export function CookAIProvider({ children }) {
    */
   const deactivatePro = useCallback(() => {
     setIsPro(false);
-  }, []);
+  }, [setIsPro]);
 
-  // ─── Daily free-tier fridge scan cap ───
-  const [dailyFridgeScanCount, setDailyFridgeScanCount] = useState(0);
-  const [scanCountHydrated, setScanCountHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(SCAN_COUNT_STORAGE_KEY);
-        if (!cancelled && raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && parsed.date === todayKey()) {
-            setDailyFridgeScanCount(Number(parsed.count) || 0);
-          }
-          // Different date (or malformed) → leave at 0, a fresh day.
-        }
-      } catch (err) {
-        log.warn("[Cook AI] scan count hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setScanCountHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!scanCountHydrated) return;
-    AsyncStorage.setItem(
-      SCAN_COUNT_STORAGE_KEY,
-      JSON.stringify({ date: todayKey(), count: dailyFridgeScanCount })
-    ).catch((err) =>
-      log.warn("[Cook AI] scan count persist failed:", err?.message)
-    );
-  }, [scanCountHydrated, dailyFridgeScanCount]);
-
-  const canScanFridge = isPro || dailyFridgeScanCount < FREE_DAILY_FRIDGE_SCANS;
-
-  /** Call right before opening the fridge camera. Returns false + does not
-   *  increment when the free daily cap is already hit — caller should show
-   *  the paywall in that case instead of proceeding. */
-  const registerFridgeScanAttempt = useCallback(() => {
-    if (isPro) return true;
-    if (dailyFridgeScanCount >= FREE_DAILY_FRIDGE_SCANS) return false;
-    setDailyFridgeScanCount((prev) => prev + 1);
-    return true;
-  }, [isPro, dailyFridgeScanCount]);
-
-  // ─── Daily free-tier pantry scan cap ───
-  // Same shape as the fridge scan cap above, and deliberately the same
-  // limit — pantry scans hit gemini-3.7-flash, the same pricier vision
-  // model fridge scans use, so there's no cost reason to treat them
-  // differently. This used to be free/unlimited by explicit product
-  // direction; reversed after confirming that left the single most
-  // expensive call in the app reachable with no cap and no PRO gate at
+  // ─── Daily free-tier caps (fridge scans, pantry scans, recipe generations) ───
+  // Each is `limit` uses per local day for free users, unlimited for PRO — see
+  // useFreeTierCap. register*() is called right before the action: it returns
+  // false (and does not count) when the cap is already hit, and the caller shows
+  // the paywall instead of proceeding.
+  //
+  // Pantry scans deliberately share the fridge scans' limit: both hit
+  // gemini-3.7-flash, the pricier vision model. They used to be free and
+  // unlimited by product direction; that was reversed after confirming it left
+  // the most expensive call in the app reachable with no cap and no PRO gate at
   // all — a real, unbounded cost exposure, not just a monetization gap.
-  const [dailyPantryScanCount, setDailyPantryScanCount] = useState(0);
-  const [pantryScanCountHydrated, setPantryScanCountHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(PANTRY_SCAN_COUNT_STORAGE_KEY);
-        if (!cancelled && raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && parsed.date === todayKey()) {
-            setDailyPantryScanCount(Number(parsed.count) || 0);
-          }
-        }
-      } catch (err) {
-        log.warn("[Cook AI] pantry scan count hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setPantryScanCountHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!pantryScanCountHydrated) return;
-    AsyncStorage.setItem(
-      PANTRY_SCAN_COUNT_STORAGE_KEY,
-      JSON.stringify({ date: todayKey(), count: dailyPantryScanCount })
-    ).catch((err) =>
-      log.warn("[Cook AI] pantry scan count persist failed:", err?.message)
-    );
-  }, [pantryScanCountHydrated, dailyPantryScanCount]);
-
-  const canScanPantry = isPro || dailyPantryScanCount < FREE_DAILY_PANTRY_SCANS;
-
-  /** Call right before opening the pantry camera. Same contract as
-   *  registerFridgeScanAttempt. */
-  const registerPantryScanAttempt = useCallback(() => {
-    if (isPro) return true;
-    if (dailyPantryScanCount >= FREE_DAILY_PANTRY_SCANS) return false;
-    setDailyPantryScanCount((prev) => prev + 1);
-    return true;
-  }, [isPro, dailyPantryScanCount]);
-
-  // ─── Daily free-tier recipe-generation cap ───
-  // Same hydrate-once/persist/reset-daily pattern as the fridge scan cap
-  // above — see FREE_DAILY_RECIPE_GENERATIONS for why this is the cap that
-  // actually matters. Counts both the initial "Generate AI Recipes" and
-  // every "Regenerate" tap on the Scanner screen equally.
-  const [dailyRecipeGenerationCount, setDailyRecipeGenerationCount] = useState(0);
-  const [generationCountHydrated, setGenerationCountHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(GENERATION_COUNT_STORAGE_KEY);
-        if (!cancelled && raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && parsed.date === todayKey()) {
-            setDailyRecipeGenerationCount(Number(parsed.count) || 0);
-          }
-          // Different date (or malformed) → leave at 0, a fresh day.
-        }
-      } catch (err) {
-        log.warn("[Cook AI] generation count hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setGenerationCountHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!generationCountHydrated) return;
-    AsyncStorage.setItem(
-      GENERATION_COUNT_STORAGE_KEY,
-      JSON.stringify({ date: todayKey(), count: dailyRecipeGenerationCount })
-    ).catch((err) =>
-      log.warn("[Cook AI] generation count persist failed:", err?.message)
-    );
-  }, [generationCountHydrated, dailyRecipeGenerationCount]);
-
-  const canGenerateRecipes =
-    isPro || dailyRecipeGenerationCount < FREE_DAILY_RECIPE_GENERATIONS;
-
-  /** Call right before generateRecipes(). Returns false + does not
-   *  increment when the free daily cap is already hit — caller should show
-   *  the paywall in that case instead of proceeding. */
-  const registerRecipeGenerationAttempt = useCallback(() => {
-    if (isPro) return true;
-    if (dailyRecipeGenerationCount >= FREE_DAILY_RECIPE_GENERATIONS) return false;
-    setDailyRecipeGenerationCount((prev) => prev + 1);
-    return true;
-  }, [isPro, dailyRecipeGenerationCount]);
+  // Generations count the initial "Generate AI Recipes" and every "Regenerate"
+  // tap equally — see FREE_DAILY_RECIPE_GENERATIONS for why this is the cap
+  // that actually matters.
+  const fridgeScanCap = useFreeTierCap(STORAGE_KEYS.dailyFridgeScans, FREE_DAILY_FRIDGE_SCANS, isPro);
+  const pantryScanCap = useFreeTierCap(STORAGE_KEYS.dailyPantryScans, FREE_DAILY_PANTRY_SCANS, isPro);
+  const generationCap = useFreeTierCap(
+    STORAGE_KEYS.dailyRecipeGenerations,
+    FREE_DAILY_RECIPE_GENERATIONS,
+    isPro
+  );
+  const dailyFridgeScanCount = fridgeScanCap.count;
+  const canScanFridge = fridgeScanCap.canUse;
+  const registerFridgeScanAttempt = fridgeScanCap.register;
+  const dailyPantryScanCount = pantryScanCap.count;
+  const canScanPantry = pantryScanCap.canUse;
+  const registerPantryScanAttempt = pantryScanCap.register;
+  const dailyRecipeGenerationCount = generationCap.count;
+  const canGenerateRecipes = generationCap.canUse;
+  const registerRecipeGenerationAttempt = generationCap.register;
 
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
   const [generatedRecipes, setGeneratedRecipes] = useState(null);
@@ -810,11 +501,18 @@ export function CookAIProvider({ children }) {
   // this never needs a value baked in before `t` exists.
   const [scanningLabel, setScanningLabel] = useState(null);
   const [cameraOpen, setCameraOpen] = useState(false);
-  const [fridgePhoto, setFridgePhoto] = useState(null);
+  // Stores a permanent Paths.document URI (see persistPhotoToDevice), so a
+  // restored URI still resolves to a real file after an app restart. Persisting
+  // the photo along with the ingredients it produced (above) matters: a photo
+  // next to an empty list is a more confusing state than neither.
+  const [fridgePhoto, setFridgePhoto, fridgePhotoHydrated] = usePersistedState(STORAGE_KEYS.fridgePhoto, {
+    initial: null,
+    codec: jsonCodec(),
+    shouldPersist: () => !scanIsDemoRef.current,
+  });
   // True while the onboarding sample fridge is on screen (see completeDemoScan).
   // Its photo and list are never persisted, and a real scan replaces them.
   const [scanIsDemo, setScanIsDemo] = useState(false);
-  const scanIsDemoRef = useRef(false);
   const markScanDemo = useCallback((on) => {
     scanIsDemoRef.current = on;
     setScanIsDemo(on);
@@ -874,78 +572,12 @@ export function CookAIProvider({ children }) {
   const [pantryCameraOpen, setPantryCameraOpen] = useState(false);
   const [pantryPhoto, setPantryPhoto] = useState(null);
 
-  const [scanHistory, setScanHistory] = useState([]);
-  // fridgePhoto + scanHistory + ingredients persistence — same hydrate-once-
-  // then-persist pattern as pantry/favorites above. fridgePhoto/scanHistory
-  // now store permanent Paths.document URIs (see persistPhotoToDevice), so
-  // a restored URI still resolves to a real file after an app restart.
-  // ingredients is included here too — persisting the photo without the
-  // ingredients it produced would restore a fridge photo next to an empty
-  // list, which is a more confusing state than neither persisting at all.
-  const [scanDataHydrated, setScanDataHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [rawPhoto, rawHistory, rawIngredients] = await Promise.all([
-          AsyncStorage.getItem(FRIDGE_PHOTO_STORAGE_KEY),
-          AsyncStorage.getItem(SCAN_HISTORY_STORAGE_KEY),
-          AsyncStorage.getItem(INGREDIENTS_STORAGE_KEY),
-        ]);
-        if (!cancelled && rawPhoto) setFridgePhoto(JSON.parse(rawPhoto));
-        if (!cancelled && rawHistory) {
-          const parsed = JSON.parse(rawHistory);
-          if (Array.isArray(parsed)) setScanHistory(parsed);
-        }
-        if (!cancelled && rawIngredients) {
-          const parsed = JSON.parse(rawIngredients);
-          if (Array.isArray(parsed)) setIngredients(parsed);
-        }
-      } catch (err) {
-        log.warn("[Cook AI] scan data hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setScanDataHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!scanDataHydrated) return;
-    // The onboarding sample is never saved: its photo is a bundled asset whose
-    // path changes between updates, and its list is not the user's fridge.
-    if (scanIsDemoRef.current) return;
-    AsyncStorage.setItem(
-      FRIDGE_PHOTO_STORAGE_KEY,
-      JSON.stringify(fridgePhoto)
-    ).catch((err) =>
-      log.warn("[Cook AI] fridgePhoto persist failed:", err?.message)
-    );
-  }, [scanDataHydrated, fridgePhoto]);
-
-  useEffect(() => {
-    if (!scanDataHydrated) return;
-    AsyncStorage.setItem(
-      SCAN_HISTORY_STORAGE_KEY,
-      JSON.stringify(scanHistory)
-    ).catch((err) =>
-      log.warn("[Cook AI] scanHistory persist failed:", err?.message)
-    );
-  }, [scanDataHydrated, scanHistory]);
-
-  useEffect(() => {
-    if (!scanDataHydrated) return;
-    if (scanIsDemoRef.current) return;
-    AsyncStorage.setItem(
-      INGREDIENTS_STORAGE_KEY,
-      JSON.stringify(ingredients)
-    ).catch((err) =>
-      log.warn("[Cook AI] ingredients persist failed:", err?.message)
-    );
-  }, [scanDataHydrated, ingredients]);
+  const [scanHistory, setScanHistory, scanHistoryHydrated] = usePersistedState(STORAGE_KEYS.scanHistory, {
+    initial: [],
+    codec: arrayCodec,
+  });
+  // The three scan-data keys load in the same batched read.
+  const scanDataHydrated = ingredientsHydrated && fridgePhotoHydrated && scanHistoryHydrated;
 
   // Confirmed real failure, not a hypothetical: this and servings/hungerLevel
   // below were plain useState with no AsyncStorage read/write at all — every
@@ -954,43 +586,10 @@ export function CookAIProvider({ children }) {
   // the app restarted. A user who set "Vegan" once would see it vanish on
   // the next launch and get non-vegan recipes with no warning. Same
   // hydrate-once-then-persist-on-change pattern as unitSystem below.
-  const [dietaryRestrictions, setDietaryRestrictions] = useState(
-    DIETARY_OPTIONS_DEFAULT
+  const [dietaryRestrictions, setDietaryRestrictions] = usePersistedState(
+    STORAGE_KEYS.dietaryRestrictions,
+    { initial: DIETARY_OPTIONS_DEFAULT, codec: objectCodec(DIETARY_OPTIONS_DEFAULT) }
   );
-  const [dietaryRestrictionsHydrated, setDietaryRestrictionsHydrated] =
-    useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(DIETARY_RESTRICTIONS_STORAGE_KEY);
-        if (!cancelled && raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && typeof parsed === "object") {
-            setDietaryRestrictions({ ...DIETARY_OPTIONS_DEFAULT, ...parsed });
-          }
-        }
-      } catch (err) {
-        log.warn("[Cook AI] dietary restrictions hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setDietaryRestrictionsHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!dietaryRestrictionsHydrated) return;
-    AsyncStorage.setItem(
-      DIETARY_RESTRICTIONS_STORAGE_KEY,
-      JSON.stringify(dietaryRestrictions)
-    ).catch((err) =>
-      log.warn("[Cook AI] dietary restrictions persist failed:", err?.message)
-    );
-  }, [dietaryRestrictionsHydrated, dietaryRestrictions]);
 
   // PRO-only Custom Diet — raw comma-separated text, same hydrate-once-
   // then-persist-on-change pattern as dietaryRestrictions above. Stored
@@ -1000,46 +599,14 @@ export function CookAIProvider({ children }) {
   // below is what actually gates whether they reach generation, so a
   // lapsed-then-renewed PRO user gets their list back instead of having
   // to retype it.
-  const [customDietAvoid, setCustomDietAvoid] = useState("");
-  const [customDietPrefer, setCustomDietPrefer] = useState("");
-  const [customDietHydrated, setCustomDietHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [avoidRaw, preferRaw] = await Promise.all([
-          AsyncStorage.getItem(CUSTOM_DIET_AVOID_STORAGE_KEY),
-          AsyncStorage.getItem(CUSTOM_DIET_PREFER_STORAGE_KEY),
-        ]);
-        if (!cancelled) {
-          if (avoidRaw != null) setCustomDietAvoid(avoidRaw);
-          if (preferRaw != null) setCustomDietPrefer(preferRaw);
-        }
-      } catch (err) {
-        log.warn("[Cook AI] custom diet hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setCustomDietHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!customDietHydrated) return;
-    AsyncStorage.setItem(CUSTOM_DIET_AVOID_STORAGE_KEY, customDietAvoid).catch((err) =>
-      log.warn("[Cook AI] custom diet avoid persist failed:", err?.message)
-    );
-  }, [customDietHydrated, customDietAvoid]);
-
-  useEffect(() => {
-    if (!customDietHydrated) return;
-    AsyncStorage.setItem(CUSTOM_DIET_PREFER_STORAGE_KEY, customDietPrefer).catch((err) =>
-      log.warn("[Cook AI] custom diet prefer persist failed:", err?.message)
-    );
-  }, [customDietHydrated, customDietPrefer]);
+  const [customDietAvoid, setCustomDietAvoid] = usePersistedState(STORAGE_KEYS.customDietAvoid, {
+    initial: "",
+    codec: textCodec(),
+  });
+  const [customDietPrefer, setCustomDietPrefer] = usePersistedState(STORAGE_KEYS.customDietPrefer, {
+    initial: "",
+    codec: textCodec(),
+  });
 
   // What every generation call actually receives — dietaryRestrictions
   // (the boolean preset map) with customAvoid/customPrefer/craving riding
@@ -1104,93 +671,22 @@ export function CookAIProvider({ children }) {
 
   const [includePantryStaples, setIncludePantryStaples] = useState(true);
 
-  // Same real failure as dietaryRestrictions above — servings and hunger
-  // level (declared near the top of this component, with mealType) reset
-  // to their defaults (2 people, "normal") on every restart instead of
-  // remembering the user's last choice.
-  const [mealPrefsHydrated, setMealPrefsHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [rawServings, rawHunger] = await Promise.all([
-          AsyncStorage.getItem(SERVINGS_STORAGE_KEY),
-          AsyncStorage.getItem(HUNGER_LEVEL_STORAGE_KEY),
-        ]);
-        if (!cancelled && rawServings) {
-          const parsedServings = parseInt(rawServings, 10);
-          if (Number.isFinite(parsedServings) && parsedServings > 0) {
-            setServings(parsedServings);
-          }
-        }
-        if (!cancelled && rawHunger) {
-          setHungerLevel(rawHunger);
-        }
-      } catch (err) {
-        log.warn("[Cook AI] meal prefs hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setMealPrefsHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!mealPrefsHydrated) return;
-    AsyncStorage.setItem(SERVINGS_STORAGE_KEY, String(servings)).catch((err) =>
-      log.warn("[Cook AI] servings persist failed:", err?.message)
-    );
-  }, [mealPrefsHydrated, servings]);
-
-  useEffect(() => {
-    if (!mealPrefsHydrated) return;
-    AsyncStorage.setItem(HUNGER_LEVEL_STORAGE_KEY, hungerLevel).catch((err) =>
-      log.warn("[Cook AI] hunger level persist failed:", err?.message)
-    );
-  }, [mealPrefsHydrated, hungerLevel]);
 
   // Recipe measurement system — "us" (cups/tbsp/°F) or "metric" (g/ml/°C).
   // User explicitly asked NOT to show both units at once (a prior fix had
   // shown dual units inline everywhere); this is a persisted single choice
   // that's threaded into every Gemini recipe prompt so generated recipes
   // come back in exactly one system, never mixed.
-  const [unitSystem, setUnitSystemState] = useState("us");
-  const [unitSystemHydrated, setUnitSystemHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(UNIT_SYSTEM_STORAGE_KEY);
-        if (!cancelled && (raw === "metric" || raw === "us")) {
-          setUnitSystemState(raw);
-        } else if (!cancelled) {
-          setUnitSystemState(detectUnitSystem());
-        }
-      } catch (err) {
-        log.warn("[Cook AI] unit system hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setUnitSystemHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!unitSystemHydrated) return;
-    AsyncStorage.setItem(UNIT_SYSTEM_STORAGE_KEY, unitSystem).catch((err) =>
-      log.warn("[Cook AI] unit system persist failed:", err?.message)
-    );
-  }, [unitSystemHydrated, unitSystem]);
+  const [unitSystem, setUnitSystemState] = usePersistedState(STORAGE_KEYS.unitSystem, {
+    initial: "us",
+    codec: enumCodec("us", "metric"),
+    // Nothing (valid) saved yet: guess from the device's region.
+    fallback: detectUnitSystem,
+  });
 
   const setUnitSystem = useCallback((next) => {
     setUnitSystemState(next === "metric" ? "metric" : "us");
-  }, []);
+  }, [setUnitSystemState]);
 
   // Recipe output language — persisted the same way as unitSystem. Drives
   // both the language Gemini writes recipe titles/ingredients/steps in
@@ -1203,48 +699,20 @@ export function CookAIProvider({ children }) {
   // LANGUAGE_OPTIONS, falling back to English only when the device
   // language isn't one we support. Still fully overridable in Settings,
   // and whatever the user picks there always wins from then on.
-  const [recipeLanguageId, setRecipeLanguageIdState] = useState(
-    DEFAULT_LANGUAGE_ID
+  const [recipeLanguageId, setRecipeLanguageIdState, recipeLanguageHydrated] = usePersistedState(
+    STORAGE_KEYS.recipeLanguage,
+    {
+      initial: DEFAULT_LANGUAGE_ID,
+      codec: textCodec((raw) => LANGUAGE_OPTIONS.some((l) => l.id === raw)),
+      fallback: () => matchDeviceLanguage(Localization.getLocales?.()?.[0]?.languageCode),
+    }
   );
-  const [recipeLanguageHydrated, setRecipeLanguageHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(RECIPE_LANGUAGE_STORAGE_KEY);
-        if (!cancelled && raw && LANGUAGE_OPTIONS.some((l) => l.id === raw)) {
-          setRecipeLanguageIdState(raw);
-        } else if (!cancelled) {
-          const deviceCode = Localization.getLocales?.()?.[0]?.languageCode;
-          setRecipeLanguageIdState(matchDeviceLanguage(deviceCode));
-        }
-      } catch (err) {
-        log.warn("[Cook AI] recipe language hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setRecipeLanguageHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!recipeLanguageHydrated) return;
-    AsyncStorage.setItem(
-      RECIPE_LANGUAGE_STORAGE_KEY,
-      recipeLanguageId
-    ).catch((err) =>
-      log.warn("[Cook AI] recipe language persist failed:", err?.message)
-    );
-  }, [recipeLanguageHydrated, recipeLanguageId]);
 
   const setRecipeLanguageId = useCallback((next) => {
     setRecipeLanguageIdState(
       LANGUAGE_OPTIONS.some((l) => l.id === next) ? next : DEFAULT_LANGUAGE_ID
     );
-  }, []);
+  }, [setRecipeLanguageIdState]);
 
   // English name (e.g. "Polish") threaded into every Gemini prompt — the
   // model is instructed in English regardless of which language the
@@ -1324,53 +792,14 @@ export function CookAIProvider({ children }) {
   // existing user must never see the gate flash while AsyncStorage is
   // still being read, so the gate stays hidden (nothing renders yet)
   // until hydration resolves either way.
-  const [onboardingComplete, setOnboardingCompleteState] = useState(false);
-  const [onboardingHydrated, setOnboardingHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(ONBOARDING_STORAGE_KEY);
-        if (!cancelled && raw === "true") setOnboardingCompleteState(true);
-      } catch (err) {
-        log.warn("[Cook AI] onboarding hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setOnboardingHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const [onboardingComplete, setOnboardingCompleteState, onboardingHydrated] = usePersistedState(
+    STORAGE_KEYS.onboardingComplete,
+    { initial: false, codec: flagCodec }
+  );
 
   const completeOnboarding = useCallback(() => {
     setOnboardingCompleteState(true);
-    AsyncStorage.setItem(ONBOARDING_STORAGE_KEY, "true").catch((err) =>
-      log.warn("[Cook AI] onboarding persist failed:", err?.message)
-    );
-  }, []);
-
-  // Testing-only escape hatch (Settings > Testing) — replays the
-  // first-launch onboarding flow (language/units + the PRO intro screen)
-  // without needing to uninstall/reinstall the app to clear AsyncStorage.
-  const resetOnboarding = useCallback(() => {
-    setOnboardingCompleteState(false);
-    AsyncStorage.removeItem(ONBOARDING_STORAGE_KEY).catch((err) =>
-      log.warn("[Cook AI] onboarding reset failed:", err?.message)
-    );
-    // Replaying onboarding is meant to simulate a genuine first-time user
-    // end to end — that includes Settings' one-time "Done" hint below,
-    // not just the onboarding screens themselves.
-    setSettingsDoneHintShownState(false);
-    AsyncStorage.removeItem(SETTINGS_DONE_HINT_STORAGE_KEY).catch((err) =>
-      log.warn("[Cook AI] settings done-hint reset failed:", err?.message)
-    );
-    setFirstScanHintShownState(false);
-    AsyncStorage.removeItem(FIRST_SCAN_HINT_STORAGE_KEY).catch((err) =>
-      log.warn("[Cook AI] first-scan hint reset failed:", err?.message)
-    );
-  }, []);
+  }, [setOnboardingCompleteState]);
 
   // Confirmed real feedback: Settings' sticky "Done" button only earns its
   // keep the very first time someone lands there — by any later visit,
@@ -1378,58 +807,41 @@ export function CookAIProvider({ children }) {
   // just adds noise. SettingsScreen reads this flag once per mount (via
   // its own lazy useState initializer, not live) so it still shows for
   // that first visit even though this flips true the moment it mounts.
-  const [settingsDoneHintShown, setSettingsDoneHintShownState] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(SETTINGS_DONE_HINT_STORAGE_KEY);
-        if (!cancelled && raw === "true") setSettingsDoneHintShownState(true);
-      } catch (err) {
-        log.warn("[Cook AI] settings done-hint hydrate failed:", err?.message);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const [settingsDoneHintShown, setSettingsDoneHintShownState] = usePersistedState(
+    STORAGE_KEYS.settingsDoneHintShown,
+    { initial: false, codec: flagCodec }
+  );
 
   const markSettingsDoneHintShown = useCallback(() => {
     setSettingsDoneHintShownState(true);
-    AsyncStorage.setItem(SETTINGS_DONE_HINT_STORAGE_KEY, "true").catch((err) =>
-      log.warn("[Cook AI] settings done-hint persist failed:", err?.message)
-    );
-  }, []);
+  }, [setSettingsDoneHintShownState]);
 
   // Confirmed real feedback: a first-time user landing on the idle Scanner
   // screen right after onboarding didn't register that this is where you
   // scan — same one-time-hint pattern as Settings' "Done" button above.
   // Shown once, dismissed the moment the user actually taps either scan
   // action (handled in FridgeScannerHero, not here), never shown again.
-  const [firstScanHintShown, setFirstScanHintShownState] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(FIRST_SCAN_HINT_STORAGE_KEY);
-        if (!cancelled && raw === "true") setFirstScanHintShownState(true);
-      } catch (err) {
-        log.warn("[Cook AI] first-scan hint hydrate failed:", err?.message);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const [firstScanHintShown, setFirstScanHintShownState] = usePersistedState(
+    STORAGE_KEYS.firstScanHintShown,
+    { initial: false, codec: flagCodec }
+  );
 
   const markFirstScanHintShown = useCallback(() => {
     setFirstScanHintShownState(true);
-    AsyncStorage.setItem(FIRST_SCAN_HINT_STORAGE_KEY, "true").catch((err) =>
-      log.warn("[Cook AI] first-scan hint persist failed:", err?.message)
-    );
-  }, []);
+  }, [setFirstScanHintShownState]);
+
+  // Testing-only escape hatch (Settings > Testing) — replays the
+  // first-launch onboarding flow (language/units + the PRO intro screen)
+  // without needing to uninstall/reinstall the app to clear AsyncStorage.
+  const resetOnboarding = useCallback(() => {
+    // Replaying onboarding is meant to simulate a genuine first-time user end
+    // to end — that includes Settings' one-time "Done" hint and the Scanner's
+    // first-scan hint, not just the onboarding screens themselves. Each flag
+    // deletes its own storage key when it goes false.
+    setOnboardingCompleteState(false);
+    setSettingsDoneHintShownState(false);
+    setFirstScanHintShownState(false);
+  }, [setOnboardingCompleteState, setSettingsDoneHintShownState, setFirstScanHintShownState]);
 
   const toastTimerRef = useRef(null);
 
@@ -1524,14 +936,14 @@ export function CookAIProvider({ children }) {
       }
       return prev.filter((i) => i.id !== id);
     });
-  }, []);
+  }, [setIngredients]);
 
   const addIngredient = useCallback((item) => {
     setIngredients((prev) =>
       mergeUniqueIngredients(prev, [{ ...item, source: "manual" }])
     );
     setAddIngredientOpen(false);
-  }, [setAddIngredientOpen]);
+  }, [setAddIngredientOpen, setIngredients]);
 
   /** Merge new vision items — append only, never overwrite; de-dupe by name. */
   const appendIngredients = useCallback((newItems) => {
@@ -1540,7 +952,7 @@ export function CookAIProvider({ children }) {
     setIngredients((prev) =>
       mergeUniqueIngredients(prev, incoming.map((i) => ({ ...i, source: "scan" })))
     );
-  }, []);
+  }, [setIngredients]);
 
   const pushScanHistory = useCallback((photoUri, source, itemCount, snapshotIngredients) => {
     setScanHistory((prev) => [
@@ -1561,7 +973,7 @@ export function CookAIProvider({ children }) {
       },
       ...prev,
     ].slice(0, 10));
-  }, []);
+  }, [setScanHistory]);
 
   /**
    * Bring back a past scan from history — restores its photo + the
@@ -1581,13 +993,13 @@ export function CookAIProvider({ children }) {
       scanMetaRef.current = { photoUri: entry.photoUri, source: entry.source || "camera" };
       setActiveTab("scanner");
     },
-    [scanHistory, markScanDemo]
+    [scanHistory, markScanDemo, setFridgePhoto, setIngredients]
   );
 
   /** Remove one past scan (and its stored photo) from the history. */
   const deleteScan = useCallback((scanId) => {
     setScanHistory((prev) => (prev || []).filter((s) => s.id !== scanId));
-  }, []);
+  }, [setScanHistory]);
 
   /**
    * Instant Vision scan — AI runs immediately; UI choreography (laser/radar)
@@ -1680,7 +1092,7 @@ export function CookAIProvider({ children }) {
       pendingDetectedRef.current = [];
       showToast(t("errors.readPhotoFailed"), "error", 4200);
     }
-  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen, setProReason, showToast, markScanDemo]);
+  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen, setProReason, showToast, markScanDemo, setFridgePhoto]);
 
   /**
    * The onboarding "sample scan". Runs the same choreography as a real scan on
@@ -1724,7 +1136,7 @@ export function CookAIProvider({ children }) {
         }));
       }, 1400);
     },
-    [markScanDemo]
+    [markScanDemo, setFridgePhoto, setIngredients]
   );
 
   /**
@@ -1836,7 +1248,7 @@ export function CookAIProvider({ children }) {
       const addedCount = fullList.length;
       pushScanHistory(photoUri, source || "camera", addedCount, mergedIngredients);
     }
-  }, [pushScanHistory]);
+  }, [pushScanHistory, setIngredients]);
 
   /** Next completeScan will APPEND (de-duped). */
   const prepareScanMore = useCallback(() => {
@@ -1873,7 +1285,7 @@ export function CookAIProvider({ children }) {
     ingredientsCommittedRef.current = false;
     scanMetaRef.current = { photoUri: null, source: "camera" };
     setScanStartedAt(null);
-  }, [markScanDemo]);
+  }, [markScanDemo, setFridgePhoto, setIngredients]);
 
   const toggleSaveRecipe = useCallback((recipe) => {
     if (!recipe || recipe.id == null) return;
@@ -1896,7 +1308,7 @@ export function CookAIProvider({ children }) {
         return prev;
       }
     });
-  }, []);
+  }, [setFavorites, setSavedRecipes]);
 
   /** Toggle favorite by id — keeps favorites[] + savedRecipes in sync. */
   const toggleFavorite = useCallback((recipeId) => {
@@ -1928,7 +1340,7 @@ export function CookAIProvider({ children }) {
         return prev;
       }
     });
-  }, [generatedRecipes]);
+  }, [generatedRecipes, setFavorites, setSavedRecipes]);
 
   // Re-stamp dish emoji badges on every render of the saved list.
   const savedRecipesWithImages = useMemo(() => {
@@ -1961,7 +1373,7 @@ export function CookAIProvider({ children }) {
     setPantryItems((prev) =>
       prev.map((p) => (p.id === id ? { ...p, inStock: !p.inStock } : p))
     );
-  }, []);
+  }, [setPantryItems]);
 
   const addPantryItem = useCallback((rawNameOrItem) => {
     const item =
@@ -1982,12 +1394,12 @@ export function CookAIProvider({ children }) {
       return [{ ...item, inStock: true }, ...prev];
     });
     return item;
-  }, []);
+  }, [setPantryItems]);
 
   const removePantryItem = useCallback((id) => {
     if (!id) return;
     setPantryItems((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+  }, [setPantryItems]);
 
   // Lets the user correct a recipe ingredient the generator just assumed
   // (salt/pepper/cooking oil — see BASIC_STAPLES in geminiRecipes.js)
@@ -2015,11 +1427,11 @@ export function CookAIProvider({ children }) {
       if (!classified?.name) return prev;
       return [{ ...classified, inStock: false }, ...prev];
     });
-  }, []);
+  }, [setPantryItems]);
 
   const clearPantry = useCallback(() => {
     setPantryItems([]);
-  }, []);
+  }, [setPantryItems]);
 
   /**
    * Append ingredient names to the Shopping List.
@@ -2065,7 +1477,7 @@ export function CookAIProvider({ children }) {
       }
       return markOutOfStock.length + newItems.length;
     },
-    [pantryItems]
+    [pantryItems, setPantryItems]
   );
 
   const mergePantryScanResults = useCallback((detected = []) => {
@@ -2097,7 +1509,7 @@ export function CookAIProvider({ children }) {
       return next;
     });
     return detected.length;
-  }, []);
+  }, [setPantryItems]);
 
   /**
    * Fire-and-forget, mirroring completeScan's fridge counterpart above:
@@ -2410,7 +1822,7 @@ export function CookAIProvider({ children }) {
       );
       return updated;
     },
-    [dietaryRestrictionsWithCustom, unitSystem, recipeLanguageName]
+    [dietaryRestrictionsWithCustom, unitSystem, recipeLanguageName, setSavedRecipes]
   );
 
   /**
@@ -2447,7 +1859,7 @@ export function CookAIProvider({ children }) {
         return recipe;
       }
     },
-    [recipeLanguageId, recipeLanguageName, dietaryRestrictionsWithCustom, unitSystem]
+    [recipeLanguageId, recipeLanguageName, dietaryRestrictionsWithCustom, unitSystem, setSavedRecipes]
   );
 
   // Proactively translates every stale-language recipe when the language
@@ -2505,7 +1917,7 @@ export function CookAIProvider({ children }) {
 
   const toggleDietaryRestriction = useCallback((key) => {
     setDietaryRestrictions((prev) => ({ ...prev, [key]: !prev[key] }));
-  }, []);
+  }, [setDietaryRestrictions]);
 
   // Memoized — an unmemoized value object here recreates on every render of
   // this provider and forces every useCookAI() consumer in the app (every

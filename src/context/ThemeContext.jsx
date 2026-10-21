@@ -1,19 +1,10 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useMemo } from "react";
 import { useColorScheme as useDeviceColorScheme } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { log } from "../utils/log";
+import { enumCodec } from "../storage/codecs";
+import { STORAGE_KEYS } from "../storage/keys";
+import { usePersistedState } from "../hooks/usePersistedState";
 
 const ThemeContext = createContext(null);
-
-const THEME_STORAGE_KEY = "cookai:theme:v1";
 
 /** Ultimate Premium Native — #F5F5F7 spatial canvas, pure white cards, glass chrome */
 const LIGHT_COLORS = {
@@ -102,54 +93,17 @@ export function ThemeProvider({ children }) {
   // device (see hasStoredChoice below); this only fills in the initial value
   // when the user has never picked a theme in-app at all.
   const deviceScheme = useDeviceColorScheme();
-  const [theme, setTheme] = useState("light");
-  // Set once hydration confirms a saved theme exists, so the device-scheme
-  // effect below can never stomp a choice the user actually made.
-  const hasStoredChoice = useRef(false);
-  // Confirmed real failure, not a hypothetical: theme had zero AsyncStorage
-  // wiring at all — a user who switched to Dark mode in Settings saw it
-  // silently revert to Light every time the app restarted. Same hydrate-
-  // once-then-persist-on-change pattern used throughout CookAIContext.
-  const [themeHydrated, setThemeHydrated] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const raw = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-        if (!cancelled && (raw === "light" || raw === "dark")) {
-          hasStoredChoice.current = true;
-          setTheme(raw);
-        }
-      } catch (err) {
-        log.warn("[Cook AI] theme hydrate failed:", err?.message);
-      } finally {
-        if (!cancelled) setThemeHydrated(true);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Adopt the device's dark-mode setting on a first launch that found no
-  // saved theme. Runs after hydration so it can't race the stored value, and
-  // bails the moment a stored choice exists — deliberately including when the
-  // user later picks a theme in Settings, since an explicit in-app choice
-  // should stick even if it disagrees with the OS.
-  useEffect(() => {
-    if (!themeHydrated || hasStoredChoice.current) return;
-    if (deviceScheme === "light" || deviceScheme === "dark") {
-      setTheme(deviceScheme);
-    }
-  }, [themeHydrated, deviceScheme]);
-
-  useEffect(() => {
-    if (!themeHydrated) return;
-    AsyncStorage.setItem(THEME_STORAGE_KEY, theme).catch((err) =>
-      log.warn("[Cook AI] theme persist failed:", err?.message)
-    );
-  }, [themeHydrated, theme]);
+  // An explicit stored choice always wins. `fallback` runs only when nothing
+  // valid is stored (a first launch) and adopts the device setting once; after
+  // that the choice is the user's and the OS flipping later does not override
+  // it. Confirmed real failure that motivated persisting at all: theme had no
+  // storage wiring, so a user who switched to Dark in Settings saw it revert to
+  // Light on every restart.
+  const [theme, setTheme] = usePersistedState(STORAGE_KEYS.theme, {
+    initial: "light",
+    codec: enumCodec("light", "dark"),
+    fallback: () => (deviceScheme === "light" || deviceScheme === "dark" ? deviceScheme : "light"),
+  });
 
   const isDark = theme === "dark";
 
@@ -157,7 +111,7 @@ export function ThemeProvider({ children }) {
     if (selectedTheme === "light" || selectedTheme === "dark") {
       setTheme(selectedTheme);
     }
-  }, []);
+  }, [setTheme]);
 
   const colors = useMemo(
     () => (isDark ? DARK_COLORS : LIGHT_COLORS),
@@ -172,7 +126,7 @@ export function ThemeProvider({ children }) {
       isDark,
       colors,
     }),
-    [theme, toggleTheme, isDark, colors]
+    [theme, setTheme, toggleTheme, isDark, colors]
   );
 
   return (
