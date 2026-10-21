@@ -22,7 +22,7 @@ import PillTag from "./PillTag";
 export default function AddIngredientModal() {
   const { addIngredient, ingredients, t } = useCookAI();
   const { addIngredientOpen, setAddIngredientOpen } = useModalState();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   const [customName, setCustomName] = useState("");
 

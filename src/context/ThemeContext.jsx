@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useColorScheme as useDeviceColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { log } from "../utils/log";
 
 const ThemeContext = createContext(null);
 
@@ -121,7 +122,7 @@ export function ThemeProvider({ children }) {
           setTheme(raw);
         }
       } catch (err) {
-        console.warn("[Cook AI] theme hydrate failed:", err?.message);
+        log.warn("[Cook AI] theme hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setThemeHydrated(true);
       }
@@ -146,7 +147,7 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     if (!themeHydrated) return;
     AsyncStorage.setItem(THEME_STORAGE_KEY, theme).catch((err) =>
-      console.warn("[Cook AI] theme persist failed:", err?.message)
+      log.warn("[Cook AI] theme persist failed:", err?.message)
     );
   }, [themeHydrated, theme]);
 

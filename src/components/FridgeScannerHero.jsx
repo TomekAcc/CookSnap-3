@@ -37,6 +37,7 @@ import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import ScanMoreSheet from "./ScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { log } from "../utils/log";
 
 // Placeholders the vision model is told never to use but sometimes does; a
 // chip with no emoji reads better than a generic jar or box.
@@ -375,7 +376,7 @@ export default function FridgeScannerHero() {
     return () => {
       cancelled = true;
     };
-  }, [rawScanStage, progressBarAnim]);
+  }, [rawScanStage, progressBarAnim, setScanRevealActive]);
 
   // Linear progress 0→1 over TOTAL_SCAN_DURATION → commit + shrink at 100%.
   useEffect(() => {
@@ -672,7 +673,7 @@ export default function FridgeScannerHero() {
       }
       setCameraOpen(true);
     } catch (err) {
-      console.warn("[Cook AI] Failed to open camera:", err?.message);
+      log.warn("[Cook AI] Failed to open camera:", err?.message);
       showToast?.(t("errors.openCameraFailed"), "error");
     }
   };
@@ -688,7 +689,7 @@ export default function FridgeScannerHero() {
     try {
       await completeScan?.(uri, source);
     } catch (err) {
-      console.warn("[Cook AI] Instant scan failed:", err?.message);
+      log.warn("[Cook AI] Instant scan failed:", err?.message);
       showToast?.(t("errors.analyzePhotoFailed"), "error");
     }
   };
@@ -703,7 +704,7 @@ export default function FridgeScannerHero() {
       setCameraOpen(false);
       await beginInstantScan(photo.uri, "camera");
     } catch (err) {
-      console.warn("[Cook AI] Failed to capture photo:", err?.message);
+      log.warn("[Cook AI] Failed to capture photo:", err?.message);
       setCameraOpen(false);
       showToast?.(t("errors.capturePhotoFailed"), "error");
     }
@@ -734,7 +735,7 @@ export default function FridgeScannerHero() {
         await beginInstantScan(result.assets[0].uri, "gallery");
       }
     } catch (err) {
-      console.warn(
+      log.warn(
         "[Cook AI] Failed to pick photo from gallery:",
         err?.message
       );

@@ -7,6 +7,7 @@ import {
   getIngredientEmoji as classifyIngredientEmoji,
   getIngredientMeta,
 } from "./ingredientEmoji";
+import { log } from "./log";
 
 /**
  * CENTRAL EMOJI → PASTEL MAP (single source of truth).
@@ -742,7 +743,7 @@ export function stampRecipeEmojis(recipes) {
         }
       });
   } catch (err) {
-    console.warn("[Cook AI] stampRecipeEmojis failed:", err?.message);
+    log.warn("[Cook AI] stampRecipeEmojis failed:", err?.message);
     return Array.isArray(recipes) ? recipes.filter(Boolean) : [];
   }
 }

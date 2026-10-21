@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-nati
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { translate } from "../i18n";
 import { DEFAULT_LANGUAGE_ID } from "../data/languageOptions";
+import { log } from "../utils/log";
 
 // Same key CookAIContext persists recipeLanguageId under. Duplicated
 // (not imported) on purpose — this class component deliberately reads
@@ -12,8 +13,9 @@ import { DEFAULT_LANGUAGE_ID } from "../data/languageOptions";
 const RECIPE_LANGUAGE_STORAGE_KEY = "cookai:recipeLanguage:v1";
 
 /**
- * Root-level safety net. StyleSheet only — never rely on NativeWind here,
- * or a CSS crash would hide the real error.
+ * Root-level safety net. Keep it dependency-light (StyleSheet only, no app
+ * context or themed components) so a crash elsewhere can never hide the real
+ * error.
  */
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -34,7 +36,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    console.error(
+    log.error(
       "[Cook AI] Caught a render crash in ErrorBoundary:",
       error,
       info?.componentStack

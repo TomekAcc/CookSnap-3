@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useRef } from "react";
 import { stampRecipeEmojis } from "../utils/imageUtils";
+import { log } from "../utils/log";
 
 const ModalContext = createContext(null);
 
@@ -27,7 +28,7 @@ function enrichRecipe(recipe) {
     const [stamped] = stampRecipeEmojis([recipe].filter(Boolean));
     return stamped || recipe;
   } catch (err) {
-    console.warn("[Cook AI] enrichRecipe (modal) failed:", err?.message);
+    log.warn("[Cook AI] enrichRecipe (modal) failed:", err?.message);
     return recipe;
   }
 }
@@ -129,7 +130,7 @@ export function ModalProvider({ children }) {
       setActiveModalId(null);
       setSelectedRecipeState(enrichRecipe(recipe));
     } catch (err) {
-      console.warn("[Cook AI] setSelectedRecipe failed:", err?.message);
+      log.warn("[Cook AI] setSelectedRecipe failed:", err?.message);
       setSelectedRecipeState(recipe);
     }
   }, []);
@@ -204,6 +205,7 @@ export function ModalProvider({ children }) {
       activeModalId,
       proReason,
       openModal,
+      setActiveModal,
       closeModal,
       addIngredientOpen,
       setAddIngredientOpen,

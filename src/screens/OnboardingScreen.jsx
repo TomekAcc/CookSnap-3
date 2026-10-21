@@ -25,6 +25,7 @@ import { useCookAI } from "../context/CookAIContext";
 import { LANGUAGE_OPTIONS, DEFAULT_LANGUAGE_ID, getLanguageById } from "../data/languageOptions";
 import { translate } from "../i18n";
 import { SAMPLE_FRIDGE_IMAGE, sampleFridgeSize } from "../constants/sampleFridge";
+import { log } from "../utils/log";
 
 const GREEN = "#059669";
 
@@ -132,7 +133,7 @@ export default function OnboardingScreen({ onContinue }) {
       if (uri) completeDemoScan(uri);
     } catch (err) {
       // The sample is a nicety: if it can't start, just open the app.
-      console.warn("[Cook AI] sample scan could not start:", err?.message);
+      log.warn("[Cook AI] sample scan could not start:", err?.message);
     }
     onContinue();
   };

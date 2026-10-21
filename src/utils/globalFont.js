@@ -18,6 +18,7 @@
  * still reaches every subsequent element.
  */
 import { Text, TextInput } from "react-native";
+import { log } from "./log";
 
 const FONT_BY_WEIGHT = {
   "100": "PlusJakartaSans_400Regular",
@@ -75,7 +76,7 @@ export function installGlobalFont() {
     cssInteropRuntime.jsxs = wrapJsxFn(cssInteropRuntime.jsxs);
     cssInteropRuntime.jsxDEV = wrapJsxFn(cssInteropRuntime.jsxDEV);
   } catch (err) {
-    console.warn("[Cook AI] global font: css-interop runtime patch failed:", err?.message);
+    log.warn("[Cook AI] global font: css-interop runtime patch failed:", err?.message);
   }
 
   // Defensive fallback: any code path still on the plain React runtime
@@ -85,9 +86,8 @@ export function installGlobalFont() {
     const reactJsxRuntime = require("react/jsx-runtime");
     reactJsxRuntime.jsx = wrapJsxFn(reactJsxRuntime.jsx);
     reactJsxRuntime.jsxs = wrapJsxFn(reactJsxRuntime.jsxs);
-    // eslint-disable-next-line camelcase
     if (reactJsxRuntime.jsxDEV) reactJsxRuntime.jsxDEV = wrapJsxFn(reactJsxRuntime.jsxDEV);
   } catch (err) {
-    console.warn("[Cook AI] global font: react jsx-runtime patch failed:", err?.message);
+    log.warn("[Cook AI] global font: react jsx-runtime patch failed:", err?.message);
   }
 }

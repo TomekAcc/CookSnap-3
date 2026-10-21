@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -71,23 +71,11 @@ export default function ScannerScreen() {
     generatedRecipes,
     generateRecipes,
     registerRecipeGenerationAttempt,
-    isPro,
-    dailyRecipeGenerationCount,
-    freeDailyRecipeGenerations,
     ingredients,
     t,
   } = useCookAI();
   const tabScroll = useTabScroll("scanner", scrollViewRef);
   const { setProModalOpen } = useModalState();
-
-  // Shown right on the CTA so a free user sees how many they have left
-  // *before* tapping into a paywall, not just after — and phrased with
-  // "today" so it reads as a daily allowance that comes back tomorrow,
-  // not a one-time limit they've permanently used up.
-  const remainingGenerations = Math.max(
-    0,
-    freeDailyRecipeGenerations - dailyRecipeGenerationCount
-  );
 
   // Free tier caps recipe generations/regenerations per day (each one is
   // its own Gemini call) rather than the scan itself — see

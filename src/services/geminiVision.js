@@ -1,6 +1,7 @@
 import * as ImageManipulator from "expo-image-manipulator";
 import { getIngredientStyle } from "../utils/imageUtils";
 import { getIngredientEmoji } from "../utils/ingredientEmoji";
+import { log } from "../utils/log";
 
 // Per-request timeout so one hung candidate model can't stall the whole
 // scan — a bare fetch() has no built-in timeout and will otherwise wait on
@@ -171,7 +172,7 @@ export async function compressPhotoForVision(imageInput) {
 
     return manipResult.base64 ? manipResult.base64.trim() : null;
   } catch (err) {
-    console.warn("[Cook AI Vision] Compression warning:", err?.message);
+    log.warn("[Cook AI Vision] Compression warning:", err?.message);
     if (typeof imageInput === "string" && imageInput.includes(",")) {
       return imageInput.split(",")[1].trim();
     }
@@ -202,7 +203,7 @@ export async function analyzeFridgeImage(
     .replace(/['"]/g, "");
 
   if (!apiKey) {
-    console.error("[Cook AI Vision] CRITICAL: Missing Gemini API Key!");
+    log.error("[Cook AI Vision] CRITICAL: Missing Gemini API Key!");
     throw new Error(
       "Missing Gemini API Key. Configure EXPO_PUBLIC_GEMINI_API_KEY in your .env file."
     );
@@ -215,7 +216,7 @@ export async function analyzeFridgeImage(
     throw new Error("Invalid image format. Please capture a new photo.");
   }
 
-  console.log(
+  log.debug(
     `[Cook AI Vision] Processing ${inputs.length} photo(s) with 1280px sampler...`
   );
 
@@ -226,7 +227,7 @@ export async function analyzeFridgeImage(
   }
 
   if (!base64Array.length) {
-    console.error(
+    log.error(
       "[Cook AI Vision] CRITICAL: Could not generate Base64 from photo(s)."
     );
     throw new Error("Invalid image format. Please capture a new photo.");
@@ -324,7 +325,7 @@ Return ONLY a JSON array of {"name","icon"} objects.
   for (const url of candidateUrls) {
     const modelName = url.split("models/")[1].split(":")[0];
     try {
-      console.log(
+      log.debug(
         `[Cook AI Vision] Requesting deterministic ${multi ? "multi-photo" : "5-zone"} deep scan (${base64Array.length} image(s)) from ${modelName}...`
       );
 
@@ -338,14 +339,14 @@ Return ONLY a JSON array of {"name","icon"} objects.
       // waiting out this one's cooldown (previously up to 35s) — with a
       // short, bounded candidate list, a fresh model is faster than waiting.
       if (response.status === 429) {
-        console.warn(`[Cook AI Vision] ${modelName} rate-limited (429), trying next model...`);
+        log.warn(`[Cook AI Vision] ${modelName} rate-limited (429), trying next model...`);
         lastError = new Error(`Gemini API Error 429: rate limited`);
         continue;
       }
 
       if (!response.ok) {
         const errText = await response.text();
-        console.warn(
+        log.warn(
           `[Cook AI Vision] Endpoint ${modelName} returned status ${response.status}:`,
           errText.slice(0, 280)
         );
@@ -358,7 +359,7 @@ Return ONLY a JSON array of {"name","icon"} objects.
       const data = await response.json();
       const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-      console.log(`[Cook AI Vision] Raw response from ${modelName}:`, rawText);
+      log.debug(`[Cook AI Vision] Raw response from ${modelName}:`, rawText);
 
       const jsonMatch = rawText.match(/\[\s*\{[\s\S]*\}\s*\]/);
       const jsonString = jsonMatch
@@ -371,7 +372,7 @@ Return ONLY a JSON array of {"name","icon"} objects.
       }
 
       if (jsonString === "[]") {
-        console.log(`[Cook AI Vision] ${modelName} returned empty food list.`);
+        log.debug(`[Cook AI Vision] ${modelName} returned empty food list.`);
         return [];
       }
 
@@ -414,14 +415,14 @@ Return ONLY a JSON array of {"name","icon"} objects.
           return true;
         });
 
-        console.log(
+        log.debug(
           `[Cook AI Vision] SUCCESS! Master scan detected ${unique.length} items:`,
           unique
         );
         return unique;
       }
     } catch (err) {
-      console.warn(`[Cook AI Vision] Error with ${modelName}:`, err?.message);
+      log.warn(`[Cook AI Vision] Error with ${modelName}:`, err?.message);
       lastError = err;
     }
   }
@@ -516,7 +517,7 @@ ${JSON.stringify(
         return { ...item, name, icon, emoji: icon };
       });
     } catch (err) {
-      console.warn("[Cook AI Vision] translateIngredientNames failed:", err?.message);
+      log.warn("[Cook AI Vision] translateIngredientNames failed:", err?.message);
     }
   }
   return items;
@@ -772,7 +773,7 @@ Return ONLY JSON: {"category":"...","icon":"..."}`,
       icon: validIcon || base.icon,
     };
   } catch (err) {
-    console.warn("[Cook AI] Pantry item classification skipped:", err?.message);
+    log.warn("[Cook AI] Pantry item classification skipped:", err?.message);
     return base;
   } finally {
     clearTimeout(timer);
@@ -878,7 +879,7 @@ export async function analyzePantryImage(
   for (const url of candidateUrls) {
     const endpointName = url.match(/models\/(.*?):/)?.[1] || "unknown-model";
     try {
-      console.log(`[Cook AI Vision] Pantry attempt: ${endpointName}`);
+      log.debug(`[Cook AI Vision] Pantry attempt: ${endpointName}`);
       const response = await fetchWithTimeout(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -887,7 +888,7 @@ export async function analyzePantryImage(
 
       if (!response.ok) {
         const errText = await response.text().catch(() => "");
-        console.warn(
+        log.warn(
           `[Cook AI Vision] Pantry ${endpointName} failed (${response.status}):`,
           errText.slice(0, 280)
         );
@@ -921,17 +922,17 @@ export async function analyzePantryImage(
       // valid, final answer, exactly like the fridge path.
       if (Array.isArray(items)) {
         if (items.length === 0) {
-          console.log(`[Cook AI Vision] Pantry ${endpointName} returned empty pantry list.`);
+          log.debug(`[Cook AI Vision] Pantry ${endpointName} returned empty pantry list.`);
           return [];
         }
         const normalized = normalizePantryItems(items);
-        console.log(
+        log.debug(
           `[Cook AI Vision] Pantry SUCCESS — ${normalized.length} staples via ${endpointName}`
         );
         return normalized;
       }
     } catch (err) {
-      console.warn(`[Cook AI Vision] Pantry failed:`, err?.message);
+      log.warn(`[Cook AI Vision] Pantry failed:`, err?.message);
     }
   }
 

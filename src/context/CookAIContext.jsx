@@ -33,6 +33,7 @@ import { useModalState } from "./ModalContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { SAMPLE_FRIDGE_ITEMS } from "../constants/sampleFridge";
 import { toastStore } from "../utils/toastStore";
+import { log } from "../utils/log";
 
 const CookAIContext = createContext(null);
 // Language-only slice of the context. CookAIContext is one 50+ field value, so
@@ -124,7 +125,7 @@ function persistPhotoToDevice(sourceUri) {
     sourceFile.copy(destFile);
     return destFile.uri;
   } catch (err) {
-    console.warn("[Cook AI] Could not persist scan photo to device:", err?.message);
+    log.warn("[Cook AI] Could not persist scan photo to device:", err?.message);
     return sourceUri;
   }
 }
@@ -240,18 +241,13 @@ async function appendFeedbackLog(entry) {
     ].slice(0, 200);
     await AsyncStorage.setItem(FEEDBACK_LOG_STORAGE_KEY, JSON.stringify(next));
   } catch (err) {
-    console.warn("[Cook AI] feedback log append failed:", err?.message);
+    log.warn("[Cook AI] feedback log append failed:", err?.message);
   }
 }
 
 /** Brand-new users start with a clean, empty pantry — no seeded staples. */
 function safePantryInit() {
-  try {
-    return [];
-  } catch (err) {
-    console.warn("[Cook AI] pantry init failed:", err?.message);
-    return [];
-  }
+  return [];
 }
 
 /**
@@ -263,7 +259,7 @@ function safeStorageRead(reader, fallback) {
     const value = typeof reader === "function" ? reader() : fallback;
     return value == null ? fallback : value;
   } catch (err) {
-    console.warn("[Cook AI] storage read failed, using fallback:", err?.message);
+    log.warn("[Cook AI] storage read failed, using fallback:", err?.message);
     return fallback;
   }
 }
@@ -275,7 +271,7 @@ function enrichRecipes(rawRecipes) {
       Array.isArray(rawRecipes) ? rawRecipes.filter(Boolean) : []
     );
   } catch (err) {
-    console.warn("[Cook AI] enrichRecipes failed:", err?.message);
+    log.warn("[Cook AI] enrichRecipes failed:", err?.message);
     return Array.isArray(rawRecipes)
       ? rawRecipes.filter(Boolean).slice(0, 5)
       : [];
@@ -375,7 +371,7 @@ function safeVisibleRecipes(
       };
     });
   } catch (err) {
-    console.warn("[Cook AI] visibleRecipes failed:", err?.message);
+    log.warn("[Cook AI] visibleRecipes failed:", err?.message);
   }
 
   try {
@@ -438,7 +434,7 @@ export function CookAIProvider({ children }) {
           setIngredientPriorityState(raw);
         }
       } catch (err) {
-        console.warn("[Cook AI] ingredient priority hydrate failed:", err?.message);
+        log.warn("[Cook AI] ingredient priority hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setIngredientPriorityHydrated(true);
       }
@@ -451,7 +447,7 @@ export function CookAIProvider({ children }) {
   useEffect(() => {
     if (!ingredientPriorityHydrated) return;
     AsyncStorage.setItem(INGREDIENT_PRIORITY_STORAGE_KEY, ingredientPriority).catch((err) =>
-      console.warn("[Cook AI] ingredient priority persist failed:", err?.message)
+      log.warn("[Cook AI] ingredient priority persist failed:", err?.message)
     );
   }, [ingredientPriorityHydrated, ingredientPriority]);
 
@@ -499,7 +495,7 @@ export function CookAIProvider({ children }) {
           if (Array.isArray(parsed)) setSavedRecipes(parsed);
         }
       } catch (err) {
-        console.warn("[Cook AI] saved recipes hydrate failed:", err?.message);
+        log.warn("[Cook AI] saved recipes hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setSavedHydrated(true);
       }
@@ -512,7 +508,7 @@ export function CookAIProvider({ children }) {
   useEffect(() => {
     if (!savedHydrated) return;
     AsyncStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favorites)).catch(
-      (err) => console.warn("[Cook AI] favorites persist failed:", err?.message)
+      (err) => log.warn("[Cook AI] favorites persist failed:", err?.message)
     );
   }, [savedHydrated, favorites]);
 
@@ -522,7 +518,7 @@ export function CookAIProvider({ children }) {
       SAVED_RECIPES_STORAGE_KEY,
       JSON.stringify(savedRecipes)
     ).catch((err) =>
-      console.warn("[Cook AI] savedRecipes persist failed:", err?.message)
+      log.warn("[Cook AI] savedRecipes persist failed:", err?.message)
     );
   }, [savedHydrated, savedRecipes]);
 
@@ -542,7 +538,7 @@ export function CookAIProvider({ children }) {
           if (Array.isArray(parsed)) setPantryItems(parsed);
         }
       } catch (err) {
-        console.warn("[Cook AI] pantry hydrate failed:", err?.message);
+        log.warn("[Cook AI] pantry hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setPantryHydrated(true);
       }
@@ -555,7 +551,7 @@ export function CookAIProvider({ children }) {
   useEffect(() => {
     if (!pantryHydrated) return;
     AsyncStorage.setItem(PANTRY_STORAGE_KEY, JSON.stringify(pantryItems)).catch(
-      (err) => console.warn("[Cook AI] pantry persist failed:", err?.message)
+      (err) => log.warn("[Cook AI] pantry persist failed:", err?.message)
     );
   }, [pantryHydrated, pantryItems]);
 
@@ -576,7 +572,7 @@ export function CookAIProvider({ children }) {
         const raw = await AsyncStorage.getItem(PRO_STORAGE_KEY);
         if (!cancelled && raw === "true") setIsPro(true);
       } catch (err) {
-        console.warn("[Cook AI] pro entitlement hydrate failed:", err?.message);
+        log.warn("[Cook AI] pro entitlement hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setProHydrated(true);
       }
@@ -589,7 +585,7 @@ export function CookAIProvider({ children }) {
   useEffect(() => {
     if (!proHydrated) return;
     AsyncStorage.setItem(PRO_STORAGE_KEY, isPro ? "true" : "false").catch((err) =>
-      console.warn("[Cook AI] pro entitlement persist failed:", err?.message)
+      log.warn("[Cook AI] pro entitlement persist failed:", err?.message)
     );
   }, [proHydrated, isPro]);
 
@@ -627,7 +623,7 @@ export function CookAIProvider({ children }) {
           // Different date (or malformed) → leave at 0, a fresh day.
         }
       } catch (err) {
-        console.warn("[Cook AI] scan count hydrate failed:", err?.message);
+        log.warn("[Cook AI] scan count hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setScanCountHydrated(true);
       }
@@ -643,7 +639,7 @@ export function CookAIProvider({ children }) {
       SCAN_COUNT_STORAGE_KEY,
       JSON.stringify({ date: todayKey(), count: dailyFridgeScanCount })
     ).catch((err) =>
-      console.warn("[Cook AI] scan count persist failed:", err?.message)
+      log.warn("[Cook AI] scan count persist failed:", err?.message)
     );
   }, [scanCountHydrated, dailyFridgeScanCount]);
 
@@ -682,7 +678,7 @@ export function CookAIProvider({ children }) {
           }
         }
       } catch (err) {
-        console.warn("[Cook AI] pantry scan count hydrate failed:", err?.message);
+        log.warn("[Cook AI] pantry scan count hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setPantryScanCountHydrated(true);
       }
@@ -698,7 +694,7 @@ export function CookAIProvider({ children }) {
       PANTRY_SCAN_COUNT_STORAGE_KEY,
       JSON.stringify({ date: todayKey(), count: dailyPantryScanCount })
     ).catch((err) =>
-      console.warn("[Cook AI] pantry scan count persist failed:", err?.message)
+      log.warn("[Cook AI] pantry scan count persist failed:", err?.message)
     );
   }, [pantryScanCountHydrated, dailyPantryScanCount]);
 
@@ -734,7 +730,7 @@ export function CookAIProvider({ children }) {
           // Different date (or malformed) → leave at 0, a fresh day.
         }
       } catch (err) {
-        console.warn("[Cook AI] generation count hydrate failed:", err?.message);
+        log.warn("[Cook AI] generation count hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setGenerationCountHydrated(true);
       }
@@ -750,7 +746,7 @@ export function CookAIProvider({ children }) {
       GENERATION_COUNT_STORAGE_KEY,
       JSON.stringify({ date: todayKey(), count: dailyRecipeGenerationCount })
     ).catch((err) =>
-      console.warn("[Cook AI] generation count persist failed:", err?.message)
+      log.warn("[Cook AI] generation count persist failed:", err?.message)
     );
   }, [generationCountHydrated, dailyRecipeGenerationCount]);
 
@@ -907,7 +903,7 @@ export function CookAIProvider({ children }) {
           if (Array.isArray(parsed)) setIngredients(parsed);
         }
       } catch (err) {
-        console.warn("[Cook AI] scan data hydrate failed:", err?.message);
+        log.warn("[Cook AI] scan data hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setScanDataHydrated(true);
       }
@@ -926,7 +922,7 @@ export function CookAIProvider({ children }) {
       FRIDGE_PHOTO_STORAGE_KEY,
       JSON.stringify(fridgePhoto)
     ).catch((err) =>
-      console.warn("[Cook AI] fridgePhoto persist failed:", err?.message)
+      log.warn("[Cook AI] fridgePhoto persist failed:", err?.message)
     );
   }, [scanDataHydrated, fridgePhoto]);
 
@@ -936,7 +932,7 @@ export function CookAIProvider({ children }) {
       SCAN_HISTORY_STORAGE_KEY,
       JSON.stringify(scanHistory)
     ).catch((err) =>
-      console.warn("[Cook AI] scanHistory persist failed:", err?.message)
+      log.warn("[Cook AI] scanHistory persist failed:", err?.message)
     );
   }, [scanDataHydrated, scanHistory]);
 
@@ -947,7 +943,7 @@ export function CookAIProvider({ children }) {
       INGREDIENTS_STORAGE_KEY,
       JSON.stringify(ingredients)
     ).catch((err) =>
-      console.warn("[Cook AI] ingredients persist failed:", err?.message)
+      log.warn("[Cook AI] ingredients persist failed:", err?.message)
     );
   }, [scanDataHydrated, ingredients]);
 
@@ -976,7 +972,7 @@ export function CookAIProvider({ children }) {
           }
         }
       } catch (err) {
-        console.warn("[Cook AI] dietary restrictions hydrate failed:", err?.message);
+        log.warn("[Cook AI] dietary restrictions hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setDietaryRestrictionsHydrated(true);
       }
@@ -992,7 +988,7 @@ export function CookAIProvider({ children }) {
       DIETARY_RESTRICTIONS_STORAGE_KEY,
       JSON.stringify(dietaryRestrictions)
     ).catch((err) =>
-      console.warn("[Cook AI] dietary restrictions persist failed:", err?.message)
+      log.warn("[Cook AI] dietary restrictions persist failed:", err?.message)
     );
   }, [dietaryRestrictionsHydrated, dietaryRestrictions]);
 
@@ -1021,7 +1017,7 @@ export function CookAIProvider({ children }) {
           if (preferRaw != null) setCustomDietPrefer(preferRaw);
         }
       } catch (err) {
-        console.warn("[Cook AI] custom diet hydrate failed:", err?.message);
+        log.warn("[Cook AI] custom diet hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setCustomDietHydrated(true);
       }
@@ -1034,14 +1030,14 @@ export function CookAIProvider({ children }) {
   useEffect(() => {
     if (!customDietHydrated) return;
     AsyncStorage.setItem(CUSTOM_DIET_AVOID_STORAGE_KEY, customDietAvoid).catch((err) =>
-      console.warn("[Cook AI] custom diet avoid persist failed:", err?.message)
+      log.warn("[Cook AI] custom diet avoid persist failed:", err?.message)
     );
   }, [customDietHydrated, customDietAvoid]);
 
   useEffect(() => {
     if (!customDietHydrated) return;
     AsyncStorage.setItem(CUSTOM_DIET_PREFER_STORAGE_KEY, customDietPrefer).catch((err) =>
-      console.warn("[Cook AI] custom diet prefer persist failed:", err?.message)
+      log.warn("[Cook AI] custom diet prefer persist failed:", err?.message)
     );
   }, [customDietHydrated, customDietPrefer]);
 
@@ -1132,7 +1128,7 @@ export function CookAIProvider({ children }) {
           setHungerLevel(rawHunger);
         }
       } catch (err) {
-        console.warn("[Cook AI] meal prefs hydrate failed:", err?.message);
+        log.warn("[Cook AI] meal prefs hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setMealPrefsHydrated(true);
       }
@@ -1145,14 +1141,14 @@ export function CookAIProvider({ children }) {
   useEffect(() => {
     if (!mealPrefsHydrated) return;
     AsyncStorage.setItem(SERVINGS_STORAGE_KEY, String(servings)).catch((err) =>
-      console.warn("[Cook AI] servings persist failed:", err?.message)
+      log.warn("[Cook AI] servings persist failed:", err?.message)
     );
   }, [mealPrefsHydrated, servings]);
 
   useEffect(() => {
     if (!mealPrefsHydrated) return;
     AsyncStorage.setItem(HUNGER_LEVEL_STORAGE_KEY, hungerLevel).catch((err) =>
-      console.warn("[Cook AI] hunger level persist failed:", err?.message)
+      log.warn("[Cook AI] hunger level persist failed:", err?.message)
     );
   }, [mealPrefsHydrated, hungerLevel]);
 
@@ -1175,7 +1171,7 @@ export function CookAIProvider({ children }) {
           setUnitSystemState(detectUnitSystem());
         }
       } catch (err) {
-        console.warn("[Cook AI] unit system hydrate failed:", err?.message);
+        log.warn("[Cook AI] unit system hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setUnitSystemHydrated(true);
       }
@@ -1188,7 +1184,7 @@ export function CookAIProvider({ children }) {
   useEffect(() => {
     if (!unitSystemHydrated) return;
     AsyncStorage.setItem(UNIT_SYSTEM_STORAGE_KEY, unitSystem).catch((err) =>
-      console.warn("[Cook AI] unit system persist failed:", err?.message)
+      log.warn("[Cook AI] unit system persist failed:", err?.message)
     );
   }, [unitSystemHydrated, unitSystem]);
 
@@ -1224,7 +1220,7 @@ export function CookAIProvider({ children }) {
           setRecipeLanguageIdState(matchDeviceLanguage(deviceCode));
         }
       } catch (err) {
-        console.warn("[Cook AI] recipe language hydrate failed:", err?.message);
+        log.warn("[Cook AI] recipe language hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setRecipeLanguageHydrated(true);
       }
@@ -1240,7 +1236,7 @@ export function CookAIProvider({ children }) {
       RECIPE_LANGUAGE_STORAGE_KEY,
       recipeLanguageId
     ).catch((err) =>
-      console.warn("[Cook AI] recipe language persist failed:", err?.message)
+      log.warn("[Cook AI] recipe language persist failed:", err?.message)
     );
   }, [recipeLanguageHydrated, recipeLanguageId]);
 
@@ -1286,7 +1282,7 @@ export function CookAIProvider({ children }) {
           const translated = await translateIngredientNames(ingredients, recipeLanguageName);
           if (!cancelled) setIngredients(translated);
         } catch (err) {
-          console.warn("[Cook AI] Fridge inventory auto-translate failed:", err?.message);
+          log.warn("[Cook AI] Fridge inventory auto-translate failed:", err?.message);
         }
       }
       if (pantryItems.length > 0) {
@@ -1294,7 +1290,7 @@ export function CookAIProvider({ children }) {
           const translated = await translateIngredientNames(pantryItems, recipeLanguageName);
           if (!cancelled) setPantryItems(translated);
         } catch (err) {
-          console.warn("[Cook AI] Pantry auto-translate failed:", err?.message);
+          log.warn("[Cook AI] Pantry auto-translate failed:", err?.message);
         }
       }
     })();
@@ -1338,7 +1334,7 @@ export function CookAIProvider({ children }) {
         const raw = await AsyncStorage.getItem(ONBOARDING_STORAGE_KEY);
         if (!cancelled && raw === "true") setOnboardingCompleteState(true);
       } catch (err) {
-        console.warn("[Cook AI] onboarding hydrate failed:", err?.message);
+        log.warn("[Cook AI] onboarding hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setOnboardingHydrated(true);
       }
@@ -1351,7 +1347,7 @@ export function CookAIProvider({ children }) {
   const completeOnboarding = useCallback(() => {
     setOnboardingCompleteState(true);
     AsyncStorage.setItem(ONBOARDING_STORAGE_KEY, "true").catch((err) =>
-      console.warn("[Cook AI] onboarding persist failed:", err?.message)
+      log.warn("[Cook AI] onboarding persist failed:", err?.message)
     );
   }, []);
 
@@ -1361,18 +1357,18 @@ export function CookAIProvider({ children }) {
   const resetOnboarding = useCallback(() => {
     setOnboardingCompleteState(false);
     AsyncStorage.removeItem(ONBOARDING_STORAGE_KEY).catch((err) =>
-      console.warn("[Cook AI] onboarding reset failed:", err?.message)
+      log.warn("[Cook AI] onboarding reset failed:", err?.message)
     );
     // Replaying onboarding is meant to simulate a genuine first-time user
     // end to end — that includes Settings' one-time "Done" hint below,
     // not just the onboarding screens themselves.
     setSettingsDoneHintShownState(false);
     AsyncStorage.removeItem(SETTINGS_DONE_HINT_STORAGE_KEY).catch((err) =>
-      console.warn("[Cook AI] settings done-hint reset failed:", err?.message)
+      log.warn("[Cook AI] settings done-hint reset failed:", err?.message)
     );
     setFirstScanHintShownState(false);
     AsyncStorage.removeItem(FIRST_SCAN_HINT_STORAGE_KEY).catch((err) =>
-      console.warn("[Cook AI] first-scan hint reset failed:", err?.message)
+      log.warn("[Cook AI] first-scan hint reset failed:", err?.message)
     );
   }, []);
 
@@ -1391,7 +1387,7 @@ export function CookAIProvider({ children }) {
         const raw = await AsyncStorage.getItem(SETTINGS_DONE_HINT_STORAGE_KEY);
         if (!cancelled && raw === "true") setSettingsDoneHintShownState(true);
       } catch (err) {
-        console.warn("[Cook AI] settings done-hint hydrate failed:", err?.message);
+        log.warn("[Cook AI] settings done-hint hydrate failed:", err?.message);
       }
     })();
     return () => {
@@ -1402,7 +1398,7 @@ export function CookAIProvider({ children }) {
   const markSettingsDoneHintShown = useCallback(() => {
     setSettingsDoneHintShownState(true);
     AsyncStorage.setItem(SETTINGS_DONE_HINT_STORAGE_KEY, "true").catch((err) =>
-      console.warn("[Cook AI] settings done-hint persist failed:", err?.message)
+      log.warn("[Cook AI] settings done-hint persist failed:", err?.message)
     );
   }, []);
 
@@ -1420,7 +1416,7 @@ export function CookAIProvider({ children }) {
         const raw = await AsyncStorage.getItem(FIRST_SCAN_HINT_STORAGE_KEY);
         if (!cancelled && raw === "true") setFirstScanHintShownState(true);
       } catch (err) {
-        console.warn("[Cook AI] first-scan hint hydrate failed:", err?.message);
+        log.warn("[Cook AI] first-scan hint hydrate failed:", err?.message);
       }
     })();
     return () => {
@@ -1431,7 +1427,7 @@ export function CookAIProvider({ children }) {
   const markFirstScanHintShown = useCallback(() => {
     setFirstScanHintShownState(true);
     AsyncStorage.setItem(FIRST_SCAN_HINT_STORAGE_KEY, "true").catch((err) =>
-      console.warn("[Cook AI] first-scan hint persist failed:", err?.message)
+      log.warn("[Cook AI] first-scan hint persist failed:", err?.message)
     );
   }, []);
 
@@ -1535,7 +1531,7 @@ export function CookAIProvider({ children }) {
       mergeUniqueIngredients(prev, [{ ...item, source: "manual" }])
     );
     setAddIngredientOpen(false);
-  }, []);
+  }, [setAddIngredientOpen]);
 
   /** Merge new vision items — append only, never overwrite; de-dupe by name. */
   const appendIngredients = useCallback((newItems) => {
@@ -1601,7 +1597,7 @@ export function CookAIProvider({ children }) {
   const completeScan = useCallback(async (photoUri, source = "camera") => {
     const rawUri = Array.isArray(photoUri) ? photoUri[0] : photoUri;
     if (!rawUri || typeof rawUri !== "string") {
-      console.warn("[Cook AI] completeScan called with no photo");
+      log.warn("[Cook AI] completeScan called with no photo");
       return;
     }
     // Every real scan funnels through here regardless of entry point (main
@@ -1667,7 +1663,7 @@ export function CookAIProvider({ children }) {
         // direct testing. One retry after a short pause clears it almost
         // every time, instead of the scan silently finishing with zero
         // ingredients and no explanation.
-        console.warn(
+        log.warn(
           "Cook AI Vision scan failed, retrying once:",
           firstErr?.message
         );
@@ -1680,11 +1676,11 @@ export function CookAIProvider({ children }) {
     } catch (err) {
       if (scanSessionIdRef.current !== sessionId) return;
       if (ingredientsCommittedRef.current) return;
-      console.warn("Cook AI Vision scan failed after retry:", err?.message);
+      log.warn("Cook AI Vision scan failed after retry:", err?.message);
       pendingDetectedRef.current = [];
       showToast(t("errors.readPhotoFailed"), "error", 4200);
     }
-  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen, markScanDemo]);
+  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen, setProReason, showToast, markScanDemo]);
 
   /**
    * The onboarding "sample scan". Runs the same choreography as a real scan on
@@ -2074,7 +2070,6 @@ export function CookAIProvider({ children }) {
 
   const mergePantryScanResults = useCallback((detected = []) => {
     if (!Array.isArray(detected) || detected.length === 0) return 0;
-    let added = 0;
     setPantryItems((prev) => {
       const next = [...prev];
       for (const item of detected) {
@@ -2097,7 +2092,6 @@ export function CookAIProvider({ children }) {
           };
         } else {
           next.unshift({ ...item, inStock: true });
-          added += 1;
         }
       }
       return next;
@@ -2154,12 +2148,12 @@ export function CookAIProvider({ children }) {
       } catch (err) {
         if (pantryScanSessionIdRef.current !== sessionId) return;
         if (pantryIngredientsCommittedRef.current) return;
-        console.warn("[Cook AI] Pantry scan failed:", err?.message);
+        log.warn("[Cook AI] Pantry scan failed:", err?.message);
         pantryPendingDetectedRef.current = [];
         showToast(t("errors.analyzePantryFailed"), "error");
       }
     },
-    [t, recipeLanguageName, registerPantryScanAttempt, setProModalOpen, showToast]
+    [t, recipeLanguageName, registerPantryScanAttempt, setProModalOpen, setProReason, showToast]
   );
 
   /**
@@ -2310,7 +2304,7 @@ export function CookAIProvider({ children }) {
 
       scrollToRecipesTop();
     } catch (err) {
-      console.warn("[Cook AI] Recipe generation failed:", err?.message);
+      log.warn("[Cook AI] Recipe generation failed:", err?.message);
       // Never disguise a failure as a real batch: if a previous real batch
       // is still on screen (this was a failed "Regenerate"), leave it
       // exactly as it was and just tell the user this attempt failed —
@@ -2449,7 +2443,7 @@ export function CookAIProvider({ children }) {
         );
         return updated;
       } catch (err) {
-        console.warn("[Cook AI] Recipe auto-translate failed:", err?.message);
+        log.warn("[Cook AI] Recipe auto-translate failed:", err?.message);
         return recipe;
       }
     },

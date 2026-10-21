@@ -16,6 +16,7 @@ import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
+import { log } from "../utils/log";
 
 // Same native-Modal-handoff reasoning as ScanMoreSheet.jsx (fridge's
 // identical popover) — see that file's own comment for the full history.
@@ -66,7 +67,7 @@ export default function PantryScanMoreSheet({ anchor }) {
         }),
       ]).start();
     }
-  }, [pantryScanOpen]);
+  }, [pantryScanOpen, opacity, scale]);
 
   const handleClose = () => setPantryScanOpen?.(false);
 
@@ -107,7 +108,7 @@ export default function PantryScanMoreSheet({ anchor }) {
           if (result.canceled || !result.assets?.[0]?.uri) return;
           await completePantryScan?.(result.assets[0].uri, "gallery");
         } catch (err) {
-          console.warn("[Cook AI] Pantry Scan More gallery failed:", err?.message);
+          log.warn("[Cook AI] Pantry Scan More gallery failed:", err?.message);
           showToast?.(t("errors.loadPhotoFailed"), "error");
         }
       })();

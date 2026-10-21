@@ -24,8 +24,6 @@ export default function ProfileScreen() {
   const tabScroll = useTabScroll("profile");
   const insets = useSafeAreaInsets();
   const {
-    dietaryRestrictions,
-    toggleDietaryRestriction,
     setActiveTab,
     isPro,
     dailyRecipeGenerationCount,

@@ -1,6 +1,7 @@
 import {
   getDishEmojiAndStyle,
 } from "../utils/imageUtils";
+import { log } from "../utils/log";
 
 export const CATEGORY_STYLE = {
   breakfast: { emoji: "🥐", colors: ["#F59E0B", "#EA580C"] },
@@ -215,7 +216,7 @@ function buildRecipesWithEmojiBadges(raw) {
       }
     });
   } catch (err) {
-    console.warn("[Cook AI] Failed to stamp recipe emoji badges on boot:", err?.message);
+    log.warn("[Cook AI] Failed to stamp recipe emoji badges on boot:", err?.message);
     return (raw || []).map((recipe, idx) => ({
       ...recipe,
       emoji: "🥘",
@@ -266,7 +267,7 @@ export function filterRecipes(recipes, mealType, hungerLevel) {
 
     return filtered.slice(0, 5);
   } catch (err) {
-    console.warn("[Cook AI] filterRecipes failed:", err?.message);
+    log.warn("[Cook AI] filterRecipes failed:", err?.message);
     return Array.isArray(recipes) ? recipes.filter(Boolean).slice(0, 5) : [];
   }
 }

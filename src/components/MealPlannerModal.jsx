@@ -31,6 +31,7 @@ import SwipeToDeleteRow from "./SwipeToDeleteRow";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { animateLayout } from "../utils/layoutMotion";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
+import { log } from "../utils/log";
 
 const PLANNER_STORAGE_KEY = "cookai:weeklyPlan:v1";
 
@@ -229,7 +230,7 @@ export default function MealPlannerModal() {
           }
         }
       } catch (err) {
-        console.warn("[Cook AI] Weekly plan hydrate failed:", err?.message);
+        log.warn("[Cook AI] Weekly plan hydrate failed:", err?.message);
       } finally {
         if (!cancelled) setPlanHydrated(true);
       }
@@ -243,7 +244,7 @@ export default function MealPlannerModal() {
   useEffect(() => {
     if (!planHydrated) return;
     AsyncStorage.setItem(PLANNER_STORAGE_KEY, JSON.stringify(weeklyPlan)).catch(
-      (err) => console.warn("[Cook AI] Weekly plan persist failed:", err?.message)
+      (err) => log.warn("[Cook AI] Weekly plan persist failed:", err?.message)
     );
   }, [planHydrated, weeklyPlan]);
 
@@ -344,7 +345,7 @@ export default function MealPlannerModal() {
       if (isMountedRef.current) mealPoolRef.current = pool;
       return pool;
     } catch (err) {
-      console.warn("[Cook AI] Meal pool refresh failed:", err?.message);
+      log.warn("[Cook AI] Meal pool refresh failed:", err?.message);
       return mealPoolRef.current;
     }
   }, [getPlannerMealsFromInventory]);
@@ -475,7 +476,7 @@ export default function MealPlannerModal() {
         "success"
       );
     } catch (err) {
-      console.warn("[Cook AI] Auto-fill week failed:", err?.message);
+      log.warn("[Cook AI] Auto-fill week failed:", err?.message);
       showToast?.(t("mealPlanner.planWeekFailed"), "error");
     } finally {
       if (isMountedRef.current) setIsGeneratingWeek(false);
@@ -500,7 +501,7 @@ export default function MealPlannerModal() {
       }
       setDay(dayId, meal);
     } catch (err) {
-      console.warn("[Cook AI] Generate day meal failed:", err?.message);
+      log.warn("[Cook AI] Generate day meal failed:", err?.message);
       showToast?.(t("mealPlanner.generateMealFailed"), "error");
     } finally {
       if (isMountedRef.current) setLoadingDayId(null);
@@ -521,7 +522,7 @@ export default function MealPlannerModal() {
       setDay(dayId, meal);
       showToast?.(t("mealPlanner.mealSwappedToast"), "info");
     } catch (err) {
-      console.warn("[Cook AI] Swap meal failed:", err?.message);
+      log.warn("[Cook AI] Swap meal failed:", err?.message);
       showToast?.(t("mealPlanner.swapMealFailed"), "error");
     } finally {
       if (isMountedRef.current) setLoadingDayId(null);

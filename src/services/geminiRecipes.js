@@ -9,6 +9,7 @@ import { getIngredientEmoji } from "../utils/ingredientEmoji";
 import { translate } from "../i18n";
 import { LANGUAGE_OPTIONS } from "../data/languageOptions";
 import { matchesStapleCategory } from "../utils/assumedStaples";
+import { log } from "../utils/log";
 
 /**
  * The offline/local-template fallback (buildSmartFallbackRecipes) has no
@@ -1153,19 +1154,6 @@ The other recipes already kept for this same batch have these "dishType" values:
         .join(", ")}. None of the recipe(s) you generate now may use any of these dishType values — pick a genuinely different format from the real range available for this meal, not just a different title on the same format.\n`
     : "";
 
-  const withinCategoryFormats = {
-    dessert:
-      "bowls/parfaits, baked goods (cake, crumble, cobbler, bars), stovetop creams (pudding, custard, mousse), no-bake bites, fruit-forward preparations (compote, baked fruit, galette)",
-    breakfast:
-      "egg dishes, batter-based (pancakes, waffles, crepes), grain bowls (oatmeal, overnight oats), yogurt/fruit bowls, savory hash or skillet",
-    snack:
-      "dips/spreads with something to dip, energy/no-bake bites, toast-based, small skillet bites, fruit or yogurt-based",
-    lunch:
-      "pasta, stir-fry, skillet, soup/stew, hearty salad, wrap or sandwich, grain bowl",
-    dinner:
-      "pasta, stir-fry, skillet, soup/stew, casserole/bake, sheet-pan roast",
-  };
-
   const diversityOrMainMealsRule = mainMealsOnly
     ? `═══ ABSOLUTE RULE FOR WEEKLY MEAL PLANNER (MANDATORY) ═══
 Generate ONLY substantial, savory, satisfying main meals (lunches and dinners) like pastas, stir-fries, skillet bakes, soups, and hearty salads. STRICTLY FORBIDDEN: do NOT include sweet desserts, sugary breakfast bowls, parfaits, or pancakes anywhere in this batch. Every single recipe must be a proper, comforting home-cooked meal — vary the cooking style (pasta, stir-fry, skillet, soup/stew, hearty salad, casserole/bake) across the batch so it doesn't feel repetitive, but never break the savory-main-meal rule to do so.`
@@ -2033,7 +2021,7 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
       if (v.verdict === "reject") {
         if (rejected < maxRejects) {
           rejected += 1;
-          console.log(`[Cook AI] Recipe QA rejected "${recipe.title}": ${v.reason || "no reason given"}`);
+          log.debug(`[Cook AI] Recipe QA rejected "${recipe.title}": ${v.reason || "no reason given"}`);
           return;
         }
         result.push(recipe);
@@ -2063,11 +2051,11 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
       result.push(recipe);
     });
     if (fixed || rejected) {
-      console.log(`[Cook AI] Recipe QA: fixed ${fixed}, rejected ${rejected} of ${rawRecipes.length}.`);
+      log.debug(`[Cook AI] Recipe QA: fixed ${fixed}, rejected ${rejected} of ${rawRecipes.length}.`);
     }
     return result;
   } catch (err) {
-    console.warn(`[Cook AI] Recipe QA skipped (${err?.message}) — using the batch as generated.`);
+    log.warn(`[Cook AI] Recipe QA skipped (${err?.message}) — using the batch as generated.`);
     return rawRecipes;
   }
 }
@@ -2375,7 +2363,7 @@ export async function generatePlannerMealsWithGemini(
       .filter((r) => !r?.isSmartFallback)
       .map(toPlannerCard);
   } catch (err) {
-    console.warn("[Cook AI] Planner Gemini generation failed:", err?.message);
+    log.warn("[Cook AI] Planner Gemini generation failed:", err?.message);
   }
 
   if (cards.length >= count) return cards.slice(0, count);
@@ -2597,7 +2585,7 @@ export async function generateRecipesWithGemini(
     const beforeDishTypeDedupe = normalized.length;
     normalized = dedupeDishType(normalized);
     if (normalized.length < beforeDishTypeDedupe) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforeDishTypeDedupe - normalized.length} recipe(s) sharing a dishType with an earlier recipe in the same batch.`
       );
     }
@@ -2609,7 +2597,7 @@ export async function generateRecipesWithGemini(
       (r, i) => !isRenameOfKeptTitle(r.title, normalized.slice(0, i).map((n) => n.title))
     );
     if (normalized.length < beforeRenameDedupe) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforeRenameDedupe - normalized.length} recipe(s) that repeat an earlier recipe in the same batch under a new name.`
       );
     }
@@ -2617,7 +2605,7 @@ export async function generateRecipesWithGemini(
     const beforeCutTechniqueFilter = normalized.length;
     normalized = normalized.filter((r) => !hasCutTechniqueMismatch(r));
     if (normalized.length < beforeCutTechniqueFilter) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforeCutTechniqueFilter - normalized.length} recipe(s) using a tough braising cut with a too-short cook time.`
       );
     }
@@ -2625,7 +2613,7 @@ export async function generateRecipesWithGemini(
     const beforeFlavorMismatchFilter = normalized.length;
     normalized = normalized.filter((r) => !hasTitleFlavorMismatch(r));
     if (normalized.length < beforeFlavorMismatchFilter) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforeFlavorMismatchFilter - normalized.length} recipe(s) whose title claimed a flavor/ingredient not actually in ingredientsList.`
       );
     }
@@ -2633,7 +2621,7 @@ export async function generateRecipesWithGemini(
     const beforeThinSoupFilter = normalized.length;
     normalized = normalized.filter((r) => !hasThinSoup(r));
     if (normalized.length < beforeThinSoupFilter) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforeThinSoupFilter - normalized.length} recipe(s) labeled "soup" with fewer than 5 ingredients.`
       );
     }
@@ -2641,7 +2629,7 @@ export async function generateRecipesWithGemini(
     const beforeDoughFeasibilityFilter = normalized.length;
     normalized = normalized.filter((r) => !hasUnrealisticFromScratchDough(r));
     if (normalized.length < beforeDoughFeasibilityFilter) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforeDoughFeasibilityFilter - normalized.length} recipe(s) requiring from-scratch dough on an unrealistically short timeline.`
       );
     }
@@ -2649,7 +2637,7 @@ export async function generateRecipesWithGemini(
     const beforeOvenTempFilter = normalized.length;
     normalized = normalized.filter((r) => !hasMissingOvenTemp(r));
     if (normalized.length < beforeOvenTempFilter) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforeOvenTempFilter - normalized.length} recipe(s) using the oven/broiler/grill with no temperature stated anywhere in the steps.`
       );
     }
@@ -2657,7 +2645,7 @@ export async function generateRecipesWithGemini(
     const beforePanSizeFilter = normalized.length;
     normalized = normalized.filter((r) => !hasMissingPanSize(r));
     if (normalized.length < beforePanSizeFilter) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforePanSizeFilter - normalized.length} recipe(s) naming a baking dish/pan with no size stated anywhere in the steps.`
       );
     }
@@ -2665,7 +2653,7 @@ export async function generateRecipesWithGemini(
     const beforeDonenessCueFilter = normalized.length;
     normalized = normalized.filter((r) => !hasMissingDonenessCue(r));
     if (normalized.length < beforeDonenessCueFilter) {
-      console.warn(
+      log.warn(
         `[Cook AI] ${label} returned ${beforeDonenessCueFilter - normalized.length} recipe(s) with meat/poultry/fish but no checkable doneness cue (temperature or visual/textural signal) anywhere in the steps.`
       );
     }
@@ -2676,7 +2664,7 @@ export async function generateRecipesWithGemini(
         (r) => !isNearDuplicateOfExcluded(r.title, excludeForCall)
       );
       if (normalized.length < beforeDuplicateFilter) {
-        console.warn(
+        log.warn(
           `[Cook AI] ${label} returned ${beforeDuplicateFilter - normalized.length} recipe(s) too similar to an excluded title.`
         );
       }
@@ -2691,7 +2679,7 @@ export async function generateRecipesWithGemini(
         // Confirmed real failure (see getDietViolation's doc comment) — the
         // prompt's own "HIGHEST PRIORITY / zero exceptions" guardrail isn't
         // reliable enough on its own, so this is not a hypothetical check.
-        console.warn(
+        log.warn(
           `[Cook AI] ${label} returned ${beforeDietFilter - normalized.length} recipe(s) violating an active diet restriction.`
         );
       }
@@ -2708,7 +2696,7 @@ export async function generateRecipesWithGemini(
     const apiVersion = url.includes("/v1beta/") ? "v1beta" : "v1";
 
     try {
-      console.log(`[Cook AI] Generating recipes: ${apiVersion} -> ${modelName}`);
+      log.debug(`[Cook AI] Generating recipes: ${apiVersion} -> ${modelName}`);
       // Ask for one spare recipe up front. Measured live: the most common
       // reason a batch ran short was a single recipe dropped by the safety
       // filters (usually a repeated dishType), and each top-up round to
@@ -2732,7 +2720,7 @@ export async function generateRecipesWithGemini(
         // of this inventory or these models. A single retry absorbs a blip
         // like that without waiting for the second candidate model AND the
         // final static fallback to also be reached.
-        console.warn(
+        log.warn(
           `[Cook AI] ${modelName} failed once (${firstErr?.message}) — retrying the same model once before moving on.`
         );
         rawRecipes = await fetchRawRecipes(url, mainRequestCount, excludeTitles);
@@ -2740,7 +2728,7 @@ export async function generateRecipesWithGemini(
 
       if (Array.isArray(rawRecipes) && rawRecipes.length > 0) {
         if (rawRecipes.length !== mainRequestCount) {
-          console.warn(
+          log.warn(
             `[Cook AI] Expected ${mainRequestCount} recipes, got ${rawRecipes.length} from ${modelName} — padding/trimming to ${recipeCount}`
           );
         }
@@ -2798,7 +2786,7 @@ export async function generateRecipesWithGemini(
           cumulativeExclude.push(...normalized.map((r) => r.title));
           const retryExclude = [...new Set(cumulativeExclude)];
           try {
-            console.log(
+            log.debug(
               `[Cook AI] ${modelName} batch came up ${shortfall} short after safety filters — top-up attempt ${attempt}/${MAX_TOPUP_ATTEMPTS} for fresh replacements before falling back to static recipes.`
             );
             const usedDishTypesSoFar = normalized.map((r) => r.dishType).filter(Boolean);
@@ -2850,7 +2838,7 @@ export async function generateRecipesWithGemini(
               normalized.push(r);
             }
           } catch (retryErr) {
-            console.warn(
+            log.warn(
               `[Cook AI] Top-up attempt ${attempt} failed:`,
               retryErr?.message
             );
@@ -2879,7 +2867,7 @@ export async function generateRecipesWithGemini(
         // failure at the end of this loop) beats returning an empty batch
         // as if it were a normal, if small, result.
         if (finalBatch.length > 0) {
-          console.log(
+          log.debug(
             `[Cook AI] Generated ${finalBatch.length} recipes using ${modelName} (${apiVersion})`
           );
           return finalBatch;
@@ -2894,18 +2882,18 @@ export async function generateRecipesWithGemini(
       }
     } catch (err) {
       if (err?.name === "AbortError") {
-        console.warn(
+        log.warn(
           `[Cook AI] ${modelName} timed out after ${REQUEST_TIMEOUT_MS}ms`
         );
         lastError = new GeminiRecipeError("The AI response timed out.");
       } else {
-        console.warn(`[Cook AI] Fetch error for ${modelName}:`, err?.message);
+        log.warn(`[Cook AI] Fetch error for ${modelName}:`, err?.message);
         lastError = err;
       }
     }
   }
 
-  console.warn(
+  log.warn(
     "[Cook AI] All Vision Engine endpoints failed:",
     lastError?.message || lastError
   );
@@ -3001,7 +2989,7 @@ Return ONLY a single raw JSON object (not an array) with these exact keys:
   for (const url of candidateUrls) {
     const modelName = url.match(/models\/(.*?):/)?.[1] || "unknown-model";
     try {
-      console.log(`[Cook AI] Modifying recipe via ${modelName}: "${cleanInstruction}"`);
+      log.debug(`[Cook AI] Modifying recipe via ${modelName}: "${cleanInstruction}"`);
       const generationConfig = {
         temperature: 0.3,
         responseMimeType: "application/json",
@@ -3050,7 +3038,7 @@ Return ONLY a single raw JSON object (not an array) with these exact keys:
         // why prompt wording alone isn't trusted here).
         const violation = getDietViolation(result.ingredientsList, dietaryRestrictions);
         if (violation) {
-          console.warn(
+          log.warn(
             `[Cook AI] ${modelName} modify result violated an active diet restriction — retrying:`,
             `"${violation.ingredient}" (${violation.word}, ${violation.dietId})`
           );

@@ -38,7 +38,7 @@ export default function SavedScreen() {
   const insets = useSafeAreaInsets();
   const { savedRecipes, toggleSaveRecipe, t } = useCookAI();
   const { setSelectedRecipe } = useModalState();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [openSwipeId, setOpenSwipeId] = useState(null);
   const [mealFilter, setMealFilter] = useState("all");
 

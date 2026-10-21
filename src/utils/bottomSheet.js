@@ -10,8 +10,8 @@ import {
   Dimensions,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { log } from "./log";
 
-const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export const BACKDROP_COLOR = "rgba(15, 23, 42, 0.58)";
@@ -108,7 +108,7 @@ export function useBackdropFade(animate) {
         useNativeDriver: false,
       }).start();
     } catch (err) {
-      console.warn("[useBackdropFade] animation failed, snapping:", err?.message);
+      log.warn("[useBackdropFade] animation failed, snapping:", err?.message);
       backdropOpacity.setValue(animate ? 1 : 0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -134,7 +134,7 @@ export function useDrawerSlideIn(animate) {
         useNativeDriver: true,
       }).start();
     } catch (err) {
-      console.warn("[useDrawerSlideIn] animation failed, snapping:", err?.message);
+      log.warn("[useDrawerSlideIn] animation failed, snapping:", err?.message);
       translateX.setValue(animate ? 0 : -SCREEN_WIDTH);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

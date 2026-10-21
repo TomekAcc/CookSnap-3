@@ -28,7 +28,7 @@ import StandardModal from "../components/StandardModal";
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
   const insets = useSafeAreaInsets();
-  const { theme, toggleTheme, isDark, colors } = useTheme();
+  const { theme, toggleTheme, colors } = useTheme();
   const {
     unitSystem,
     setUnitSystem,

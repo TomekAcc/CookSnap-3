@@ -16,6 +16,7 @@ import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
+import { log } from "../utils/log";
 
 // launchImageLibraryAsync presents a real native iOS view controller.
 // Confirmed via device logs: calling it right after this popover's own
@@ -72,7 +73,7 @@ export default function ScanMoreSheet({ anchor }) {
         }),
       ]).start();
     }
-  }, [scanMoreOpen]);
+  }, [scanMoreOpen, opacity, scale]);
 
   const handleClose = () => setScanMoreOpen?.(false);
 
@@ -118,38 +119,38 @@ export default function ScanMoreSheet({ anchor }) {
   };
 
   const handlePickGallery = () => {
-    console.log("[ScanMore] From Gallery pressed");
+    log.debug("[ScanMore] From Gallery pressed");
     if (!canScanFridge) {
       openProAfterClose();
       return;
     }
     setScanMoreOpen?.(false);
     setTimeout(() => {
-      console.log("[ScanMore] handoff delay elapsed, starting picker flow");
+      log.debug("[ScanMore] handoff delay elapsed, starting picker flow");
       void (async () => {
         try {
           prepareScanMore?.();
-          console.log("[ScanMore] requesting media library permission...");
+          log.debug("[ScanMore] requesting media library permission...");
           const permissionResult =
             await ImagePicker.requestMediaLibraryPermissionsAsync();
-          console.log("[ScanMore] permission result:", JSON.stringify(permissionResult));
+          log.debug("[ScanMore] permission result:", JSON.stringify(permissionResult));
           if (!permissionResult.granted) {
             showToast?.(t("errors.galleryPermission"), "error");
             return;
           }
-          console.log("[ScanMore] launching image library...");
+          log.debug("[ScanMore] launching image library...");
           const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ["images"],
             quality: 0.9,
             exif: false,
           });
-          console.log("[ScanMore] picker result canceled:", result.canceled);
+          log.debug("[ScanMore] picker result canceled:", result.canceled);
           if (result.canceled || !result.assets?.[0]?.uri) return;
-          console.log("[ScanMore] got asset uri, calling completeScan");
+          log.debug("[ScanMore] got asset uri, calling completeScan");
           await completeScan?.(result.assets[0].uri, "gallery");
-          console.log("[ScanMore] completeScan finished");
+          log.debug("[ScanMore] completeScan finished");
         } catch (err) {
-          console.warn("[Cook AI] Scan More gallery failed:", err?.message, err?.stack);
+          log.warn("[Cook AI] Scan More gallery failed:", err?.message, err?.stack);
           showToast?.(t("errors.loadPhotoFailed"), "error");
         }
       })();
