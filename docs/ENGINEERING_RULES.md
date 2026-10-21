@@ -87,10 +87,26 @@ production iOS export: following these rules took the Hermes bundle from
 ## Testing
 
 ### Current state of the art here (be honest about it)
-There is no automated unit/integration test suite for this app yet. Testing
-today is: (1) a Playwright-driven web smoke test for crash-level JS bugs,
-and (2) manual on-device verification through Expo Go. Don't claim a change
-is "tested" unless one of these actually ran.
+Testing is three layers, none of which replaces the others:
+1. **Unit tests** (`npm test`, Jest + `jest-expo`, files in `__tests__/`) for
+   pure logic: diet/allergy filtering, i18n lookup and plural forms, a parity
+   check that all 31 translation tables have the same keys and `{placeholders}`
+   as English, time/calorie formatting and pantry text helpers. When you move
+   logic out of a component or the context (see the refactor plan), add its
+   test in the same change.
+2. A Playwright-driven **web smoke test** for crash-level JS bugs.
+3. **Manual on-device verification** through Expo Go.
+There is still no automated coverage of screens, gestures or the scan flow.
+Don't claim a change is "tested" unless one of these actually ran.
+
+### Lint (`npm run lint`)
+- ESLint with `eslint-config-expo` (includes `react-hooks/exhaustive-deps`);
+  it must stay at zero warnings. `no-console` is an error in app code: use
+  `log.debug` / `log.warn` / `log.error` from `src/utils/log.js` (`debug` is
+  stripped in production).
+- A new `eslint-disable` needs a reason in the comment above it. The existing
+  `react-hooks/exhaustive-deps` suppressions mark effects that intentionally
+  run only when one value changes — don't copy the pattern for convenience.
 
 ### Web smoke test (`scripts/web-smoke-test.js`)
 - Run it before publishing any change that touches a shared component —
@@ -284,16 +300,17 @@ is "tested" unless one of these actually ran.
 ## CI/CD
 
 ### Current pipeline (honest state, see roadmap issue #2)
-There is no CI and no standalone signed build yet. "Shipping" today means:
+CI (`.github/workflows/ci.yml`) runs `npm run lint` and `npm test` on every
+push and pull request. It does not run the web smoke test and does not publish
+anything. There is no standalone signed build yet. "Shipping" today means:
 1. Edit source in `src/`.
 2. Bump the version marker (see `versioning.md`).
 3. `export EXPO_TOKEN=... && eas update --branch preview --message "..."`.
 4. Confirm on a real device via Expo Go.
 
-There is no automated gate between a code change and it reaching a real
-user's phone. Treat that as a real risk, not a convenience — run the web
-smoke test (`testing.md`) before every publish that touches shared code,
-since nothing else will catch a crash before it ships.
+CI only gates the pushed branch, not the `eas update` command, and it cannot
+see crashes in rendering. Treat that as a real risk — run lint, tests and the
+web smoke test (`testing.md`) before every publish that touches shared code.
 
 ### Before this project has real CI
 - Any pre-publish check that CAN run without a full CI system should run
@@ -304,10 +321,9 @@ since nothing else will catch a crash before it ships.
   looked too small to bother checking.
 
 ### When CI is built (roadmap item #2 groundwork)
-- The web smoke test is already structured to be CI-runnable
-  (`scripts/web-smoke-test.js`, exits non-zero on failure) — wire it into
-  a GitHub Actions workflow on push/PR before building anything more
-  elaborate.
+- Add the web smoke test to the workflow (`scripts/web-smoke-test.js` exits
+  non-zero on failure; it needs Metro running and a Chromium install) before
+  building anything more elaborate.
 - `eas build` profiles (`eas.json`) should exist for `preview` (internal
   testing) and `production` (store submission) before any store listing
   work starts — see `docs/IMPLEMENTATION_ROADMAP.md` item #2.
