@@ -11,8 +11,6 @@ import {
   Dimensions,
   Platform,
 } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   Camera,
@@ -35,9 +33,9 @@ import { sampleFridgeFitHeight } from "../constants/sampleFridge";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import ScanMoreSheet from "./scanner/ScanMoreSheet";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ScanCameraModal from "./scanner/ScanCameraModal";
+import { useScanCapture } from "./scanner/useScanCapture";
 import { log } from "../utils/log";
-import { useEntitlements } from "../context/EntitlementsContext";
 import { useInventory } from "../context/InventoryContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useOnboarding } from "../context/OnboardingContext";
@@ -151,8 +149,6 @@ export default function FridgeScannerHero() {
     scanRevealActive,
     setScanRevealActive,
     scanningLabel,
-    cameraOpen,
-    setCameraOpen,
     fridgePhoto,
     scanHistory,
     hasScanned,
@@ -160,10 +156,9 @@ export default function FridgeScannerHero() {
     endScanChoreography,
     resetScan,
   } = useScan();
-  const { canScanFridge } = useEntitlements();
   const { t, recipeLanguageId } = useLanguage();
   const { firstScanHintShown, markFirstScanHintShown } = useOnboarding();
-  const { setScanMoreOpen, setProModalOpen, setProReason } = useModalState();
+  const { setScanMoreOpen } = useModalState();
   const { colors, isDark } = useTheme();
   const scanMoreButtonRef = useRef(null);
   const [scanMoreAnchor, setScanMoreAnchor] = useState(null);
@@ -249,15 +244,11 @@ export default function FridgeScannerHero() {
   // Read by the reveal animation without making its effect re-run on every edit.
   const ingredientCountRef = useRef(0);
   ingredientCountRef.current = foodCount;
-  const insets = useSafeAreaInsets();
-  const shutterBottom = Math.max(insets.bottom + 28, 40);
 
-  const [permission, requestPermission] = useCameraPermissions();
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
   const [showAddInput, setShowAddInput] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
-  const cameraRef = useRef(null);
 
   const photoHeightAnim = useRef(new Animated.Value(COMPACT_HEIGHT)).current;
   const ingredientsOpacity = useRef(new Animated.Value(0)).current;
@@ -656,27 +647,6 @@ export default function FridgeScannerHero() {
   // prompt for nothing; it never itself consumes an allowance, so
   // denying the permission prompt or backing out of the camera without
   // capturing anything never burns a scan.
-  const handleOpenCamera = async () => {
-    if (!canScanFridge) {
-      setProReason?.("scan");
-      setProModalOpen(true);
-      return;
-    }
-    try {
-      if (!permission?.granted) {
-        const result = await requestPermission();
-        if (!result.granted) {
-          showToast?.(t("errors.cameraPermission"), "error");
-          return;
-        }
-      }
-      setCameraOpen(true);
-    } catch (err) {
-      log.warn("[Cook AI] Failed to open camera:", err?.message);
-      showToast?.(t("errors.openCameraFailed"), "error");
-    }
-  };
-
   const beginInstantScan = async (uri, source) => {
     if (!uri) return;
     // Measure the photo first so the frame opens at its final shape; resizing
@@ -693,54 +663,8 @@ export default function FridgeScannerHero() {
     }
   };
 
-  const handleCapture = async () => {
-    if (!cameraRef.current) return;
-    try {
-      const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.85,
-        imageType: "jpg",
-      });
-      setCameraOpen(false);
-      await beginInstantScan(photo.uri, "camera");
-    } catch (err) {
-      log.warn("[Cook AI] Failed to capture photo:", err?.message);
-      setCameraOpen(false);
-      showToast?.(t("errors.capturePhotoFailed"), "error");
-    }
-  };
-
-
-  const handlePickFromGallery = async () => {
-    if (!canScanFridge) {
-      setProReason?.("scan");
-      setProModalOpen(true);
-      return;
-    }
-    try {
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        showToast?.(t("errors.galleryPermission"), "error");
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        quality: 0.9,
-        exif: false,
-      });
-
-      if (!result.canceled && result.assets?.[0]?.uri) {
-        await beginInstantScan(result.assets[0].uri, "gallery");
-      }
-    } catch (err) {
-      log.warn(
-        "[Cook AI] Failed to pick photo from gallery:",
-        err?.message
-      );
-      showToast?.(t("errors.loadPhotoFailed"), "error");
-    }
-  };
+  const { camera, openCamera: handleOpenCamera, pickFromGallery: handlePickFromGallery } =
+    useScanCapture("fridge", beginInstantScan);
 
   const handleAddItem = () => {
     const trimmed = newItemName.trim();
@@ -1783,73 +1707,7 @@ export default function FridgeScannerHero() {
         )}
       </View>
 
-      {cameraOpen ? (
-        <Modal
-          visible
-          animationType="slide"
-          statusBarTranslucent
-          presentationStyle="fullScreen"
-          onRequestClose={() => setCameraOpen(false)}
-        >
-          <View style={{ flex: 1, backgroundColor: "#000000" }}>
-            <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
-
-            <PerfectCloseButton
-              isFullScreen
-              onPress={() => setCameraOpen(false)}
-              accessibilityLabel={t("a11y.closeCamera")}
-            />
-
-            <View
-              pointerEvents="box-none"
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: shutterBottom,
-                alignItems: "center",
-                zIndex: 50,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontWeight: "700",
-                  fontSize: 17,
-                  marginBottom: 24,
-                  textAlign: "center",
-                  paddingHorizontal: 24,
-                }}
-              >
-                {t("scanner.pointAtFridge")}
-              </Text>
-              <TouchableOpacity
-                onPress={handleCapture}
-                activeOpacity={0.8}
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 40,
-                  backgroundColor: "#FFFFFF",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 4,
-                  borderColor: "#10B981",
-                }}
-              >
-                <View
-                  style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 32,
-                    backgroundColor: "#10B981",
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      ) : null}
+      <ScanCameraModal {...camera} hint={t("scanner.pointAtFridge")} />
 
       {photoViewerOpen ? (
         <Modal

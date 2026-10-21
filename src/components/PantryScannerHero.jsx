@@ -4,13 +4,10 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Modal,
   Animated,
   Easing,
   Platform,
 } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import * as ImagePicker from "expo-image-picker";
 import { Camera, Image as ImageIcon, CheckCircle2 } from "../icons";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
@@ -24,11 +21,11 @@ import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import PrivacyNote from "./PrivacyNote";
 import ScanMoreSheet from "./scanner/ScanMoreSheet";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ScanCameraModal from "./scanner/ScanCameraModal";
+import { useScanCapture } from "./scanner/useScanCapture";
 import { useInventory } from "../context/InventoryContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useScan } from "../context/ScanContext";
-import { showToast } from "../utils/toast";
 
 /** Compact height for the captured photo once a scan finishes. */
 const COMPACT_HEIGHT = 130;
@@ -84,8 +81,6 @@ export default function PantryScannerHero() {
     isPantryScanning,
     hasPantryScanned,
     pantryPhoto,
-    pantryCameraOpen,
-    setPantryCameraOpen,
     completePantryScan,
     endPantryScanChoreography,
     resetPantryPhoto,
@@ -93,13 +88,8 @@ export default function PantryScannerHero() {
   const { t, recipeLanguageId } = useLanguage();
   const { setPantryScanOpen } = useModalState();
   const { colors, isDark } = useTheme();
-  const insets = useSafeAreaInsets();
-  const shutterBottom = Math.max(insets.bottom + 28, 40);
   const scanMoreButtonRef = useRef(null);
   const [scanMoreAnchor, setScanMoreAnchor] = useState(null);
-
-  const [permission, requestPermission] = useCameraPermissions();
-  const cameraRef = useRef(null);
 
   // See holdingAtComplete in FridgeScannerHero for the full reasoning —
   // identical fix, identical failure, applied here.
@@ -417,52 +407,8 @@ export default function PantryScannerHero() {
     });
   };
 
-  const handleOpenCamera = async () => {
-    try {
-      if (!permission?.granted) {
-        const result = await requestPermission();
-        if (!result.granted) {
-          showToast?.(t("errors.pantryCameraPermission"), "error");
-          return;
-        }
-      }
-      setPantryCameraOpen(true);
-    } catch {
-      showToast?.(t("errors.openCameraFailed"), "error");
-    }
-  };
-
-  const handleCapture = async () => {
-    if (!cameraRef.current) return;
-    try {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 0.85 });
-      setPantryCameraOpen(false);
-      await completePantryScan(photo?.uri, "camera");
-    } catch {
-      setPantryCameraOpen(false);
-      showToast?.(t("errors.capturePhotoFailed"), "error");
-    }
-  };
-
-  const handlePickFromGallery = async () => {
-    try {
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        showToast?.(t("errors.galleryPermission"), "error");
-        return;
-      }
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        quality: 1,
-      });
-      if (!result.canceled && result.assets?.[0]?.uri) {
-        await completePantryScan(result.assets[0].uri, "gallery");
-      }
-    } catch {
-      showToast?.(t("errors.loadPhotoFailed"), "error");
-    }
-  };
+  const { camera, openCamera: handleOpenCamera, pickFromGallery: handlePickFromGallery } =
+    useScanCapture("pantry", (uri, source) => completePantryScan(uri, source));
 
   return (
     <>
@@ -743,66 +689,7 @@ export default function PantryScannerHero() {
         </View>
       )}
 
-      {pantryCameraOpen ? (
-        <Modal
-          visible
-          animationType="slide"
-          statusBarTranslucent
-          presentationStyle="fullScreen"
-          onRequestClose={() => setPantryCameraOpen(false)}
-        >
-          <View style={{ flex: 1, backgroundColor: "#000000" }}>
-            <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
-            <PerfectCloseButton
-              isFullScreen
-              onPress={() => setPantryCameraOpen(false)}
-              accessibilityLabel={t("a11y.closeCamera")}
-            />
-            <View
-              pointerEvents="box-none"
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: shutterBottom,
-                alignItems: "center",
-                zIndex: 50,
-              }}
-            >
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontWeight: "700",
-                  fontSize: 17,
-                  marginBottom: 24,
-                  textAlign: "center",
-                  paddingHorizontal: 24,
-                }}
-              >
-                {t("pantry.pointAtPantry")}
-              </Text>
-              <TouchableOpacity
-                onPress={handleCapture}
-                activeOpacity={0.8}
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 40,
-                  backgroundColor: "#FFFFFF",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderWidth: 4,
-                  borderColor: "#10B981",
-                }}
-              >
-                <View
-                  style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: "#10B981" }}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      ) : null}
+      <ScanCameraModal {...camera} hint={t("pantry.pointAtPantry")} />
 
       <ScanMoreSheet kind="pantry" anchor={scanMoreAnchor} />
     </>
