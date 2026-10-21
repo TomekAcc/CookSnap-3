@@ -146,13 +146,14 @@ export function InventoryProvider({ children }) {
    */
   const addToShoppingList = useCallback(
     (names = []) => {
-      const clean = [
-        ...new Set(
-          (Array.isArray(names) ? names : [])
-            .map((n) => String(n || "").trim())
-            .filter(Boolean)
-        ),
-      ];
+      // One entry per pantry name: "Flour" and "flour " are the same item, and
+      // must not become two rows when a recipe lists both.
+      const byKey = new Map();
+      for (const raw of Array.isArray(names) ? names : []) {
+        const name = String(raw || "").trim();
+        if (name && !byKey.has(normalizePantryName(name))) byKey.set(normalizePantryName(name), name);
+      }
+      const clean = [...byKey.values()];
       if (clean.length === 0) return 0;
 
       // Plan changes against current state so the count is reliable —

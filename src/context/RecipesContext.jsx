@@ -38,6 +38,7 @@ export function RecipesProvider({ children }) {
   const { savedHydrated, savedRecipesRaw: savedRecipes, replaceSavedRecipe } = useLibrary();
   const { ingredients, pantryItems } = useInventory();
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
+  const generatingRef = useRef(false);
   const [generatedRecipes, setGeneratedRecipes] = useState(null);
   // True only when a generate/regenerate call failed AND there was no
   // previous real batch on screen to fall back to — RecipeFeed uses this to
@@ -74,7 +75,11 @@ export function RecipesProvider({ children }) {
     // fires out of order. Every other async handler in this app
     // (MealPlannerModal's handleAutoFillWeek, handleGenerateForDay, etc.)
     // already guards itself this way; this was the one call site missing it.
-    if (isGeneratingRecipes) return;
+    //
+    // A ref, not the isGeneratingRecipes state: state only updates on the next
+    // render, so two taps in the same instant both saw "not generating" and
+    // both started a request. The ref flips synchronously.
+    if (generatingRef.current) return;
 
     // Strict data pipeline: fridge scan + in-stock pantry staples only
     const scannedIngredients = ingredients;
@@ -87,6 +92,7 @@ export function RecipesProvider({ children }) {
       return;
     }
 
+    generatingRef.current = true;
     setIsGeneratingRecipes(true);
     setRecipeGenerationFailed(false);
     // Scroll to the recipes section immediately, not just after the fetch
@@ -160,10 +166,10 @@ export function RecipesProvider({ children }) {
         showToast(t("errors.generateRecipesFailed"), "error");
       }
     } finally {
+      generatingRef.current = false;
       setIsGeneratingRecipes(false);
     }
   }, [
-    isGeneratingRecipes,
     ingredients,
     pantryItems,
     includePantryStaples,

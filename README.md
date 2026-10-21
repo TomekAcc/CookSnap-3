@@ -28,7 +28,18 @@ cook-ai/
 │   │   ├── AddIngredientModal.jsx   # Quick-add pantry chips
 │   │   └── ProSubscriptionModal.jsx # 7-day trial paywall
 │   ├── context/
-│   │   └── CookAIContext.jsx        # Global state provider
+│   │   ├── AppProviders.jsx         # Composes the state providers below
+│   │   ├── NavigationContext.jsx    # Tabs + scroll bookkeeping
+│   │   ├── OnboardingContext.jsx    # Onboarding gate + one-time hints
+│   │   ├── LanguageContext.jsx      # t() + recipe language
+│   │   ├── EntitlementsContext.jsx  # PRO + free-tier limits
+│   │   ├── PreferencesContext.jsx   # Meal prefs, diet, units
+│   │   ├── LibraryContext.jsx       # Saved recipes + favorites
+│   │   ├── InventoryContext.jsx     # Fridge ingredients + pantry
+│   │   ├── RecipesContext.jsx       # Recipe generation
+│   │   ├── ScanContext.jsx          # Fridge / pantry scan flows
+│   │   ├── ModalContext.jsx         # Which modal is open
+│   │   └── ThemeContext.jsx         # Light / dark
 │   ├── data/
 │   │   └── recipes.js               # Recipes, pantry data & helpers
 │   └── screens/

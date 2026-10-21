@@ -98,8 +98,8 @@ catches crash-level bugs, checks 4-tab navigation).
 
 **Steps:**
 1. Add a `hasOnboarded` boolean to `AsyncStorage`, mirroring the existing
-   `PRO_STORAGE_KEY`/`isPro` persistence pattern already in
-   `CookAIContext.jsx`.
+   `isPro` persistence (`usePersistedState`) already in
+   `EntitlementsContext.jsx`.
 2. Build a 3-screen `OnboardingModal.jsx` on top of the existing
    `StandardModal` (`type="center"`), reusing established chrome — no new
    modal system needed:
@@ -135,7 +135,7 @@ catches crash-level bugs, checks 4-tab navigation).
 **Steps (requires an actual analytics pipeline, currently absent):**
 1. Add minimal event logging at the two decision points that already exist
    in code: `canScanFridge` / `dailyFridgeScanCount` hitting the cap in
-   `CookAIContext.jsx`, and `handleSubscribe()` in
+   `EntitlementsContext.jsx`, and `handleSubscribe()` in
    `ProSubscriptionModal.jsx` (which plan was chosen).
 2. Pick a lightweight analytics target (even a simple logging endpoint is
    enough to start) — this is a decision point, not a default to assume.

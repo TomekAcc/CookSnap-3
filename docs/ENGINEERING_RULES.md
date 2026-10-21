@@ -74,13 +74,59 @@ production iOS export: following these rules took the Hermes bundle from
 - **No NativeWind / `className`.** It was used once, yet its JSX runtime wrapped
   every element (about 15% more fibers and 16-30% slower tab switches). Style
   with `StyleSheet` / inline styles and the tokens in `src/theme/tokens.js`.
-- **Context fan-out:** `CookAIContext` is one large value — every consumer
-  re-renders on every change. Keep transient UI state out of it (the visible
-  toast lives in `src/utils/toastStore.js`), and have leaf components that only
-  need `t` use `useTranslation()` instead of `useCookAI()`.
+- **Context fan-out:** app state is split by domain (see "State architecture");
+  a screen reads only the domain hooks it needs, so it re-renders only when
+  those change. Keep transient UI state out of context entirely (the visible
+  toast is `showToast()` from `src/utils/toast.js`, rendered from
+  `toastStore.js`), and have leaf components that only need `t` use
+  `useTranslation()`.
 - **Lists:** rows of a list that can reach dozens of items (Pantry, Saved) are
   `React.memo` components with stable props (ids + stable callbacks, not inline
   closures from the parent). Verify with a render count before and after.
+
+---
+
+## State architecture
+
+App state lives in nine domain providers, composed in `src/context/AppProviders.jsx`
+(outermost first). Each owns its state, persistence and actions, and may use only
+the providers above it:
+
+| Provider (hook) | Owns |
+|---|---|
+| `NavigationContext` (`useNavigation`) | active tab, Scanner scroll bookkeeping |
+| `OnboardingContext` (`useOnboarding`) | onboarding gate and the one-time hints |
+| `LanguageContext` (`useLanguage`, alias `useTranslation`) | the one language setting: `t`, recipe language |
+| `EntitlementsContext` (`useEntitlements`) | `isPro` and the free-tier daily limits |
+| `PreferencesContext` (`usePreferences`) | meal type, servings, hunger, cravings, ingredient priority, diet (+ PRO custom diet), units |
+| `LibraryContext` (`useLibrary`) | saved recipes and favorites |
+| `InventoryContext` (`useInventory`) | fridge ingredients, pantry, and the "sample data showing" flag |
+| `RecipesContext` (`useRecipes`) | the generated batch: generate, modify, translate, visible list |
+| `ScanContext` (`useScan`) | fridge scan, pantry scan, history, the onboarding sample scan |
+
+`ModalContext` (modal open/close) sits above all of these and is deliberately
+separate; `ThemeContext` is separate too.
+
+- **Where new state goes:** the domain that owns the concept. If nothing fits,
+  that is a design question — do not add a catch-all. A domain never reads one
+  below it; if it needs something from below, the lower domain should call it
+  (that is why `ScanContext` calls `clearRecipes()` instead of `RecipesContext`
+  watching scans).
+- **Screens** import the specific hooks (`const { ingredients } = useInventory()`),
+  never a merged object. There is intentionally no `useCookAI()` any more.
+- **Expose actions, not raw setters,** across domains (`replaceSavedRecipe`,
+  `clearRecipes`) so the owner keeps its invariants. `toggleFavorite` takes the
+  recipe as an argument instead of reaching into the generated batch for the same
+  reason.
+- **Pure logic stays out of providers** (`utils/ingredients.js`, `utils/recipeLists.js`,
+  `constants/limits.js`) so it can be tested without React.
+- **Don't let callbacks in a context value close over fast-changing state** if
+  consumers don't need it — it changes the function's identity and re-renders every
+  consumer (`generateRecipes` and a few others still do; a stable-callback pass is a
+  known follow-up).
+- **Testing a domain:** `renderApp()` from `test-utils/renderApp.js` mounts the real
+  provider tree (AsyncStorage mocked) and returns every domain's value; mock only
+  the Gemini services. See `__tests__/scan.test.js`, `recipes.test.js`, etc.
 
 ---
 
@@ -89,7 +135,7 @@ production iOS export: following these rules took the Hermes bundle from
 Anything that must survive an app restart goes through the persistence layer —
 never a bare `AsyncStorage` call, and never a hand-written
 "hydrate in an effect, persist in another effect, `*Hydrated` flag" block (that
-pattern was copied ~20 times in `CookAIContext` and is what this replaced).
+pattern was copied ~20 times in the old single provider and is what this replaced).
 
 - **State:** `usePersistedState(STORAGE_KEYS.x, { initial, codec, fallback?, shouldPersist? })`
   in `src/hooks/usePersistedState.js` returns `[value, setValue, hydrated]`. It
@@ -131,7 +177,9 @@ Testing is three layers, none of which replaces the others:
    parity check that all 31 translation tables have the same keys and
    `{placeholders}` as English, time/calorie formatting, pantry text helpers, the
    Gemini client, the storage layer and persisted-state hooks (AsyncStorage is
-   mocked in `jest.setup.js`), the daily-limit counter and the ingredient merge. When you move
+   mocked in `jest.setup.js`), the daily-limit counter and the ingredient merge,
+   and every state domain through the real providers (`test-utils/renderApp.js`):
+   library, inventory, preferences/entitlements, recipes, scan. When you move
    logic out of a component or the context (see the refactor plan), add its
    test in the same change.
 2. A Playwright-driven **web smoke test** for crash-level JS bugs.

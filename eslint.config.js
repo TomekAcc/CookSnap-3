@@ -9,7 +9,7 @@ module.exports = [
     rules: { "no-console": "error" },
   },
   {
-    files: ["__tests__/**/*.js", "live/**/*.js", "jest.setup.js"],
+    files: ["__tests__/**/*.js", "test-utils/**/*.js", "live/**/*.js", "jest.setup.js"],
     languageOptions: {
       globals: { describe: "readonly", it: "readonly", test: "readonly", expect: "readonly", jest: "readonly", beforeEach: "readonly", afterEach: "readonly" },
     },
