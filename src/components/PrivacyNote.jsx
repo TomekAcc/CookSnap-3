@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { Lock } from "lucide-react-native";
-import { useCookAI } from "../context/CookAIContext";
+import { Lock } from "../icons";
+import { useTranslation } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 
 /**
@@ -12,7 +12,7 @@ import { useTheme } from "../context/ThemeContext";
  * only until the first scan, so it never becomes permanent clutter.
  */
 export default function PrivacyNote({ style }) {
-  const { t } = useCookAI();
+  const { t } = useTranslation();
   const { colors } = useTheme();
   return (
     <View

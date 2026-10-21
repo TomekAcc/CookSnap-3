@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
-import { History, ChevronRight, Camera, Image as ImageIcon, Sparkles } from "lucide-react-native";
+import { History, ChevronRight, Camera, Image as ImageIcon, Sparkles } from "../icons";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";

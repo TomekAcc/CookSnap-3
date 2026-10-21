@@ -1,5 +1,5 @@
 import { useTabScroll } from "../hooks/useTabScroll";
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { memo, useMemo, useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -22,8 +22,8 @@ import {
   Package,
   PackageOpen,
   Trash2,
-} from "lucide-react-native";
-import { useCookAI } from "../context/CookAIContext";
+} from "../icons";
+import { useCookAI, useTranslation } from "../context/CookAIContext";
 import { classifyPantryItemWithGemini, prettyPantryName } from "../services/geminiVision";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
@@ -48,6 +48,205 @@ const CATEGORY_LABEL_KEYS = {
   "Grains & Baking": "pantryCategory.grainsBaking",
   Condiments: "pantryCategory.condiments",
 };
+
+// The two pantry row types are memoized with stable props: before, a toast, a
+// search keystroke or toggling ONE item re-rendered every row (80 rows ≈ 80
+// full JSX trees per keystroke). Now only the row whose `item` changed renders.
+const InStockRow = memo(function InStockRow({ item, isOpen, setOpenSwipeId, onToggle, onRemove }) {
+  const { colors, isDark } = useTheme();
+  return (
+    <SwipeToDeleteRow
+      isOpen={isOpen}
+      onOpenChange={(open) => setOpenSwipeId(open ? item.id : null)}
+      onDelete={() => onRemove(item)}
+      borderRadius={16}
+    >
+      <View
+        style={{
+          backgroundColor: isDark ? colors.card : "#FFFFFF",
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: isDark ? colors.cardBorder : "#F1F5F9",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingVertical: 7,
+          paddingHorizontal: 14,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => onToggle(item.id)}
+          activeOpacity={0.85}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            flex: 1,
+            paddingRight: 12,
+            minWidth: 0,
+            gap: 12,
+          }}
+        >
+          <View
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 12,
+              backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
+              borderWidth: 1,
+              borderColor: isDark ? colors.cardBorder : "#F1F5F9",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}
+          >
+            <Text style={{ fontSize: 22, lineHeight: 26 }} allowFontScaling={false}>
+              {item.emoji}
+            </Text>
+          </View>
+          <View style={{ flex: 1, minWidth: 0, justifyContent: "center" }}>
+            <Text
+              style={{
+                fontWeight: "700",
+                color: colors.textPrimary,
+                fontSize: 15,
+                lineHeight: 19,
+                letterSpacing: -0.2,
+              }}
+              numberOfLines={2}
+            >
+              {prettyPantryName(item.name)}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => onToggle(item.id)}
+          activeOpacity={0.85}
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 9,
+            backgroundColor: "#10B981",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <Check size={15} color="#FFFFFF" strokeWidth={3} />
+        </TouchableOpacity>
+      </View>
+    </SwipeToDeleteRow>
+  );
+});
+
+const OutOfStockRow = memo(function OutOfStockRow({ item, isOpen, setOpenSwipeId, onToggle, onRemove }) {
+  const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
+  return (
+    <SwipeToDeleteRow
+      isOpen={isOpen}
+      onOpenChange={(open) => setOpenSwipeId(open ? item.id : null)}
+      onDelete={() => onRemove(item)}
+      borderRadius={16}
+    >
+      <View
+        style={{
+          // Opaque, not a translucent rgba tint — this row sits
+          // directly in front of SwipeToDeleteRow's always-mounted
+          // red delete background, and a low-alpha fill let that
+          // red layer bleed through as an unwanted glow behind the
+          // Restock button in dark mode (confirmed via screenshot:
+          // identical row was clean in light mode, where the
+          // opaque #FFFBEB fully hid it).
+          backgroundColor: isDark ? colors.card : "#FFFFFF",
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: isDark ? colors.cardBorder : "#F1F5F9",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingVertical: 10,
+          paddingHorizontal: 14,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => onToggle(item.id)}
+          activeOpacity={0.85}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            flex: 1,
+            paddingRight: 12,
+            minWidth: 0,
+            gap: 12,
+          }}
+        >
+          <View
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 12,
+              backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
+              borderWidth: 1,
+              borderColor: isDark ? colors.cardBorder : "#F1F5F9",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              opacity: 0.7,
+            }}
+          >
+            <Text style={{ fontSize: 22, lineHeight: 26 }} allowFontScaling={false}>
+              {item.emoji}
+            </Text>
+          </View>
+          <View style={{ flex: 1, minWidth: 0, justifyContent: "center" }}>
+            <Text
+              style={{
+                fontWeight: "700",
+                color: colors.textSecondary,
+                fontSize: 15,
+                lineHeight: 19,
+                letterSpacing: -0.2,
+                textDecorationLine: "line-through",
+              }}
+              numberOfLines={2}
+            >
+              {prettyPantryName(item.name)}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => onToggle(item.id)}
+          activeOpacity={0.85}
+          style={{
+            backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
+            paddingHorizontal: 12,
+            paddingVertical: 9,
+            borderRadius: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            flexShrink: 0,
+          }}
+        >
+          <Plus size={14} color={isDark ? "#34D399" : "#047857"} strokeWidth={2.6} />
+          <Text
+            style={{
+              color: isDark ? "#34D399" : "#047857",
+              fontSize: 12,
+              fontWeight: "700",
+              marginLeft: 4,
+              letterSpacing: 0.3,
+              textTransform: "uppercase",
+            }}
+          >
+            {t("pantry.restock")}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SwipeToDeleteRow>
+  );
+});
 
 export default function PantryTab() {
   const tabScroll = useTabScroll("pantry");
@@ -158,7 +357,7 @@ export default function PantryTab() {
       removePantryItem(item.id);
       showToast?.(t("pantry.removedItem", { name: item.name }), "success");
     },
-    [removePantryItem, showToast]
+    [removePantryItem, showToast, t]
   );
 
   // Confirmed real feedback, from a live tester: after not opening the app
@@ -245,8 +444,7 @@ export default function PantryTab() {
         ref={tabScroll.setRef}
         onScroll={tabScroll.onScroll}
         onContentSizeChange={tabScroll.onContentSizeChange}
-        className="flex-1"
-        style={{ backgroundColor: colors.bg }}
+        style={{ flex: 1, backgroundColor: colors.bg }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: insets.bottom + 156,
@@ -519,88 +717,14 @@ export default function PantryTab() {
           ) : (
             <View style={{ gap: 8 }}>
               {inStockItems.map((item) => (
-                <SwipeToDeleteRow
+                <InStockRow
                   key={item.id}
+                  item={item}
                   isOpen={openSwipeId === item.id}
-                  onOpenChange={(open) => setOpenSwipeId(open ? item.id : null)}
-                  onDelete={() => handleRemoveItem(item)}
-                  borderRadius={16}
-                >
-                  <View
-                    style={{
-                      backgroundColor: isDark ? colors.card : "#FFFFFF",
-                      borderRadius: 16,
-                      borderWidth: 1,
-                      borderColor: isDark ? colors.cardBorder : "#F1F5F9",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      paddingVertical: 7,
-                      paddingHorizontal: 14,
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => togglePantryItem(item.id)}
-                      activeOpacity={0.85}
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        flex: 1,
-                        paddingRight: 12,
-                        minWidth: 0,
-                        gap: 12,
-                      }}
-                    >
-                      <View
-                        style={{
-                          width: 42,
-                          height: 42,
-                          borderRadius: 12,
-                          backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
-                          borderWidth: 1,
-                          borderColor: isDark ? colors.cardBorder : "#F1F5F9",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Text style={{ fontSize: 22, lineHeight: 26 }} allowFontScaling={false}>
-                          {item.emoji}
-                        </Text>
-                      </View>
-                      <View style={{ flex: 1, minWidth: 0, justifyContent: "center" }}>
-                        <Text
-                          style={{
-                            fontWeight: "700",
-                            color: colors.textPrimary,
-                            fontSize: 15,
-                            lineHeight: 19,
-                            letterSpacing: -0.2,
-                          }}
-                          numberOfLines={2}
-                        >
-                          {prettyPantryName(item.name)}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => togglePantryItem(item.id)}
-                      activeOpacity={0.85}
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: 9,
-                        backgroundColor: "#10B981",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Check size={15} color="#FFFFFF" strokeWidth={3} />
-                    </TouchableOpacity>
-                  </View>
-                </SwipeToDeleteRow>
+                  setOpenSwipeId={setOpenSwipeId}
+                  onToggle={togglePantryItem}
+                  onRemove={handleRemoveItem}
+                />
               ))}
             </View>
           )}
@@ -699,109 +823,14 @@ export default function PantryTab() {
           ) : (
             <View style={{ gap: 8 }}>
               {outOfStockItems.map((item) => (
-                <SwipeToDeleteRow
+                <OutOfStockRow
                   key={item.id}
+                  item={item}
                   isOpen={openSwipeId === item.id}
-                  onOpenChange={(open) => setOpenSwipeId(open ? item.id : null)}
-                  onDelete={() => handleRemoveItem(item)}
-                  borderRadius={16}
-                >
-                  <View
-                    style={{
-                      // Opaque, not a translucent rgba tint — this row sits
-                      // directly in front of SwipeToDeleteRow's always-mounted
-                      // red delete background, and a low-alpha fill let that
-                      // red layer bleed through as an unwanted glow behind the
-                      // Restock button in dark mode (confirmed via screenshot:
-                      // identical row was clean in light mode, where the
-                      // opaque #FFFBEB fully hid it).
-                      backgroundColor: isDark ? colors.card : "#FFFFFF",
-                      borderRadius: 20,
-                      borderWidth: 1,
-                      borderColor: isDark ? colors.cardBorder : "#F1F5F9",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      paddingVertical: 10,
-                      paddingHorizontal: 14,
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => togglePantryItem(item.id)}
-                      activeOpacity={0.85}
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        flex: 1,
-                        paddingRight: 12,
-                        minWidth: 0,
-                        gap: 12,
-                      }}
-                    >
-                      <View
-                        style={{
-                          width: 42,
-                          height: 42,
-                          borderRadius: 12,
-                          backgroundColor: isDark ? colors.inputBg : "#F8FAFC",
-                          borderWidth: 1,
-                          borderColor: isDark ? colors.cardBorder : "#F1F5F9",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                          opacity: 0.7,
-                        }}
-                      >
-                        <Text style={{ fontSize: 22, lineHeight: 26 }} allowFontScaling={false}>
-                          {item.emoji}
-                        </Text>
-                      </View>
-                      <View style={{ flex: 1, minWidth: 0, justifyContent: "center" }}>
-                        <Text
-                          style={{
-                            fontWeight: "700",
-                            color: colors.textSecondary,
-                            fontSize: 15,
-                            lineHeight: 19,
-                            letterSpacing: -0.2,
-                            textDecorationLine: "line-through",
-                          }}
-                          numberOfLines={2}
-                        >
-                          {prettyPantryName(item.name)}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      onPress={() => togglePantryItem(item.id)}
-                      activeOpacity={0.85}
-                      style={{
-                        backgroundColor: isDark ? "#064E3B" : "#ECFDF5",
-                        paddingHorizontal: 12,
-                        paddingVertical: 9,
-                        borderRadius: 12,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Plus size={14} color={isDark ? "#34D399" : "#047857"} strokeWidth={2.6} />
-                      <Text
-                        style={{
-                          color: isDark ? "#34D399" : "#047857",
-                          fontSize: 12,
-                          fontWeight: "700",
-                          marginLeft: 4,
-                          letterSpacing: 0.3,
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {t("pantry.restock")}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </SwipeToDeleteRow>
+                  setOpenSwipeId={setOpenSwipeId}
+                  onToggle={togglePantryItem}
+                  onRemove={handleRemoveItem}
+                />
               ))}
             </View>
           )}

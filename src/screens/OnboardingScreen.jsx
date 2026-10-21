@@ -19,7 +19,7 @@ import {
   ChevronDown,
   Sparkles,
   Globe,
-} from "lucide-react-native";
+} from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { useCookAI } from "../context/CookAIContext";
 import { LANGUAGE_OPTIONS, DEFAULT_LANGUAGE_ID, getLanguageById } from "../data/languageOptions";

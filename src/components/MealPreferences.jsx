@@ -20,7 +20,7 @@ import {
   ChevronDown,
   ChevronRight,
   Check,
-} from "lucide-react-native";
+} from "../icons";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import { translateCount } from "../i18n";

@@ -10,7 +10,7 @@ import {
   NutOff,
   Fish,
   Droplet,
-} from "lucide-react-native";
+} from "../icons";
 import { useTheme } from "../context/ThemeContext";
 
 // One vector icon per dietary restriction, replacing the emoji in

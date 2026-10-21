@@ -1,40 +1,56 @@
 import en from "./translations/en";
-import es from "./translations/es";
-import zh from "./translations/zh";
-import ja from "./translations/ja";
-import de from "./translations/de";
-import ko from "./translations/ko";
-import hi from "./translations/hi";
-import ar from "./translations/ar";
-import pt from "./translations/pt";
-import fr from "./translations/fr";
-import ru from "./translations/ru";
-import it from "./translations/it";
-import nl from "./translations/nl";
-import id from "./translations/id";
-import sv from "./translations/sv";
-import tr from "./translations/tr";
-import vi from "./translations/vi";
-import th from "./translations/th";
-import pl from "./translations/pl";
-import fi from "./translations/fi";
-import uk from "./translations/uk";
-import el from "./translations/el";
-import da from "./translations/da";
-import no from "./translations/no";
-import he from "./translations/he";
-import cs from "./translations/cs";
-import ro from "./translations/ro";
-import hu from "./translations/hu";
-import sk from "./translations/sk";
-import bg from "./translations/bg";
-import hr from "./translations/hr";
 
-/** One dictionary per LANGUAGE_OPTIONS id — see src/data/languageOptions.js. */
-const TRANSLATIONS = {
-  en, es, zh, ja, de, ko, hi, ar, pt, fr, ru, it, nl, id, sv,
-  tr, vi, th, pl, fi, uk, el, da, no, he, cs, ro, hu, sk, bg, hr,
+/**
+ * One dictionary per LANGUAGE_OPTIONS id — see src/data/languageOptions.js.
+ *
+ * Only English (the fallback for every missing language or key) is imported
+ * eagerly. The other 30 tables are ~1 MB of object literals that used to be
+ * evaluated at launch although a user only ever reads one of them; each is now
+ * required the first time its language is used, then cached. The `require`
+ * calls are static strings, so Metro still bundles every table.
+ */
+const LOADERS = {
+  es: () => require("./translations/es").default,
+  zh: () => require("./translations/zh").default,
+  ja: () => require("./translations/ja").default,
+  de: () => require("./translations/de").default,
+  ko: () => require("./translations/ko").default,
+  hi: () => require("./translations/hi").default,
+  ar: () => require("./translations/ar").default,
+  pt: () => require("./translations/pt").default,
+  fr: () => require("./translations/fr").default,
+  ru: () => require("./translations/ru").default,
+  it: () => require("./translations/it").default,
+  nl: () => require("./translations/nl").default,
+  id: () => require("./translations/id").default,
+  sv: () => require("./translations/sv").default,
+  tr: () => require("./translations/tr").default,
+  vi: () => require("./translations/vi").default,
+  th: () => require("./translations/th").default,
+  pl: () => require("./translations/pl").default,
+  fi: () => require("./translations/fi").default,
+  uk: () => require("./translations/uk").default,
+  el: () => require("./translations/el").default,
+  da: () => require("./translations/da").default,
+  no: () => require("./translations/no").default,
+  he: () => require("./translations/he").default,
+  cs: () => require("./translations/cs").default,
+  ro: () => require("./translations/ro").default,
+  hu: () => require("./translations/hu").default,
+  sk: () => require("./translations/sk").default,
+  bg: () => require("./translations/bg").default,
+  hr: () => require("./translations/hr").default,
 };
+
+const DICTIONARIES = { en };
+
+function dictionaryFor(languageId) {
+  const cached = DICTIONARIES[languageId];
+  if (cached) return cached;
+  const load = LOADERS[languageId];
+  if (!load) return en;
+  return (DICTIONARIES[languageId] = load());
+}
 
 /**
  * Looks up `key` in the dictionary for `languageId`, falling back to
@@ -45,8 +61,8 @@ const TRANSLATIONS = {
  * { count: 3 }).
  */
 export function translate(languageId, key, vars) {
-  const dict = TRANSLATIONS[languageId] || TRANSLATIONS.en;
-  let str = dict[key] ?? TRANSLATIONS.en[key] ?? key;
+  const dict = dictionaryFor(languageId);
+  let str = dict[key] ?? en[key] ?? key;
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {
       str = str.split(`{${k}}`).join(String(v));
@@ -81,12 +97,10 @@ export function isSlavicFewCount(languageId, n) {
  * plain one/other behavior everywhere else.
  */
 export function translateCount(languageId, count, { few, many, fallback }, vars) {
-  const dict = TRANSLATIONS[languageId] || TRANSLATIONS.en;
+  const dict = dictionaryFor(languageId);
   const isFew = isSlavicFewCount(languageId, count);
   let key = fallback;
   if (isFew && few && few in dict) key = few;
   if (!isFew && many && many in dict) key = many;
   return translate(languageId, key, { count, ...vars });
 }
-
-export { TRANSLATIONS };

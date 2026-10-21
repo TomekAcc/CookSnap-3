@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Share } from "react-native";
-import { Circle, Check, PackageCheck, Share2 } from "lucide-react-native";
+import { Circle, Check, PackageCheck, Share2 } from "../icons";
 import StandardSmoothModal from "./StandardSmoothModal";
 import { prettyPantryName } from "../services/geminiVision";
 import { DS } from "../utils/designSystem";
 import { animateLayout } from "../utils/layoutMotion";
 import { useTheme } from "../context/ThemeContext";
-import { useCookAI } from "../context/CookAIContext";
+import { useTranslation } from "../context/CookAIContext";
 import { emojiLine } from "../theme/tokens";
 
 // How long the checked state (filled circle, strikethrough) holds before the
@@ -30,7 +30,7 @@ export default function ShoppingListModal({
   onRestockItem,
 }) {
   const { colors, isDark } = useTheme();
-  const { t } = useCookAI();
+  const { t } = useTranslation();
   const handleClose = typeof onClose === "function" ? onClose : () => {};
   const safeItems = Array.isArray(items) ? items : [];
 

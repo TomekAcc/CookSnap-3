@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { X } from "lucide-react-native";
+import { X } from "../icons";
 
 /** Apple HIG-friendly tap target (visual 38pt, hit area expanded). */
 const BTN_SIZE = 38;

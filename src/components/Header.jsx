@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Crown } from "lucide-react-native";
+import { Crown } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";

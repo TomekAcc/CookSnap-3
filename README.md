@@ -1,11 +1,10 @@
 # Cook AI
 
-Production-grade React Native app built with Expo and NativeWind. Scan your fridge, set meal preferences, and get AI-suggested recipes.
+Production-grade React Native app built with Expo. Scan your fridge, set meal preferences, and get AI-suggested recipes.
 
 ## Tech Stack
 
-- **Expo SDK 52** (Managed Workflow)
-- **NativeWind v4** (Tailwind CSS for React Native)
+- **Expo SDK 57** (Managed Workflow)
 - **lucide-react-native** icons
 - **expo-camera** for fridge photo capture
 - **React Context** for state management

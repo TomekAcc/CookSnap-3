@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { Camera, Image as ImageIcon } from "lucide-react-native";
+import { Camera, Image as ImageIcon } from "../icons";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";

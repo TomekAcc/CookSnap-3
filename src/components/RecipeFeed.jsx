@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Crown, Sparkles, TriangleAlert } from "lucide-react-native";
+import { Crown, Sparkles, TriangleAlert } from "../icons";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";

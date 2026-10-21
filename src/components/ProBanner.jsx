@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Crown, ChevronRight } from "lucide-react-native";
-import { useCookAI } from "../context/CookAIContext";
+import { Crown, ChevronRight } from "../icons";
+import { useTranslation } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 
 const ON_AMBER = "#1D1D1F";
@@ -35,7 +35,7 @@ function noOrphan(text) {
  * strings, so every language is already translated.
  */
 export default function ProBanner({ onOpenProModal, usedUp = false, limit = 0 }) {
-  const { t } = useCookAI();
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   return (
     <TouchableOpacity

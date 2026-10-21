@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Camera, SlidersHorizontal, Sparkles } from "lucide-react-native";
-import { useCookAI } from "../context/CookAIContext";
+import { Camera, SlidersHorizontal, Sparkles } from "../icons";
+import { useTranslation } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 
 const STEPS = [
@@ -18,7 +18,7 @@ const STEPS = [
  * space.
  */
 export default function ScanSteps() {
-  const { t } = useCookAI();
+  const { t } = useTranslation();
   const { colors, isDark } = useTheme();
   const dot = isDark ? "#064E3B" : "#ECFDF5";
   const ink = isDark ? "#34D399" : "#059669";

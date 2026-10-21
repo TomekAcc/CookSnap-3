@@ -21,7 +21,7 @@ import {
   Refrigerator,
   Lock,
   Crown,
-} from "lucide-react-native";
+} from "../icons";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";

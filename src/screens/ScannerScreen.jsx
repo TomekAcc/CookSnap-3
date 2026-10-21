@@ -11,7 +11,7 @@ import {
 import { useTabScroll } from "../hooks/useTabScroll";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Sparkles, RefreshCw } from "lucide-react-native";
+import { Sparkles, RefreshCw } from "../icons";
 import Header from "../components/Header";
 import FridgeScannerHero from "../components/FridgeScannerHero";
 import MealPreferences from "../components/MealPreferences";

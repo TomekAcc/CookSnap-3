@@ -15,7 +15,7 @@ import {
   Target,
   BarChart3,
   CalendarDays,
-} from "lucide-react-native";
+} from "../icons";
 import { useModalState } from "../context/ModalContext";
 import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";

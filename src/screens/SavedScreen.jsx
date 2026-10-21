@@ -1,8 +1,8 @@
 import { useTabScroll } from "../hooks/useTabScroll";
-import React, { useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Heart } from "lucide-react-native";
+import { Heart } from "../icons";
 import EmptyStateSparkle from "../components/EmptyStateSparkle";
 import Header from "../components/Header";
 import { useCookAI } from "../context/CookAIContext";
@@ -16,6 +16,23 @@ import { RADIUS } from "../theme/tokens";
 // ones with a translation and at least one saved recipe become chips.
 const FILTERABLE_MEALS = ["breakfast", "lunch", "dinner", "dessert"];
 
+// Memoized with stable props so a toast, a tab-bar tap or one row's swipe
+// re-renders only the rows that actually changed instead of the whole list.
+const SavedRow = memo(function SavedRow({ recipe, isOpen, setOpenSwipeId, onDelete, onSelect }) {
+  return (
+    <View style={styles.rowGap}>
+      <SwipeToDeleteRow
+        isOpen={isOpen}
+        onOpenChange={(open) => setOpenSwipeId(open ? recipe.id : null)}
+        onDelete={() => onDelete(recipe)}
+        borderRadius={RADIUS.card}
+      >
+        <RecipeCard compact recipe={recipe} isFavorite onSelect={onSelect} />
+      </SwipeToDeleteRow>
+    </View>
+  );
+});
+
 export default function SavedScreen() {
   const tabScroll = useTabScroll("saved");
   const insets = useSafeAreaInsets();
@@ -24,6 +41,14 @@ export default function SavedScreen() {
   const { colors, isDark } = useTheme();
   const [openSwipeId, setOpenSwipeId] = useState(null);
   const [mealFilter, setMealFilter] = useState("all");
+
+  const handleSelect = useCallback(
+    (recipe) => {
+      setOpenSwipeId(null);
+      setSelectedRecipe(recipe);
+    },
+    [setSelectedRecipe]
+  );
 
   const mealChips = useMemo(() => {
     const present = FILTERABLE_MEALS.filter((m) =>
@@ -172,24 +197,14 @@ export default function SavedScreen() {
                 The spacing lives on the wrapper so the red delete layer
                 doesn't stretch over the gap between rows. */}
             {visibleRecipes.map((recipe) => (
-              <View key={recipe.id} style={styles.rowGap}>
-                <SwipeToDeleteRow
-                  isOpen={openSwipeId === recipe.id}
-                  onOpenChange={(open) => setOpenSwipeId(open ? recipe.id : null)}
-                  onDelete={() => toggleSaveRecipe(recipe)}
-                  borderRadius={RADIUS.card}
-                >
-                  <RecipeCard
-                    compact
-                    recipe={recipe}
-                    isFavorite
-                    onSelect={(r) => {
-                      setOpenSwipeId(null);
-                      setSelectedRecipe(r);
-                    }}
-                  />
-                </SwipeToDeleteRow>
-              </View>
+              <SavedRow
+                key={recipe.id}
+                recipe={recipe}
+                isOpen={openSwipeId === recipe.id}
+                setOpenSwipeId={setOpenSwipeId}
+                onDelete={toggleSaveRecipe}
+                onSelect={handleSelect}
+              />
             ))}
           </>
         )}

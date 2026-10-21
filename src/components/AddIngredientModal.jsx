@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { Plus } from "lucide-react-native";
+import { Plus } from "../icons";
 import { POPULAR_PANTRY } from "../data/recipes";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";

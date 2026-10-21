@@ -32,8 +32,14 @@ import { translate } from "../i18n";
 import { useModalState } from "./ModalContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { SAMPLE_FRIDGE_ITEMS } from "../constants/sampleFridge";
+import { toastStore } from "../utils/toastStore";
 
 const CookAIContext = createContext(null);
+// Language-only slice of the context. CookAIContext is one 50+ field value, so
+// anything that reads it re-renders on every state change in the app. Leaf
+// components that only need the translator (rows, cards, buttons) read this
+// instead and re-render only when the language changes.
+const TranslationContext = createContext(null);
 
 /**
  * Measurement system to start from when nothing is saved yet: the device's own
@@ -1429,7 +1435,6 @@ export function CookAIProvider({ children }) {
     );
   }, []);
 
-  const [toast, setToast] = useState(null);
   const toastTimerRef = useRef(null);
 
   const scrollViewRef = useRef(null);
@@ -1500,14 +1505,14 @@ export function CookAIProvider({ children }) {
 
   const showToast = useCallback((message, type = "info", duration = 3200) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setToast({ message, type });
-    toastTimerRef.current = setTimeout(() => setToast(null), duration);
+    toastStore.set({ message, type });
+    toastTimerRef.current = setTimeout(() => toastStore.set(null), duration);
   }, []);
 
   // Tap / swipe-up dismiss from the Toast component.
   const hideToast = useCallback(() => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setToast(null);
+    toastStore.set(null);
   }, []);
 
   // Removing a vision-detected ingredient (as opposed to one the user typed
@@ -2628,7 +2633,6 @@ export function CookAIProvider({ children }) {
       markSettingsDoneHintShown,
       firstScanHintShown,
       markFirstScanHintShown,
-      toast,
       showToast,
       hideToast,
     }),
@@ -2739,15 +2743,24 @@ export function CookAIProvider({ children }) {
       markSettingsDoneHintShown,
       firstScanHintShown,
       markFirstScanHintShown,
-      toast,
       showToast,
       hideToast,
     ]
   );
 
+  const translation = useMemo(() => ({ t, recipeLanguageId }), [t, recipeLanguageId]);
+
   return (
-    <CookAIContext.Provider value={value}>{children}</CookAIContext.Provider>
+    <CookAIContext.Provider value={value}>
+      <TranslationContext.Provider value={translation}>{children}</TranslationContext.Provider>
+    </CookAIContext.Provider>
   );
+}
+
+export function useTranslation() {
+  const ctx = useContext(TranslationContext);
+  if (!ctx) throw new Error("useTranslation must be used within CookAIProvider");
+  return ctx;
 }
 
 export function useCookAI() {

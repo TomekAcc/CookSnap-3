@@ -19,7 +19,7 @@ import {
   Check,
   ChevronRight,
   ChevronLeft,
-} from "lucide-react-native";
+} from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { useCookAI } from "../context/CookAIContext";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";

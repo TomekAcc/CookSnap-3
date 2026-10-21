@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { Clock } from "lucide-react-native";
+import { Clock } from "../icons";
 import { useTheme } from "../context/ThemeContext";
-import { useCookAI } from "../context/CookAIContext";
+import { useTranslation } from "../context/CookAIContext";
 import { formatTimeLabel, sumTimeLabel, hasRealMinutes } from "../utils/timeFormat";
 
 export default function CookingTimeDisplay({
@@ -12,7 +12,7 @@ export default function CookingTimeDisplay({
   variant = "card",
 }) {
   const { colors } = useTheme();
-  const { t } = useCookAI();
+  const { t } = useTranslation();
   const minUnit = t("cookingTime.minUnit");
 
   const prepLabel = formatTimeLabel(prepTime, minUnit);

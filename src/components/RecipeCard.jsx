@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
-import { Heart, ChevronRight } from "lucide-react-native";
+import { Heart, ChevronRight } from "../icons";
 import {
   getDishEmojiAndColor,
   resolveCategoryBadgeColors,
 } from "../utils/imageUtils";
 import { useTheme } from "../context/ThemeContext";
-import { useCookAI } from "../context/CookAIContext";
+import { useTranslation } from "../context/CookAIContext";
 import { cookTimeLabel } from "../utils/timeFormat";
 import { TYPE, WEIGHT, RADIUS, SPACE, ICON, emojiLine } from "../theme/tokens";
 
@@ -47,7 +47,7 @@ const CARD_SHADOW = Platform.select({
  * rather than being picked here — that's the point of the token file.
  * Local emoji only — never Image / network.
  */
-export default function RecipeCard({
+function RecipeCard({
   recipe,
   isFavorite = false,
   onToggleFavorite,
@@ -55,7 +55,7 @@ export default function RecipeCard({
   compact = false,
 }) {
   const { colors, isDark } = useTheme();
-  const { t } = useCookAI();
+  const { t } = useTranslation();
 
   const safeRecipe = recipe && typeof recipe === "object" ? recipe : null;
   if (!safeRecipe) return null;
@@ -306,3 +306,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+export default React.memo(RecipeCard);

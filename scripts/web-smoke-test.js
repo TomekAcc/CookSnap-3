@@ -60,12 +60,12 @@ const TABS = [
   await page.waitForTimeout(3000);
 
   // Fresh browser context = fresh AsyncStorage = the first-launch onboarding
-  // gate (language + units picker on one page, then the skippable PRO
-  // intro screen) blocks the tab shell until dismissed. Accept the
-  // defaults and skip PRO so the rest of this smoke test can reach the
-  // actual app underneath.
+  // gate (sample-scan page, then the skippable PRO intro screen) blocks the
+  // tab shell until dismissed. Take "I'll scan my own fridge" (keeps the
+  // default language/units) and skip PRO so the rest of this smoke test can
+  // reach the actual app underneath.
   try {
-    const getStarted = page.getByText("Get Started", { exact: true });
+    const getStarted = page.getByText("I'll scan my own fridge", { exact: true });
     if (await getStarted.isVisible({ timeout: 5000 })) {
       await getStarted.click({ timeout: 5000 });
       await page.waitForTimeout(1500);
@@ -88,7 +88,10 @@ const TABS = [
 
   for (const tab of TABS.slice(1)) {
     try {
-      await page.getByText(tab.label, { exact: true }).click({ timeout: 5000 });
+      // Labels can carry zero-width non-joiners ("Prof\u200Cile", see
+      // utils/textLigatures.js), so match with optional ZWNJs between letters.
+      const label = new RegExp(`^${[...tab.label].join("\\u200C?")}$`);
+      await page.getByText(label).click({ timeout: 5000 });
       await page.waitForTimeout(1500);
       await page.screenshot({ path: path.join(SCREENSHOT_DIR, `${tab.file}.png`) });
     } catch (err) {

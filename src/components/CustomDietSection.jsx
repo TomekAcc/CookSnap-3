@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
-import { Lock, SlidersHorizontal } from "lucide-react-native";
+import { Lock, SlidersHorizontal } from "../icons";
 import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";

@@ -19,7 +19,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../context/ThemeContext";
-import { useCookAI } from "../context/CookAIContext";
+import { useTranslation } from "../context/CookAIContext";
 import {
   BACKDROP_COLOR,
   BACKDROP_FADE_MS,
@@ -125,7 +125,7 @@ export default function StandardModal({
 }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const { t } = useCookAI();
+  const { t } = useTranslation();
   const handleClose = typeof onClose === "function" ? onClose : () => {};
   const isBottom = type !== "center";
   const { present, animate } = useModalPresence(!!visible);

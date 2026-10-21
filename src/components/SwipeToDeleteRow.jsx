@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Trash2 } from "lucide-react-native";
-import { useCookAI } from "../context/CookAIContext";
+import { Trash2 } from "../icons";
+import { useTranslation } from "../context/CookAIContext";
 
 const DELETE_WIDTH = 76;
 const OPEN_X = -DELETE_WIDTH;
@@ -28,7 +28,7 @@ export default function SwipeToDeleteRow({
   disabled,
   borderRadius = 20,
 }) {
-  const { t } = useCookAI();
+  const { t } = useTranslation();
   const translateX = useRef(new Animated.Value(0)).current;
   const isOpenRef = useRef(false);
   // The real, measured position at gesture start — NOT an assumption from

@@ -56,6 +56,34 @@ Versioning · CI/CD · Cross-Platform · AI Integration
 
 ---
 
+## Performance
+
+Metro does no tree-shaking, so what you import is what ships. Measured on the
+production iOS export: following these rules took the Hermes bundle from
+5.13 MB to 3.77 MB and bundled assets from 1.5 MB to 0.58 MB.
+
+- **Icons:** import from `src/icons.js`, never from `"lucide-react-native"`
+  (the package root bundles all ~3,500 icons, ~1.3 MB). Add a new icon as one
+  `export { default as X } from "lucide-react-native/icons/<kebab-name>"` line.
+- **Font packages:** import one weight per file
+  (`@expo-google-fonts/plus-jakarta-sans/400Regular`), never the package root
+  (it bundles all 14 weights and italics).
+- **Translations:** only English is imported eagerly; other languages are
+  `require`d on first use in `src/i18n/index.js`. A new language is one line in
+  `LOADERS`.
+- **No NativeWind / `className`.** It was used once, yet its JSX runtime wrapped
+  every element (about 15% more fibers and 16-30% slower tab switches). Style
+  with `StyleSheet` / inline styles and the tokens in `src/theme/tokens.js`.
+- **Context fan-out:** `CookAIContext` is one large value — every consumer
+  re-renders on every change. Keep transient UI state out of it (the visible
+  toast lives in `src/utils/toastStore.js`), and have leaf components that only
+  need `t` use `useTranslation()` instead of `useCookAI()`.
+- **Lists:** rows of a list that can reach dozens of items (Pantry, Saved) are
+  `React.memo` components with stable props (ids + stable callbacks, not inline
+  closures from the parent). Verify with a render count before and after.
+
+---
+
 ## Testing
 
 ### Current state of the art here (be honest about it)

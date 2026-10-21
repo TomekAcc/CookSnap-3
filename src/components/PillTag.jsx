@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { X } from "lucide-react-native";
+import { X } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { GREEN, emojiLine } from "../theme/tokens";
 
