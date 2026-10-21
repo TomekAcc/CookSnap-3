@@ -106,12 +106,13 @@ function splitLeadingEmoji(str) {
 // the i18n layer, not here) — that emoji IS the row's visual marker now;
 // see benefitRow below for why the green check-circle that used to sit
 // next to it got removed rather than kept alongside it.
+// Strongest reasons first: the weekly planner and unlimited scans.
 const PRO_BENEFIT_KEYS = [
-  "pro.benefitUnlimitedScans",
-  "pro.benefitFiveRecipes",
-  "pro.benefitAiModifier",
-  "pro.benefitMacros",
   "pro.benefitAutoPlan",
+  "pro.benefitUnlimitedScans",
+  "pro.benefitAiModifier",
+  "pro.benefitFiveRecipes",
+  "pro.benefitMacros",
 ];
 
 // One lucide icon per benefit, matching each row's meaning the same way
@@ -201,6 +202,14 @@ export default function ProSubscriptionModal() {
     const perMonthValue = `${p.perMonthPrice}${t("pro.moSuffix")}`;
     return (
       <View key={p.id} style={styles.ctaSection}>
+        {p.trial ? (
+          <View style={[styles.guaranteeRow, { marginBottom: 6 }]}>
+            <Check size={15} color="#059669" strokeWidth={3} />
+            <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
+              {t("pro.noPaymentToday")}
+            </Text>
+          </View>
+        ) : null}
         <View style={styles.guaranteeRow}>
           {p.trial ? (
             <Bell size={13} color={colors.textSecondary} strokeWidth={2.5} />
@@ -797,7 +806,8 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 10,
   },
-  guaranteeText: { fontSize: 12, fontWeight: "600" },
+  guaranteeText: { fontSize: 13, fontWeight: "600" },
+  noPaymentText: { fontSize: 14, fontWeight: "700" },
   ctaButton: {
     borderRadius: 16,
     minHeight: 50,
@@ -827,7 +837,7 @@ const styles = StyleSheet.create({
   },
   priceSubtext: {
     textAlign: "center",
-    fontSize: 11.5,
+    fontSize: 13,
     fontWeight: "600",
     marginTop: 10,
   },
