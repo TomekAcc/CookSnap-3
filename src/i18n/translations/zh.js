@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "让冰箱变成无穷的菜谱灵感",
   "pro.tagline": "不再浪费食物，不再纠结晚餐吃什么。",
   "pro.generationsUsedPartial": "今天已使用 {count} 次免费菜谱生成中的 {used} 次",
+  "pro.scansUsedUp": "你今天已用完所有 {count} 次免费冰箱扫描 — 解锁无限次",
+  "pro.pantryScansUsedUp": "你今天已用完所有 {count} 次免费食品储藏柜扫描 — 解锁无限次",
   "pro.annual": "年度订阅",
   "pro.monthly": "月度订阅",
   "pro.saveBadge": "省 58%",

@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Gjør Kjøleskapet ditt om til Uendelige Oppskriftsideer",
   "pro.tagline": "Slutt å kaste mat og lure på hva du skal lage.",
   "pro.generationsUsedPartial": "{used} av {count} gratis oppskriftsgenereringer brukt i dag",
+  "pro.scansUsedUp": "Du har brukt opp alle {count} gratis kjøleskann i dag – få ubegrenset tilgang",
+  "pro.pantryScansUsedUp": "Du har brukt opp alle {count} gratis skapskann i dag – få ubegrenset tilgang",
   "pro.annual": "Årlig",
   "pro.monthly": "Månedlig",
   "pro.saveBadge": "SPAR 58 %",

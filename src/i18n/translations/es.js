@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Convierte tu Nevera en Ideas de Recetas Infinitas",
   "pro.tagline": "Deja de desperdiciar comida y de no saber qué cocinar.",
   "pro.generationsUsedPartial": "{used} de {count} generaciones de recetas gratis usadas hoy",
+  "pro.scansUsedUp": "Has usado tus {count} escaneos de nevera gratis de hoy — pásate a ilimitado",
+  "pro.pantryScansUsedUp": "Has usado tus {count} escaneos de despensa gratis de hoy — pásate a ilimitado",
   "pro.annual": "Anual",
   "pro.monthly": "Mensual",
   "pro.saveBadge": "AHORRA 58%",

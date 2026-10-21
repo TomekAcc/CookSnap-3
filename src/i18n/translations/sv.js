@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Förvandla ditt Kylskåp till Oändliga Receptidéer",
   "pro.tagline": "Sluta slänga mat och fundera på vad du ska laga.",
   "pro.generationsUsedPartial": "{used} av {count} gratis receptgenereringar använda idag",
+  "pro.scansUsedUp": "Du har använt alla dina {count} gratis kylskåpsskanningar idag – skaffa obegränsat",
+  "pro.pantryScansUsedUp": "Du har använt alla dina {count} gratis skafferiskanningar idag – skaffa obegränsat",
   "pro.annual": "Årsvis",
   "pro.monthly": "Månadsvis",
   "pro.saveBadge": "SPARA 58%",

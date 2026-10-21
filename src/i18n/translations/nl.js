@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Verander je Koelkast in Eindeloze Receptideeën",
   "pro.tagline": "Stop met voedselverspilling en met piekeren wat je moet koken.",
   "pro.generationsUsedPartial": "{used} van {count} gratis receptgeneraties vandaag gebruikt",
+  "pro.scansUsedUp": "Je hebt vandaag alle {count} gratis koelkastscans gebruikt — ga voor onbeperkt",
+  "pro.pantryScansUsedUp": "Je hebt vandaag alle {count} gratis voorraadkastscans gebruikt — ga voor onbeperkt",
   "pro.annual": "Jaarlijks",
   "pro.monthly": "Maandelijks",
   "pro.saveBadge": "BESPAAR 58%",

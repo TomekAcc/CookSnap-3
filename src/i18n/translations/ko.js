@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "냉장고를 무한한 레시피 아이디어로",
   "pro.tagline": "음식물 낭비도, 오늘 뭐 먹지 고민도 이제 그만.",
   "pro.generationsUsedPartial": "오늘 무료 레시피 생성 {used}/{count}회 사용됨",
+  "pro.scansUsedUp": "오늘 무료 냉장고 스캔 {count}회를 모두 사용했어요 — 무제한으로 이용하기",
+  "pro.pantryScansUsedUp": "오늘 무료 팬트리 스캔 {count}회를 모두 사용했어요 — 무제한으로 이용하기",
   "pro.annual": "연간",
   "pro.monthly": "월간",
   "pro.saveBadge": "58% 할인",

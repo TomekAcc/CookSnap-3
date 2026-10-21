@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "حوّل ثلاجتك إلى أفكار وصفات لا تنتهي",
   "pro.tagline": "توقف عن إهدار الطعام والتساؤل عن عشاء اليوم.",
   "pro.generationsUsedPartial": "تم استخدام {used} من أصل {count} توليد مجاني للوصفات اليوم",
+  "pro.scansUsedUp": "لقد استنفدت عمليات مسح الثلاجة المجانية الـ {count} اليوم — احصل على مسح غير محدود",
+  "pro.pantryScansUsedUp": "لقد استنفدت عمليات مسح الخزانة المجانية الـ {count} اليوم — احصل على مسح غير محدود",
   "pro.annual": "سنوي",
   "pro.monthly": "شهري",
   "pro.saveBadge": "وفر 58%",

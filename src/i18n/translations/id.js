@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Ubah Kulkasmu Menjadi Ide Resep Tanpa Batas",
   "pro.tagline": "Berhenti membuang makanan dan bingung mau masak apa.",
   "pro.generationsUsedPartial": "{used} dari {count} pembuatan resep gratis terpakai hari ini",
+  "pro.scansUsedUp": "Kamu sudah menggunakan semua {count} pemindaian kulkas gratis hari ini — gunakan tanpa batas",
+  "pro.pantryScansUsedUp": "Kamu sudah menggunakan semua {count} pemindaian dapur gratis hari ini — gunakan tanpa batas",
   "pro.annual": "Tahunan",
   "pro.monthly": "Bulanan",
   "pro.saveBadge": "HEMAT 58%",

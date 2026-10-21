@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Biến Tủ Lạnh Thành Vô Vàn Ý Tưởng Công Thức",
   "pro.tagline": "Ngừng lãng phí thực phẩm và băn khoăn hôm nay ăn gì.",
   "pro.generationsUsedPartial": "Đã dùng {used}/{count} lần tạo công thức miễn phí hôm nay",
+  "pro.scansUsedUp": "Bạn đã dùng hết {count} lượt quét tủ lạnh miễn phí hôm nay — nâng cấp không giới hạn",
+  "pro.pantryScansUsedUp": "Bạn đã dùng hết {count} lượt quét tủ đồ ăn miễn phí hôm nay — nâng cấp không giới hạn",
   "pro.annual": "Hàng năm",
   "pro.monthly": "Hàng tháng",
   "pro.saveBadge": "TIẾT KIỆM 58%",

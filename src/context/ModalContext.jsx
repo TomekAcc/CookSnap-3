@@ -48,6 +48,8 @@ function enrichRecipe(recipe) {
  */
 export function ModalProvider({ children }) {
   const [activeModalId, setActiveModalId] = useState(null);
+  /** Why the paywall was opened ("scan" | "pantryScan"), so it can say so. */
+  const [proReason, setProReason] = useState(null);
   /** Lives in context so an unmounting overlay can't cancel a pending timeout. */
   const modalHandoffTimerRef = useRef(null);
 
@@ -163,6 +165,8 @@ export function ModalProvider({ children }) {
   const value = useMemo(
     () => ({
       activeModalId,
+      proReason,
+      setProReason,
       /** @deprecated Prefer activeModalId */
       activeModal: activeModalId,
       openModal,
@@ -198,6 +202,7 @@ export function ModalProvider({ children }) {
     }),
     [
       activeModalId,
+      proReason,
       openModal,
       closeModal,
       addIngredientOpen,

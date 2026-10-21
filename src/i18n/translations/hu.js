@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Varázsold a Hűtődet Végtelen Receptötletté",
   "pro.tagline": "Elég az ételpazarlásból és a 'mit főzzek ma' dilemmából.",
   "pro.generationsUsedPartial": "{used} / {count} ingyenes receptgenerálás felhasználva ma",
+  "pro.scansUsedUp": "Elhasználtad a mai {count} ingyenes hűtőszkennelést – válts korlátlanra",
+  "pro.pantryScansUsedUp": "Elhasználtad a mai {count} ingyenes kamraszkennelést – válts korlátlanra",
   "pro.annual": "Éves",
   "pro.monthly": "Havi",
   "pro.saveBadge": "SPÓROLJ 58%-OT",

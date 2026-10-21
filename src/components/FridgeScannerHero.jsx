@@ -160,7 +160,7 @@ export default function FridgeScannerHero() {
     firstScanHintShown,
     markFirstScanHintShown,
   } = useCookAI();
-  const { setScanMoreOpen, setProModalOpen } = useModalState();
+  const { setScanMoreOpen, setProModalOpen, setProReason } = useModalState();
   const { colors, isDark } = useTheme();
   const scanMoreButtonRef = useRef(null);
   const [scanMoreAnchor, setScanMoreAnchor] = useState(null);
@@ -651,6 +651,7 @@ export default function FridgeScannerHero() {
   // capturing anything never burns a scan.
   const handleOpenCamera = async () => {
     if (!canScanFridge) {
+      setProReason?.("scan");
       setProModalOpen(true);
       return;
     }
@@ -704,6 +705,7 @@ export default function FridgeScannerHero() {
 
   const handlePickFromGallery = async () => {
     if (!canScanFridge) {
+      setProReason?.("scan");
       setProModalOpen(true);
       return;
     }

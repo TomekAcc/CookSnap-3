@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Verwandle deinen Kühlschrank in endlose Rezeptideen",
   "pro.tagline": "Schluss mit Lebensmittelverschwendung und der Frage, was es heute gibt.",
   "pro.generationsUsedPartial": "{used} von {count} kostenlosen Rezeptgenerierungen heute genutzt",
+  "pro.scansUsedUp": "Du hast heute alle {count} kostenlosen Kühlschrank-Scans verbraucht – hol dir unbegrenzt viele",
+  "pro.pantryScansUsedUp": "Du hast heute alle {count} kostenlosen Vorrats-Scans verbraucht – hol dir unbegrenzt viele",
   "pro.annual": "Jährlich",
   "pro.monthly": "Monatlich",
   "pro.saveBadge": "58% SPAREN",

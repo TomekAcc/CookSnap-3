@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Pretvori svoj Hladnjak u Beskrajne Ideje za Recepte",
   "pro.tagline": "Prestani bacati hranu i razmišljati što skuhati.",
   "pro.generationsUsedPartial": "Iskorišteno {used} od {count} besplatnih generiranja recepata danas",
+  "pro.scansUsedUp": "Danas ste iskoristili svih {count} besplatnih skeniranja hladnjaka – prijeđite na neograničeno",
+  "pro.pantryScansUsedUp": "Danas ste iskoristili svih {count} besplatnih skeniranja smočnice – prijeđite na neograničeno",
   "pro.annual": "Godišnje",
   "pro.monthly": "Mjesečno",
   "pro.saveBadge": "UŠTEDI 58%",

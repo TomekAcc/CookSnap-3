@@ -166,12 +166,14 @@ const PRO_BENEFIT_ICONS = {
  * language is an accepted, normal outcome, not a bug to engineer around.
  */
 export default function ProSubscriptionModal() {
-  const { proModalOpen, setProModalOpen } = useModalState();
+  const { proModalOpen, setProModalOpen, proReason, setProReason } = useModalState();
   const {
     activatePro,
     showToast,
     dailyRecipeGenerationCount,
     freeDailyRecipeGenerations,
+    freeDailyFridgeScans,
+    freeDailyPantryScans,
     t,
   } = useCookAI();
   const { colors, isDark } = useTheme();
@@ -184,6 +186,8 @@ export default function ProSubscriptionModal() {
     borderColor: isDark ? "#065F46" : "#A7F3D0",
   };
   const benefitIconColor = isDark ? "#34D399" : "#059669";
+  // The reason is only meaningful for this opening of the sheet.
+  useEffect(() => () => setProReason?.(null), [setProReason]);
   const [selectedPlanId, setSelectedPlanId] = useState("annual");
   const [heroHeight, setHeroHeight] = useState(HERO_WASH_FALLBACK_HEIGHT);
   const close = () => setProModalOpen(false);
@@ -284,7 +288,11 @@ export default function ProSubscriptionModal() {
   // recipes yet. Keyed off generations, not scans — see
   // FREE_DAILY_RECIPE_GENERATIONS in CookAIContext for why.
   const subtitle =
-    dailyRecipeGenerationCount >= freeDailyRecipeGenerations
+    proReason === "scan"
+      ? t("pro.scansUsedUp", { count: freeDailyFridgeScans })
+      : proReason === "pantryScan"
+        ? t("pro.pantryScansUsedUp", { count: freeDailyPantryScans })
+        : dailyRecipeGenerationCount >= freeDailyRecipeGenerations
       ? t("profile.generationsUsedUp", { count: freeDailyRecipeGenerations })
       : dailyRecipeGenerationCount > 0
         ? t("pro.generationsUsedPartial", {

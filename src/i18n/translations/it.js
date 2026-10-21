@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Trasforma il tuo Frigo in Idee di Ricette Infinite",
   "pro.tagline": "Basta sprecare cibo e chiedersi cosa cucinare.",
   "pro.generationsUsedPartial": "{used} di {count} generazioni di ricette gratuite usate oggi",
+  "pro.scansUsedUp": "Hai usato tutte le {count} scansioni gratuite del frigo oggi — passa a illimitate",
+  "pro.pantryScansUsedUp": "Hai usato tutte le {count} scansioni gratuite della dispensa oggi — passa a illimitate",
   "pro.annual": "Annuale",
   "pro.monthly": "Mensile",
   "pro.saveBadge": "RISPARMIA IL 58%",

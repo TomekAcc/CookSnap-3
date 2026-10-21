@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Muuta Jääkaappisi Loputtomiksi Reseptivinkeiksi",
   "pro.tagline": "Lopeta ruoan hävikki ja illallisen miettiminen.",
   "pro.generationsUsedPartial": "Päivän ilmaisista reseptiluonneista käytetty {used}/{count}",
+  "pro.scansUsedUp": "Olet käyttänyt kaikki {count} ilmaista jääkaappiskannausta tänään – hanki rajaton käyttö",
+  "pro.pantryScansUsedUp": "Olet käyttänyt kaikki {count} ilmaista ruokakomeron skannausta tänään – hanki rajaton käyttö",
   "pro.annual": "Vuosittainen",
   "pro.monthly": "Kuukausittainen",
   "pro.saveBadge": "SÄÄSTÄ 58 %",

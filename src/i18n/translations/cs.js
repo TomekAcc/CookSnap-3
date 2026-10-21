@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Proměň svou Lednici v Nekonečné Nápady na Recepty",
   "pro.tagline": "Přestaň plýtvat jídlem a přemýšlet, co dnes uvařit.",
   "pro.generationsUsedPartial": "Dnes využito {used} z {count} bezplatných generování receptů",
+  "pro.scansUsedUp": "Dnes jste vyčerpali všech {count} bezplatných skenování lednice – získejte neomezený přístup",
+  "pro.pantryScansUsedUp": "Dnes jste vyčerpali všech {count} bezplatných skenování spíže – získejte neomezený přístup",
   "pro.annual": "Roční",
   "pro.monthly": "Měsíční",
   "pro.saveBadge": "UŠETŘÍTE 58 %",

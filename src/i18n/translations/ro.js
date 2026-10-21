@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Transformă-ți Frigiderul în Idei Nesfârșite de Rețete",
   "pro.tagline": "Nu mai risipi mâncare și nu te mai întreba ce să gătești.",
   "pro.generationsUsedPartial": "{used} din {count} generări gratuite de rețete folosite azi",
+  "pro.scansUsedUp": "Ai folosit toate cele {count} scanări gratuite ale frigiderului de azi – treci la nelimitat",
+  "pro.pantryScansUsedUp": "Ai folosit toate cele {count} scanări gratuite ale cămării de azi – treci la nelimitat",
   "pro.annual": "Anual",
   "pro.monthly": "Lunar",
   "pro.saveBadge": "ECONOMISEȘTE 58%",

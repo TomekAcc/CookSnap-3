@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "冷蔵庫を無限のレシピのアイデアに",
   "pro.tagline": "食品ロスとも、今日の献立の悩みともお別れ。",
   "pro.generationsUsedPartial": "本日の無料レシピ生成：{count}回中{used}回使用済み",
+  "pro.scansUsedUp": "本日の無料冷蔵庫スキャン（{count}回）をすべて使いました — 無制限にアップグレード",
+  "pro.pantryScansUsedUp": "本日の無料パントリースキャン（{count}回）をすべて使いました — 無制限にアップグレード",
   "pro.annual": "年額プラン",
   "pro.monthly": "月額プラン",
   "pro.saveBadge": "58% OFF",

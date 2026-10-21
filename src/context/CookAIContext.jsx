@@ -361,7 +361,7 @@ function safeVisibleRecipes(
 export function CookAIProvider({ children }) {
   // Modal open/close state lives in its own context (see ModalContext.jsx) —
   // only pulled in here because addIngredient() needs to close its sheet.
-  const { setAddIngredientOpen, setProModalOpen } = useModalState();
+  const { setAddIngredientOpen, setProModalOpen, setProReason } = useModalState();
   const [activeTab, setActiveTab] = useState("scanner");
   const [ingredients, setIngredients] = useState([]);
   // Smart default instead of always "All" — a one-tap-to-change starting
@@ -1571,7 +1571,10 @@ export function CookAIProvider({ children }) {
       // here would try to mount a second native Modal while that one is
       // still mid-dismissal, the same proven-on-device iOS multi-Modal
       // freeze already fixed for Meal Planner and Scan More.
-      setTimeout(() => setProModalOpen?.(true), EXIT_DURATION_MS + 40);
+      setTimeout(() => {
+        setProReason?.("scan");
+        setProModalOpen?.(true);
+      }, EXIT_DURATION_MS + 40);
       return;
     }
     // Copy into permanent app storage immediately — the original camera/
@@ -2024,7 +2027,10 @@ export function CookAIProvider({ children }) {
         // PantryScannerHero), so a bare setProModalOpen(true) here would
         // try to mount a second native Modal while that one is still
         // mid-dismissal.
-        setTimeout(() => setProModalOpen?.(true), EXIT_DURATION_MS + 40);
+        setTimeout(() => {
+          setProReason?.("pantryScan");
+          setProModalOpen?.(true);
+        }, EXIT_DURATION_MS + 40);
         return;
       }
 

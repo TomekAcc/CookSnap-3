@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Zamień lodówkę w niekończące się przepisy",
   "pro.tagline": "Koniec z marnowaniem jedzenia i zastanawianiem się, co ugotować.",
   "pro.generationsUsedPartial": "Wykorzystano {used} z {count} darmowych generacji przepisów na dzisiaj",
+  "pro.scansUsedUp": "Wykorzystano dziś wszystkie darmowe skany lodówki ({count}) — przejdź na nielimitowane",
+  "pro.pantryScansUsedUp": "Wykorzystano dziś wszystkie darmowe skany spiżarni ({count}) — przejdź na nielimitowane",
   "pro.annual": "Roczna",
   "pro.monthly": "Miesięczna",
   "pro.saveBadge": "OSZCZĘDZAJ 58%",

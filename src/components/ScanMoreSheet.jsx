@@ -49,7 +49,7 @@ export default function ScanMoreSheet({ anchor }) {
     showToast,
     t,
   } = useCookAI();
-  const { scanMoreOpen, setScanMoreOpen, setProModalOpen } = useModalState();
+  const { scanMoreOpen, setScanMoreOpen, setProModalOpen, setProReason } = useModalState();
 
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.92)).current;
@@ -97,7 +97,10 @@ export default function ScanMoreSheet({ anchor }) {
   // way the undelayed gallery-picker call used to.
   const openProAfterClose = () => {
     setScanMoreOpen?.(false);
-    setTimeout(() => setProModalOpen?.(true), GALLERY_HANDOFF_MS);
+    setTimeout(() => {
+      setProReason?.("scan");
+      setProModalOpen?.(true);
+    }, GALLERY_HANDOFF_MS);
   };
 
   const handleTakePhoto = () => {

@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Transformez votre frigo en idées de recettes infinies",
   "pro.tagline": "Finis le gaspillage alimentaire et la question « qu'est-ce qu'on mange ? ».",
   "pro.generationsUsedPartial": "{used} sur {count} générations de recettes gratuites utilisées aujourd'hui",
+  "pro.scansUsedUp": "Vous avez utilisé vos {count} scans gratuits du frigo aujourd'hui — passez en illimité",
+  "pro.pantryScansUsedUp": "Vous avez utilisé vos {count} scans gratuits du garde-manger aujourd'hui — passez en illimité",
   "pro.annual": "Annuel",
   "pro.monthly": "Mensuel",
   "pro.saveBadge": "ÉCONOMISEZ 58 %",

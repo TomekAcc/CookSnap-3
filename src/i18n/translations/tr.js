@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Buzdolabını Sonsuz Tarif Fikrine Dönüştür",
   "pro.tagline": "Yemek israfına ve 'bugün ne pişirsem' derdine son ver.",
   "pro.generationsUsedPartial": "Bugünkü {count} ücretsiz tarif hakkından {used} tanesi kullanıldı",
+  "pro.scansUsedUp": "Bugünkü {count} ücretsiz buzdolabı tarama hakkını doldurdun — sınırsıza geç",
+  "pro.pantryScansUsedUp": "Bugünkü {count} ücretsiz kiler tarama hakkını doldurdun — sınırsıza geç",
   "pro.annual": "Yıllık",
   "pro.monthly": "Aylık",
   "pro.saveBadge": "%58 TASARRUF ET",

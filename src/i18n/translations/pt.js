@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "Transforme sua Geladeira em Ideias de Receitas Infinitas",
   "pro.tagline": "Pare de desperdiçar comida e de não saber o que cozinhar.",
   "pro.generationsUsedPartial": "{used} de {count} gerações de receitas gratuitas usadas hoje",
+  "pro.scansUsedUp": "Você usou todos os {count} escaneamentos gratuitos da geladeira hoje — tenha acesso ilimitado",
+  "pro.pantryScansUsedUp": "Você usou todos os {count} escaneamentos gratuitos da despensa hoje — tenha acesso ilimitado",
   "pro.annual": "Anual",
   "pro.monthly": "Mensal",
   "pro.saveBadge": "POUPE 58%",

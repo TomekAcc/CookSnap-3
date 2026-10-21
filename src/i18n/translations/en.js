@@ -351,6 +351,8 @@ export default {
   "pro.unlockTitle": "Turn Your Fridge Into Endless Recipe Ideas",
   "pro.tagline": "Never waste food or wonder what's for dinner again.",
   "pro.generationsUsedPartial": "{used} of {count} free recipe generations used today",
+  "pro.scansUsedUp": "You've used all {count} free fridge scans today — go unlimited",
+  "pro.pantryScansUsedUp": "You've used all {count} free pantry scans today — go unlimited",
   "pro.annual": "Annual",
   "pro.monthly": "Monthly",
   "pro.saveBadge": "SAVE 58%",

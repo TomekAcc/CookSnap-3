@@ -321,6 +321,8 @@ export default {
   "pro.unlockTitle": "הפוך את המקרר שלך לרעיונות מתכונים אינסופיים",
   "pro.tagline": "תפסיק לזרוק אוכל ולתהות מה לבשל הערב.",
   "pro.generationsUsedPartial": "נוצלו {used} מתוך {count} יצירות מתכונים חינמיות להיום",
+  "pro.scansUsedUp": "השתמשת בכל {count} סריקות המקרר החינמיות להיום — שדרג/י ללא הגבלה",
+  "pro.pantryScansUsedUp": "השתמשת בכל {count} סריקות המזווה החינמיות להיום — שדרג/י ללא הגבלה",
   "pro.annual": "שנתי",
   "pro.monthly": "חודשי",
   "pro.saveBadge": "חיסכון של 58%",
