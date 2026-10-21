@@ -23,7 +23,7 @@ import { translateCount } from "../i18n";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
 import PrivacyNote from "./PrivacyNote";
-import PantryScanMoreSheet from "./PantryScanMoreSheet";
+import ScanMoreSheet from "./scanner/ScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useInventory } from "../context/InventoryContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -804,7 +804,7 @@ export default function PantryScannerHero() {
         </Modal>
       ) : null}
 
-      <PantryScanMoreSheet anchor={scanMoreAnchor} />
+      <ScanMoreSheet kind="pantry" anchor={scanMoreAnchor} />
     </>
   );
 }

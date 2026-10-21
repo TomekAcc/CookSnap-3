@@ -10,16 +10,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { Camera, Image as ImageIcon } from "../icons";
-import { useModalState } from "../context/ModalContext";
-import { useTheme } from "../context/ThemeContext";
-import { EXIT_DURATION_MS } from "../utils/bottomSheet";
-import { log } from "../utils/log";
-import { useEntitlements } from "../context/EntitlementsContext";
-import { useLanguage } from "../context/LanguageContext";
-import { useScan } from "../context/ScanContext";
-import { showToast } from "../utils/toast";
+import { Camera, Image as ImageIcon } from "../../icons";
+import { useModalState } from "../../context/ModalContext";
+import { useTheme } from "../../context/ThemeContext";
+import { EXIT_DURATION_MS } from "../../utils/bottomSheet";
+import { log } from "../../utils/log";
+import { pickImageFromLibrary } from "../../utils/imagePicker";
+import { useEntitlements } from "../../context/EntitlementsContext";
+import { useLanguage } from "../../context/LanguageContext";
+import { useScan } from "../../context/ScanContext";
+import { showToast } from "../../utils/toast";
 
 // launchImageLibraryAsync presents a real native iOS view controller.
 // Confirmed via device logs: calling it right after this popover's own
@@ -35,26 +35,40 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const MENU_WIDTH = 200;
 
 /**
- * Scan More trigger — a compact floating popover anchored right under the
- * "Scan More" button, not a bottom sheet. Deliberately NOT built on
- * StandardModal: that shared sheet machinery (backdrop fade, slide-in,
- * exit-duration buffering) exists for full sheets that need time for their
- * own animation to finish before unmounting. A 2-row dropdown has nothing
- * worth animating that long, and skipping that machinery is what lets the
- * Take Photo / Gallery actions fire with zero handoff delay below.
+ * Scan More — a compact floating popover anchored right under the "Scan More"
+ * button on a scanned photo (fridge or pantry), not a bottom sheet. Deliberately
+ * NOT built on StandardModal: that shared sheet machinery (backdrop fade,
+ * slide-in, exit-duration buffering) exists for full sheets that need time for
+ * their own animation to finish before unmounting. A 2-row dropdown has
+ * nothing worth animating that long, and skipping that machinery is what lets
+ * the Take Photo / Gallery actions fire with zero handoff delay.
+ *
+ * `kind` picks which scan it feeds: "fridge" (default) or "pantry". The two used
+ * to be separate near-identical files; the only differences are which modal flag
+ * it uses and which scan functions and daily limit it calls.
  */
-export default function ScanMoreSheet({ anchor }) {
+export default function ScanMoreSheet({ kind = "fridge", anchor }) {
   const { colors, isDark } = useTheme();
-  const { prepareScanMore, startScanMore, completeScan } = useScan();
-  const { canScanFridge } = useEntitlements();
   const { t } = useLanguage();
-  const { scanMoreOpen, setScanMoreOpen, setProModalOpen, setProReason } = useModalState();
+  const scan = useScan();
+  const entitlements = useEntitlements();
+  const modal = useModalState();
+  const { setProModalOpen, setProReason } = modal;
+
+  const isPantry = kind === "pantry";
+  const open = isPantry ? modal.pantryScanOpen : modal.scanMoreOpen;
+  const setOpen = isPantry ? modal.setPantryScanOpen : modal.setScanMoreOpen;
+  const canScan = isPantry ? entitlements.canScanPantry : entitlements.canScanFridge;
+  const startCamera = isPantry ? scan.startPantryScanMore : scan.startScanMore;
+  const importPhoto = isPantry ? scan.completePantryScan : scan.completeScan;
+  const prepareImport = isPantry ? undefined : scan.prepareScanMore;
+  const paywallReason = isPantry ? "pantryScan" : "scan";
 
   const opacity = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.92)).current;
 
   useEffect(() => {
-    if (scanMoreOpen) {
+    if (open) {
       opacity.setValue(0);
       scale.setValue(0.92);
       Animated.parallel([
@@ -71,91 +85,65 @@ export default function ScanMoreSheet({ anchor }) {
         }),
       ]).start();
     }
-  }, [scanMoreOpen, opacity, scale]);
+  }, [open, opacity, scale]);
 
-  const handleClose = () => setScanMoreOpen?.(false);
+  const handleClose = () => setOpen?.(false);
 
-  // Take Photo stays instant — startScanMore() only flips React state
-  // (cameraOpen=true), which mounts our own RN <Modal> via normal
-  // reconciliation. That's not blocked by a still-transitioning previous
-  // Modal the way a raw native module call (see handlePickGallery) is.
-  // Scan More uses the exact same Vision-API scan path as the main
-  // Take Photo / From Gallery buttons on the fridge photo itself, and that
-  // shared completeScan() (ScanContext) is where the free daily cap is
-  // actually gated and consumed — this popover was previously a bypass of
-  // it entirely (never checked at all). This is only a read-only early
-  // check so a capped-out free user sees the paywall immediately instead
-  // of granting camera/gallery permission first for nothing; the real
-  // gate lives in completeScan, not here, so a cancelled permission
-  // prompt or picker never burns an allowance.
-  // Same "wait for the previous Modal to actually finish closing" handoff
-  // documented above for the gallery picker — a bare setProModalOpen(true)
-  // right after setScanMoreOpen(false) tried to mount a second native
-  // Modal (ProSubscriptionModal) in the same tick this popover's own Modal
-  // was still mid-dismissal, which froze the app on-device the exact same
-  // way the undelayed gallery-picker call used to.
+  // Every action below first closes this popover and then waits
+  // GALLERY_HANDOFF_MS before doing anything that mounts or presents another
+  // native Modal (the camera, the photo picker, the paywall). Doing it in the
+  // same tick as this popover's own Modal closing is the multi-Modal collision
+  // that froze the app on-device.
+  //
+  // The free daily cap is actually gated and consumed inside the scan function
+  // itself (the single choke point every real scan funnels through, so this
+  // popover can't be a bypass). The `canScan` check here is only a read-only
+  // early one: a capped-out free user sees the paywall immediately instead of
+  // granting camera/gallery permission first for nothing, and a cancelled
+  // permission prompt or picker never burns an allowance.
   const openProAfterClose = () => {
-    setScanMoreOpen?.(false);
+    setOpen?.(false);
     setTimeout(() => {
-      setProReason?.("scan");
+      setProReason?.(paywallReason);
       setProModalOpen?.(true);
     }, GALLERY_HANDOFF_MS);
   };
 
   const handleTakePhoto = () => {
-    if (!canScanFridge) {
+    if (!canScan) {
       openProAfterClose();
       return;
     }
-    // Same handoff as the gallery picker below and openProAfterClose above —
-    // startScanMore() sets cameraOpen=true, which mounts FridgeScannerHero's
-    // own native Modal. Calling it in the same tick this popover's Modal
-    // closes is the identical multi-Modal collision already fixed
-    // elsewhere; this one path was missed.
-    setScanMoreOpen?.(false);
-    setTimeout(() => startScanMore?.(), GALLERY_HANDOFF_MS);
+    setOpen?.(false);
+    setTimeout(() => startCamera?.(), GALLERY_HANDOFF_MS);
   };
 
   const handlePickGallery = () => {
-    log.debug("[ScanMore] From Gallery pressed");
-    if (!canScanFridge) {
+    if (!canScan) {
       openProAfterClose();
       return;
     }
-    setScanMoreOpen?.(false);
+    setOpen?.(false);
     setTimeout(() => {
-      log.debug("[ScanMore] handoff delay elapsed, starting picker flow");
       void (async () => {
         try {
-          prepareScanMore?.();
-          log.debug("[ScanMore] requesting media library permission...");
-          const permissionResult =
-            await ImagePicker.requestMediaLibraryPermissionsAsync();
-          log.debug("[ScanMore] permission result:", JSON.stringify(permissionResult));
-          if (!permissionResult.granted) {
+          prepareImport?.();
+          const picked = await pickImageFromLibrary();
+          if (picked.status === "denied") {
             showToast?.(t("errors.galleryPermission"), "error");
             return;
           }
-          log.debug("[ScanMore] launching image library...");
-          const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ["images"],
-            quality: 0.9,
-            exif: false,
-          });
-          log.debug("[ScanMore] picker result canceled:", result.canceled);
-          if (result.canceled || !result.assets?.[0]?.uri) return;
-          log.debug("[ScanMore] got asset uri, calling completeScan");
-          await completeScan?.(result.assets[0].uri, "gallery");
-          log.debug("[ScanMore] completeScan finished");
+          if (picked.status !== "picked") return;
+          await importPhoto?.(picked.uri, "gallery");
         } catch (err) {
-          log.warn("[Cook AI] Scan More gallery failed:", err?.message, err?.stack);
+          log.warn(`[Cook AI] ${isPantry ? "Pantry " : ""}Scan More gallery failed:`, err?.message);
           showToast?.(t("errors.loadPhotoFailed"), "error");
         }
       })();
     }, GALLERY_HANDOFF_MS);
   };
 
-  if (!scanMoreOpen || !anchor) return null;
+  if (!open || !anchor) return null;
 
   const top = anchor.y + anchor.height + 6;
   const right = Math.max(12, SCREEN_WIDTH - (anchor.x + anchor.width));

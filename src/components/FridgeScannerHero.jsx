@@ -34,7 +34,7 @@ import PrivacyNote from "./PrivacyNote";
 import { sampleFridgeFitHeight } from "../constants/sampleFridge";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
-import ScanMoreSheet from "./ScanMoreSheet";
+import ScanMoreSheet from "./scanner/ScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { log } from "../utils/log";
 import { useEntitlements } from "../context/EntitlementsContext";
