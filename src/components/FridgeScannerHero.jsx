@@ -23,7 +23,6 @@ import {
   CheckCircle2,
   Zap,
 } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { TOTAL_SCAN_DURATION } from "../constants/scanChoreography";
@@ -38,6 +37,12 @@ import ScanLaserOverlay from "./ScanLaserOverlay";
 import ScanMoreSheet from "./ScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { log } from "../utils/log";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useOnboarding } from "../context/OnboardingContext";
+import { useScan } from "../context/ScanContext";
+import { showToast } from "../utils/toast";
 
 // Placeholders the vision model is told never to use but sometimes does; a
 // chip with no emoji reads better than a generic jar or box.
@@ -140,10 +145,8 @@ function resolveScanStage(hasScanned, isScanning) {
  * Scan More appends de-duped items.
  */
 export default function FridgeScannerHero() {
+  const { ingredients, removeIngredient, addIngredient, scanIsDemo } = useInventory();
   const {
-    ingredients,
-    removeIngredient,
-    addIngredient,
     isScanning,
     scanRevealActive,
     setScanRevealActive,
@@ -154,16 +157,12 @@ export default function FridgeScannerHero() {
     scanHistory,
     hasScanned,
     completeScan,
-    scanIsDemo,
     endScanChoreography,
     resetScan,
-    showToast,
-    canScanFridge,
-    t,
-    recipeLanguageId,
-    firstScanHintShown,
-    markFirstScanHintShown,
-  } = useCookAI();
+  } = useScan();
+  const { canScanFridge } = useEntitlements();
+  const { t, recipeLanguageId } = useLanguage();
+  const { firstScanHintShown, markFirstScanHintShown } = useOnboarding();
   const { setScanMoreOpen, setProModalOpen, setProReason } = useModalState();
   const { colors, isDark } = useTheme();
   const scanMoreButtonRef = useRef(null);
@@ -182,7 +181,7 @@ export default function FridgeScannerHero() {
   // further down actually has a mounted bar to animate.
   //
   // scanRevealActive itself (and the render-phase correction that computes
-  // it with no one-render gap) now lives in CookAIContext, not here — see
+  // it with no one-render gap) now lives in ScanContext, not here — see
   // its own long comment there for why: this used to be local state
   // (holdingAtComplete) mirrored out to context for ScannerScreen's
   // benefit, but mirroring between two separately-updated states always
@@ -293,7 +292,7 @@ export default function FridgeScannerHero() {
   // to swipe past on autopilot), this puts a one-time soft pulsing glow
   // directly on the "Take Photo" button — the attention cue sits exactly
   // where the action needs to happen, at the moment it needs to happen.
-  // Shown only once ever (firstScanHintShown persists via CookAIContext,
+  // Shown only once ever (firstScanHintShown persists via OnboardingContext,
   // same pattern as Settings' one-time "Done" hint), dismissed the moment
   // the user taps either scan action below.
   useEffect(() => {
@@ -327,7 +326,7 @@ export default function FridgeScannerHero() {
   // of the deliberately-delayed display `scanStage` above. Without this
   // being separate from the shrink/reveal effect below, the fill animation
   // and the view that unmounts it would land in the same tick — see
-  // scanRevealActive's comment in CookAIContext for the full failure this
+  // scanRevealActive's comment in ScanContext for the full failure this
   // fixes.
   useEffect(() => {
     if (rawScanStage !== "completed") {
@@ -347,7 +346,7 @@ export default function FridgeScannerHero() {
     }
 
     // scanRevealActive is already true by now — set synchronously in
-    // CookAIContext's own render the instant rawScanStage became
+    // ScanContext's own render the instant rawScanStage became
     // "completed", not here. This effect only owns the actual fill
     // animation + hold timer + eventual release.
     let cancelled = false;
@@ -396,7 +395,7 @@ export default function FridgeScannerHero() {
     // identity from context changes as a side effect of committing the
     // scanned ingredients — which fires DURING the post-completion hold
     // (scanStage still reads "scanning" on purpose, see scanRevealActive's
-    // comment in CookAIContext). Without this guard, that spurious re-run wiped
+    // comment in ScanContext). Without this guard, that spurious re-run wiped
     // progressBarAnim back to 0 and restarted the whole 3.2s phase1 climb
     // from scratch, so the bar visibly dropped from 100% down to ~3%
     // before the completed view took over — worse than the original bug.
@@ -650,7 +649,7 @@ export default function FridgeScannerHero() {
   ]);
 
   // The daily free-scan cap is actually gated and consumed inside
-  // completeScan() (CookAIContext) — the single choke point every real
+  // completeScan() (ScanContext) — the single choke point every real
   // scan funnels through, regardless of entry point. This is only a
   // read-only early check so a capped-out free user hits the paywall
   // immediately instead of being walked through a camera-permission

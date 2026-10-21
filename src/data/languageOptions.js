@@ -69,7 +69,7 @@ export function getLanguageById(id) {
  * Matches a device locale's language code (e.g. from expo-localization's
  * getLocales()[0].languageCode) to a supported language, falling back to
  * English when the device language isn't in our list. Used once, on
- * first launch (no persisted preference yet) — see CookAIContext.
+ * first launch (no persisted preference yet) — see LanguageContext.
  */
 export function matchDeviceLanguage(languageCode) {
   if (!languageCode) return DEFAULT_LANGUAGE_ID;

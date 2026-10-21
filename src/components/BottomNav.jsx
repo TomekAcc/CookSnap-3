@@ -3,12 +3,15 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Flame, Utensils, Heart, User } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { animateLayout } from "../utils/layoutMotion";
 import { scrollTabToTop } from "../hooks/useTabScroll";
 import { breakLigatures } from "../utils/textLigatures";
+import { useLanguage } from "../context/LanguageContext";
+import { useNavigation } from "../context/NavigationContext";
+import { useRecipes } from "../context/RecipesContext";
+import { useScan } from "../context/ScanContext";
 
 // Same delayed-flatten pattern as Header.jsx: a live BlurView is one of the
 // more GPU-expensive effects to keep compositing every frame, and this one
@@ -40,15 +43,10 @@ const ACTIVE_DARK = "#34D399";
 const INACTIVE = "#8E8E93";
 
 export default function BottomNav() {
-  const {
-    activeTab,
-    setActiveTab,
-    isScanning,
-    scanRevealActive,
-    generatedRecipes,
-    hasPantryScanned,
-    t,
-  } = useCookAI();
+  const { activeTab, setActiveTab } = useNavigation();
+  const { isScanning, scanRevealActive, hasPantryScanned } = useScan();
+  const { generatedRecipes } = useRecipes();
+  const { t } = useLanguage();
   // The Scanner used to show a whole "Scan your pantry" card under the
   // recipes to make sure people found this tab (they scan the fridge, get
   // recipes, and never notice Pantry exists). A card duplicating a tab that is
@@ -75,7 +73,7 @@ export default function BottomNav() {
 
   // Stay hidden through FridgeScannerHero's post-scan reveal hold too, not
   // just the raw API call — see scanRevealActive's comment in
-  // CookAIContext. Otherwise the nav could reappear (letting the user tab
+  // ScanContext. Otherwise the nav could reappear (letting the user tab
   // away) a few hundred ms before the scan card actually finishes revealing.
   if (isScanning || scanRevealActive) return null;
 

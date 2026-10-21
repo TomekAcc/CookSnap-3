@@ -6,7 +6,7 @@ import { prettyPantryName } from "../services/geminiVision";
 import { DS } from "../utils/designSystem";
 import { animateLayout } from "../utils/layoutMotion";
 import { useTheme } from "../context/ThemeContext";
-import { useTranslation } from "../context/CookAIContext";
+import { useTranslation } from "../context/LanguageContext";
 import { emojiLine } from "../theme/tokens";
 
 // How long the checked state (filled circle, strikethrough) holds before the

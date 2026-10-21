@@ -17,9 +17,11 @@ import {
   CalendarDays,
 } from "../icons";
 import { useModalState } from "../context/ModalContext";
-import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import StandardModal from "./StandardModal";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useLanguage } from "../context/LanguageContext";
+import { showToast } from "../utils/toast";
 
 // Amber is a fixed accent (ThemeContext's accentAmber is the SAME hex in
 // both LIGHT_COLORS and DARK_COLORS), so its derived tints are safe as
@@ -169,13 +171,12 @@ export default function ProSubscriptionModal() {
   const { proModalOpen, setProModalOpen, proReason, setProReason } = useModalState();
   const {
     activatePro,
-    showToast,
     dailyRecipeGenerationCount,
     freeDailyRecipeGenerations,
     freeDailyFridgeScans,
     freeDailyPantryScans,
-    t,
-  } = useCookAI();
+  } = useEntitlements();
+  const { t } = useLanguage();
   const { colors, isDark } = useTheme();
   // The app's own pastel-emerald icon-badge tokens — the same fill/border/
   // glyph colors used for the Profile, Pantry and Saved header badges and
@@ -286,7 +287,7 @@ export default function ProSubscriptionModal() {
   // Real usage beats a generic tagline — someone who just hit their daily
   // generation cap is a much warmer lead than someone who hasn't generated
   // recipes yet. Keyed off generations, not scans — see
-  // FREE_DAILY_RECIPE_GENERATIONS in CookAIContext for why.
+  // FREE_DAILY_RECIPE_GENERATIONS in constants/limits.js for why.
   const subtitle =
     proReason === "scan"
       ? t("pro.scansUsedUp", { count: freeDailyFridgeScans })

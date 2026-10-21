@@ -6,7 +6,7 @@ import {
   resolveCategoryBadgeColors,
 } from "../utils/imageUtils";
 import { useTheme } from "../context/ThemeContext";
-import { useTranslation } from "../context/CookAIContext";
+import { useTranslation } from "../context/LanguageContext";
 import { cookTimeLabel } from "../utils/timeFormat";
 import { TYPE, WEIGHT, RADIUS, SPACE, ICON, emojiLine } from "../theme/tokens";
 

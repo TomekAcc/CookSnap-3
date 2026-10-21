@@ -10,17 +10,19 @@ import {
 } from "react-native";
 import { Plus } from "../icons";
 import { POPULAR_PANTRY } from "../data/recipes";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import StandardSmoothModal from "./StandardSmoothModal";
 import PillTag from "./PillTag";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage } from "../context/LanguageContext";
 
 /**
  * Add Custom Ingredient — StandardSmoothModal center card (synced animation).
  */
 export default function AddIngredientModal() {
-  const { addIngredient, ingredients, t } = useCookAI();
+  const { addIngredient, ingredients } = useInventory();
+  const { t } = useLanguage();
   const { addIngredientOpen, setAddIngredientOpen } = useModalState();
   const { colors } = useTheme();
 

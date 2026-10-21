@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Crown, ChevronRight } from "../icons";
-import { useTranslation } from "../context/CookAIContext";
+import { useTranslation } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 
 const ON_AMBER = "#1D1D1F";

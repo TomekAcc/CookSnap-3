@@ -3,7 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Crown } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { useModalState } from "../context/ModalContext";
-import { useCookAI } from "../context/CookAIContext";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useLanguage } from "../context/LanguageContext";
 
 // Same amber accent as the PRO paywall's own crown badge
 // (ProSubscriptionModal.jsx) — kept as local literals here rather than a
@@ -49,7 +50,8 @@ export const HEADER_SHADOW_KILL = Object.freeze({
 export default function Header() {
   const { colors, isDark } = useTheme();
   const { setProModalOpen } = useModalState();
-  const { isPro, t } = useCookAI();
+  const { isPro } = useEntitlements();
+  const { t } = useLanguage();
 
   const headerStyle = [
     styles.base,

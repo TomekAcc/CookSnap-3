@@ -12,11 +12,14 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Camera, Image as ImageIcon } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { log } from "../utils/log";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useScan } from "../context/ScanContext";
+import { showToast } from "../utils/toast";
 
 // Same native-Modal-handoff reasoning as ScanMoreSheet.jsx (fridge's
 // identical popover) — see that file's own comment for the full history.
@@ -37,13 +40,9 @@ const MENU_WIDTH = 200;
  */
 export default function PantryScanMoreSheet({ anchor }) {
   const { colors, isDark } = useTheme();
-  const {
-    startPantryScanMore,
-    completePantryScan,
-    canScanPantry,
-    showToast,
-    t,
-  } = useCookAI();
+  const { startPantryScanMore, completePantryScan } = useScan();
+  const { canScanPantry } = useEntitlements();
+  const { t } = useLanguage();
   const { pantryScanOpen, setPantryScanOpen, setProModalOpen } = useModalState();
 
   const opacity = useRef(new Animated.Value(0)).current;

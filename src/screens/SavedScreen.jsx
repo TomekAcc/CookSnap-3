@@ -5,12 +5,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Heart } from "../icons";
 import EmptyStateSparkle from "../components/EmptyStateSparkle";
 import Header from "../components/Header";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import RecipeCard from "../components/RecipeCard";
 import SwipeToDeleteRow from "../components/SwipeToDeleteRow";
 import { RADIUS } from "../theme/tokens";
+import { useLanguage } from "../context/LanguageContext";
+import { useLibrary } from "../context/LibraryContext";
 
 // Meal types worth filtering by, in the order they appear in a day. Only the
 // ones with a translation and at least one saved recipe become chips.
@@ -36,7 +37,8 @@ const SavedRow = memo(function SavedRow({ recipe, isOpen, setOpenSwipeId, onDele
 export default function SavedScreen() {
   const tabScroll = useTabScroll("saved");
   const insets = useSafeAreaInsets();
-  const { savedRecipes, toggleSaveRecipe, t } = useCookAI();
+  const { savedRecipes, toggleSaveRecipe } = useLibrary();
+  const { t } = useLanguage();
   const { setSelectedRecipe } = useModalState();
   const { colors } = useTheme();
   const [openSwipeId, setOpenSwipeId] = useState(null);

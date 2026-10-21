@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { Animated, PanResponder, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Check, AlertTriangle, Info, Crown } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import { toastStore } from "../utils/toastStore";
+import { hideToast } from "../utils/toast";
 
 // A solid card on the app's normal surface, with a small vector icon in a
 // tinted disc carrying the variant colour. It used to be a see-through mint /
@@ -32,7 +32,7 @@ function stripLeadingEmoji(text) {
 const HIDDEN_OFFSET = -28;
 
 export default function Toast() {
-  const { hideToast } = useCookAI();
+
   const toast = useSyncExternalStore(toastStore.subscribe, toastStore.get);
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();

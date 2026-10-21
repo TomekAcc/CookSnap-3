@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { Lock } from "../icons";
-import { useTranslation } from "../context/CookAIContext";
+import { useTranslation } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 
 /**

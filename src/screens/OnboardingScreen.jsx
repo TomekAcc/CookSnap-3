@@ -21,11 +21,13 @@ import {
   Globe,
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
-import { useCookAI } from "../context/CookAIContext";
 import { LANGUAGE_OPTIONS, DEFAULT_LANGUAGE_ID, getLanguageById } from "../data/languageOptions";
 import { translate } from "../i18n";
 import { SAMPLE_FRIDGE_IMAGE, sampleFridgeSize } from "../constants/sampleFridge";
 import { log } from "../utils/log";
+import { useLanguage } from "../context/LanguageContext";
+import { usePreferences } from "../context/PreferencesContext";
+import { useScan } from "../context/ScanContext";
 
 const GREEN = "#059669";
 
@@ -56,7 +58,7 @@ function sampleCardLayout() {
  * recipe generation, with no photo needed. Language and units start from the
  * device's own settings and sit in one collapsed row that opens inline.
  *
- * Both choices still write into CookAIContext (the same `recipeLanguageId` /
+ * Both choices still write into LanguageContext and PreferencesContext (the same `recipeLanguageId` /
  * `unitSystem` Settings edits) — there's no separate onboarding-only state.
  *
  * The highlighted language deliberately starts as English rather than the
@@ -70,14 +72,9 @@ function sampleCardLayout() {
 export default function OnboardingScreen({ onContinue }) {
   const insets = useSafeAreaInsets();
   const { colors, isDark } = useTheme();
-  const {
-    setRecipeLanguageId,
-    unitSystem,
-    setUnitSystem,
-    recipeLanguageId,
-    recipeLanguageHydrated,
-    completeDemoScan,
-  } = useCookAI();
+  const { setRecipeLanguageId, recipeLanguageId, recipeLanguageHydrated } = useLanguage();
+  const { unitSystem, setUnitSystem } = usePreferences();
+  const { completeDemoScan } = useScan();
 
   const [selectedLanguage, setSelectedLanguage] = useState(DEFAULT_LANGUAGE_ID);
   // null until the user taps a units button; until then the device-detected

@@ -5,7 +5,7 @@ import { Asset } from "expo-asset";
  * the fixed list of what is in it. It runs through the real scanning animation
  * and then the real recipe generation, but never calls the vision API, never
  * uses up a daily free scan, and is never saved (see completeDemoScan in
- * CookAIContext) — it exists so someone who installs the app away from their
+ * ScanContext) — it exists so someone who installs the app away from their
  * kitchen still gets to see what it does.
  *
  * Every item below is drawn in the illustration (scripts/sample-fridge-

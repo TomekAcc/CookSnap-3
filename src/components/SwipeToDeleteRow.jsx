@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { Trash2 } from "../icons";
-import { useTranslation } from "../context/CookAIContext";
+import { useTranslation } from "../context/LanguageContext";
 
 const DELETE_WIDTH = 76;
 const OPEN_X = -DELETE_WIDTH;

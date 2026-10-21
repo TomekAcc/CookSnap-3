@@ -12,7 +12,6 @@ import {
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import { Camera, Image as ImageIcon, CheckCircle2 } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import {
@@ -26,6 +25,10 @@ import ScanLaserOverlay from "./ScanLaserOverlay";
 import PrivacyNote from "./PrivacyNote";
 import PantryScanMoreSheet from "./PantryScanMoreSheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useScan } from "../context/ScanContext";
+import { showToast } from "../utils/toast";
 
 /** Compact height for the captured photo once a scan finishes. */
 const COMPACT_HEIGHT = 130;
@@ -70,14 +73,14 @@ function resolveScanStage(hasScanned, isScanning) {
  * writes straight into pantryItems, a context-level list, independent of
  * this component's lifecycle) — only the "here's what just happened" photo
  * summary was. Fixed by moving pantryPhoto/isPantryScanning into
- * CookAIContext (completePantryScan/endPantryScanChoreography/
+ * ScanContext (completePantryScan/endPantryScanChoreography/
  * resetPantryPhoto), mirroring fridge's identical architecture exactly,
  * holdingAtComplete fix included — see FridgeScannerHero's own comments on
  * that for the full reasoning, since it applies here unchanged.
  */
 export default function PantryScannerHero() {
+  const { pantryItems } = useInventory();
   const {
-    pantryItems,
     isPantryScanning,
     hasPantryScanned,
     pantryPhoto,
@@ -86,10 +89,8 @@ export default function PantryScannerHero() {
     completePantryScan,
     endPantryScanChoreography,
     resetPantryPhoto,
-    showToast,
-    t,
-    recipeLanguageId,
-  } = useCookAI();
+  } = useScan();
+  const { t, recipeLanguageId } = useLanguage();
   const { setPantryScanOpen } = useModalState();
   const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();

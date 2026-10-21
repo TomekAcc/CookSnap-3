@@ -23,7 +23,6 @@ import {
   PackageOpen,
   Trash2,
 } from "../icons";
-import { useCookAI, useTranslation } from "../context/CookAIContext";
 import { classifyPantryItemWithGemini, prettyPantryName } from "../services/geminiVision";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
@@ -36,6 +35,12 @@ import PantryScannerHero from "./PantryScannerHero";
 import ErrorBoundary from "./ErrorBoundary";
 import Header from "./Header";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage, useTranslation } from "../context/LanguageContext";
+import { useNavigation } from "../context/NavigationContext";
+import { useRecipes } from "../context/RecipesContext";
+import { showToast } from "../utils/toast";
 
 // PANTRY_CATEGORIES' own values stay English (they're also the actual
 // matching key against each pantry item's stored `category`, set by the
@@ -258,19 +263,18 @@ export default function PantryTab() {
     addPantryItem,
     removePantryItem,
     clearPantry,
-    showToast,
-    setActiveTab,
-    registerRecipeGenerationAttempt,
-    generateRecipes,
     ingredients,
-    t,
-  } = useCookAI();
+  } = useInventory();
+  const { setActiveTab } = useNavigation();
+  const { registerRecipeGenerationAttempt } = useEntitlements();
+  const { generateRecipes } = useRecipes();
+  const { t } = useLanguage();
   const { setLocalSheetOpen, setProModalOpen } = useModalState();
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   // LOCAL visibility only — never write activeModalId on open. Routing these
-  // through CookAIContext re-rendered every App-level modal in the same frame
+  // through the old single app-wide context re-rendered every App-level modal in the same frame
   // the native Modal presents, which locked the JS thread.
   const [showAddModal, setShowAddModal] = useState(false);
   const [showShoppingModal, setShowShoppingModal] = useState(false);
@@ -357,7 +361,7 @@ export default function PantryTab() {
       removePantryItem(item.id);
       showToast?.(t("pantry.removedItem", { name: item.name }), "success");
     },
-    [removePantryItem, showToast, t]
+    [removePantryItem, t]
   );
 
   // Confirmed real feedback, from a live tester: after not opening the app
@@ -383,7 +387,7 @@ export default function PantryTab() {
         },
       ]
     );
-  }, [clearPantry, showToast, t]);
+  }, [clearPantry, t]);
 
   // One tiny AI call picks the category and emoji for what was typed (in any
   // language). Never blocks for long and falls back to the local guess, so

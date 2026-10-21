@@ -17,9 +17,14 @@ import FridgeScannerHero from "../components/FridgeScannerHero";
 import MealPreferences from "../components/MealPreferences";
 import ScanSteps from "../components/ScanSteps";
 import RecipeFeed from "../components/RecipeFeed";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useNavigation } from "../context/NavigationContext";
+import { useRecipes } from "../context/RecipesContext";
+import { useScan } from "../context/ScanContext";
 
 // Generation takes ~10-15 s. A spinner alone makes that feel open-ended, so
 // the button also fills left to right: quick at first, easing toward 92% and
@@ -61,25 +66,18 @@ function GenerationProgress({ active }) {
 export default function ScannerScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const {
-    scrollViewRef,
-    setRecipesSectionY,
-    hasScanned,
-    isScanning,
-    scanRevealActive,
-    isGeneratingRecipes,
-    generatedRecipes,
-    generateRecipes,
-    registerRecipeGenerationAttempt,
-    ingredients,
-    t,
-  } = useCookAI();
+  const { scrollViewRef, setRecipesSectionY } = useNavigation();
+  const { hasScanned, isScanning, scanRevealActive } = useScan();
+  const { isGeneratingRecipes, generatedRecipes, generateRecipes } = useRecipes();
+  const { registerRecipeGenerationAttempt } = useEntitlements();
+  const { ingredients } = useInventory();
+  const { t } = useLanguage();
   const tabScroll = useTabScroll("scanner", scrollViewRef);
   const { setProModalOpen } = useModalState();
 
   // Free tier caps recipe generations/regenerations per day (each one is
   // its own Gemini call) rather than the scan itself — see
-  // FREE_DAILY_RECIPE_GENERATIONS in CookAIContext for why. Same
+  // FREE_DAILY_RECIPE_GENERATIONS in constants/limits.js for why. Same
   // register-then-check-result pattern already used for the fridge scan
   // cap in FridgeScannerHero.
   const handleGeneratePress = () => {
@@ -98,7 +96,7 @@ export default function ScannerScreen() {
   // false the instant the real result lands, but FridgeScannerHero
   // deliberately holds its own display a few hundred ms longer so that
   // moment is actually visible to the user — see scanRevealActive's own
-  // comment in CookAIContext for the full story. Gating on both means this
+  // comment in ScanContext for the full story. Gating on both means this
   // screen only treats the scan as "done" once the user has actually seen
   // it finish, not the instant the API result lands.
   const stillScanning = isScanning || scanRevealActive;

@@ -24,7 +24,6 @@ import {
   Lock,
   Crown,
 } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { getDishEmojiAndColor } from "../utils/imageUtils";
@@ -34,6 +33,14 @@ import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { animateLayout } from "../utils/layoutMotion";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
 import { log } from "../utils/log";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useLibrary } from "../context/LibraryContext";
+import { useNavigation } from "../context/NavigationContext";
+import { useRecipes } from "../context/RecipesContext";
+import { useScan } from "../context/ScanContext";
+import { showToast } from "../utils/toast";
 
 
 // This modal's own native Modal (via StandardSmoothModal) stays mounted for
@@ -179,23 +186,18 @@ function applyTranslatedRecipeToMeal(meal, translated) {
 }
 
 export default function MealPlannerModal() {
+  const { scannedIngredients, pantryItems } = useInventory();
+  const { savedRecipes } = useLibrary();
+  const { setActiveTab } = useNavigation();
+  const { setCameraOpen, hasScanned } = useScan();
+  const { getPlannerMealsFromInventory, ensureRecipeLanguage } = useRecipes();
   const {
-    scannedIngredients,
-    pantryItems,
-    savedRecipes,
-    setActiveTab,
-    setCameraOpen,
-    getPlannerMealsFromInventory,
-    showToast,
     isPro,
-    hasScanned,
     registerRecipeGenerationAttempt,
     dailyRecipeGenerationCount,
     freeDailyRecipeGenerations,
-    recipeLanguageId,
-    ensureRecipeLanguage,
-    t,
-  } = useCookAI();
+  } = useEntitlements();
+  const { recipeLanguageId, t } = useLanguage();
   const minUnit = t("cookingTime.minUnit");
   const { mealPlannerOpen, setMealPlannerOpen, setSelectedRecipe, setProModalOpen } =
     useModalState();
@@ -221,7 +223,7 @@ export default function MealPlannerModal() {
   const mealPoolRef = useRef([]);
   const isMountedRef = useRef(true);
 
-  // Confirmed real gap: CookAIContext already re-translates the Saved list
+  // Confirmed real gap: RecipesContext already re-translates the Saved list
   // and the current Recipe Feed batch the moment the language changes (see
   // its recipeLangTrackerRef effect), but this modal's weeklyPlan is its
   // own local state, persisted separately — a day assigned while Polish was
@@ -230,7 +232,7 @@ export default function MealPlannerModal() {
   // RecipeDetailModal's own per-open translate doesn't fix this either: it
   // only patches its local `displayRecipe`, never writes back into
   // weeklyPlan, so the collapsed day row stayed stale even after opening
-  // and closing the detail view. Same tracker-ref pattern as CookAIContext:
+  // and closing the detail view. Same tracker-ref pattern as RecipesContext:
   // skip the very first render (that's hydration, not a language change),
   // then walk every day whose embedded recipe is stale and update it in
   // place, one at a time.
@@ -273,7 +275,7 @@ export default function MealPlannerModal() {
       cancelled = true;
     };
     // Deliberately excludes weeklyPlan — read from the closure at switch
-    // time, same reasoning as CookAIContext's own language-switch effect.
+    // time, same reasoning as RecipesContext's own language-switch effect.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipeLanguageId, planHydrated, ensureRecipeLanguage]);
 
@@ -286,7 +288,7 @@ export default function MealPlannerModal() {
   const fridgeEmpty = fridgeCount === 0 && pantryStaples.length === 0;
 
   // Per-day Generate/Swap draws from the SAME daily cap as the Scanner's
-  // Generate button (see registerRecipeGenerationAttempt in CookAIContext)
+  // Generate button (see registerRecipeGenerationAttempt in EntitlementsContext)
   // — surfaced here too, not just on Scanner, so a free user isn't
   // surprised by the paywall on a tap when they never used a generation
   // in this screen specifically (confirmed real confusion: "I didn't use

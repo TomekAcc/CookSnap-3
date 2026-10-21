@@ -12,11 +12,14 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Camera, Image as ImageIcon } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { log } from "../utils/log";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useScan } from "../context/ScanContext";
+import { showToast } from "../utils/toast";
 
 // launchImageLibraryAsync presents a real native iOS view controller.
 // Confirmed via device logs: calling it right after this popover's own
@@ -42,14 +45,9 @@ const MENU_WIDTH = 200;
  */
 export default function ScanMoreSheet({ anchor }) {
   const { colors, isDark } = useTheme();
-  const {
-    prepareScanMore,
-    startScanMore,
-    completeScan,
-    canScanFridge,
-    showToast,
-    t,
-  } = useCookAI();
+  const { prepareScanMore, startScanMore, completeScan } = useScan();
+  const { canScanFridge } = useEntitlements();
+  const { t } = useLanguage();
   const { scanMoreOpen, setScanMoreOpen, setProModalOpen, setProReason } = useModalState();
 
   const opacity = useRef(new Animated.Value(0)).current;
@@ -83,7 +81,7 @@ export default function ScanMoreSheet({ anchor }) {
   // Modal the way a raw native module call (see handlePickGallery) is.
   // Scan More uses the exact same Vision-API scan path as the main
   // Take Photo / From Gallery buttons on the fridge photo itself, and that
-  // shared completeScan() (CookAIContext) is where the free daily cap is
+  // shared completeScan() (ScanContext) is where the free daily cap is
   // actually gated and consumed — this popover was previously a bypass of
   // it entirely (never checked at all). This is only a read-only early
   // check so a capped-out free user sees the paywall immediately instead

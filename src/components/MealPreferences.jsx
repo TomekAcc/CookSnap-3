@@ -21,10 +21,11 @@ import {
   ChevronRight,
   Check,
 } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
 import { translateCount } from "../i18n";
 import StandardSmoothModal from "./StandardSmoothModal";
+import { useLanguage } from "../context/LanguageContext";
+import { usePreferences } from "../context/PreferencesContext";
 
 // Every option on this screen is text only, and every selected option looks
 // the same: solid emerald with a white bold label. (A white "raised pill"
@@ -46,7 +47,7 @@ const HUNGER_OPTIONS = [
   { id: "hungry", labelKey: "mealPrefs.hungerHearty" },
 ];
 
-// ids here must match CRAVING_PROMPT_TEXT in CookAIContext.jsx — that's
+// ids here must match CRAVING_PROMPT_TEXT in PreferencesContext.jsx.jsx — that's
 // where these get translated into the actual prompt phrasing.
 const CRAVING_TAGS = [
   { id: "salty", labelKey: "mealPrefs.cravingSalty", Icon: Waves },
@@ -180,9 +181,8 @@ export default function MealPreferences() {
     setExcludeThisBatch,
     includePantryStaples,
     setIncludePantryStaples,
-    t,
-    recipeLanguageId,
-  } = useCookAI();
+  } = usePreferences();
+  const { t, recipeLanguageId } = useLanguage();
   const { colors, isDark } = useTheme();
   const card = cardStyle(isDark, colors);
   const palette = usePalette();

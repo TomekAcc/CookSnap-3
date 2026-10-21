@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
 import { History, ChevronRight, Camera, Image as ImageIcon, Sparkles } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import StandardSmoothModal from "./StandardSmoothModal";
 import EmptyStateSparkle from "./EmptyStateSparkle";
 import SwipeToDeleteRow from "./SwipeToDeleteRow";
 import { translateCount } from "../i18n";
+import { useLanguage } from "../context/LanguageContext";
+import { useRecipes } from "../context/RecipesContext";
+import { useScan } from "../context/ScanContext";
+import { showToast } from "../utils/toast";
 
 const SOURCE_ICON = { camera: Camera, gallery: ImageIcon, demo: Sparkles };
 
@@ -25,8 +28,9 @@ const SOURCE_LABEL_KEY = {
  * Scan History — StandardSmoothModal bottom-sheet.
  */
 export default function ScanHistoryModal() {
-  const { scanHistory, restoreScan, deleteScan, showToast, generatedRecipes, recipeLanguageId, t } =
-    useCookAI();
+  const { scanHistory, restoreScan, deleteScan } = useScan();
+  const { generatedRecipes } = useRecipes();
+  const { recipeLanguageId, t } = useLanguage();
   const { scanHistoryOpen, setScanHistoryOpen } = useModalState();
   const { colors } = useTheme();
   const [openSwipeId, setOpenSwipeId] = useState(null);

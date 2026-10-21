@@ -7,8 +7,9 @@ import {
 } from "react-native";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
-import { useCookAI } from "../context/CookAIContext";
 import StandardSmoothModal from "./StandardSmoothModal";
+import { useLanguage } from "../context/LanguageContext";
+import { showToast } from "../utils/toast";
 
 /**
  * Help & Feedback — StandardSmoothModal bottom-sheet (slide, synced with all sheets).
@@ -16,7 +17,7 @@ import StandardSmoothModal from "./StandardSmoothModal";
 export default function HelpFeedbackModal() {
   const { helpModalOpen, setHelpModalOpen } = useModalState();
   const { colors } = useTheme();
-  const { t, showToast } = useCookAI();
+  const { t } = useLanguage();
   const [message, setMessage] = useState("");
 
   const handleClose = () => {

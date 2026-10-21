@@ -11,7 +11,7 @@ import { PlusJakartaSans_600SemiBold } from "@expo-google-fonts/plus-jakarta-san
 import { PlusJakartaSans_700Bold } from "@expo-google-fonts/plus-jakarta-sans/700Bold";
 import { PlusJakartaSans_800ExtraBold } from "@expo-google-fonts/plus-jakarta-sans/800ExtraBold";
 import { installGlobalFont } from "./src/utils/globalFont";
-import { CookAIProvider, useCookAI } from "./src/context/CookAIContext";
+import { AppProviders } from "./src/context/AppProviders";
 import { ModalProvider, useModalState } from "./src/context/ModalContext";
 import { useModalPresence } from "./src/utils/bottomSheet";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
@@ -30,6 +30,9 @@ import SavedScreen from "./src/screens/SavedScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
 import OnboardingScreen from "./src/screens/OnboardingScreen";
+import { useLanguage } from "./src/context/LanguageContext";
+import { useNavigation } from "./src/context/NavigationContext";
+import { useOnboarding } from "./src/context/OnboardingContext";
 
 // Runs once, before the first Text renders — see globalFont.js for why this
 // has to patch the JSX runtime rather than Text.render or createElement.
@@ -48,8 +51,8 @@ try {
 }
 
 function MainContent() {
-  // Hooks must stay unconditional — never wrap useCookAI in try/catch.
-  const { activeTab } = useCookAI();
+  // Hooks must stay unconditional — never wrap context hooks in try/catch.
+  const { activeTab } = useNavigation();
 
   switch (activeTab) {
     case "pantry":
@@ -160,12 +163,8 @@ function AppShell() {
  * intrusive and higher-intent than an abstract pitch during onboarding.
  */
 function RootGate() {
-  const {
-    onboardingComplete,
-    onboardingHydrated,
-    completeOnboarding,
-    recipeLanguageHydrated,
-  } = useCookAI();
+  const { onboardingComplete, onboardingHydrated, completeOnboarding } = useOnboarding();
+  const { recipeLanguageHydrated } = useLanguage();
   const { colors } = useTheme();
   const fadeAnim = React.useRef(new Animated.Value(1)).current;
 
@@ -199,7 +198,7 @@ function RootGate() {
     // English before recipeLanguageId's own AsyncStorage read resolved and
     // corrected it — recipeLanguageId starts at DEFAULT_LANGUAGE_ID
     // (English) synchronously and only becomes the real saved language
-    // after that async read finishes (see CookAIContext.jsx). Holding the
+    // after that async read finishes (see OnboardingContext.jsx.jsx). Holding the
     // shell back the same way onboardingHydrated already does above closes
     // that gap: nothing text-bearing mounts until the real language is
     // known, so there's no English frame to flash at all.
@@ -238,9 +237,9 @@ export default function App() {
           <ErrorBoundary>
             <ThemeProvider>
               <ModalProvider>
-                <CookAIProvider>
+                <AppProviders>
                   <RootGate />
-                </CookAIProvider>
+                </AppProviders>
               </ModalProvider>
             </ThemeProvider>
           </ErrorBoundary>

@@ -67,7 +67,7 @@ const DIET_FORBIDDEN_HINTS = {
  *
  * customAvoid merges the persisted PRO Custom Diet list with the
  * free-for-everyone one-off "exclude this batch" quick-tag exclusion (see
- * CookAIContext's dietaryRestrictionsWithCustom) and gets the same hard
+ * PreferencesContext's dietaryRestrictionsWithCustom) and gets the same hard
  * "STRICTLY FORBIDDEN" treatment as the preset diets — also covered by the
  * getDietViolation code-level safety net below, unlike a free-text diet
  * description would be. customPrefer and craving are both soft, separate
@@ -868,7 +868,7 @@ function isFallbackCompatibleWithMealType(fillerCategory, mealType) {
 //   banner explaining it isn't really personalized. The empty-batch case
 //   (zero real recipes survive at all) and total request failure are both
 //   thrown as GeminiRecipeError instead of silently swapping in fake
-//   recipes — CookAIContext surfaces that as an honest "couldn't
+//   recipes — RecipesContext surfaces that as an honest "couldn't
 //   generate" state rather than ever showing fabricated recipes as real.
 function enforceExactlyFive(recipes, mealType, servings = 2, count = RECIPES_PER_SCAN, dietaryRestrictions = null, excludeTitles = [], scannedIngredients = [], allowPadding = true) {
   const incoming = Array.isArray(recipes) ? recipes : [];

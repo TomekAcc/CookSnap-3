@@ -2,8 +2,9 @@ import React from "react";
 import { View, Text, TouchableOpacity, Switch } from "react-native";
 import { FULL_DIETARY_OPTIONS } from "../data/dietaryOptions";
 import DietIcon from "./DietIcon";
-import { useCookAI } from "../context/CookAIContext";
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { usePreferences } from "../context/PreferencesContext";
 
 /**
  * The dietary-restriction list — one component for Settings and Profile, so
@@ -18,7 +19,8 @@ import { useTheme } from "../context/ThemeContext";
  * label used to do nothing).
  */
 export default function DietList({ showDescriptions = true }) {
-  const { t, dietaryRestrictions, toggleDietaryRestriction } = useCookAI();
+  const { t } = useLanguage();
+  const { dietaryRestrictions, toggleDietaryRestriction } = usePreferences();
   const { colors, isDark } = useTheme();
 
   return (

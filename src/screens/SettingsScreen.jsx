@@ -21,30 +21,23 @@ import {
   ChevronLeft,
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
-import { useCookAI } from "../context/CookAIContext";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
 import StandardModal from "../components/StandardModal";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useNavigation } from "../context/NavigationContext";
+import { useOnboarding } from "../context/OnboardingContext";
+import { usePreferences } from "../context/PreferencesContext";
 
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
   const insets = useSafeAreaInsets();
   const { theme, toggleTheme, colors } = useTheme();
-  const {
-    unitSystem,
-    setUnitSystem,
-    ingredientPriority,
-    setIngredientPriority,
-    recipeLanguageId,
-    setRecipeLanguageId,
-    isPro,
-    activatePro,
-    deactivatePro,
-    resetOnboarding,
-    setActiveTab,
-    settingsDoneHintShown,
-    markSettingsDoneHintShown,
-    t,
-  } = useCookAI();
+  const { unitSystem, setUnitSystem, ingredientPriority, setIngredientPriority } = usePreferences();
+  const { recipeLanguageId, setRecipeLanguageId, t } = useLanguage();
+  const { isPro, activatePro, deactivatePro } = useEntitlements();
+  const { resetOnboarding, settingsDoneHintShown, markSettingsDoneHintShown } = useOnboarding();
+  const { setActiveTab } = useNavigation();
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
   const [unitsPickerOpen, setUnitsPickerOpen] = useState(false);
   const selectedLanguage = getLanguageById(recipeLanguageId);
@@ -470,7 +463,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* No real payment processor is wired up yet (see the PRO
-            entitlement note in CookAIContext) — activating PRO from the
+            entitlement note in EntitlementsContext) — activating PRO from the
             paywall was previously one-way with no way back to reviewing
             the free tier short of clearing app storage. Labeled plainly as
             a testing switch, not real subscription management, so it never

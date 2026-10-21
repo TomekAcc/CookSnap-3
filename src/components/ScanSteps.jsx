@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Camera, SlidersHorizontal, Sparkles } from "../icons";
-import { useTranslation } from "../context/CookAIContext";
+import { useTranslation } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
 
 const STEPS = [

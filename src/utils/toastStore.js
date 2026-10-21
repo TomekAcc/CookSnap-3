@@ -1,5 +1,5 @@
 // The visible toast lives outside React state on purpose. While it sat in
-// CookAIContext, every toast (show + auto-hide = two updates) re-rendered
+// the old single app context, every toast (show + auto-hide = two updates) re-rendered
 // every screen and list that reads the context — measured at 120 RecipeCard
 // and 160 pantry-row renders per toast with a full Saved / Pantry tab. Only
 // <Toast/> subscribes now, so showing a message re-renders just that overlay.

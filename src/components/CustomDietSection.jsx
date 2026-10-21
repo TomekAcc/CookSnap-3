@@ -1,9 +1,11 @@
 import React from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { Lock, SlidersHorizontal } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useLanguage } from "../context/LanguageContext";
+import { usePreferences } from "../context/PreferencesContext";
 
 /**
  * Custom Diet (PRO) — free-text "always avoid" / "prefer more of" lists.
@@ -11,14 +13,14 @@ import { useTheme } from "../context/ThemeContext";
  * Settings, which meant diet preferences were split across two screens.
  */
 export default function CustomDietSection() {
+  const { t } = useLanguage();
+  const { isPro } = useEntitlements();
   const {
-    t,
-    isPro,
     customDietAvoid,
     setCustomDietAvoid,
     customDietPrefer,
     setCustomDietPrefer,
-  } = useCookAI();
+  } = usePreferences();
   const { setProModalOpen } = useModalState();
   const { colors, isDark } = useTheme();
 

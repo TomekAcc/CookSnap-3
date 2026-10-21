@@ -7,8 +7,8 @@ import { log } from "../utils/log";
 import { STORAGE_KEYS } from "../storage/keys";
 
 // Reads the saved language straight from AsyncStorage (not through
-// CookAIContext / the hooks) on purpose, so the crash screen still renders in
-// the user's language even if the crash happened inside CookAIProvider itself.
+// the app-state contexts / the hooks) on purpose, so the crash screen still renders in
+// the user's language even if the crash happened inside the providers themselves.
 // The key comes from storage/keys.js — a plain constants file with no
 // dependencies — so it cannot drift from the key the app actually writes.
 const RECIPE_LANGUAGE_STORAGE_KEY = STORAGE_KEYS.recipeLanguage;

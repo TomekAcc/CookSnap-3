@@ -34,15 +34,15 @@ function enrichRecipe(recipe) {
 }
 
 /**
- * Modal open/close state, deliberately isolated from CookAIContext.
+ * Modal open/close state, deliberately isolated from the app-state contexts.
  *
- * Every modal trigger used to write into CookAIContext's single giant
- * memoized value, which re-renders every useCookAI() consumer app-wide
+ * Every modal trigger used to write into the old single app context's single giant
+ * memoized value, which re-rendered every consumer app-wide
  * (every tab, every screen) in the same commit a native <Modal> tries to
  * present. Direct on-device testing confirmed that collision — not the
  * Modal component itself — was what silently broke presentation: the exact
  * same modal worked when its open flag lived in plain local state, and
- * broke the instant it touched CookAIContext, regardless of timing.
+ * broke the instant it touched that context, regardless of timing.
  * Keeping modal state in its own context means opening one only re-renders
  * the handful of components that actually read this context, not the
  * whole app.

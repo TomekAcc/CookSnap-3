@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Crown, Sparkles, TriangleAlert } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { translateCount } from "../i18n";
@@ -9,6 +8,10 @@ import RecipeCard from "./RecipeCard";
 import ProBanner from "./ProBanner";
 import EmptyStateSparkle from "./EmptyStateSparkle";
 import { ICON, SPACE } from "../theme/tokens";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useLibrary } from "../context/LibraryContext";
+import { useRecipes } from "../context/RecipesContext";
 
 export default function RecipeFeed({ onSelectRecipe } = {}) {
   const {
@@ -16,15 +19,10 @@ export default function RecipeFeed({ onSelectRecipe } = {}) {
     isGeneratingRecipes,
     generatedRecipes,
     recipeGenerationFailed,
-    favorites,
-    toggleFavorite,
-    isRecipeSaved,
-    recipeLanguageId,
-    isPro,
-    dailyRecipeGenerationCount,
-    freeDailyRecipeGenerations,
-    t,
-  } = useCookAI();
+  } = useRecipes();
+  const { favorites, toggleFavorite, isRecipeSaved } = useLibrary();
+  const { recipeLanguageId, t } = useLanguage();
+  const { isPro, dailyRecipeGenerationCount, freeDailyRecipeGenerations } = useEntitlements();
   const { setSelectedRecipe, setProModalOpen } = useModalState();
   const { colors } = useTheme();
 

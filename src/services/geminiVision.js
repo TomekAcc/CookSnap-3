@@ -405,7 +405,7 @@ export function getFallbackFridgeItems() {
   return [];
 }
 
-// --- Pantry helpers (used by CookAIContext) ---
+// --- Pantry helpers (used by InventoryContext) ---
 
 /**
  * Batch-translates a list of ingredient/pantry item names into `language`

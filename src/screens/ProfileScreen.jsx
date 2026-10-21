@@ -12,27 +12,28 @@ import {
   ChevronRight,
   Check,
 } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import DietList from "../components/DietList";
 import CustomDietSection from "../components/CustomDietSection";
 import Header from "../components/Header";
 import { breakLigatures } from "../utils/textLigatures";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useLibrary } from "../context/LibraryContext";
+import { useNavigation } from "../context/NavigationContext";
+import { useScan } from "../context/ScanContext";
 
 export default function ProfileScreen() {
   const tabScroll = useTabScroll("profile");
   const insets = useSafeAreaInsets();
-  const {
-    setActiveTab,
-    isPro,
-    dailyRecipeGenerationCount,
-    freeDailyRecipeGenerations,
-    savedCount,
-    pantryItems,
-    scanHistory,
-    t,
-  } = useCookAI();
+  const { setActiveTab } = useNavigation();
+  const { isPro, dailyRecipeGenerationCount, freeDailyRecipeGenerations } = useEntitlements();
+  const { savedCount } = useLibrary();
+  const { pantryItems } = useInventory();
+  const { scanHistory } = useScan();
+  const { t } = useLanguage();
   const { setProModalOpen, setMealPlannerOpen, setScanHistoryOpen, setHelpModalOpen } =
     useModalState();
   const { colors, isDark } = useTheme();
@@ -82,7 +83,7 @@ export default function ProfileScreen() {
   // copy. Keyed off recipe generations, not scans — regenerating for new
   // suggestions is the action people actually repeat in a session, and the
   // one the free cap is meant to meter (see FREE_DAILY_RECIPE_GENERATIONS
-  // in CookAIContext).
+  // in EntitlementsContext).
   const proBannerSubtitle =
     !isPro && dailyRecipeGenerationCount >= freeDailyRecipeGenerations
       ? t("profile.generationsUsedUp", { count: freeDailyRecipeGenerations })

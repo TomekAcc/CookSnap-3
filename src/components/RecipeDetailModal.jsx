@@ -24,7 +24,6 @@ import {
   X,
   Info,
 } from "../icons";
-import { useCookAI } from "../context/CookAIContext";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import {
@@ -39,6 +38,13 @@ import { DS } from "../utils/designSystem";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
 import { emojiLine, SPACE, strokeFor } from "../theme/tokens";
 import { isAssumedStapleIngredient } from "../utils/assumedStaples";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useLibrary } from "../context/LibraryContext";
+import { usePreferences } from "../context/PreferencesContext";
+import { useRecipes } from "../context/RecipesContext";
+import { showToast } from "../utils/toast";
 
 /** Hermes-safe emoji strip (no /u flag). */
 function stripInlineEmojis(str) {
@@ -98,22 +104,15 @@ function formatQtyFromItem(item) {
 
 /**
  * Compact no-bloat recipe detail — sticky favorites CTA.
- * Wired to CookAIContext (mounted with no props).
+ * Wired to the recipes and library contexts (mounted with no props).
  */
 export default function RecipeDetailModal() {
-  const {
-    servings,
-    toggleSaveRecipe,
-    isRecipeSaved,
-    isPro,
-    modifyRecipe,
-    ensureRecipeLanguage,
-    recipeLanguageId,
-    showToast,
-    addToShoppingList,
-    markPantryItemOutOfStock,
-    t,
-  } = useCookAI();
+  const { servings } = usePreferences();
+  const { toggleSaveRecipe, isRecipeSaved } = useLibrary();
+  const { isPro } = useEntitlements();
+  const { modifyRecipe, ensureRecipeLanguage } = useRecipes();
+  const { recipeLanguageId, t } = useLanguage();
+  const { addToShoppingList, markPantryItemOutOfStock } = useInventory();
   const { selectedRecipe, setSelectedRecipe, setProModalOpen } =
     useModalState();
   const { colors, isDark } = useTheme();
@@ -177,7 +176,7 @@ export default function RecipeDetailModal() {
   // immediately — without this the modifier card can end up mostly hidden
   // under the keyboard inside the sheet's keyboard-shrunk viewport. Two
   // passes (post-commit, then post-keyboard-animation) mirrors the same
-  // scroll-after-layout pattern CookAIContext uses for scrollToRecipesTop.
+  // scroll-after-layout pattern NavigationContext uses for scrollToRecipesTop.
   useEffect(() => {
     if (!modifierOpen) return;
     const scroll = () => {
