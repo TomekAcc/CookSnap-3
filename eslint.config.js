@@ -2,7 +2,7 @@ const expoConfig = require("eslint-config-expo/flat");
 
 module.exports = [
   ...expoConfig,
-  { ignores: ["dist/**", ".expo/**", "node_modules/**", "scripts/smoke-test-screenshots/**"] },
+  { ignores: ["dist/**", ".expo/**", "node_modules/**", "proxy/node_modules/**", "proxy/.wrangler/**", "scripts/smoke-test-screenshots/**"] },
   {
     // Use src/utils/log.js (log.debug / log.warn / log.error) instead.
     files: ["src/**/*.{js,jsx}", "App.jsx", "index.js"],
@@ -28,6 +28,14 @@ module.exports = [
     files: ["__tests__/**/*.js", "test-utils/**/*.js", "live/**/*.js", "jest.setup.js"],
     languageOptions: {
       globals: { describe: "readonly", it: "readonly", test: "readonly", expect: "readonly", jest: "readonly", beforeEach: "readonly", afterEach: "readonly", __dirname: "readonly" },
+    },
+  },
+  {
+    // The Cloudflare Worker in /proxy (ES modules; Workers/Node globals, not React Native).
+    files: ["proxy/**/*.js"],
+    languageOptions: {
+      sourceType: "module",
+      globals: { Request: "readonly", Response: "readonly", fetch: "readonly", URL: "readonly", TextEncoder: "readonly" },
     },
   },
   {

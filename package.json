@@ -10,6 +10,8 @@
     "smoke:web": "bash -c 'npx expo start --web & PID=$!; sleep 8; node scripts/web-smoke-test.js; EXIT=$?; kill $PID 2>/dev/null; exit $EXIT'",
     "lint": "eslint .",
     "test": "jest",
+    "test:proxy": "npm --prefix proxy test",
+    "check:bundle": "node scripts/check-bundle-secrets.js",
     "test:live": "jest --config live/jest.config.js"
   },
   "dependencies": {
@@ -58,6 +60,7 @@
     "preset": "jest-expo",
     "testPathIgnorePatterns": [
       "/node_modules/",
+      "/proxy/",
       "/dist/"
     ],
     "setupFiles": [

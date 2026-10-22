@@ -1,0 +1,23 @@
+name = "cook-ai-gemini-proxy"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+# Requests one phone may make per UTC day. A recipe generation is ~3-5 Gemini calls
+# (generate + quality pass + retries), a scan 1-2, so 300 is far above normal use.
+DEVICE_DAILY_LIMIT = "300"
+# Requests the whole app may make per UTC day. Keeps a stolen proxy URL from draining
+# the monthly Gemini budget; raise it as the user base grows.
+GLOBAL_DAILY_LIMIT = "2000"
+# Set to "1" (dashboard or `wrangler deploy --var PROXY_DISABLED:1`) to switch the proxy off.
+PROXY_DISABLED = "0"
+
+# GEMINI_API_KEY is a secret, not a var: `npx wrangler secret put GEMINI_API_KEY`.
+
+[[durable_objects.bindings]]
+name = "LIMITER"
+class_name = "Limiter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Limiter"]

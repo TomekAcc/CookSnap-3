@@ -347,16 +347,22 @@ Don't claim a change is "tested" unless one of these actually ran.
 ## Security
 
 ### API keys and secrets
-- `EXPO_PUBLIC_GEMINI_API_KEY` and any other key lives only in `.env`
-  (gitignored). Never hardcode a key in source, never print one in full to
-  a terminal or log, never commit `.env`.
-- Because this is an `EXPO_PUBLIC_*` variable, it ships inside the client
-  bundle and is not truly secret from a determined attacker — treat key
-  rotation as a real, periodic task, not a one-time setup step, and don't
-  add anything more sensitive than a rate-limited AI API key to the
-  `EXPO_PUBLIC_*` namespace.
-- If a key is ever suspected exposed (posted in a log, a screenshot, a
-  shared zip), rotate it — don't just delete the local reference.
+- The Gemini key lives on the proxy only (`proxy/`, a Cloudflare Worker holding it as the
+  `GEMINI_API_KEY` secret). The app is configured with `EXPO_PUBLIC_GEMINI_PROXY_URL` and
+  sends an anonymous per-install device id; it never needs the key.
+- `EXPO_PUBLIC_*` values are compiled into the bundle and readable by anyone who installs the
+  app, so no secret may use that prefix in a build or publish environment. The key may sit in
+  a local `.env` for development only; keep it out of EAS environment variables and empty it
+  before publishing.
+- Before every `eas update` or build: `npx expo export --platform android --no-bytecode --clear
+  --output-dir <dir>`, then `npm run check:bundle -- <dir>` (fails if any Google key is in the
+  bundle), and publish with `--clear-cache`. Metro caches inlined env values, so a key removed
+  from `.env` can still ride along from a stale cache (seen while building the check).
+- Never hardcode a key in source, never print one in full to a terminal or log, never commit
+  `.env`. If a key is ever suspected exposed (posted in a log, a screenshot, a shared zip, or
+  a published bundle), rotate it: deleting the local reference is not enough.
+- Cost guards, in layers: the proxy's per-device and global daily limits (`proxy/wrangler.toml`),
+  the monthly spend cap in AI Studio, and the Cloud Billing budget alert.
 
 ### Handling user data
 - Fridge/pantry photos and detected ingredients are the most sensitive
@@ -369,10 +375,11 @@ Don't claim a change is "tested" unless one of these actually ran.
   usage-data item), not as a side effect of another change.
 
 ### Dependencies
-- This project pulls from `generativelanguage.googleapis.com` directly
-  from the client. Don't introduce a second AI provider or a proxy
-  endpoint without checking it under the same scrutiny (timeout handling,
-  key exposure, response validation).
+- The app reaches Gemini through the proxy in `proxy/` (directly from the client only in local
+  development with a key in `.env`). Don't introduce a second AI provider or another endpoint
+  without the same scrutiny (timeout handling, key exposure, response validation). The proxy
+  forwards only the request shapes the app sends (`proxy/src/policy.js`): when the app starts
+  sending a new field or model, add it there in the same change.
 
 ### Input handling
 - Never trust the AI's JSON output directly — `normalizeRecipe()` and the

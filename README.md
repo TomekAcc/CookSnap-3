@@ -14,6 +14,7 @@ Production-grade React Native app built with Expo. Scan your fridge, set meal pr
 ```
 cook-ai/
 ├── App.jsx                          # Root app with navigation & modals
+├── proxy/                           # Cloudflare Worker that holds the Gemini key (see proxy/README.md)
 ├── src/
 │   ├── components/
 │   │   ├── Header.jsx               # Brand badge, menu & notifications

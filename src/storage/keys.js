@@ -20,6 +20,8 @@ export const STORAGE_KEYS = {
   customDietAvoid: "cookai:customDietAvoid:v1",
   customDietPrefer: "cookai:customDietPrefer:v1",
   theme: "cookai:theme:v1",
+  // Random id created once per install; sent to the Gemini proxy so it can rate-limit per phone.
+  deviceId: "cookai:deviceId:v1",
   // Entitlement and free-tier limits
   isPro: "cookai:isPro:v1",
   dailyFridgeScans: "cookai:dailyFridgeScans:v1",

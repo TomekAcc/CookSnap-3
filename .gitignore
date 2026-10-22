@@ -19,3 +19,8 @@ web-build/
 # typescript
 *.tsbuildinfo
 scripts/smoke-test-screenshots/
+
+# Cloudflare Worker local state
+proxy/.wrangler/
+proxy/node_modules/
+proxy/.dev.vars
