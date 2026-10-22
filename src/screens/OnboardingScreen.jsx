@@ -28,6 +28,7 @@ import { log } from "../utils/log";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
 import { useScan } from "../context/ScanContext";
+import SampleFridgeTags from "../components/SampleFridgeTags";
 import { EMERALD, MISC, SLATE, WHITE } from "../theme/palette";
 
 const GREEN = EMERALD[600];
@@ -44,7 +45,7 @@ function sampleCardLayout() {
   const size = sampleFridgeSize();
   const imageHeight = size ? (cardWidth * size.height) / size.width : (cardWidth * 4) / 3;
   const overflow = Math.max(0, imageHeight - cardHeight);
-  return { cardHeight, imageHeight, imageTop: -Math.round(overflow * 0.12) };
+  return { cardWidth, cardHeight, imageHeight, imageTop: -Math.round(overflow * 0.12) };
 }
 
 /**
@@ -263,6 +264,12 @@ export default function OnboardingScreen({ onContinue }) {
             }}
             resizeMode="cover"
             accessibilityLabel={t("onboarding.sampleLabel")}
+          />
+          <SampleFridgeTags
+            t={t}
+            cardWidth={sampleCard.cardWidth}
+            imageHeight={sampleCard.imageHeight}
+            imageTop={sampleCard.imageTop}
           />
           <View
             style={{

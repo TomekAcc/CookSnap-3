@@ -30,6 +30,19 @@ export const SAMPLE_FRIDGE_ITEMS = [
 ];
 
 /**
+ * Where to pin a label on the illustration, as fractions of the image (x across, y down) at
+ * the top-centre of the item. Only items on the top three shelves: the onboarding card crops
+ * the bottom drawers on shorter phones. Names come from the sampleFridge.<id> translations.
+ */
+export const SAMPLE_FRIDGE_TAGS = [
+  { id: "cheese", x: 0.511, y: 0.196 },
+  { id: "eggs", x: 0.233, y: 0.45 },
+  { id: "orangeJuice", x: 0.633, y: 0.371 },
+  { id: "tomatoes", x: 0.167, y: 0.68 },
+  { id: "onion", x: 0.684, y: 0.6875 },
+];
+
+/**
  * Pixel size of the bundled sample, known synchronously (Metro records it in the
  * asset's metadata). expo-asset rather than Image.resolveAssetSource, which does
  * not exist on react-native-web.
