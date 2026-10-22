@@ -7,6 +7,7 @@ import {
   ScrollView,
   Switch,
 } from "react-native";
+import { useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Sun,
@@ -40,6 +41,12 @@ export default function SettingsScreen() {
   const { resetOnboarding, settingsDoneHintShown, markSettingsDoneHintShown } = useOnboarding();
   const { setActiveTab } = useNavigation();
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
+  // True while the language list is scrolled to the very top: then pulling down anywhere on
+  // the sheet moves the whole sheet (StandardModal.scrollTopSignal), like the recipe sheet.
+  const languageListAtTop = useSharedValue(true);
+  useEffect(() => {
+    if (languagePickerOpen) languageListAtTop.value = true;
+  }, [languagePickerOpen, languageListAtTop]);
   const [unitsPickerOpen, setUnitsPickerOpen] = useState(false);
   const selectedLanguage = getLanguageById(recipeLanguageId);
 
@@ -628,6 +635,7 @@ export default function SettingsScreen() {
         visible={languagePickerOpen}
         onClose={() => setLanguagePickerOpen(false)}
         maxHeight="80%"
+        scrollTopSignal={languageListAtTop}
         // Default drag-to-dismiss zone (110px) overlapped this modal's
         // compact grab-handle + title, reaching into the first language
         // row below — its higher z-index absorbed light taps there before
@@ -664,6 +672,11 @@ export default function SettingsScreen() {
         </Text>
         <ScrollView
           showsVerticalScrollIndicator={false}
+          bounces={false}
+          scrollEventThrottle={16}
+          onScroll={(e) => {
+            languageListAtTop.value = e.nativeEvent.contentOffset.y <= 0;
+          }}
           style={{ paddingHorizontal: 20 }}
           contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
         >
