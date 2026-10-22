@@ -78,6 +78,7 @@ export const LIGHT_COLORS = {
   trackStrong: SLATE[200],
   neutralWash: SLATE[100],
   photoBorder: "rgba(15, 23, 42, 0.14)",
+  imageDim: "rgba(8, 14, 20, 0)",
   chipBg: "rgba(241, 245, 249, 0.7)",
   chipBorder: "rgba(226, 232, 240, 0.8)",
 
@@ -168,6 +169,7 @@ export const DARK_COLORS = {
   trackStrong: SLATE[700],
   neutralWash: "rgba(255, 255, 255, 0.08)",
   photoBorder: "rgba(255, 255, 255, 0.16)",
+  imageDim: "rgba(8, 14, 20, 0.24)",
   chipBg: APPLE.darkInset,
   chipBorder: DARK_HAIRLINE,
 

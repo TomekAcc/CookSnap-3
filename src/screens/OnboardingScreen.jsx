@@ -90,6 +90,8 @@ export default function OnboardingScreen({ onContinue }) {
   const [showSettings, setShowSettings] = useState(false);
   const [showAllLanguages, setShowAllLanguages] = useState(false);
   const [starting, setStarting] = useState(false);
+  // Bumped when the sample fridge is tapped, to replay its scan animation.
+  const [scanPlays, setScanPlays] = useState(0);
   const sampleCard = useRef(sampleCardLayout()).current;
   const scrollRef = useRef(null);
 
@@ -242,7 +244,10 @@ export default function OnboardingScreen({ onContinue }) {
         </View>
 
         {/* The sample fridge (see sampleCardLayout for how it is cropped). */}
-        <View
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setScanPlays((n) => n + 1)}
+          accessible={false}
           style={{
             height: sampleCard.cardHeight,
             borderRadius: 24,
@@ -265,11 +270,17 @@ export default function OnboardingScreen({ onContinue }) {
             resizeMode="cover"
             accessibilityLabel={t("onboarding.sampleLabel")}
           />
+          <View
+            pointerEvents="none"
+            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.imageDim }}
+          />
           <SampleFridgeTags
             t={t}
             cardWidth={sampleCard.cardWidth}
+            cardHeight={sampleCard.cardHeight}
             imageHeight={sampleCard.imageHeight}
             imageTop={sampleCard.imageTop}
+            playKey={scanPlays}
           />
           <View
             style={{
@@ -286,7 +297,7 @@ export default function OnboardingScreen({ onContinue }) {
               {t("onboarding.sampleLabel")}
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Language & units — one quiet row, open on request. */}
         <TouchableOpacity
