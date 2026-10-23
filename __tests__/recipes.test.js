@@ -3,6 +3,7 @@ import { act, waitFor } from "@testing-library/react-native";
 import { renderApp } from "../test-utils/renderApp";
 import { toastStore } from "../src/utils/toastStore";
 import { hideToast } from "../src/utils/toast";
+import { STORAGE_KEYS } from "../src/storage/keys";
 
 jest.mock("../src/services/geminiRecipes", () => ({
   ...jest.requireActual("../src/services/geminiRecipes"),
@@ -62,6 +63,45 @@ describe("generateRecipes", () => {
     expect(args[7]).toBe(3); // free batch size
     expect(args[10]).toBe("metric");
     expect(args[11]).toBe("English");
+  });
+
+  describe("sample pantry (onboarding sample fridge)", () => {
+    const sampleNames = ["Pasta", "Rice", "Flour", "Olive oil", "Garlic", "Oregano", "Paprika"];
+
+    it("is used for the sample fridge when the user has stocked nothing, and is never saved", async () => {
+      gemini.generateRecipesWithGemini.mockResolvedValue(batch(5));
+      const { result } = await withFridge();
+      act(() => result.current.inv.markScanDemo(true));
+      await act(() => result.current.rec.generateRecipes());
+      expect(gemini.generateRecipesWithGemini.mock.calls[0][1].map((p) => p.name)).toEqual(sampleNames);
+      expect(result.current.inv.pantryItems).toEqual([]);
+      expect(JSON.parse((await AsyncStorage.getItem(STORAGE_KEYS.pantryItems)) || "[]")).toEqual([]);
+    });
+
+    it("gives way to the user's own pantry, and to a real scan", async () => {
+      gemini.generateRecipesWithGemini.mockResolvedValue(batch(5));
+      const { result } = await withFridge();
+      act(() => {
+        result.current.inv.markScanDemo(true);
+        result.current.inv.addPantryItem({ id: "p", name: "Salt", category: "Spices & Herbs" });
+      });
+      await act(() => result.current.rec.generateRecipes());
+      expect(gemini.generateRecipesWithGemini.mock.calls[0][1].map((p) => p.name)).toEqual(["Salt"]);
+    });
+
+    it("is not used for a real fridge, or when pantry staples are switched off", async () => {
+      gemini.generateRecipesWithGemini.mockResolvedValue(batch(5));
+      const { result } = await withFridge();
+      await act(() => result.current.rec.generateRecipes());
+      expect(gemini.generateRecipesWithGemini.mock.calls[0][1]).toEqual([]);
+
+      act(() => {
+        result.current.inv.markScanDemo(true);
+        result.current.prefs.setIncludePantryStaples(false);
+      });
+      await act(() => result.current.rec.generateRecipes());
+      expect(gemini.generateRecipesWithGemini.mock.calls[1][1]).toEqual([]);
+    });
   });
 
   it("PRO gets the full batch of five", async () => {

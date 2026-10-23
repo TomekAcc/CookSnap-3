@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "यह तय करता है कि आपकी रेसिपी में सामग्री की मात्रा और ओवन का तापमान कैसे दिखाया जाए — आप इसे कभी भी सेटिंग्स में बदल सकते हैं।",
   "onboarding.valueSubtitle": "अपने फ्रिज की फोटो लें और जो सामान मौजूद है उससे आसान रेसिपी पाएं",
   "onboarding.sampleLabel": "सैंपल फ्रिज",
+  "onboarding.samplePantryLabel": "सैंपल पेंट्री",
   "onboarding.trySample": "सैंपल स्कैन आज़माएं",
   "onboarding.skipSample": "मैं अपना फ्रिज स्कैन करूंगा",
   "onboarding.settingsTitle": "भाषा और इकाइयां",

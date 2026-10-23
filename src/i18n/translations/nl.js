@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Dit bepaalt hoe ingrediëntenhoeveelheden en oventemperaturen in je recepten worden weergegeven — je kunt dit altijd wijzigen in Instellingen.",
   "onboarding.valueSubtitle": "Maak een foto van je koelkast en ontdek recepten met wat je al in huis hebt",
   "onboarding.sampleLabel": "Voorbeeldkoelkast",
+  "onboarding.samplePantryLabel": "Voorbeeldvoorraadkast",
   "onboarding.trySample": "Probeer een voorbeeldscan",
   "onboarding.skipSample": "Mijn eigen koelkast scannen",
   "onboarding.settingsTitle": "Taal & eenheden",

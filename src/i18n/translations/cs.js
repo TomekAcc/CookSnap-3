@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Toto určuje, jak se v receptech zobrazují množství ingrediencí a teploty trouby — kdykoli to můžete změnit v Nastavení.",
   "onboarding.valueSubtitle": "Vyfoťte lednici a získejte recepty z toho, co už máte doma",
   "onboarding.sampleLabel": "Ukázková lednice",
+  "onboarding.samplePantryLabel": "Ukázková spíž",
   "onboarding.trySample": "Vyzkoušet ukázkový sken",
   "onboarding.skipSample": "Naskenuji si vlastní lednici",
   "onboarding.settingsTitle": "Jazyk a jednotky",

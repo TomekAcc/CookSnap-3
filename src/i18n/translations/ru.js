@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Это определяет, как отображаются количества ингредиентов и температура духовки в ваших рецептах — вы можете изменить это в любой момент в настройках.",
   "onboarding.valueSubtitle": "Сфотографируйте холодильник и найдите рецепты из того, что уже есть дома",
   "onboarding.sampleLabel": "Пример холодильника",
+  "onboarding.samplePantryLabel": "Пример кладовой",
   "onboarding.trySample": "Попробовать пример сканирования",
   "onboarding.skipSample": "Сканировать свой холодильник",
   "onboarding.settingsTitle": "Язык и единицы измерения",

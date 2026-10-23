@@ -29,6 +29,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
 import { useScan } from "../context/ScanContext";
 import SampleFridgeTags from "../components/SampleFridgeTags";
+import { buildSamplePantry } from "../constants/samplePantry";
 import { EMERALD, MISC, SLATE, WHITE } from "../theme/palette";
 
 const GREEN = EMERALD[600];
@@ -93,6 +94,7 @@ export default function OnboardingScreen({ onContinue }) {
   // Bumped when the sample fridge is tapped, to replay its scan animation.
   const [scanPlays, setScanPlays] = useState(0);
   const sampleCard = useMemo(() => sampleCardLayout(insets), [insets]);
+  const samplePantry = buildSamplePantry(t);
   const scrollRef = useRef(null);
 
   const userPickedRef = useRef(false);
@@ -255,7 +257,7 @@ export default function OnboardingScreen({ onContinue }) {
             backgroundColor: MISC.paleBlueGray,
             borderWidth: 1,
             borderColor: colors.cardBorder,
-            marginBottom: 16,
+            marginBottom: 10,
             // The picture and its labels are positioned in screen coordinates; never mirror them.
             direction: "ltr",
           }}
@@ -300,6 +302,36 @@ export default function OnboardingScreen({ onContinue }) {
             </Text>
           </View>
         </TouchableOpacity>
+
+        {/* The sample pantry: what goes into the first recipes besides the fridge. Not saved. */}
+        <View
+          accessible
+          accessibilityLabel={`${t("onboarding.samplePantryLabel")}: ${samplePantry.map((p) => p.name).join(", ")}`}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            columnGap: 10,
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.cardBorder,
+            borderRadius: 16,
+            paddingVertical: 7,
+            paddingHorizontal: 12,
+            marginBottom: 12,
+          }}
+        >
+          {/* One line at any width: a long translation of the label is cut, the emoji never wrap. */}
+          <Text
+            numberOfLines={1}
+            style={{ fontSize: 12, fontWeight: "700", color: colors.textSecondary, flexShrink: 1 }}
+          >
+            {t("onboarding.samplePantryLabel")}
+          </Text>
+          <Text numberOfLines={1} style={{ fontSize: 19, lineHeight: 26, flexShrink: 0 }}>
+            {samplePantry.map((item) => item.emoji).join("  ")}
+          </Text>
+        </View>
 
         {/* Language & units — one quiet row, open on request. */}
         <TouchableOpacity

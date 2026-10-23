@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "يحدد هذا كيفية عرض كميات المكونات ودرجات حرارة الفرن في وصفاتك — يمكنك تغييره في أي وقت من الإعدادات.",
   "onboarding.valueSubtitle": "التقط صورة لثلاجتك واحصل على وصفات مما لديك بالفعل",
   "onboarding.sampleLabel": "ثلاجة تجريبية",
+  "onboarding.samplePantryLabel": "مؤونة تجريبية",
   "onboarding.trySample": "جرب فحصاً تجريبياً",
   "onboarding.skipSample": "سأصور ثلاجتي بنفسي",
   "onboarding.settingsTitle": "اللغة والوحدات",

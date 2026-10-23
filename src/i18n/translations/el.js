@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Αυτό καθορίζει πώς εμφανίζονται οι ποσότητες υλικών και οι θερμοκρασίες φούρνου στις συνταγές σας — μπορείτε να το αλλάξετε ανά πάσα στιγμή από τις Ρυθμίσεις.",
   "onboarding.valueSubtitle": "Βγάλε μια φωτογραφία το ψυγείο σου και βρες συνταγές με ό,τι έχεις ήδη",
   "onboarding.sampleLabel": "Δείγμα ψυγείου",
+  "onboarding.samplePantryLabel": "Δείγμα ντουλαπιού",
   "onboarding.trySample": "Δοκίμασε ένα δείγμα σάρωσης",
   "onboarding.skipSample": "Θα σαρώσω το δικό μου ψυγείο",
   "onboarding.settingsTitle": "Γλώσσα & μονάδες",

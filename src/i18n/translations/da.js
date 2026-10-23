@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Dette bestemmer, hvordan mængder af ingredienser og ovntemperaturer vises i dine opskrifter — du kan altid ændre det i Indstillinger.",
   "onboarding.valueSubtitle": "Tag et billede af dit køleskab, og få opskrifter med det, du allerede har",
   "onboarding.sampleLabel": "Eksempelkøleskab",
+  "onboarding.samplePantryLabel": "Eksempel-spisekammer",
   "onboarding.trySample": "Prøv en eksempelscanning",
   "onboarding.skipSample": "Jeg scanner mit eget køleskab",
   "onboarding.settingsTitle": "Sprog & enheder",

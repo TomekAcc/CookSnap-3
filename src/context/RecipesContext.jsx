@@ -15,6 +15,7 @@ import { useEntitlements } from "./EntitlementsContext";
 import { usePreferences } from "./PreferencesContext";
 import { useLibrary } from "./LibraryContext";
 import { useInventory } from "./InventoryContext";
+import { pantryForGeneration } from "../constants/samplePantry";
 
 const RecipesContext = createContext(null);
 
@@ -36,7 +37,7 @@ export function RecipesProvider({ children }) {
     unitSystem,
   } = usePreferences();
   const { savedHydrated, savedRecipesRaw: savedRecipes, replaceSavedRecipe } = useLibrary();
-  const { ingredients, pantryItems } = useInventory();
+  const { ingredients, pantryItems, scanIsDemo } = useInventory();
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
   const generatingRef = useRef(false);
   const [generatedRecipes, setGeneratedRecipes] = useState(null);
@@ -84,7 +85,7 @@ export function RecipesProvider({ children }) {
     // Strict data pipeline: fridge scan + in-stock pantry staples only
     const scannedIngredients = ingredients;
     const activeStaples = includePantryStaples
-      ? pantryItems.filter((item) => item.inStock)
+      ? pantryForGeneration(pantryItems, scanIsDemo, t)
       : [];
 
     if (scannedIngredients.length === 0 && activeStaples.length === 0) {
@@ -172,6 +173,7 @@ export function RecipesProvider({ children }) {
   }, [
     ingredients,
     pantryItems,
+    scanIsDemo,
     includePantryStaples,
     mealType,
     servings,
@@ -194,7 +196,7 @@ export function RecipesProvider({ children }) {
    */
   const getPlannerMealsFromInventory = useCallback(
     async (count = 7) => {
-      const activeStaples = pantryItems.filter((item) => item.inStock);
+      const activeStaples = pantryForGeneration(pantryItems, scanIsDemo, t);
       return generatePlannerMealsWithGemini(
         ingredients,
         activeStaples,
@@ -209,6 +211,8 @@ export function RecipesProvider({ children }) {
     [
       ingredients,
       pantryItems,
+      scanIsDemo,
+      t,
       servings,
       dietaryRestrictionsWithCustom,
       unitSystem,

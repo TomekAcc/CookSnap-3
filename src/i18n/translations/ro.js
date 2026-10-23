@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Aceasta stabilește cum sunt afișate cantitățile de ingrediente și temperaturile cuptorului în rețetele tale — poți schimba oricând din Setări.",
   "onboarding.valueSubtitle": "Fă o poză frigiderului și găsește rețete cu ce ai deja la îndemână",
   "onboarding.sampleLabel": "Frigider demonstrativ",
+  "onboarding.samplePantryLabel": "Cămară demonstrativă",
   "onboarding.trySample": "Încearcă o scanare demo",
   "onboarding.skipSample": "Scanează propriul frigider",
   "onboarding.settingsTitle": "Limbă și unități",

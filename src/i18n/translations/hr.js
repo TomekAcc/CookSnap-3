@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Ovo određuje kako se količine sastojaka i temperature pećnice prikazuju u vašim receptima — to možete promijeniti bilo kada u postavkama.",
   "onboarding.valueSubtitle": "Fotografirajte hladnjak i pronađite recepte od onoga što već imate",
   "onboarding.sampleLabel": "Primjer hladnjaka",
+  "onboarding.samplePantryLabel": "Primjer ostave",
   "onboarding.trySample": "Isprobaj primjer skeniranja",
   "onboarding.skipSample": "Skenirat ću svoj hladnjak",
   "onboarding.settingsTitle": "Jezik i mjerne jedinice",

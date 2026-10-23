@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Ez határozza meg, hogyan jelennek meg a hozzávalók mennyiségei és a sütő hőmérséklete a receptjeidben — bármikor módosíthatod a Beállításokban.",
   "onboarding.valueSubtitle": "Fotózd le a hűtődet, és készíts ételeket abból, ami már otthon van",
   "onboarding.sampleLabel": "Mintafotó a hűtőről",
+  "onboarding.samplePantryLabel": "Minta kamra",
   "onboarding.trySample": "Minta beolvasás kipróbálása",
   "onboarding.skipSample": "Saját hűtő beolvasása",
   "onboarding.settingsTitle": "Nyelv és mértékegységek",

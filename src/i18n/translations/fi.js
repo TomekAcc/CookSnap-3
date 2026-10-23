@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Tämä määrittää, miten ainesosien määrät ja uunin lämpötilat näytetään resepteissäsi — voit muuttaa sen milloin tahansa asetuksista.",
   "onboarding.valueSubtitle": "Ota kuva jääkaapistasi ja löydä reseptejä aineksista, joita sinulla jo on",
   "onboarding.sampleLabel": "Esimerkkijääkaappi",
+  "onboarding.samplePantryLabel": "Esimerkkiruokakomero",
   "onboarding.trySample": "Kokeile esimerkkiskannausta",
   "onboarding.skipSample": "Skannaan oman jääkaappini",
   "onboarding.settingsTitle": "Kieli ja yksiköt",

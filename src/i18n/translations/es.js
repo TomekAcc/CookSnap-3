@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Esto determina cómo se muestran las cantidades de ingredientes y las temperaturas del horno en tus recetas — puedes cambiarlo en cualquier momento en Ajustes.",
   "onboarding.valueSubtitle": "Haz una foto de tu nevera y descubre recetas con lo que ya tienes",
   "onboarding.sampleLabel": "Nevera de ejemplo",
+  "onboarding.samplePantryLabel": "Despensa de ejemplo",
   "onboarding.trySample": "Probar un escaneo de ejemplo",
   "onboarding.skipSample": "Escanear mi propia nevera",
   "onboarding.settingsTitle": "Idioma y unidades",

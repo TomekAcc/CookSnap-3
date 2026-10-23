@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Bu, tariflerinizde malzeme miktarlarının ve fırın sıcaklıklarının nasıl gösterileceğini belirler — Ayarlar'dan istediğiniz zaman değiştirebilirsiniz.",
   "onboarding.valueSubtitle": "Buzdolabının fotoğrafını çek, elindekilerle yapabileceğin tarifleri keşfet",
   "onboarding.sampleLabel": "Örnek buzdolabı",
+  "onboarding.samplePantryLabel": "Örnek kiler",
   "onboarding.trySample": "Örnek taramayı dene",
   "onboarding.skipSample": "Kendi buzdolabımı tarayacağım",
   "onboarding.settingsTitle": "Dil ve birimler",

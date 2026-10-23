@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "To określa, jak ilości składników i temperatury piekarnika są pokazywane w Twoich przepisach — możesz to zmienić w dowolnym momencie w ustawieniach.",
   "onboarding.valueSubtitle": "Zrób zdjęcie lodówki i odkryj przepisy z tego, co masz już w domu",
   "onboarding.sampleLabel": "Przykładowa lodówka",
+  "onboarding.samplePantryLabel": "Przykładowa spiżarnia",
   "onboarding.trySample": "Wypróbuj przykładowe skanowanie",
   "onboarding.skipSample": "Zeskanuję własną lodówkę",
   "onboarding.settingsTitle": "Język i jednostki",

@@ -75,7 +75,11 @@ browsing, not a recipe box to build over years.
   a fridge and offers to scan it — the real scan animation, then real recipe
   generation — so someone installing away from their kitchen sees the product
   work first. It never calls the vision API, never uses a daily free scan and
-  is never saved; the user's own scan replaces it.
+  is never saved; the user's own scan replaces it. A strip under the picture
+  shows a sample pantry (pasta, rice, flour, olive oil, garlic, oregano,
+  paprika) that is sent to the first recipe generation alongside the fridge so
+  the dishes are real meals; it is never added to the user's pantry, and it
+  stops applying once they scan their own fridge or stock their own pantry.
 - A one-line privacy note under the camera / gallery buttons until the first
   scan: photos are sent to Google's AI to find ingredients and are stored only
   on the phone.

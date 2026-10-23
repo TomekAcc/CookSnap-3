@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Това определя как ще се показват количествата на съставките и температурите на фурната в рецептите ви — можете да го промените по всяко време в Настройки.",
   "onboarding.valueSubtitle": "Снимай хладилника си и виж рецепти с наличните продукти",
   "onboarding.sampleLabel": "Примерен хладилник",
+  "onboarding.samplePantryLabel": "Примерен килер",
   "onboarding.trySample": "Опитай примерно сканиране",
   "onboarding.skipSample": "Ще сканирам моя хладилник",
   "onboarding.settingsTitle": "Език и мерни единици",

@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "レシピ内の材料の分量やオーブンの温度の表示方法を設定します。設定からいつでも変更できます。",
   "onboarding.valueSubtitle": "冷蔵庫の写真を撮るだけで、今ある食材で作れるレシピが見つかります",
   "onboarding.sampleLabel": "サンプルの冷蔵庫",
+  "onboarding.samplePantryLabel": "サンプルのパントリー",
   "onboarding.trySample": "サンプルスキャンを試す",
   "onboarding.skipSample": "自宅の冷蔵庫をスキャンする",
   "onboarding.settingsTitle": "言語と単位",

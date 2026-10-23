@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "레시피에서 재료 양과 오븐 온도가 어떻게 표시되는지를 결정합니다 — 설정에서 언제든지 변경할 수 있습니다.",
   "onboarding.valueSubtitle": "냉장고 사진을 찍고 남은 재료로 만들 수 있는 레시피를 찾아보세요",
   "onboarding.sampleLabel": "샘플 냉장고",
+  "onboarding.samplePantryLabel": "샘플 식료품",
   "onboarding.trySample": "샘플 스캔해 보기",
   "onboarding.skipSample": "내 냉장고 직접 스캔하기",
   "onboarding.settingsTitle": "언어 및 단위",

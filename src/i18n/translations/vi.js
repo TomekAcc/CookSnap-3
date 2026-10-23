@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Điều này xác định cách hiển thị lượng nguyên liệu và nhiệt độ lò nướng trong công thức của bạn — bạn có thể thay đổi bất cứ lúc nào trong Cài đặt.",
   "onboarding.valueSubtitle": "Chụp ảnh tủ lạnh để tìm các công thức nấu ăn từ nguyên liệu sẵn có",
   "onboarding.sampleLabel": "Tủ lạnh mẫu",
+  "onboarding.samplePantryLabel": "Tủ bếp mẫu",
   "onboarding.trySample": "Thử quét mẫu",
   "onboarding.skipSample": "Tôi sẽ quét tủ lạnh của mình",
   "onboarding.settingsTitle": "Ngôn ngữ & đơn vị",

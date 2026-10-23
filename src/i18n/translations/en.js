@@ -17,6 +17,7 @@ export default {
   "onboarding.unitsCaption": "Metric (grams, °C) — most countries. US customary (cups, °F) — US and a few others. Change anytime in Settings.",
   "onboarding.valueSubtitle": "Snap a photo of your fridge and get recipes from what you already have",
   "onboarding.sampleLabel": "Sample fridge",
+  "onboarding.samplePantryLabel": "Sample pantry",
   "onboarding.trySample": "Try a sample scan",
   "onboarding.skipSample": "I'll scan my own fridge",
   "onboarding.settingsTitle": "Language & units",

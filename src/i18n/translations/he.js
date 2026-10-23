@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "זה קובע כיצד כמויות המצרכים וטמפרטורות התנור מוצגות במתכונים שלך — תוכל לשנות זאת בכל עת בהגדרות.",
   "onboarding.valueSubtitle": "מצלמים את המקרר ומקבלים מתכונים ממה שכבר יש בבית",
   "onboarding.sampleLabel": "מקרר לדוגמה",
+  "onboarding.samplePantryLabel": "מזווה לדוגמה",
   "onboarding.trySample": "לנסות סריקה לדוגמה",
   "onboarding.skipSample": "אסרוק את המקרר שלי",
   "onboarding.settingsTitle": "שפה ויחידות מידה",

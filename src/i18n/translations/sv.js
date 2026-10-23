@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Detta avgör hur ingrediensmängder och ugnstemperaturer visas i dina recept — du kan alltid ändra det i Inställningar.",
   "onboarding.valueSubtitle": "Ta en bild av ditt kylskåp och få recept med det du redan har hemma",
   "onboarding.sampleLabel": "Exempelkylskåp",
+  "onboarding.samplePantryLabel": "Exempelskafferi",
   "onboarding.trySample": "Prova en exempelscanning",
   "onboarding.skipSample": "Scanna mitt eget kylskåp",
   "onboarding.settingsTitle": "Språk & enheter",

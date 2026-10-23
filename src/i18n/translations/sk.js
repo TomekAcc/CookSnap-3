@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Toto určuje, ako sa v receptoch zobrazujú množstvá surovín a teploty rúry — kedykoľvek to môžete zmeniť v nastaveniach.",
   "onboarding.valueSubtitle": "Odfoťte chladničku a získajte recepty z toho, čo už máte doma",
   "onboarding.sampleLabel": "Ukážková chladnička",
+  "onboarding.samplePantryLabel": "Ukážková špajza",
   "onboarding.trySample": "Vyskúšať ukážkový sken",
   "onboarding.skipSample": "Naskenovať vlastnú chladničku",
   "onboarding.settingsTitle": "Jazyk a jednotky",

@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Isso define como as quantidades de ingredientes e as temperaturas do forno são exibidas nas suas receitas — você pode alterar isso a qualquer momento nas Configurações.",
   "onboarding.valueSubtitle": "Tire uma foto do seu frigorífico e descubra receitas com o que já tem em casa",
   "onboarding.sampleLabel": "Frigorífico de exemplo",
+  "onboarding.samplePantryLabel": "Despensa de exemplo",
   "onboarding.trySample": "Experimentar leitura de exemplo",
   "onboarding.skipSample": "Digitalizar o meu próprio frigorífico",
   "onboarding.settingsTitle": "Idioma e unidades",

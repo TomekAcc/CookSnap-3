@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "这决定了食谱中食材用量和烤箱温度的显示方式 — 你可以随时在设置中更改。",
   "onboarding.valueSubtitle": "随手拍下冰箱，即可用现有食材获取美味食谱",
   "onboarding.sampleLabel": "示例冰箱",
+  "onboarding.samplePantryLabel": "示例储藏室",
   "onboarding.trySample": "体验示例扫描",
   "onboarding.skipSample": "扫描我自己的冰箱",
   "onboarding.settingsTitle": "语言与单位",

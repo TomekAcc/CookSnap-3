@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "การตั้งค่านี้กำหนดวิธีแสดงปริมาณส่วนผสมและอุณหภูมิเตาอบในสูตรอาหารของคุณ — คุณสามารถเปลี่ยนได้ทุกเมื่อในการตั้งค่า",
   "onboarding.valueSubtitle": "ถ่ายรูปตู้เย็นของคุณ แล้วดูเมนูอาหารจากของที่มีอยู่ได้เลย",
   "onboarding.sampleLabel": "ตู้เย็นตัวอย่าง",
+  "onboarding.samplePantryLabel": "คลังอาหารตัวอย่าง",
   "onboarding.trySample": "ลองสแกนตัวอย่าง",
   "onboarding.skipSample": "ฉันจะสแกนตู้เย็นตัวเอง",
   "onboarding.settingsTitle": "ภาษาและหน่วยวัด",

@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Ini menentukan cara jumlah bahan dan suhu oven ditampilkan dalam resep Anda — Anda dapat mengubahnya kapan saja di Pengaturan.",
   "onboarding.valueSubtitle": "Foto isi kulkasmu dan temukan resep dari bahan yang sudah ada",
   "onboarding.sampleLabel": "Contoh kulkas",
+  "onboarding.samplePantryLabel": "Contoh pantry",
   "onboarding.trySample": "Coba contoh pemindaian",
   "onboarding.skipSample": "Pindai kulkasku sendiri",
   "onboarding.settingsTitle": "Bahasa & satuan",

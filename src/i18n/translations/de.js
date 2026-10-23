@@ -11,6 +11,7 @@ export default {
   "onboarding.unitsCaption": "Das legt fest, wie Zutatenmengen und Ofentemperaturen in deinen Rezepten angezeigt werden — du kannst es jederzeit in den Einstellungen ändern.",
   "onboarding.valueSubtitle": "Fotografiere deinen Kühlschrank und finde Rezepte mit Zutaten, die du schon hast",
   "onboarding.sampleLabel": "Beispiel-Kühlschrank",
+  "onboarding.samplePantryLabel": "Beispiel-Vorratskammer",
   "onboarding.trySample": "Beispiel-Scan ausprobieren",
   "onboarding.skipSample": "Eigenen Kühlschrank scannen",
   "onboarding.settingsTitle": "Sprache & Einheiten",
