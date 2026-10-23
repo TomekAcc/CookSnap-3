@@ -94,3 +94,29 @@ describe("sample fridge tags", () => {
     });
   });
 });
+
+describe("sampleCardHeight", () => {
+  const { sampleCardHeight } = require("../src/constants/sampleFridge");
+  const IPHONE = { top: 59, bottom: 34 };
+
+  it("leaves room for the language row and buttons on a modern iPhone", () => {
+    // 393x852: the card plus 410 of other content plus both insets must fit the window.
+    expect(sampleCardHeight(852, 421, IPHONE)).toBe(349);
+    expect(sampleCardHeight(852, 421, IPHONE) + 410 + IPHONE.top + IPHONE.bottom).toBeLessThanOrEqual(852);
+    expect(sampleCardHeight(932, 469, IPHONE)).toBe(429);
+  });
+
+  it("uses smaller insets (older iPhones, Android) to give the card more room", () => {
+    expect(sampleCardHeight(667, 421, { top: 20, bottom: 0 })).toBe(237);
+    expect(sampleCardHeight(800, 421, { top: 24, bottom: 0 })).toBe(366);
+  });
+
+  it("has a floor on tiny screens and never exceeds the picture", () => {
+    expect(sampleCardHeight(480, 421, IPHONE)).toBe(220);
+    expect(sampleCardHeight(1400, 469, IPHONE)).toBe(469);
+  });
+
+  it("works without insets (browser)", () => {
+    expect(sampleCardHeight(844, 421)).toBe(421);
+  });
+});

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import { LANGUAGE_OPTIONS, DEFAULT_LANGUAGE_ID, getLanguageById } from "../data/languageOptions";
 import { translate } from "../i18n";
-import { SAMPLE_FRIDGE_IMAGE, sampleFridgeSize } from "../constants/sampleFridge";
+import { SAMPLE_FRIDGE_IMAGE, sampleCardHeight, sampleFridgeSize } from "../constants/sampleFridge";
 import { log } from "../utils/log";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
@@ -35,15 +35,15 @@ const GREEN = EMERALD[600];
 
 // The sample card takes the height the screen has left after the header, the
 // language row and the buttons (about 440pt), so a tall phone shows more of the
-// fridge instead of an empty band, up to the whole picture. The image is shown
+// fridge instead of an empty band (see sampleCardHeight). The image is shown
 // at full width and shifted up a little rather than centred, which keeps the
 // top shelf (the milk, cheese and eggs) in view and cuts the bottom first.
-function sampleCardLayout() {
+function sampleCardLayout(insets) {
   const { width, height } = Dimensions.get("window");
   const cardWidth = width - 40;
   const size = sampleFridgeSize();
   const imageHeight = size ? (cardWidth * size.height) / size.width : (cardWidth * 4) / 3;
-  const cardHeight = Math.round(Math.max(220, Math.min(imageHeight, height - 440)));
+  const cardHeight = sampleCardHeight(height, imageHeight, insets);
   const overflow = Math.max(0, imageHeight - cardHeight);
   return { cardWidth, cardHeight, imageHeight, imageTop: -Math.round(overflow * 0.12) };
 }
@@ -92,7 +92,7 @@ export default function OnboardingScreen({ onContinue }) {
   const [starting, setStarting] = useState(false);
   // Bumped when the sample fridge is tapped, to replay its scan animation.
   const [scanPlays, setScanPlays] = useState(0);
-  const sampleCard = useRef(sampleCardLayout()).current;
+  const sampleCard = useMemo(() => sampleCardLayout(insets), [insets]);
   const scrollRef = useRef(null);
 
   const userPickedRef = useRef(false);
