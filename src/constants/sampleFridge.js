@@ -47,13 +47,13 @@ export const SAMPLE_FRIDGE_TAGS = [
 
 /**
  * Height of the onboarding picture card: what is left of the window after everything else on the
- * screen (header, language row and pinned buttons, about 410pt, plus the notch and home-bar
+ * screen (header, language row and pinned buttons, about 370pt, plus the notch and home-bar
  * insets), never less than 220 and never more than the whole picture. Calibrated by simulating
  * an iPhone's safe-area insets in a browser: with this much reserved the language row ends
  * about 8pt above the buttons on 375x812 up to 430x932 screens.
  */
 export function sampleCardHeight(windowHeight, imageHeight, insets = { top: 0, bottom: 0 }) {
-  const room = windowHeight - 410 - (insets.top || 0) - (insets.bottom || 0);
+  const room = windowHeight - 370 - (insets.top || 0) - (insets.bottom || 0);
   return Math.round(Math.max(220, Math.min(imageHeight, room)));
 }
 

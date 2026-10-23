@@ -197,25 +197,25 @@ export default function OnboardingScreen({ onContinue }) {
       <ScrollView
         ref={scrollRef}
         contentContainerStyle={{
-          paddingTop: insets.top + 28,
+          paddingTop: insets.top + 12,
           paddingHorizontal: 20,
           paddingBottom: 16,
         }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ alignItems: "center", marginBottom: 22 }}>
+        <View style={{ alignItems: "center", marginBottom: 14 }}>
           <View
             style={{
-              width: 56,
-              height: 56,
-              borderRadius: 20,
+              width: 46,
+              height: 46,
+              borderRadius: 16,
               backgroundColor: colors.greenWash,
               alignItems: "center",
               justifyContent: "center",
-              marginBottom: 14,
+              marginBottom: 10,
             }}
           >
-            <ChefHat size={28} color={green} />
+            <ChefHat size={24} color={green} />
           </View>
           <Text
             style={{

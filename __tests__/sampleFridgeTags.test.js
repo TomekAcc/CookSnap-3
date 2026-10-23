@@ -101,14 +101,14 @@ describe("sampleCardHeight", () => {
 
   it("leaves room for the language row and buttons on a modern iPhone", () => {
     // 393x852: the card plus 410 of other content plus both insets must fit the window.
-    expect(sampleCardHeight(852, 421, IPHONE)).toBe(349);
-    expect(sampleCardHeight(852, 421, IPHONE) + 410 + IPHONE.top + IPHONE.bottom).toBeLessThanOrEqual(852);
-    expect(sampleCardHeight(932, 469, IPHONE)).toBe(429);
+    expect(sampleCardHeight(852, 421, IPHONE)).toBe(389);
+    expect(sampleCardHeight(852, 421, IPHONE) + 370 + IPHONE.top + IPHONE.bottom).toBeLessThanOrEqual(852);
+    expect(sampleCardHeight(932, 469, IPHONE)).toBe(469);
   });
 
   it("uses smaller insets (older iPhones, Android) to give the card more room", () => {
-    expect(sampleCardHeight(667, 421, { top: 20, bottom: 0 })).toBe(237);
-    expect(sampleCardHeight(800, 421, { top: 24, bottom: 0 })).toBe(366);
+    expect(sampleCardHeight(667, 421, { top: 20, bottom: 0 })).toBe(277);
+    expect(sampleCardHeight(800, 421, { top: 24, bottom: 0 })).toBe(406);
   });
 
   it("has a floor on tiny screens and never exceeds the picture", () => {
