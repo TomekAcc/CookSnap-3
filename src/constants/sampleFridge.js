@@ -1,15 +1,17 @@
 import { Asset } from "expo-asset";
 
 /**
- * The onboarding "sample scan": a bundled illustration of an open fridge and
+ * The onboarding "sample scan": a bundled illustration of the inside of a fridge and
  * the fixed list of what is in it. It runs through the real scanning animation
  * and then the real recipe generation, but never calls the vision API, never
  * uses up a daily free scan, and is never saved (see completeDemoScan in
  * ScanContext) — it exists so someone who installs the app away from their
  * kitchen still gets to see what it does.
  *
- * Every item below is drawn in the illustration (scripts/sample-fridge-
- * illustration.js), so what is "detected" matches what is on screen.
+ * Every item below is drawn in the illustration, so what is "detected" matches what is on
+ * screen. The picture was generated for this app by its owner (Google Flow) and cropped to the
+ * inside of the fridge: no cabinet rim, no generator watermark. Replacing it means re-measuring
+ * SAMPLE_FRIDGE_TAGS below.
  */
 export const SAMPLE_FRIDGE_IMAGE = require("../../assets/sample-fridge.jpg");
 
@@ -30,16 +32,17 @@ export const SAMPLE_FRIDGE_ITEMS = [
 ];
 
 /**
- * Where to pin a label on the illustration, as fractions of the image (x across, y down) at
- * the top-centre of the item. Only items on the top three shelves: the onboarding card crops
- * the bottom drawers on shorter phones. Names come from the sampleFridge.<id> translations.
+ * Where to pin a label on the picture, as fractions of the image (x across, y down) at the
+ * top-centre of the item. Only items with clear wall above them and nothing from the shelf above
+ * in the way (the orange juice sits too close under the top shelf), on the upper shelves: the
+ * onboarding card crops the bottom drawers on shorter phones. Names come from the
+ * sampleFridge.<id> translations. Measured on assets/sample-fridge.jpg (1427 x 1716).
  */
 export const SAMPLE_FRIDGE_TAGS = [
-  { id: "cheese", x: 0.511, y: 0.196 },
-  { id: "eggs", x: 0.233, y: 0.45 },
-  { id: "orangeJuice", x: 0.633, y: 0.371 },
-  { id: "tomatoes", x: 0.167, y: 0.68 },
-  { id: "onion", x: 0.684, y: 0.6875 },
+  { id: "cheese", x: 0.511, y: 0.21 },
+  { id: "eggs", x: 0.154, y: 0.508 },
+  { id: "tomatoes", x: 0.126, y: 0.741 },
+  { id: "onion", x: 0.729, y: 0.71 },
 ];
 
 /**

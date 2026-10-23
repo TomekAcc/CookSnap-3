@@ -35,15 +35,15 @@ const GREEN = EMERALD[600];
 
 // The sample card takes the height the screen has left after the header, the
 // language row and the buttons (about 440pt), so a tall phone shows more of the
-// fridge instead of an empty band. The image is shown at full width and
-// shifted up a little rather than centred, which keeps the top shelf (the
-// milk, cheese and eggs) in view and cuts the bottom drawers instead.
+// fridge instead of an empty band, up to the whole picture. The image is shown
+// at full width and shifted up a little rather than centred, which keeps the
+// top shelf (the milk, cheese and eggs) in view and cuts the bottom first.
 function sampleCardLayout() {
   const { width, height } = Dimensions.get("window");
   const cardWidth = width - 40;
-  const cardHeight = Math.max(220, Math.min(360, height - 440));
   const size = sampleFridgeSize();
   const imageHeight = size ? (cardWidth * size.height) / size.width : (cardWidth * 4) / 3;
+  const cardHeight = Math.round(Math.max(220, Math.min(imageHeight, height - 440)));
   const overflow = Math.max(0, imageHeight - cardHeight);
   return { cardWidth, cardHeight, imageHeight, imageTop: -Math.round(overflow * 0.12) };
 }
@@ -256,6 +256,8 @@ export default function OnboardingScreen({ onContinue }) {
             borderWidth: 1,
             borderColor: colors.cardBorder,
             marginBottom: 16,
+            // The picture and its labels are positioned in screen coordinates; never mirror them.
+            direction: "ltr",
           }}
         >
           <Image
@@ -286,7 +288,7 @@ export default function OnboardingScreen({ onContinue }) {
             style={{
               position: "absolute",
               top: 12,
-              left: 12,
+              right: 12,
               backgroundColor: "rgba(255,255,255,0.94)",
               borderRadius: 999,
               paddingHorizontal: 11,
