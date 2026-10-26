@@ -100,15 +100,15 @@ describe("sampleCardHeight", () => {
   const IPHONE = { top: 59, bottom: 34 };
 
   it("leaves room for the language row and buttons on a modern iPhone", () => {
-    // 393x852: the card plus 420 of other content (the pantry strip included) plus both insets must fit the window.
-    expect(sampleCardHeight(852, 421, IPHONE)).toBe(339);
+    // 393x852: the card plus 416 of other content (the pantry strip included) plus both insets must fit the window.
+    expect(sampleCardHeight(852, 421, IPHONE)).toBe(343);
     expect(sampleCardHeight(852, 421, IPHONE) + ONBOARDING_CHROME_HEIGHT + IPHONE.top + IPHONE.bottom).toBeLessThanOrEqual(852);
-    expect(sampleCardHeight(932, 469, IPHONE)).toBe(419);
+    expect(sampleCardHeight(932, 469, IPHONE)).toBe(423);
   });
 
   it("uses smaller insets (older iPhones, Android) to give the card more room", () => {
-    expect(sampleCardHeight(667, 421, { top: 20, bottom: 0 })).toBe(227);
-    expect(sampleCardHeight(800, 421, { top: 24, bottom: 0 })).toBe(356);
+    expect(sampleCardHeight(667, 421, { top: 20, bottom: 0 })).toBe(231);
+    expect(sampleCardHeight(800, 421, { top: 24, bottom: 0 })).toBe(360);
   });
 
   it("has a floor on tiny screens and never exceeds the picture", () => {
@@ -118,5 +118,40 @@ describe("sampleCardHeight", () => {
 
   it("works without insets (browser)", () => {
     expect(sampleCardHeight(844, 421)).toBe(421);
+  });
+});
+
+describe("sample pantry", () => {
+  const { SAMPLE_PANTRY_IDS, SAMPLE_PANTRY_TAGS, buildSamplePantry } = require("../src/constants/samplePantry");
+  const { PANTRY_STAPLES } = require("../src/data/recipes");
+  const { SAMPLE_FRIDGE_ITEMS } = require("../src/constants/sampleFridge");
+  const en = require("../src/i18n/translations/en").default;
+
+  it("only uses catalog staples, each once, so every name is already translated", () => {
+    expect(new Set(SAMPLE_PANTRY_IDS).size).toBe(SAMPLE_PANTRY_IDS.length);
+    for (const id of SAMPLE_PANTRY_IDS) {
+      expect(PANTRY_STAPLES.some((s) => s.id === id)).toBe(true);
+      expect(en[`pantryStaple.${id}`]).toBeTruthy();
+    }
+  });
+
+  it("does not repeat what is already in the sample fridge", () => {
+    const fridge = SAMPLE_FRIDGE_ITEMS.map((item) => en[`sampleFridge.${item.id}`].toLowerCase());
+    for (const item of buildSamplePantry((k) => en[k])) {
+      expect(fridge).not.toContain(item.name.toLowerCase());
+    }
+  });
+
+  it("pins a label on four drawn items, inside the picture, top to bottom", () => {
+    expect(SAMPLE_PANTRY_TAGS).toHaveLength(4);
+    for (const tag of SAMPLE_PANTRY_TAGS) {
+      expect(SAMPLE_PANTRY_IDS).toContain(tag.id);
+      expect(tag.x).toBeGreaterThan(0.1);
+      expect(tag.x).toBeLessThan(0.9);
+      expect(tag.y).toBeGreaterThan(0.08);
+      expect(tag.y).toBeLessThan(0.9);
+    }
+    const ys = SAMPLE_PANTRY_TAGS.map((tag) => tag.y);
+    expect(ys).toEqual([...ys].sort((a, b) => a - b));
   });
 });

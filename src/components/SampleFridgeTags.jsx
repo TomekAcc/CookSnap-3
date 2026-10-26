@@ -22,12 +22,26 @@ const LINE_HEIGHT = 84;
  * there and nothing sweeps.
  *
  * Rendered inside the same clipped card as the image and positioned from the image's own size,
- * so everything moves and scales with it.
+ * so everything moves and scales with it. The sample pantry picture reuses it with its own `tags`,
+ * `getLabel` and `getIcon` (and `imageLeft`/`imageWidth` when it is wider than the card); it is
+ * mounted with a different `key` per picture, since the reveal values are created once.
  */
-export default function SampleFridgeTags({ t, cardWidth, cardHeight, imageHeight, imageTop, playKey = 0 }) {
+export default function SampleFridgeTags({
+  t,
+  cardWidth,
+  cardHeight,
+  imageHeight,
+  imageTop,
+  imageWidth = cardWidth,
+  imageLeft = 0,
+  playKey = 0,
+  tags = SAMPLE_FRIDGE_TAGS,
+  getLabel = (id) => t(`sampleFridge.${id}`),
+  getIcon = (id) => SAMPLE_FRIDGE_ITEMS.find((item) => item.id === id)?.icon,
+}) {
   const [reduceMotion, setReduceMotion] = useState(null); // null until the system answers
   const sweep = useRef(new Animated.Value(0)).current;
-  const reveals = useRef(SAMPLE_FRIDGE_TAGS.map(() => new Animated.Value(0))).current;
+  const reveals = useRef(tags.map(() => new Animated.Value(0))).current;
 
   useEffect(() => {
     let alive = true;
@@ -53,7 +67,7 @@ export default function SampleFridgeTags({ t, cardWidth, cardHeight, imageHeight
         Animated.timing(sweep, { toValue: 1, duration: SWEEP_MS, easing: Easing.inOut(Easing.quad), useNativeDriver: true }),
       ]),
     ];
-    SAMPLE_FRIDGE_TAGS.forEach((tag, i) => {
+    tags.forEach((tag, i) => {
       // The label appears when the line's leading edge reaches the item.
       const reached = Math.min(1, Math.max(0, (imageTop + tag.y * imageHeight) / cardHeight));
       animations.push(
@@ -66,15 +80,15 @@ export default function SampleFridgeTags({ t, cardWidth, cardHeight, imageHeight
     const run = Animated.parallel(animations);
     run.start();
     return () => run.stop();
-  }, [playKey, reduceMotion, cardHeight, imageHeight, imageTop, sweep, reveals]);
+  }, [playKey, reduceMotion, cardHeight, imageHeight, imageTop, sweep, reveals, tags]);
 
   const lineY = sweep.interpolate({ inputRange: [0, 1], outputRange: [-LINE_HEIGHT, cardHeight - LINE_HEIGHT] });
   const lineOpacity = sweep.interpolate({ inputRange: [0, 0.04, 0.94, 1], outputRange: [0, 1, 1, 0] });
 
   return (
     <>
-      {SAMPLE_FRIDGE_TAGS.map(({ id, x, y }, i) => {
-        const icon = SAMPLE_FRIDGE_ITEMS.find((item) => item.id === id)?.icon;
+      {tags.map(({ id, x, y }, i) => {
+        const icon = getIcon(id);
         const reveal = reveals[i];
         return (
           <Animated.View
@@ -85,7 +99,7 @@ export default function SampleFridgeTags({ t, cardWidth, cardHeight, imageHeight
             style={{
               position: "absolute",
               width: BOX_WIDTH,
-              left: x * cardWidth - BOX_WIDTH / 2,
+              left: imageLeft + x * imageWidth - BOX_WIDTH / 2,
               top: imageTop + y * imageHeight - PILL_HEIGHT - GAP - DOT,
               alignItems: "center",
               opacity: reveal,
@@ -110,7 +124,7 @@ export default function SampleFridgeTags({ t, cardWidth, cardHeight, imageHeight
             >
               {icon ? <Text style={{ fontSize: 12 }}>{icon}</Text> : null}
               <Text style={{ fontSize: 11.5, fontWeight: "700", color: SLATE[900] }} numberOfLines={1}>
-                {t(`sampleFridge.${id}`)}
+                {getLabel(id)}
               </Text>
             </View>
             <View

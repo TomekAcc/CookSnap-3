@@ -66,7 +66,7 @@ describe("generateRecipes", () => {
   });
 
   describe("sample pantry (onboarding sample fridge)", () => {
-    const sampleNames = ["Pasta", "Rice", "Flour", "Olive oil", "Garlic", "Oregano", "Paprika"];
+    const sampleNames = ["Pasta", "Sugar", "Honey", "Soy sauce", "Cinnamon", "Oregano", "Paprika", "Salt", "Black pepper", "Flour", "Rice", "Rolled oats"];
 
     it("is used for the sample fridge when the user has stocked nothing, and is never saved", async () => {
       gemini.generateRecipesWithGemini.mockResolvedValue(batch(5));

@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
+  AccessibilityInfo,
+  Animated,
   View,
   Text,
   TouchableOpacity,
@@ -23,14 +25,15 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import { LANGUAGE_OPTIONS, DEFAULT_LANGUAGE_ID, getLanguageById } from "../data/languageOptions";
 import { translate } from "../i18n";
-import { SAMPLE_FRIDGE_IMAGE, sampleCardHeight, sampleFridgeSize } from "../constants/sampleFridge";
+import { SAMPLE_FRIDGE_IMAGE, sampleCardHeight, sampleFridgeSize, sampleImageSize } from "../constants/sampleFridge";
 import { log } from "../utils/log";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
 import { useScan } from "../context/ScanContext";
 import SampleFridgeTags from "../components/SampleFridgeTags";
-import { buildSamplePantry } from "../constants/samplePantry";
-import { EMERALD, MISC, SLATE, WHITE } from "../theme/palette";
+import { SAMPLE_PANTRY_IMAGE, SAMPLE_PANTRY_TAGS } from "../constants/samplePantry";
+import { PANTRY_STAPLES } from "../data/recipes";
+import { EMERALD, MISC, WHITE } from "../theme/palette";
 
 const GREEN = EMERALD[600];
 
@@ -46,8 +49,30 @@ function sampleCardLayout(insets) {
   const imageHeight = size ? (cardWidth * size.height) / size.width : (cardWidth * 4) / 3;
   const cardHeight = sampleCardHeight(height, imageHeight, insets);
   const overflow = Math.max(0, imageHeight - cardHeight);
-  return { cardWidth, cardHeight, imageHeight, imageTop: -Math.round(overflow * 0.12) };
+
+  // The sample pantry picture fills the same card (cover, centred): it is wide enough that
+  // nothing but a sliver is cut, so all three shelves stay in view.
+  const pantrySize = sampleImageSize(SAMPLE_PANTRY_IMAGE) || { width: 4, height: 3 };
+  const scale = Math.max(cardWidth / pantrySize.width, cardHeight / pantrySize.height);
+  const pantryWidth = pantrySize.width * scale;
+  const pantryHeight = pantrySize.height * scale;
+  return {
+    cardWidth,
+    cardHeight,
+    imageHeight,
+    imageTop: -Math.round(overflow * 0.12),
+    pantry: {
+      width: pantryWidth,
+      height: pantryHeight,
+      left: (cardWidth - pantryWidth) / 2,
+      top: (cardHeight - pantryHeight) / 2,
+    },
+  };
 }
+
+// How long the fridge scan plays before the card moves on to the pantry by itself.
+const AUTO_SWITCH_MS = 3800;
+const PANTRY_ICONS = Object.fromEntries(PANTRY_STAPLES.map((item) => [item.id, item.emoji]));
 
 /**
  * First-launch gate — shown once, before the main app shell ever mounts
@@ -94,7 +119,36 @@ export default function OnboardingScreen({ onContinue }) {
   // Bumped when the sample fridge is tapped, to replay its scan animation.
   const [scanPlays, setScanPlays] = useState(0);
   const sampleCard = useMemo(() => sampleCardLayout(insets), [insets]);
-  const samplePantry = buildSamplePantry(t);
+  // Which sample picture is showing. It starts on the fridge and moves on to the pantry by
+  // itself once the fridge scan has played, unless the person has already touched the card.
+  const [sampleTab, setSampleTab] = useState("fridge");
+  const touchedTabRef = useRef(false);
+  const tabFade = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    let alive = true;
+    let timer = null;
+    AccessibilityInfo.isReduceMotionEnabled()
+      .catch(() => false)
+      .then((reduce) => {
+        if (!alive || reduce) return;
+        timer = setTimeout(() => {
+          if (!touchedTabRef.current) setSampleTab("pantry");
+        }, AUTO_SWITCH_MS);
+      });
+    return () => {
+      alive = false;
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
+  useEffect(() => {
+    tabFade.setValue(0);
+    Animated.timing(tabFade, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+  }, [sampleTab, tabFade]);
+  const pickSampleTab = (tab) => {
+    touchedTabRef.current = true;
+    if (tab === sampleTab) setScanPlays((n) => n + 1);
+    else setSampleTab(tab);
+  };
   const scrollRef = useRef(null);
 
   const userPickedRef = useRef(false);
@@ -245,10 +299,60 @@ export default function OnboardingScreen({ onContinue }) {
           </Text>
         </View>
 
-        {/* The sample fridge (see sampleCardLayout for how it is cropped). */}
+        {/* The two sample pictures, one at a time: what the scan would find in a fridge and in a pantry. */}
+        <View
+          accessibilityRole="tablist"
+          style={{ flexDirection: "row", gap: 8, marginBottom: 10 }}
+        >
+          {[
+            { id: "fridge", label: t("onboarding.sampleLabel") },
+            { id: "pantry", label: t("onboarding.samplePantryLabel") },
+          ].map((tab) => {
+            const active = sampleTab === tab.id;
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                onPress={() => pickSampleTab(tab.id)}
+                activeOpacity={0.8}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
+                style={{
+                  flex: 1,
+                  height: 34,
+                  borderRadius: 999,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 10,
+                  backgroundColor: active ? colors.card : "transparent",
+                  borderWidth: 1.5,
+                  borderColor: active ? green : colors.cardBorder,
+                }}
+              >
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.78}
+                  style={{
+                    fontSize: 13,
+                    fontWeight: "700",
+                    color: active ? green : colors.textSecondary,
+                  }}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* The picture card (see sampleCardLayout for how each picture is fitted). */}
         <TouchableOpacity
           activeOpacity={1}
-          onPress={() => setScanPlays((n) => n + 1)}
+          onPress={() => {
+            touchedTabRef.current = true;
+            setScanPlays((n) => n + 1);
+          }}
           accessible={false}
           style={{
             height: sampleCard.cardHeight,
@@ -257,81 +361,76 @@ export default function OnboardingScreen({ onContinue }) {
             backgroundColor: MISC.paleBlueGray,
             borderWidth: 1,
             borderColor: colors.cardBorder,
-            marginBottom: 10,
+            marginBottom: 16,
             // The picture and its labels are positioned in screen coordinates; never mirror them.
             direction: "ltr",
           }}
         >
-          <Image
-            source={SAMPLE_FRIDGE_IMAGE}
-            style={{
-              position: "absolute",
-              left: 0,
-              top: sampleCard.imageTop,
-              width: "100%",
-              height: sampleCard.imageHeight,
-            }}
-            resizeMode="cover"
-            accessibilityLabel={t("onboarding.sampleLabel")}
-          />
-          <View
-            pointerEvents="none"
-            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.imageDim }}
-          />
-          <SampleFridgeTags
-            t={t}
-            cardWidth={sampleCard.cardWidth}
-            cardHeight={sampleCard.cardHeight}
-            imageHeight={sampleCard.imageHeight}
-            imageTop={sampleCard.imageTop}
-            playKey={scanPlays}
-          />
-          <View
-            style={{
-              position: "absolute",
-              top: 12,
-              right: 12,
-              backgroundColor: "rgba(255,255,255,0.94)",
-              borderRadius: 999,
-              paddingHorizontal: 11,
-              paddingVertical: 5,
-            }}
-          >
-            <Text style={{ fontSize: 12, fontWeight: "700", color: SLATE[900] }}>
-              {t("onboarding.sampleLabel")}
-            </Text>
-          </View>
+          <Animated.View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: tabFade }}>
+            {sampleTab === "fridge" ? (
+              <>
+                <Image
+                  source={SAMPLE_FRIDGE_IMAGE}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: sampleCard.imageTop,
+                    width: "100%",
+                    height: sampleCard.imageHeight,
+                  }}
+                  resizeMode="cover"
+                  accessibilityLabel={t("onboarding.sampleLabel")}
+                />
+                <View
+                  pointerEvents="none"
+                  style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.imageDim }}
+                />
+                <SampleFridgeTags
+                  key="fridge"
+                  t={t}
+                  cardWidth={sampleCard.cardWidth}
+                  cardHeight={sampleCard.cardHeight}
+                  imageHeight={sampleCard.imageHeight}
+                  imageTop={sampleCard.imageTop}
+                  playKey={scanPlays}
+                />
+              </>
+            ) : (
+              <>
+                <Image
+                  source={SAMPLE_PANTRY_IMAGE}
+                  style={{
+                    position: "absolute",
+                    left: sampleCard.pantry.left,
+                    top: sampleCard.pantry.top,
+                    width: sampleCard.pantry.width,
+                    height: sampleCard.pantry.height,
+                  }}
+                  resizeMode="cover"
+                  accessibilityLabel={t("onboarding.samplePantryLabel")}
+                />
+                <View
+                  pointerEvents="none"
+                  style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.imageDim }}
+                />
+                <SampleFridgeTags
+                  key="pantry"
+                  t={t}
+                  cardWidth={sampleCard.cardWidth}
+                  cardHeight={sampleCard.cardHeight}
+                  imageHeight={sampleCard.pantry.height}
+                  imageTop={sampleCard.pantry.top}
+                  imageWidth={sampleCard.pantry.width}
+                  imageLeft={sampleCard.pantry.left}
+                  playKey={scanPlays}
+                  tags={SAMPLE_PANTRY_TAGS}
+                  getLabel={(id) => t(`pantryStaple.${id}`)}
+                  getIcon={(id) => PANTRY_ICONS[id]}
+                />
+              </>
+            )}
+          </Animated.View>
         </TouchableOpacity>
-
-        {/* The sample pantry: what goes into the first recipes besides the fridge. Not saved. */}
-        <View
-          accessible
-          accessibilityLabel={`${t("onboarding.samplePantryLabel")}: ${samplePantry.map((p) => p.name).join(", ")}`}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            columnGap: 10,
-            backgroundColor: colors.card,
-            borderWidth: 1,
-            borderColor: colors.cardBorder,
-            borderRadius: 16,
-            paddingVertical: 7,
-            paddingHorizontal: 12,
-            marginBottom: 12,
-          }}
-        >
-          {/* One line at any width: a long translation of the label is cut, the emoji never wrap. */}
-          <Text
-            numberOfLines={1}
-            style={{ fontSize: 12, fontWeight: "700", color: colors.textSecondary, flexShrink: 1 }}
-          >
-            {t("onboarding.samplePantryLabel")}
-          </Text>
-          <Text numberOfLines={1} style={{ fontSize: 19, lineHeight: 26, flexShrink: 0 }}>
-            {samplePantry.map((item) => item.emoji).join("  ")}
-          </Text>
-        </View>
 
         {/* Language & units — one quiet row, open on request. */}
         <TouchableOpacity

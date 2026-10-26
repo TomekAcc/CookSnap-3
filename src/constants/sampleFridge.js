@@ -46,11 +46,11 @@ export const SAMPLE_FRIDGE_TAGS = [
 ];
 
 // Everything on the onboarding screen that is not the picture card.
-export const ONBOARDING_CHROME_HEIGHT = 420;
+export const ONBOARDING_CHROME_HEIGHT = 416;
 
 /**
  * Height of the onboarding picture card: what is left of the window after everything else on the
- * screen (header, sample-pantry strip, language row and pinned buttons, about 420pt, plus the notch and home-bar
+ * screen (header, fridge/pantry tabs, language row and pinned buttons, about 416pt, plus the notch and home-bar
  * insets), never less than 220 and never more than the whole picture. Calibrated by simulating
  * an iPhone's safe-area insets in a browser: with this much reserved the language row ends
  * about 8pt above the buttons on 375x812 up to 430x932 screens.
@@ -66,8 +66,13 @@ export function sampleCardHeight(windowHeight, imageHeight, insets = { top: 0, b
  * not exist on react-native-web.
  */
 export function sampleFridgeSize() {
+  return sampleImageSize(SAMPLE_FRIDGE_IMAGE);
+}
+
+/** Pixel size of any bundled sample picture (see sampleFridgeSize). */
+export function sampleImageSize(source) {
   try {
-    const asset = Asset.fromModule(SAMPLE_FRIDGE_IMAGE);
+    const asset = Asset.fromModule(source);
     if (asset?.width && asset?.height) return { width: asset.width, height: asset.height };
   } catch {
     // fall through
