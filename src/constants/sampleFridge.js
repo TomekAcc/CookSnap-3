@@ -36,13 +36,13 @@ export const SAMPLE_FRIDGE_ITEMS = [
  * top-centre of the item. Only items with clear wall above them and nothing from the shelf above
  * in the way (the orange juice sits too close under the top shelf), on the upper shelves: the
  * onboarding card crops the bottom drawers on shorter phones. Names come from the
- * sampleFridge.<id> translations. Measured on assets/sample-fridge.jpg (1427 x 1716).
+ * sampleFridge.<id> translations. Measured on assets/sample-fridge.jpg (1427 x 1827).
  */
 export const SAMPLE_FRIDGE_TAGS = [
-  { id: "cheese", x: 0.511, y: 0.21 },
-  { id: "eggs", x: 0.154, y: 0.508 },
-  { id: "tomatoes", x: 0.126, y: 0.741 },
-  { id: "onion", x: 0.729, y: 0.71 },
+  { id: "cheese", x: 0.511, y: 0.197 },
+  { id: "eggs", x: 0.154, y: 0.477 },
+  { id: "tomatoes", x: 0.126, y: 0.696 },
+  { id: "onion", x: 0.729, y: 0.667 },
 ];
 
 // Everything on the onboarding screen that is not the picture card.
