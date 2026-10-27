@@ -156,7 +156,7 @@ browsing, not a recipe box to build over years.
 
 ## 8. Tech Stack
 
-- **Client:** Expo (React Native, SDK 57), StyleSheet styling,
+- **Client:** Expo (React Native, SDK 58), StyleSheet styling,
   React Context for state, `react-native-reanimated` +
   `react-native-gesture-handler` for UI-thread animations/gestures,
   AsyncStorage for local persistence.

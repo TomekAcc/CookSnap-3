@@ -405,10 +405,17 @@ Don't claim a change is "tested" unless one of these actually ran.
   it's a stopgap, not a permanent UI element.
 
 ### EAS Update
-- `app.json`'s `updates.url` and `runtimeVersion: "exposdk:54.0.0"` must
+- `app.json`'s `updates.url` and `runtimeVersion: "exposdk:58.0.0"` must
   stay in the classic SDK-string format for updates to open directly in
   Expo Go — the `{"policy": "appVersion"}` format only targets standalone/
   custom builds and will NOT work for Expo Go testing.
+- Expo Go on iOS always updates itself to the newest SDK and an older one
+  cannot be installed, so the app has to follow: when Expo Go shows "Project
+  is incompatible with this version of Expo Go", upgrade the SDK
+  (`npx expo install expo@~NN.0.0`, then `npx expo install --fix`, then
+  `npx expo-doctor`), set `runtimeVersion` to `exposdk:NN.0.0`, check that
+  `npx expo export --platform ios --platform android` bundles (the jest icon
+  stub hides broken icon imports), and only then publish.
 - Publish to the `preview` branch (`eas update --branch preview`) for all
   testing. Don't create new branches ad hoc without a reason — it
   fragments where "the latest version" actually is.

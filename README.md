@@ -4,7 +4,7 @@ Production-grade React Native app built with Expo. Scan your fridge, set meal pr
 
 ## Tech Stack
 
-- **Expo SDK 57** (Managed Workflow)
+- **Expo SDK 58** (Managed Workflow)
 - **lucide-react-native** icons
 - **expo-camera** for fridge photo capture
 - **React Context** for state management

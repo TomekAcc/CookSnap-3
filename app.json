@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#F5F5F7"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.tomekacc.cookai",
@@ -47,7 +42,16 @@
       "expo-asset",
       "expo-font",
       "expo-image",
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#F5F5F7",
+          "imageWidth": 200
+        }
+      ]
     ],
     "extra": {
       "eas": {
@@ -55,7 +59,7 @@
       }
     },
     "owner": "tomekacc",
-    "runtimeVersion": "exposdk:54.0.0",
+    "runtimeVersion": "exposdk:58.0.0",
     "updates": {
       "url": "https://u.expo.dev/9f7a33bb-a1f0-435d-9286-4ad349f8d948",
       "checkAutomatically": "ON_LOAD",

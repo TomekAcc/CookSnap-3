@@ -2,6 +2,19 @@ const expoConfig = require("eslint-config-expo/flat");
 
 module.exports = [
   ...expoConfig,
+  {
+    // eslint-config-expo 58 turns on the React Compiler checks of eslint-plugin-react-hooks. The app
+    // does not use the React Compiler, and these flag long-standing, working patterns (for example
+    // `useRef(new Animated.Value(0)).current`, setState inside an effect). Rewriting them is a
+    // separate refactor, so they stay off until the compiler is adopted.
+    rules: {
+      "react-hooks/refs": "off",
+      "react-hooks/globals": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/immutability": "off",
+      "react-hooks/purity": "off",
+    },
+  },
   { ignores: ["dist/**", ".expo/**", "node_modules/**", "proxy/node_modules/**", "proxy/.wrangler/**", "scripts/smoke-test-screenshots/**"] },
   {
     // Use src/utils/log.js (log.debug / log.warn / log.error) instead.
