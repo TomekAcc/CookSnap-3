@@ -33,13 +33,13 @@ export const SAMPLE_PANTRY_IMAGE = require("../../assets/sample-pantry.jpg");
 /**
  * Where to pin a label on the picture, as fractions of the image (x across, y down) at the
  * top-centre of the item. Only items with clear wall above them. Names come from the
- * pantryStaple.<id> translations. Measured on assets/sample-pantry.jpg (1200 x 1608).
+ * pantryStaple.<id> translations. Measured on assets/sample-pantry.jpg (1200 x 1536, the same proportions as sample-fridge.jpg).
  */
 export const SAMPLE_PANTRY_TAGS = [
-  { id: "soy-sauce", x: 0.837, y: 0.1265 },
-  { id: "sugar", x: 0.395, y: 0.135 },
-  { id: "paprika", x: 0.499, y: 0.4525 },
-  { id: "flour", x: 0.212, y: 0.7015 },
+  { id: "soy-sauce", x: 0.815, y: 0.1129 },
+  { id: "sugar", x: 0.395, y: 0.1218 },
+  { id: "paprika", x: 0.499, y: 0.4542 },
+  { id: "flour", x: 0.212, y: 0.7148 },
 ];
 
 export function buildSamplePantry(t) {

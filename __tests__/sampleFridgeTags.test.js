@@ -150,6 +150,16 @@ describe("sample pantry", () => {
     }
   });
 
+  it("has the same proportions as the sample fridge picture, so the two tabs are the same size", () => {
+    const { sampleFridgeSize, sampleImageSize } = require("../src/constants/sampleFridge");
+    const { SAMPLE_PANTRY_IMAGE } = require("../src/constants/samplePantry");
+    const fridge = sampleFridgeSize();
+    const pantry = sampleImageSize(SAMPLE_PANTRY_IMAGE);
+    if (fridge && pantry) {
+      expect(pantry.width / pantry.height).toBeCloseTo(fridge.width / fridge.height, 2);
+    }
+  });
+
   it("pins a label on four drawn items, inside the picture, top to bottom", () => {
     expect(SAMPLE_PANTRY_TAGS).toHaveLength(4);
     for (const tag of SAMPLE_PANTRY_TAGS) {
