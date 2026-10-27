@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Încearcă altă fotografie",
   "scanner.privacyNote": "Fotografiile sunt trimise către AI-ul Google pentru identificarea ingredientelor. CookSnap le stochează doar pe telefonul tău",
   "scanner.sampleNote": "Acesta este un frigider demonstrativ. Apasă pe × din fotografie pentru a-l scana pe al tău.",
+  "scanner.samplePantryNote": "Rețetele tale folosesc și aceste ingrediente. Este doar un exemplu, nu se salvează nimic.",
   "sampleFridge.milk": "Lapte",
   "sampleFridge.yogurt": "Iaurt",
   "sampleFridge.cheese": "Brânză",

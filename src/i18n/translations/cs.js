@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Zkusit jinou fotku",
   "scanner.privacyNote": "Fotky se odesílají do AI od Google k rozpoznání surovin. CookSnap je ukládá pouze ve vašem telefonu",
   "scanner.sampleNote": "Toto je ukázková lednice. Klepnutím na × na fotce naskenujete vlastní.",
+  "scanner.samplePantryNote": "Tvoje recepty používají i tyto suroviny. Je to jen ukázka, nic se neukládá.",
   "sampleFridge.milk": "Mléko",
   "sampleFridge.yogurt": "Jogurt",
   "sampleFridge.cheese": "Sýr",

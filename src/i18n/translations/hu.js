@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Másik fotó próbája",
   "scanner.privacyNote": "A fotókat a Google AI elemzi a hozzávalók felismeréséhez. A CookSnap csak a telefonodon tárolja őket",
   "scanner.sampleNote": "Ez csak egy mintahűtő. Koppints a képen lévő × jelre a sajátod beolvasásához.",
+  "scanner.samplePantryNote": "A receptjeid ezeket is használják. Ez csak egy példa, semmi sem kerül mentésre.",
   "sampleFridge.milk": "Tej",
   "sampleFridge.yogurt": "Joghurt",
   "sampleFridge.cheese": "Sajt",

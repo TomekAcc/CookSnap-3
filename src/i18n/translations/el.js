@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Δοκιμάστε άλλη φωτογραφία",
   "scanner.privacyNote": "Οι φωτογραφίες στέλνονται στο AI της Google για την αναγνώριση υλικών. Το CookSnap τις αποθηκεύει μόνο στο τηλέφωνό σας",
   "scanner.sampleNote": "Αυτό είναι ένα δείγμα ψυγείου. Πάτησε το × στη φωτογραφία για να σαρώσεις το δικό σου.",
+  "scanner.samplePantryNote": "Οι συνταγές σου χρησιμοποιούν και αυτά τα υλικά. Είναι μόνο παράδειγμα, δεν αποθηκεύεται τίποτα.",
   "sampleFridge.milk": "Γάλα",
   "sampleFridge.yogurt": "Γιαούρτι",
   "sampleFridge.cheese": "Τυρί",

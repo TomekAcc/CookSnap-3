@@ -4,6 +4,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useModalState } from "../context/ModalContext";
 import { useScan } from "../context/ScanContext";
 import DetectedIngredientsCard from "./scanner/DetectedIngredientsCard";
+import SamplePantryCard from "./SamplePantryCard";
 import FridgeIdleCard from "./scanner/FridgeIdleCard";
 import FridgePhotoCard from "./scanner/FridgePhotoCard";
 import FridgeScanProgress from "./scanner/FridgeScanProgress";
@@ -107,7 +108,11 @@ export default function FridgeScannerHero() {
                     manualAdd={manualAdd}
                   />
                 ) : (
-                  <DetectedIngredientsCard chipReveal={choreo.chipReveal} manualAdd={manualAdd} />
+                  <>
+                    <DetectedIngredientsCard chipReveal={choreo.chipReveal} manualAdd={manualAdd} />
+                    {/* Only while the onboarding sample fridge is showing; renders nothing otherwise. */}
+                    <SamplePantryCard style={{ marginTop: 12 }} />
+                  </>
                 )}
               </Animated.View>
             )}

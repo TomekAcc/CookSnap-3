@@ -133,3 +133,25 @@ describe("PantryScannerHero", () => {
     expect(screen.getByText("From Gallery")).toBeTruthy();
   });
 });
+
+describe("SamplePantryCard", () => {
+  const SamplePantryCard = require("../src/components/SamplePantryCard").default;
+
+  it("lists the sample staples only while the sample fridge shows and nothing is stocked", async () => {
+    await mount(<SamplePantryCard />);
+    expect(screen.queryByText("Sample pantry")).toBeNull();
+
+    act(() => ctx.inv.markScanDemo(true));
+    expect(await screen.findByText("Sample pantry")).toBeTruthy();
+    expect(screen.getByText("Rice")).toBeTruthy();
+    expect(screen.getByText("Black pepper")).toBeTruthy();
+
+    // The person stocks their own pantry: the sample steps aside (the generator ignores it too).
+    act(() => ctx.inv.addPantryItem({ id: "p", name: "Salt", category: "Spices & Herbs" }));
+    await waitFor(() => expect(screen.queryByText("Sample pantry")).toBeNull());
+
+    // And a real scan ends the sample altogether.
+    act(() => ctx.inv.markScanDemo(false));
+    expect(screen.queryByText("Sample pantry")).toBeNull();
+  });
+});

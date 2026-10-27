@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Pokušaj s drugom fotografijom",
   "scanner.privacyNote": "Fotografije se šalju Googleovoj umjetnoj inteligenciji radi prepoznavanja sastojaka. CookSnap ih sprema samo na vaš telefon",
   "scanner.sampleNote": "Ovo je primjer hladnjaka. Dodirnite × na fotografiji kako biste skenirali svoj.",
+  "scanner.samplePantryNote": "Tvoji recepti koriste i ove namirnice. Ovo je samo primjer, ništa se ne sprema.",
   "sampleFridge.milk": "Mlijeko",
   "sampleFridge.yogurt": "Jogurt",
   "sampleFridge.cheese": "Sir",

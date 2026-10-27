@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "다른 사진 찍기",
   "scanner.privacyNote": "재료 인식을 위해 사진이 Google AI로 전송됩니다. CookSnap은 사진을 사용자의 스마트폰에만 저장합니다",
   "scanner.sampleNote": "샘플 냉장고 화면입니다. 사진의 ×를 탭하면 내 냉장고를 스캔할 수 있어요.",
+  "scanner.samplePantryNote": "레시피에 이 재료들도 사용됩니다. 예시일 뿐이며 아무것도 저장되지 않습니다.",
   "sampleFridge.milk": "우유",
   "sampleFridge.yogurt": "요거트",
   "sampleFridge.cheese": "치즈",

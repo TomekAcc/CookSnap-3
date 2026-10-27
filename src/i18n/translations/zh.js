@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "换张照片试试",
   "scanner.privacyNote": "照片将发送至 Google AI 以识别食材，CookSnap 仅在您的手机本地存储照片",
   "scanner.sampleNote": "这是一个示例冰箱。点击照片上的 × 即可扫描你自己的冰箱。",
+  "scanner.samplePantryNote": "你的食谱也会用到这些食材。这只是示例，不会保存任何内容。",
   "sampleFridge.milk": "牛奶",
   "sampleFridge.yogurt": "酸奶",
   "sampleFridge.cheese": "奶酪",

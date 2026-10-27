@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Spróbuj innego zdjęcia",
   "scanner.privacyNote": "Zdjęcia są przesyłane do sztucznej inteligencji Google w celu rozpoznania składników. CookSnap zapisuje je wyłącznie na Twoim telefonie",
   "scanner.sampleNote": "To jest przykładowa lodówka. Dotknij × na zdjęciu, aby zeskanować swoją.",
+  "scanner.samplePantryNote": "Twoje przepisy korzystają też z tych składników. To tylko przykład, nic się nie zapisuje.",
   "sampleFridge.milk": "Mleko",
   "sampleFridge.yogurt": "Jogurt",
   "sampleFridge.cheese": "Ser",

@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "تجربة صورة أخرى",
   "scanner.privacyNote": "تُرسل الصور إلى الذكاء الاصطناعي من Google للتعرف على المكونات. يحفظها CookSnap على هاتفك فقط",
   "scanner.sampleNote": "هذه ثلاجة تجريبية. اضغط على × في الصورة لتصوير ثلاجتك.",
+  "scanner.samplePantryNote": "تستخدم وصفاتك هذه المكونات أيضًا. هذا مجرد مثال ولا يتم حفظ أي شيء.",
   "sampleFridge.milk": "حليب",
   "sampleFridge.yogurt": "زبادي",
   "sampleFridge.cheese": "جبن",

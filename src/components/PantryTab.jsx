@@ -32,6 +32,7 @@ import SwipeToDeleteRow from "./SwipeToDeleteRow";
 import PillTag from "./PillTag";
 import ShoppingListModal from "./ShoppingListModal";
 import PantryScannerHero from "./PantryScannerHero";
+import SamplePantryCard from "./SamplePantryCard";
 import ErrorBoundary from "./ErrorBoundary";
 import Header from "./Header";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -265,6 +266,7 @@ export default function PantryTab() {
     removePantryItem,
     clearPantry,
     ingredients,
+    scanIsDemo,
   } = useInventory();
   const { setActiveTab } = useNavigation();
   const { registerRecipeGenerationAttempt } = useEntitlements();
@@ -660,7 +662,10 @@ export default function PantryTab() {
             </Text>
           </View>
 
-          {inStockItems.length === 0 ? (
+          {inStockItems.length === 0 && scanIsDemo ? (
+            // The onboarding sample: show the staples the first recipes use instead of "nothing in stock".
+            <SamplePantryCard />
+          ) : inStockItems.length === 0 ? (
             <View
               style={{
                 backgroundColor: colors.card,

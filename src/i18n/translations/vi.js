@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Thử ảnh khác",
   "scanner.privacyNote": "Ảnh được gửi tới AI của Google để nhận diện nguyên liệu. CookSnap chỉ lưu trữ ảnh trên điện thoại của bạn",
   "scanner.sampleNote": "Đây là tủ lạnh mẫu. Nhấn vào × trên ảnh để quét tủ lạnh của bạn.",
+  "scanner.samplePantryNote": "Công thức của bạn cũng dùng các nguyên liệu này. Đây chỉ là ví dụ, không có gì được lưu.",
   "sampleFridge.milk": "Sữa",
   "sampleFridge.yogurt": "Sữa chua",
   "sampleFridge.cheese": "Phô mai",

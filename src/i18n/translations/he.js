@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "לנסות תמונה אחרת",
   "scanner.privacyNote": "התמונות נשלחות ל-AI של Google כדי לזהות מצרכים. CookSnap שומרת אותן רק בטלפון שלך",
   "scanner.sampleNote": "זהו מקרר לדוגמה. מקישים על ה-× שבתמונה כדי לסרוק את המקרר שלך.",
+  "scanner.samplePantryNote": "המתכונים שלך משתמשים גם במצרכים האלה. זו רק דוגמה, שום דבר לא נשמר.",
   "sampleFridge.milk": "חלב",
   "sampleFridge.yogurt": "יוגורט",
   "sampleFridge.cheese": "גבינה",

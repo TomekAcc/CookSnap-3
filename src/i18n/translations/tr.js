@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Başka bir fotoğraf dene",
   "scanner.privacyNote": "Fotoğraflar malzemeleri tanımak için Google'ın yapay zekâsına gönderilir. CookSnap bunları yalnızca telefonunuzda saklar",
   "scanner.sampleNote": "Bu bir örnek buzdolabıdır. Kendi buzdolabını taramak için fotoğraftaki × işaretine dokun.",
+  "scanner.samplePantryNote": "Tariflerin bunları da kullanır. Bu sadece bir örnek, hiçbir şey kaydedilmez.",
   "sampleFridge.milk": "Süt",
   "sampleFridge.yogurt": "Yoğurt",
   "sampleFridge.cheese": "Peynir",

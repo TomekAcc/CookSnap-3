@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Andere foto proberen",
   "scanner.privacyNote": "Foto's worden naar de AI van Google gestuurd om ingrediënten te herkennen. CookSnap bewaart ze alleen op je telefoon",
   "scanner.sampleNote": "Dit is een voorbeeldkoelkast. Tik op × op de foto om je eigen koelkast te scannen.",
+  "scanner.samplePantryNote": "Je recepten gebruiken deze ook. Het is maar een voorbeeld, er wordt niets opgeslagen.",
   "sampleFridge.milk": "Melk",
   "sampleFridge.yogurt": "Yoghurt",
   "sampleFridge.cheese": "Kaas",

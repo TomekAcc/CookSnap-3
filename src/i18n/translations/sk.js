@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Skúsiť inú fotku",
   "scanner.privacyNote": "Fotky sa odosielajú umelej inteligencii Google na rozpoznanie surovín. CookSnap ich ukladá iba vo vašom telefóne",
   "scanner.sampleNote": "Toto je ukážková chladnička. Klepnutím na × na fotke naskenujete svoju vlastnú.",
+  "scanner.samplePantryNote": "Tvoje recepty používajú aj tieto suroviny. Je to len ukážka, nič sa neukladá.",
   "sampleFridge.milk": "Mlieko",
   "sampleFridge.yogurt": "Jogurt",
   "sampleFridge.cheese": "Syr",

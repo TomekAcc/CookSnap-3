@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "दूसरी फ़ोटो आज़माएं",
   "scanner.privacyNote": "सामग्री पहचानने के लिए फ़ोटो Google के AI को भेजी जाती हैं। CookSnap इन्हें केवल आपके फ़ोन पर सहेजता है",
   "scanner.sampleNote": "यह एक सैंपल फ्रिज है। अपना फ्रिज स्कैन करने के लिए फोटो पर × दबाएं।",
+  "scanner.samplePantryNote": "आपकी रेसिपी में ये सामग्री भी इस्तेमाल होती हैं। यह सिर्फ़ एक उदाहरण है, कुछ भी सेव नहीं होता।",
   "sampleFridge.milk": "दूध",
   "sampleFridge.yogurt": "दही",
   "sampleFridge.cheese": "चीज़",

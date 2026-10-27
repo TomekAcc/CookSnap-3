@@ -132,6 +132,7 @@ export default {
   "scanner.tryAnotherPhoto": "Prøv et andet foto",
   "scanner.privacyNote": "Billeder sendes til Googles AI for at finde ingredienser. CookSnap gemmer dem kun på din telefon",
   "scanner.sampleNote": "Dette er et eksempelkøleskab. Tryk på × på billedet for at scanne dit eget.",
+  "scanner.samplePantryNote": "Dine opskrifter bruger også disse. Det er kun et eksempel, intet bliver gemt.",
   "sampleFridge.milk": "Mælk",
   "sampleFridge.yogurt": "Yoghurt",
   "sampleFridge.cheese": "Ost",
