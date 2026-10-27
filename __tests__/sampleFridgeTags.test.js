@@ -106,6 +106,14 @@ describe("sampleCardHeight", () => {
     expect(sampleCardHeight(932, 469, IPHONE)).toBe(423);
   });
 
+  it("gets 56pt more when the chef-hat badge is dropped on a shorter phone", () => {
+    const { ONBOARDING_COMPACT_SAVING } = require("../src/constants/sampleFridge");
+    expect(ONBOARDING_COMPACT_SAVING).toBe(56);
+    expect(sampleCardHeight(852, 424, IPHONE, true)).toBe(sampleCardHeight(852, 424, IPHONE) + 56);
+    // never more than the picture itself
+    expect(sampleCardHeight(932, 424, IPHONE, true)).toBe(424);
+  });
+
   it("uses smaller insets (older iPhones, Android) to give the card more room", () => {
     expect(sampleCardHeight(667, 421, { top: 20, bottom: 0 })).toBe(231);
     expect(sampleCardHeight(800, 421, { top: 24, bottom: 0 })).toBe(360);

@@ -47,6 +47,10 @@ export const SAMPLE_FRIDGE_TAGS = [
 
 // Everything on the onboarding screen that is not the picture card.
 export const ONBOARDING_CHROME_HEIGHT = 416;
+// The chef-hat badge above the title is dropped on screens that are short once the insets are
+// taken off (below this), which frees ONBOARDING_COMPACT_SAVING pt for the picture.
+export const ONBOARDING_COMPACT_BELOW = 800;
+export const ONBOARDING_COMPACT_SAVING = 56;
 
 /**
  * Height of the onboarding picture card: what is left of the window after everything else on the
@@ -55,8 +59,9 @@ export const ONBOARDING_CHROME_HEIGHT = 416;
  * an iPhone's safe-area insets in a browser: with this much reserved the language row ends
  * about 8pt above the buttons on 375x812 up to 430x932 screens.
  */
-export function sampleCardHeight(windowHeight, imageHeight, insets = { top: 0, bottom: 0 }) {
-  const room = windowHeight - ONBOARDING_CHROME_HEIGHT - (insets.top || 0) - (insets.bottom || 0);
+export function sampleCardHeight(windowHeight, imageHeight, insets = { top: 0, bottom: 0 }, compact = false) {
+  const chrome = ONBOARDING_CHROME_HEIGHT - (compact ? ONBOARDING_COMPACT_SAVING : 0);
+  const room = windowHeight - chrome - (insets.top || 0) - (insets.bottom || 0);
   return Math.round(Math.max(220, Math.min(imageHeight, room)));
 }
 

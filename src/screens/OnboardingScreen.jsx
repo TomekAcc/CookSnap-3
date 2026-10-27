@@ -25,7 +25,13 @@ import {
 import { useTheme } from "../context/ThemeContext";
 import { LANGUAGE_OPTIONS, DEFAULT_LANGUAGE_ID, getLanguageById } from "../data/languageOptions";
 import { translate } from "../i18n";
-import { SAMPLE_FRIDGE_IMAGE, sampleCardHeight, sampleFridgeSize, sampleImageSize } from "../constants/sampleFridge";
+import {
+  ONBOARDING_COMPACT_BELOW,
+  SAMPLE_FRIDGE_IMAGE,
+  sampleCardHeight,
+  sampleFridgeSize,
+  sampleImageSize,
+} from "../constants/sampleFridge";
 import { log } from "../utils/log";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
@@ -37,37 +43,24 @@ import { EMERALD, MISC, WHITE } from "../theme/palette";
 
 const GREEN = EMERALD[600];
 
-// The sample card takes the height the screen has left after the header, the
-// language row and the buttons (about 440pt), so a tall phone shows more of the
-// fridge instead of an empty band (see sampleCardHeight). The image is shown
-// at full width and shifted up a little rather than centred, which keeps the
-// top shelf (the milk, cheese and eggs) in view and cuts the bottom first.
+// The sample pictures are shown whole, in their own proportions (nothing is cropped): each is
+// scaled to fit the field that is left after the header, the tabs, the language row and the
+// buttons (see sampleCardHeight), and centred in it. On tall phones that is the full width; on
+// shorter ones the pictures are a little narrower, and the chef-hat badge above the title is
+// dropped to give them more room.
 function sampleCardLayout(insets) {
   const { width, height } = Dimensions.get("window");
-  const cardWidth = width - 40;
-  const size = sampleFridgeSize();
-  const imageHeight = size ? (cardWidth * size.height) / size.width : (cardWidth * 4) / 3;
-  const cardHeight = sampleCardHeight(height, imageHeight, insets);
-  const overflow = Math.max(0, imageHeight - cardHeight);
-
-  // The sample pantry picture fills the same card (cover, centred): it is wide enough that
-  // nothing but a sliver is cut, so all three shelves stay in view.
+  const fieldWidth = width - 40;
+  const compact = height - (insets.top || 0) - (insets.bottom || 0) < ONBOARDING_COMPACT_BELOW;
+  const fridgeSize = sampleFridgeSize() || { width: 3, height: 4 };
   const pantrySize = sampleImageSize(SAMPLE_PANTRY_IMAGE) || { width: 4, height: 3 };
-  const scale = Math.max(cardWidth / pantrySize.width, cardHeight / pantrySize.height);
-  const pantryWidth = pantrySize.width * scale;
-  const pantryHeight = pantrySize.height * scale;
-  return {
-    cardWidth,
-    cardHeight,
-    imageHeight,
-    imageTop: -Math.round(overflow * 0.12),
-    pantry: {
-      width: pantryWidth,
-      height: pantryHeight,
-      left: (cardWidth - pantryWidth) / 2,
-      top: (cardHeight - pantryHeight) / 2,
-    },
+  const fridgeFullHeight = (fieldWidth * fridgeSize.height) / fridgeSize.width;
+  const fieldHeight = sampleCardHeight(height, fridgeFullHeight, insets, compact);
+  const fit = (size) => {
+    const scale = Math.min(fieldWidth / size.width, fieldHeight / size.height);
+    return { width: Math.round(size.width * scale), height: Math.round(size.height * scale) };
   };
+  return { compact, fieldWidth, fieldHeight, fridge: fit(fridgeSize), pantry: fit(pantrySize) };
 }
 
 // How long the fridge scan plays before the card moves on to the pantry by itself.
@@ -122,6 +115,7 @@ export default function OnboardingScreen({ onContinue }) {
   // Which sample picture is showing. It starts on the fridge and moves on to the pantry by
   // itself once the fridge scan has played, unless the person has already touched the card.
   const [sampleTab, setSampleTab] = useState("fridge");
+  const shown = sampleTab === "fridge" ? sampleCard.fridge : sampleCard.pantry;
   const touchedTabRef = useRef(false);
   const tabFade = useRef(new Animated.Value(1)).current;
   useEffect(() => {
@@ -260,19 +254,21 @@ export default function OnboardingScreen({ onContinue }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={{ alignItems: "center", marginBottom: 14 }}>
-          <View
-            style={{
-              width: 46,
-              height: 46,
-              borderRadius: 16,
-              backgroundColor: colors.greenWash,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 10,
-            }}
-          >
-            <ChefHat size={24} color={green} />
-          </View>
+          {sampleCard.compact ? null : (
+            <View
+              style={{
+                width: 46,
+                height: 46,
+                borderRadius: 16,
+                backgroundColor: colors.greenWash,
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 10,
+              }}
+            >
+              <ChefHat size={24} color={green} />
+            </View>
+          )}
           <Text
             style={{
               fontSize: 24,
@@ -346,7 +342,7 @@ export default function OnboardingScreen({ onContinue }) {
           })}
         </View>
 
-        {/* The picture card (see sampleCardLayout for how each picture is fitted). */}
+        {/* The picture field: one sample at a time, whole and centred (see sampleCardLayout). */}
         <TouchableOpacity
           activeOpacity={1}
           onPress={() => {
@@ -355,79 +351,59 @@ export default function OnboardingScreen({ onContinue }) {
           }}
           accessible={false}
           style={{
-            height: sampleCard.cardHeight,
-            borderRadius: 24,
-            overflow: "hidden",
-            backgroundColor: MISC.paleBlueGray,
-            borderWidth: 1,
-            borderColor: colors.cardBorder,
+            height: sampleCard.fieldHeight,
+            alignItems: "center",
+            justifyContent: "center",
             marginBottom: 16,
             // The picture and its labels are positioned in screen coordinates; never mirror them.
             direction: "ltr",
           }}
         >
-          <Animated.View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: tabFade }}>
+          <Animated.View
+            style={{
+              width: shown.width,
+              height: shown.height,
+              borderRadius: 24,
+              overflow: "hidden",
+              backgroundColor: MISC.paleBlueGray,
+              borderWidth: 1,
+              borderColor: colors.cardBorder,
+              opacity: tabFade,
+            }}
+          >
+            <Image
+              source={sampleTab === "fridge" ? SAMPLE_FRIDGE_IMAGE : SAMPLE_PANTRY_IMAGE}
+              style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }}
+              resizeMode="cover"
+              accessibilityLabel={t(sampleTab === "fridge" ? "onboarding.sampleLabel" : "onboarding.samplePantryLabel")}
+            />
+            <View
+              pointerEvents="none"
+              style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.imageDim }}
+            />
             {sampleTab === "fridge" ? (
-              <>
-                <Image
-                  source={SAMPLE_FRIDGE_IMAGE}
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    top: sampleCard.imageTop,
-                    width: "100%",
-                    height: sampleCard.imageHeight,
-                  }}
-                  resizeMode="cover"
-                  accessibilityLabel={t("onboarding.sampleLabel")}
-                />
-                <View
-                  pointerEvents="none"
-                  style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.imageDim }}
-                />
-                <SampleFridgeTags
-                  key="fridge"
-                  t={t}
-                  cardWidth={sampleCard.cardWidth}
-                  cardHeight={sampleCard.cardHeight}
-                  imageHeight={sampleCard.imageHeight}
-                  imageTop={sampleCard.imageTop}
-                  playKey={scanPlays}
-                />
-              </>
+              <SampleFridgeTags
+                key="fridge"
+                t={t}
+                cardWidth={shown.width}
+                cardHeight={shown.height}
+                imageHeight={shown.height}
+                imageTop={0}
+                playKey={scanPlays}
+              />
             ) : (
-              <>
-                <Image
-                  source={SAMPLE_PANTRY_IMAGE}
-                  style={{
-                    position: "absolute",
-                    left: sampleCard.pantry.left,
-                    top: sampleCard.pantry.top,
-                    width: sampleCard.pantry.width,
-                    height: sampleCard.pantry.height,
-                  }}
-                  resizeMode="cover"
-                  accessibilityLabel={t("onboarding.samplePantryLabel")}
-                />
-                <View
-                  pointerEvents="none"
-                  style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.imageDim }}
-                />
-                <SampleFridgeTags
-                  key="pantry"
-                  t={t}
-                  cardWidth={sampleCard.cardWidth}
-                  cardHeight={sampleCard.cardHeight}
-                  imageHeight={sampleCard.pantry.height}
-                  imageTop={sampleCard.pantry.top}
-                  imageWidth={sampleCard.pantry.width}
-                  imageLeft={sampleCard.pantry.left}
-                  playKey={scanPlays}
-                  tags={SAMPLE_PANTRY_TAGS}
-                  getLabel={(id) => t(`pantryStaple.${id}`)}
-                  getIcon={(id) => PANTRY_ICONS[id]}
-                />
-              </>
+              <SampleFridgeTags
+                key="pantry"
+                t={t}
+                cardWidth={shown.width}
+                cardHeight={shown.height}
+                imageHeight={shown.height}
+                imageTop={0}
+                playKey={scanPlays}
+                tags={SAMPLE_PANTRY_TAGS}
+                getLabel={(id) => t(`pantryStaple.${id}`)}
+                getIcon={(id) => PANTRY_ICONS[id]}
+              />
             )}
           </Animated.View>
         </TouchableOpacity>
