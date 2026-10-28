@@ -774,7 +774,10 @@ export default function SettingsScreen() {
         visible={unitsPickerOpen}
         onClose={() => setUnitsPickerOpen(false)}
         maxHeight="50%"
-        dragZoneHeight={64}
+        // Nothing scrolls in here, so the whole sheet can be pulled down, not just the handle
+        // strip; and the sheet's own home-bar padding is all the room the options need below.
+        dragAnywhere
+        compactBottom
         contentStyle={{
           backgroundColor: colors.card,
           borderColor: colors.cardBorder,
@@ -804,7 +807,7 @@ export default function SettingsScreen() {
         <View
           style={{
             marginHorizontal: 20,
-            marginBottom: insets.bottom + 24,
+            marginBottom: 8,
             backgroundColor: colors.bg,
             borderRadius: 18,
             padding: 6,
