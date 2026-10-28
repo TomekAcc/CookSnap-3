@@ -7,7 +7,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useOnboarding } from "../../context/OnboardingContext";
 import { useScan } from "../../context/ScanContext";
 import { log } from "../../utils/log";
-import { startAsymptoticCreep } from "../../utils/scanProgressCreep";
+import { finishProgress, startAsymptoticCreep } from "../../utils/scanProgressCreep";
 import { showToast } from "../../utils/toast";
 
 // Where the bar sits when the scripted first phase ends; it creeps on from here.
@@ -255,13 +255,11 @@ export default function useFridgeScanChoreography() {
     // "completed", not here. This effect only owns the actual fill
     // animation + hold timer + eventual release.
     let cancelled = false;
-    Animated.timing(progressBarAnim, {
-      toValue: 1,
-      duration: 120,
-      easing: Easing.out(Easing.quad),
-      useNativeDriver: true,
-    }).start(() => {
-      if (cancelled) return;
+    // The creep is still ticking (scanStage reads "scanning" through the hold): stop it first, or its
+    // next tick cancels the fill below.
+    progressAnimRef.current?.stop?.();
+    progressAnimRef.current = null;
+    const cancelFill = finishProgress(progressBarAnim, () => {
       // Hold the genuinely-full bar on screen for a beat before letting
       // the shrink/reveal effect below swap the view away — long enough
       // to actually register as "done", short enough not to feel laggy.
@@ -279,6 +277,7 @@ export default function useFridgeScanChoreography() {
 
     return () => {
       cancelled = true;
+      cancelFill();
     };
   }, [rawScanStage, progressBarAnim, setScanRevealActive]);
 

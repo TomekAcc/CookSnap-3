@@ -15,7 +15,7 @@ import {
   TOTAL_SCAN_DURATION,
   PANTRY_SCAN_STEPS,
 } from "../constants/scanChoreography";
-import { startAsymptoticCreep } from "../utils/scanProgressCreep";
+import { finishProgress, startAsymptoticCreep } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
@@ -186,24 +186,26 @@ export default function PantryScannerHero() {
     // rawScanStage became "completed", not here. This effect only owns the
     // actual fill animation + hold timer + eventual release.
     let cancelled = false;
-    Animated.timing(progressBarAnim, {
-      toValue: 1,
-      duration: 120,
-      easing: Easing.out(Easing.quad),
-      useNativeDriver: false,
-    }).start(() => {
-      if (cancelled) return;
-      setProgressPct(100);
-      setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
-      // Bumped twice now — see the identical change (and its reasoning)
-      // in FridgeScannerHero's own hold timer.
-      setTimeout(() => {
-        if (!cancelled) setHoldingAtComplete(false);
-      }, 650);
-    });
+    // Stop the creep first, or its next tick cancels the fill (see finishProgress).
+    progressAnimRef.current?.stop?.();
+    progressAnimRef.current = null;
+    const cancelFill = finishProgress(
+      progressBarAnim,
+      () => {
+        setProgressPct(100);
+        setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
+        // Bumped twice now — see the identical change (and its reasoning)
+        // in FridgeScannerHero's own hold timer.
+        setTimeout(() => {
+          if (!cancelled) setHoldingAtComplete(false);
+        }, 650);
+      },
+      { useNativeDriver: false }
+    );
 
     return () => {
       cancelled = true;
+      cancelFill();
     };
   }, [rawScanStage, progressBarAnim]);
 

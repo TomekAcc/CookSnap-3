@@ -1,3 +1,5 @@
+import { Animated, Easing } from "react-native";
+
 /**
  * Drives a progress-bar Animated.Value from `from` toward (but never
  * reaching) `ceiling`, using a live real-clock curve instead of a
@@ -28,5 +30,34 @@ export function startAsymptoticCreep(
 
   return function stop() {
     clearInterval(intervalId);
+  };
+}
+
+/**
+ * Fills a progress bar the rest of the way to 100% once the real result has landed, from wherever
+ * the bar currently is. The caller must stop its creep first: the creep keeps calling setValue on
+ * the same Animated.Value, and every setValue cancels a running animation, which is how the bar
+ * used to flash forward and fall back to ~60% right before it disappeared.
+ *
+ * The time scales with the distance left (about 0.7s from 60%, 0.25s from 95%), so a bar that is
+ * nearly there does not crawl and one that is far behind does not teleport. Returns a cancel
+ * function; `onDone` is not called after it.
+ */
+export function finishProgress(anim, onDone, { useNativeDriver = true } = {}) {
+  let cancelled = false;
+  anim.stopAnimation((current) => {
+    if (cancelled) return;
+    const remaining = Math.min(1, Math.max(0, 1 - (Number(current) || 0)));
+    Animated.timing(anim, {
+      toValue: 1,
+      duration: Math.round(220 + remaining * 480),
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver,
+    }).start(() => {
+      if (!cancelled) onDone();
+    });
+  });
+  return () => {
+    cancelled = true;
   };
 }
