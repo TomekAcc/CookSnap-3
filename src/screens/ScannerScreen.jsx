@@ -9,6 +9,7 @@ import {
   Easing,
 } from "react-native";
 import { useTabScroll } from "../hooks/useTabScroll";
+import { useSampleAutoGenerate } from "../hooks/useSampleAutoGenerate";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Sparkles, RefreshCw } from "../icons";
@@ -71,7 +72,7 @@ export default function ScannerScreen() {
   const { hasScanned, isScanning, scanRevealActive } = useScan();
   const { isGeneratingRecipes, generatedRecipes, generateRecipes } = useRecipes();
   const { registerRecipeGenerationAttempt } = useEntitlements();
-  const { ingredients } = useInventory();
+  const { ingredients, scanIsDemo } = useInventory();
   const { t } = useLanguage();
   const tabScroll = useTabScroll("scanner", scrollViewRef);
   const { setProModalOpen } = useModalState();
@@ -114,6 +115,15 @@ export default function ScannerScreen() {
   // generatedRecipes stays null until generateRecipes() has run at least
   // once — same "never generated" signal RecipeFeed uses.
   const hasGeneratedOnce = generatedRecipes != null;
+
+  // The sample scan from onboarding goes straight on to recipes (see useSampleAutoGenerate).
+  useSampleAutoGenerate({
+    scanIsDemo,
+    ready: hasScanned && hasFood && !stillScanning,
+    hasGenerated: hasGeneratedOnce,
+    isGenerating: isGeneratingRecipes,
+    generate: generateRecipes,
+  });
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg, overflow: "hidden" }]}>

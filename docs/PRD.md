@@ -82,7 +82,9 @@ browsing, not a recipe box to build over years.
   the user's pantry, and it stops applying once they scan their own fridge or
   stock their own pantry. While it applies, the same twelve staples are listed
   read-only under the detected ingredients and in the Pantry tab, so the recipes
-  never use something the person cannot see.
+  never use something the person cannot see. The sample scan goes straight on to
+  recipes by itself (default meal settings, still editable below) and does not
+  use up one of the free daily generations.
 - A one-line privacy note under the camera / gallery buttons until the first
   scan: photos are sent to Google's AI to find ingredients and are stored only
   on the phone.
