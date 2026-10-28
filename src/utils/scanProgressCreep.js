@@ -45,17 +45,19 @@ export function startAsymptoticCreep(
  */
 export function finishProgress(anim, onDone, { useNativeDriver = true } = {}) {
   let cancelled = false;
-  anim.stopAnimation((current) => {
-    if (cancelled) return;
-    const remaining = Math.min(1, Math.max(0, 1 - (Number(current) || 0)));
-    Animated.timing(anim, {
-      toValue: 1,
-      duration: Math.round(220 + remaining * 480),
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver,
-    }).start(() => {
-      if (!cancelled) onDone();
-    });
+  anim.stopAnimation();
+  // The JS-side value is current here: the creep writes it every tick, and a finished native
+  // animation reports its end value. (stopAnimation's callback would ask the native module, which
+  // is asynchronous and never answers in tests.)
+  const current = typeof anim.__getValue === "function" ? Number(anim.__getValue()) || 0 : 0;
+  const remaining = Math.min(1, Math.max(0, 1 - current));
+  Animated.timing(anim, {
+    toValue: 1,
+    duration: Math.round(220 + remaining * 480),
+    easing: Easing.out(Easing.cubic),
+    useNativeDriver,
+  }).start(() => {
+    if (!cancelled) onDone();
   });
   return () => {
     cancelled = true;
