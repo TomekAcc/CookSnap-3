@@ -24,7 +24,25 @@ import { useLanguage } from "../context/LanguageContext";
 import { useLibrary } from "../context/LibraryContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useScan } from "../context/ScanContext";
-import { AMBER, APPLE, EMERALD, SKY, WHITE } from "../theme/palette";
+import { APPLE, EMERALD, WHITE } from "../theme/palette";
+
+/** One accent for every action: the same soft green circle the diet rows use, instead of a colour per row. */
+function ActionIcon({ Icon, size, colors }) {
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: colors.greenWash,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Icon size={Math.round(size * 0.5)} color={colors.greenStrong} />
+    </View>
+  );
+}
 
 export default function ProfileScreen() {
   const tabScroll = useTabScroll("profile");
@@ -54,27 +72,22 @@ export default function ProfileScreen() {
   // shortcut, one tap away regardless, so it was cut rather than kept as
   // redundant chrome.
   const QUICK_ACTIONS = [
+    { id: "planner", labelKey: "menu.mealPlanner", Icon: CalendarRange, onPress: () => setMealPlannerOpen(true) },
+    { id: "history", labelKey: "menu.scanHistory", Icon: History, onPress: () => setScanHistoryOpen(true) },
+    { id: "help", labelKey: "menu.helpFeedback", Icon: MessageCircleQuestion, onPress: () => setHelpModalOpen(true) },
+  ];
+
+  // The numbers count what the person has, and each one opens it. Pantry counts what is in stock: an
+  // out-of-stock item is on the shopping list, not in the kitchen.
+  const STATS = [
+    { id: "saved", labelKey: "profile.statSavedRecipes", value: savedCount, onPress: () => setActiveTab("saved") },
     {
-      id: "planner",
-      labelKey: "menu.mealPlanner",
-      Icon: CalendarRange,
-      color: EMERALD[600],
-      onPress: () => setMealPlannerOpen(true),
+      id: "pantry",
+      labelKey: "profile.statPantryItems",
+      value: pantryItems.filter((item) => item.inStock).length,
+      onPress: () => setActiveTab("pantry"),
     },
-    {
-      id: "history",
-      labelKey: "menu.scanHistory",
-      Icon: History,
-      color: AMBER[600],
-      onPress: () => setScanHistoryOpen(true),
-    },
-    {
-      id: "help",
-      labelKey: "menu.helpFeedback",
-      Icon: MessageCircleQuestion,
-      color: SKY[600],
-      onPress: () => setHelpModalOpen(true),
-    },
+    { id: "scans", labelKey: "profile.statTotalScans", value: scanHistory.length, onPress: () => setScanHistoryOpen(true) },
   ];
 
   // Real usage beats a generic pitch — a free user who's actually hit
@@ -397,71 +410,43 @@ export default function ProfileScreen() {
             borderRadius: 24,
             borderWidth: 1,
             borderColor: colors.cardBorder,
-            paddingVertical: 20,
+            overflow: "hidden",
           }}
         >
-          <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
-              {savedCount}
-            </Text>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 4,
-                textAlign: "center",
-              }}
-            >
-              {t("profile.statSavedRecipes")}
-            </Text>
-          </View>
-          <View
-            style={{
-              width: 1,
-              backgroundColor: colors.cardBorder,
-              marginVertical: 2,
-            }}
-          />
-          <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
-              {pantryItems.length}
-            </Text>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 4,
-                textAlign: "center",
-              }}
-            >
-              {t("profile.statPantryItems")}
-            </Text>
-          </View>
-          <View
-            style={{
-              width: 1,
-              backgroundColor: colors.cardBorder,
-              marginVertical: 2,
-            }}
-          />
-          <View style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
-              {scanHistory.length}
-            </Text>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontWeight: "700",
-                fontSize: 11,
-                marginTop: 4,
-                textAlign: "center",
-              }}
-            >
-              {t("profile.statTotalScans")}
-            </Text>
-          </View>
+          {/* Each number is a shortcut to the thing it counts (a small chevron says so). */}
+          {STATS.map((stat, index) => (
+            <React.Fragment key={stat.id}>
+              {index > 0 ? (
+                <View style={{ width: 1, backgroundColor: colors.cardBorder, marginVertical: 14 }} />
+              ) : null}
+              <TouchableOpacity
+                onPress={stat.onPress}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={`${t(stat.labelKey)}: ${stat.value}`}
+                style={{ flex: 1, alignItems: "center", paddingVertical: 20 }}
+              >
+                <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
+                  {stat.value}
+                </Text>
+                <Text
+                  style={{
+                    color: colors.textSecondary,
+                    fontWeight: "700",
+                    fontSize: 11,
+                    marginTop: 4,
+                    textAlign: "center",
+                    paddingHorizontal: 6,
+                  }}
+                >
+                  {t(stat.labelKey)}
+                </Text>
+                <View style={{ position: "absolute", top: 10, right: 8 }}>
+                  <ChevronRight size={14} color={colors.textTertiary || colors.textSecondary} />
+                </View>
+              </TouchableOpacity>
+            </React.Fragment>
+          ))}
         </View>
 
         {/* Real shortcuts, not more chrome — see QUICK_ACTIONS above for
@@ -478,6 +463,40 @@ export default function ProfileScreen() {
         >
           {t("profile.quickActions")}
         </Text>
+        {/* Meal Planner is the one real feature here, so it gets its own, larger card; scan history and
+            help are the occasional ones and share a quieter card with indented dividers. */}
+        {QUICK_ACTIONS.slice(0, 1).map((action) => (
+          <TouchableOpacity
+            key={action.id}
+            onPress={action.onPress}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              padding: 16,
+              marginBottom: 12,
+              backgroundColor: colors.card,
+              borderRadius: 24,
+              borderWidth: 1,
+              borderColor: colors.cardBorder,
+            }}
+          >
+            <ActionIcon Icon={action.Icon} size={44} colors={colors} />
+            <Text
+              style={{
+                flex: 1,
+                color: colors.textPrimary,
+                fontWeight: "700",
+                fontSize: 16,
+                marginLeft: 14,
+              }}
+            >
+              {t(action.labelKey)}
+            </Text>
+            <ChevronRight size={18} color={colors.textSecondary} />
+          </TouchableOpacity>
+        ))}
         <View
           style={{
             backgroundColor: colors.card,
@@ -487,32 +506,43 @@ export default function ProfileScreen() {
             overflow: "hidden",
           }}
         >
-          {QUICK_ACTIONS.map((action, idx) => (
+          {QUICK_ACTIONS.slice(1).map((action, idx, rest) => (
             <TouchableOpacity
               key={action.id}
               onPress={action.onPress}
               activeOpacity={0.7}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 16,
-                borderBottomWidth: idx < QUICK_ACTIONS.length - 1 ? 1 : 0,
-                borderBottomColor: colors.cardBorder,
-              }}
+              accessibilityRole="button"
+              style={{ flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 16 }}
             >
-              <action.Icon size={20} color={action.color} />
-              <Text
+              <ActionIcon Icon={action.Icon} size={36} colors={colors} />
+              <View
                 style={{
                   flex: 1,
-                  color: colors.textPrimary,
-                  fontWeight: "600",
-                  fontSize: 14,
+                  flexDirection: "row",
+                  alignItems: "center",
                   marginLeft: 12,
+                  // indented divider: starts under the text, not under the icon
+                  paddingVertical: 8,
                 }}
               >
-                {t(action.labelKey)}
-              </Text>
-              <ChevronRight size={18} color={colors.textSecondary} />
+                <Text style={{ flex: 1, color: colors.textPrimary, fontWeight: "600", fontSize: 15 }}>
+                  {t(action.labelKey)}
+                </Text>
+                <ChevronRight size={18} color={colors.textSecondary} />
+              </View>
+              {idx < rest.length - 1 ? (
+                <View
+                  pointerEvents="none"
+                  style={{
+                    position: "absolute",
+                    left: 64,
+                    right: 0,
+                    bottom: 0,
+                    height: 1,
+                    backgroundColor: colors.cardBorder,
+                  }}
+                />
+              ) : null}
             </TouchableOpacity>
           ))}
         </View>
