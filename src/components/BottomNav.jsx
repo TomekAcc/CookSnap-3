@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Flame, Utensils, Heart, User } from "../icons";
+import { Package, ScanLine, Heart, User } from "../icons";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import { animateLayout } from "../utils/layoutMotion";
@@ -12,7 +12,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useRecipes } from "../context/RecipesContext";
 import { useScan } from "../context/ScanContext";
-import { APPLE, EMERALD, WHITE } from "../theme/palette";
+import { EMERALD, WHITE } from "../theme/palette";
 
 // Same delayed-flatten pattern as Header.jsx: a live BlurView is one of the
 // more GPU-expensive effects to keep compositing every frame, and this one
@@ -25,10 +25,13 @@ import { APPLE, EMERALD, WHITE } from "../theme/palette";
 // mount, same reasoning as Header's FLATTEN_DELAY_MS.
 const FLATTEN_DELAY_MS = 120;
 
+// Icons say what the tab does: a viewfinder to scan, a box for the pantry stock. (It used to be a flame
+// and a knife and fork, which read as "cooking", not as "scan" and "pantry".) `fillWhenActive` fills the
+// shape of the selected tab (the heart), the way iOS tab bars show selection.
 const TABS = [
-  { id: "scanner", labelKey: "nav.scanner", icon: Flame },
-  { id: "pantry", labelKey: "nav.pantry", icon: Utensils },
-  { id: "saved", labelKey: "nav.saved", icon: Heart },
+  { id: "scanner", labelKey: "nav.scanner", icon: ScanLine },
+  { id: "pantry", labelKey: "nav.pantry", icon: Package },
+  { id: "saved", labelKey: "nav.saved", icon: Heart, fillWhenActive: true },
   { id: "profile", labelKey: "nav.profile", icon: User },
 ];
 
@@ -39,7 +42,6 @@ const ICON_SIZE = 22;
 // this same emerald (light/dark split matches the established convention
 // used throughout, e.g. FridgeScannerHero, PantryTab: #10B981/#059669 in
 // light mode, #34D399 in dark).
-const INACTIVE = APPLE.gray;
 
 export default function BottomNav() {
   const { activeTab, setActiveTab } = useNavigation();
@@ -77,6 +79,8 @@ export default function BottomNav() {
   if (isScanning || scanRevealActive) return null;
 
   const activeColor = colors.greenBright;
+  // Inactive tabs were #8E8E93 (about 3:1 on white); the secondary text colour reads clearly in both themes.
+  const INACTIVE = colors.textSecondary;
   const bottomPad = Math.max(insets.bottom, 8);
 
   return (
@@ -131,19 +135,28 @@ export default function BottomNav() {
               accessibilityState={{ selected: isActive }}
               style={styles.tab}
             >
-              <View>
+              {/* The selected tab sits on a soft green pill, so selection is a shape as well as a colour. */}
+              <View
+                style={{
+                  paddingHorizontal: 18,
+                  paddingVertical: 4,
+                  borderRadius: 999,
+                  backgroundColor: isActive ? colors.greenWash : "transparent",
+                }}
+              >
                 <Icon
                   size={ICON_SIZE}
                   color={isActive ? activeColor : INACTIVE}
                   strokeWidth={isActive ? 2.4 : 1.8}
+                  fill={isActive && tab.fillWhenActive ? activeColor : "none"}
                 />
                 {tab.id === "pantry" && showPantryDot ? (
                   <View
                     pointerEvents="none"
                     style={{
                       position: "absolute",
-                      top: -2,
-                      right: -4,
+                      top: 2,
+                      right: 12,
                       width: 9,
                       height: 9,
                       borderRadius: 4.5,
@@ -166,7 +179,7 @@ export default function BottomNav() {
                   respected everywhere, so this wrapper is the actual
                   guarantee; numberOfLines+ellipsizeMode below just make the
                   cut end in "…" instead of a hard clip when it fires. */}
-              <View style={{ width: "100%", overflow: "hidden", marginTop: 3 }}>
+              <View style={{ width: "100%", overflow: "hidden", marginTop: 1 }}>
                 <Text
                   numberOfLines={1}
                   ellipsizeMode="tail"

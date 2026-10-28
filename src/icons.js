@@ -46,6 +46,7 @@ export { default as RefreshCw } from "lucide-react-native/icons/refresh-cw";
 export { default as Refrigerator } from "lucide-react-native/icons/refrigerator";
 export { default as Ruler } from "lucide-react-native/icons/ruler";
 export { default as Scale } from "lucide-react-native/icons/scale";
+export { default as ScanLine } from "lucide-react-native/icons/scan-line";
 export { default as Search } from "lucide-react-native/icons/search";
 export { default as SearchX } from "lucide-react-native/icons/search-x";
 export { default as Settings } from "lucide-react-native/icons/settings";
