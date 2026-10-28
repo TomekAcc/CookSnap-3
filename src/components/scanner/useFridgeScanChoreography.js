@@ -14,7 +14,7 @@ import { showToast } from "../../utils/toast";
 const PHASE1_PROGRESS = 0.6;
 
 /** Compact header after AI detection completes. */
-const COMPACT_HEIGHT = 120;
+const COMPACT_HEIGHT = 150;
 
 /**
  * Tall scan card ≈ 55% of screen (capped at 420) so the Live Radar
