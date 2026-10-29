@@ -8,6 +8,7 @@ import { useOnboarding } from "../../context/OnboardingContext";
 import { useScan } from "../../context/ScanContext";
 import { log } from "../../utils/log";
 import { finishProgress, startScanProgress } from "../../utils/scanProgressCreep";
+import { expectedScanMs, loadScanTimings, recordScanTiming } from "../../utils/scanTiming";
 import { showToast } from "../../utils/toast";
 
 /** Compact header after AI detection completes. */
@@ -65,7 +66,7 @@ function resolveScanStage(hasScanned, isScanning) {
  * scanner cards read, and `beginInstantScan` (measure the photo, then start the scan).
  */
 export default function useFridgeScanChoreography() {
-  const { ingredients, scanIsDemo } = useInventory();
+  const { ingredients, scanIsDemo, scanIsDemoRef } = useInventory();
   const {
     isScanning,
     scanRevealActive,
@@ -187,6 +188,10 @@ export default function useFridgeScanChoreography() {
   const progressAnimRef = useRef(null);
   // Where the bar is right now (see startScanProgress); read when the real result lands.
   const progressEstimateRef = useRef(null);
+  const scanStartedAtRef = useRef(0);
+  useEffect(() => {
+    loadScanTimings();
+  }, []);
   const shrinkStartedRef = useRef(false);
 
   // Confirmed real feedback: a first-time user landing on this idle screen
@@ -257,6 +262,9 @@ export default function useFridgeScanChoreography() {
     // The creep is still ticking (scanStage reads "scanning" through the hold): stop it first, or its
     // next tick cancels the fill below.
     const from = progressEstimateRef.current?.();
+    if (!scanIsDemoRef.current && scanStartedAtRef.current) {
+      recordScanTiming("fridge", Date.now() - scanStartedAtRef.current);
+    }
     progressAnimRef.current?.stop?.();
     progressAnimRef.current = null;
     const cancelFill = finishProgress(progressBarAnim, () => {
@@ -279,7 +287,7 @@ export default function useFridgeScanChoreography() {
       cancelled = true;
       cancelFill();
     };
-  }, [rawScanStage, progressBarAnim, setScanRevealActive]);
+  }, [rawScanStage, progressBarAnim, setScanRevealActive, scanIsDemoRef]);
 
   // Linear progress 0→1 over TOTAL_SCAN_DURATION → commit + shrink at 100%.
   useEffect(() => {
@@ -318,7 +326,12 @@ export default function useFridgeScanChoreography() {
     // scan always shows for TOTAL_SCAN_DURATION; at that point endScanChoreography runs, exactly as it did when
     // this was a two-phase animation, and if the real response is already in hand the completed effect above
     // fills the bar from wherever the curve has got to.
-    const progress = startScanProgress(progressBarAnim, { useNativeDriver: true });
+    scanStartedAtRef.current = Date.now();
+    // The sample scan is scripted and quick; a real one takes what this phone's recent scans took.
+    const progress = startScanProgress(progressBarAnim, {
+      expectedMs: scanIsDemoRef.current ? 3400 : expectedScanMs("fridge"),
+      useNativeDriver: true,
+    });
     progressAnimRef.current = progress;
     progressEstimateRef.current = progress.estimate;
     const endTimer = setTimeout(() => endScanChoreography(), TOTAL_SCAN_DURATION);
@@ -339,6 +352,7 @@ export default function useFridgeScanChoreography() {
     progressBarAnim,
     photoHeightAnim,
     endScanChoreography,
+    scanIsDemoRef,
   ]);
 
   useEffect(() => {

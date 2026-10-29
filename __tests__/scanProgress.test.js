@@ -1,7 +1,7 @@
 import { Animated } from "react-native";
 import {
   finishProgress,
-  scanProgressCurve,
+  scanProgressAt,
   startAsymptoticCreep,
   startScanProgress,
 } from "../src/utils/scanProgressCreep";
@@ -52,31 +52,40 @@ describe("finishProgress", () => {
 });
 
 describe("scan progress curve", () => {
-  it("starts at 0, only rises, and is about half way when the scan's fixed 3.2s are up", () => {
-    expect(scanProgressCurve(0)).toBe(0);
-    expect(scanProgressCurve(1)).toBeCloseTo(1, 5);
+  it("starts at 0, only rises, and is at ~88% when the scan is expected to be done", () => {
+    expect(scanProgressAt(0, 6500)).toBe(0);
+    expect(scanProgressAt(6500, 6500)).toBeCloseTo(0.88, 5);
     let last = -1;
-    for (let t = 0; t <= 1.0001; t += 0.01) {
-      const v = scanProgressCurve(Math.min(1, t));
+    for (let t = 0; t <= 60000; t += 250) {
+      const v = scanProgressAt(t, 6500);
       expect(v).toBeGreaterThanOrEqual(last);
       last = v;
     }
-    expect(0.92 * scanProgressCurve(3200 / 30000)).toBeGreaterThan(0.45);
-    expect(0.92 * scanProgressCurve(3200 / 30000)).toBeLessThan(0.6);
-    expect(0.92 * scanProgressCurve(8000 / 30000)).toBeGreaterThan(0.7);
+    expect(last).toBeLessThan(0.97);
+    expect(last).toBeGreaterThan(0.95);
+  });
+
+  it("is paced to the expected time: a slower phone gets a slower bar", () => {
+    expect(scanProgressAt(3200, 12000)).toBeLessThan(scanProgressAt(3200, 6500));
+    expect(scanProgressAt(3200, 3400)).toBeGreaterThan(0.6);
+  });
+
+  it("keeps moving after the expected time instead of sitting still", () => {
+    const at = (t) => scanProgressAt(t, 6500);
+    expect(at(9000)).toBeGreaterThan(at(7000));
+    expect(at(14000)).toBeGreaterThan(at(9000));
   });
 
   it("reports where the bar is, and never claims the full bar", () => {
     jest.useFakeTimers();
     jest.setSystemTime(0);
     const anim = new Animated.Value(0);
-    const progress = startScanProgress(anim, { useNativeDriver: false });
+    const progress = startScanProgress(anim, { expectedMs: 6500, useNativeDriver: false });
     expect(progress.estimate()).toBe(0);
-    jest.setSystemTime(3200);
-    const early = progress.estimate();
-    expect(early).toBeGreaterThan(0.45);
+    jest.setSystemTime(6500);
+    expect(progress.estimate()).toBeCloseTo(0.88, 2);
     jest.setSystemTime(10 * 60 * 1000);
-    expect(progress.estimate()).toBeLessThanOrEqual(0.92);
+    expect(progress.estimate()).toBeLessThan(0.97);
     progress.stop();
   });
 

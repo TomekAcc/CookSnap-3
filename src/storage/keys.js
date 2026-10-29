@@ -9,6 +9,8 @@ export const STORAGE_KEYS = {
   ingredients: "cookai:ingredients:v1",
   fridgePhoto: "cookai:fridgePhoto:v1",
   scanHistory: "cookai:scanHistory:v1",
+  // How long this phone's last few scans took, so the progress bar can be paced to the real thing.
+  scanTimings: "cookai:scanTimings:v1",
   weeklyPlan: "cookai:weeklyPlan:v1",
   // Preferences
   servings: "cookai:servings:v1",

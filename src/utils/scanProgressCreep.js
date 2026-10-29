@@ -34,36 +34,42 @@ export function startAsymptoticCreep(
 }
 
 /**
- * The scan bar's whole journey as ONE continuous curve: it climbs at a steady, readable pace at the start
- * (a little over half way at the 3.2s the scan always takes, over 80% by 8s) and keeps easing toward 92% for as
- * long as the real result takes. It is a single Animated.timing, so on the native driver it runs on the UI
- * thread and does not stutter while the JS thread is busy preparing and uploading the photo. (It used to be a
- * linear run to 60% followed by a JS timer that moved the bar in 100ms steps, which read as a stutter.)
+ * The scan bar's whole journey as ONE continuous curve, paced to how long this scan is expected to take
+ * (`expectedMs`, learned per phone in scanTiming.js): it climbs steadily and reaches about 88% right when the
+ * scan usually finishes, then keeps creeping toward 97% for as long as the real result takes, so the bar neither
+ * runs out early and makes you wait nor claims to be done. It is a single Animated.timing, so on the native
+ * driver it runs on the UI thread and does not stutter while the JS thread is busy preparing and uploading the
+ * photo. (It used to be a linear run to 60% followed by a JS timer that moved the bar in 100ms steps.)
  *
  * `estimate()` says where the bar is now, from the clock and the same curve: a native animation does not
  * report its value back, and the final fill needs to start from where the bar actually is.
  */
-export const SCAN_PROGRESS_CEILING = 0.92;
-export const SCAN_PROGRESS_SPAN_MS = 30000;
-const CURVE_K = 9; // time constant of about 3.3s over the 30s span
+export const SCAN_PROGRESS_AT_EXPECTED = 0.88;
+export const SCAN_PROGRESS_CEILING = 0.97;
 
-export function scanProgressCurve(t) {
-  return (1 - Math.exp(-CURVE_K * t)) / (1 - Math.exp(-CURVE_K));
+/** Bar value (0..1) `t` ms into a scan that is expected to take `expectedMs`. */
+export function scanProgressAt(t, expectedMs) {
+  const x = Math.max(0, t) / expectedMs;
+  if (x <= 1) return SCAN_PROGRESS_AT_EXPECTED * (1 - Math.pow(1 - x, 1.5));
+  return (
+    SCAN_PROGRESS_AT_EXPECTED +
+    (SCAN_PROGRESS_CEILING - SCAN_PROGRESS_AT_EXPECTED) * (1 - Math.exp(-(x - 1) / 0.8))
+  );
 }
 
-export function startScanProgress(anim, { useNativeDriver = true } = {}) {
+export function startScanProgress(anim, { expectedMs = 6500, useNativeDriver = true } = {}) {
   const startedAt = Date.now();
+  const span = Math.min(60000, Math.max(20000, expectedMs * 5));
   const timing = Animated.timing(anim, {
     toValue: SCAN_PROGRESS_CEILING,
-    duration: SCAN_PROGRESS_SPAN_MS,
-    easing: scanProgressCurve,
+    duration: span,
+    easing: (u) => scanProgressAt(u * span, expectedMs) / SCAN_PROGRESS_CEILING,
     useNativeDriver,
   });
   timing.start();
   return {
     stop: () => timing.stop(),
-    estimate: () =>
-      SCAN_PROGRESS_CEILING * scanProgressCurve(Math.min(1, (Date.now() - startedAt) / SCAN_PROGRESS_SPAN_MS)),
+    estimate: () => scanProgressAt(Math.min(span, Date.now() - startedAt), expectedMs),
   };
 }
 

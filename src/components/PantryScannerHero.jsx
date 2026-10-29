@@ -16,6 +16,7 @@ import {
   PANTRY_SCAN_STEPS,
 } from "../constants/scanChoreography";
 import { finishProgress, startScanProgress } from "../utils/scanProgressCreep";
+import { expectedScanMs, loadScanTimings, recordScanTiming } from "../utils/scanTiming";
 import { translateCount } from "../i18n";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
@@ -158,6 +159,10 @@ export default function PantryScannerHero() {
   const badgeTranslate = useRef(new Animated.Value(18)).current;
   const progressAnimRef = useRef(null);
   const progressEstimateRef = useRef(null);
+  const scanStartedAtRef = useRef(0);
+  useEffect(() => {
+    loadScanTimings();
+  }, []);
   const shrinkStartedRef = useRef(false);
 
   // Drives the real fill-to-100% + a brief visible hold, keyed off the RAW
@@ -189,6 +194,7 @@ export default function PantryScannerHero() {
     let cancelled = false;
     // Stop the creep first, or its next tick cancels the fill (see finishProgress).
     const from = progressEstimateRef.current?.();
+    if (scanStartedAtRef.current) recordScanTiming("pantry", Date.now() - scanStartedAtRef.current);
     progressAnimRef.current?.stop?.();
     progressAnimRef.current = null;
     const cancelFill = finishProgress(
@@ -246,7 +252,11 @@ export default function PantryScannerHero() {
 
     // One continuous curve instead of a 3.2s linear run plus a stepped creep (see startScanProgress). The scan
     // always shows for TOTAL_SCAN_DURATION, then endPantryScanChoreography runs as before.
-    const progress = startScanProgress(progressBarAnim, { useNativeDriver: false });
+    scanStartedAtRef.current = Date.now();
+    const progress = startScanProgress(progressBarAnim, {
+      expectedMs: expectedScanMs("pantry"),
+      useNativeDriver: false,
+    });
     progressAnimRef.current = progress;
     progressEstimateRef.current = progress.estimate;
     const endTimer = setTimeout(() => {
