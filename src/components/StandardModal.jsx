@@ -210,6 +210,18 @@ export default function StandardModal({
         translateY.value = withSpring(0, { duration: 280, dampingRatio: 1 });
       }
     });
+  const closedAtRef = useRef(0);
+  const closeFromBackdrop = () => {
+    const now = Date.now();
+    if (now - closedAtRef.current < 400) return;
+    closedAtRef.current = now;
+    handleClose();
+  };
+  const backdropTap = Gesture.Tap()
+    .maxDistance(12)
+    .onEnd((_e, success) => {
+      if (success) runOnJS(closeFromBackdrop)();
+    });
   const panGesture = buildPan(1, 45);
   const panAnywhere = buildPan(8, 30);
 
@@ -315,12 +327,19 @@ export default function StandardModal({
           ]}
           pointerEvents="box-none"
         >
-          <Pressable
-            style={StyleSheet.absoluteFill}
-            onPress={handleClose}
-            accessibilityRole="button"
-            accessibilityLabel={t("a11y.dismiss")}
-          />
+          {/* Two routes to the same close: the Pressable (web, screen readers) and a gesture-handler tap,
+              which is the same machinery that already carries the drag-to-dismiss inside this native
+              Modal. closeFromBackdrop ignores the second call when both fire for one tap. */}
+          <GestureDetector gesture={backdropTap}>
+            <Animated.View style={StyleSheet.absoluteFill}>
+              <Pressable
+                style={StyleSheet.absoluteFill}
+                onPress={closeFromBackdrop}
+                accessibilityRole="button"
+                accessibilityLabel={t("a11y.dismiss")}
+              />
+            </Animated.View>
+          </GestureDetector>
         </Animated.View>
 
         {/* Always wrapped for bottom sheets and switched on/off with .enabled():
