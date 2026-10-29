@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Dimensions, Easing, Image } from "react-native";
-import { SCAN_STATUS_AT_MS, TOTAL_SCAN_DURATION } from "../../constants/scanChoreography";
+import { SCAN_DONE_HOLD_MS, SCAN_STATUS_AT_MS, TOTAL_SCAN_DURATION } from "../../constants/scanChoreography";
 import { sampleFridgeFitHeight } from "../../constants/sampleFridge";
 import { useInventory } from "../../context/InventoryContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -268,19 +268,10 @@ export default function useFridgeScanChoreography() {
     progressAnimRef.current?.stop?.();
     progressAnimRef.current = null;
     const cancelFill = finishProgress(progressBarAnim, () => {
-      // Hold the genuinely-full bar on screen for a beat before letting
-      // the shrink/reveal effect below swap the view away — long enough
-      // to actually register as "done", short enough not to feel laggy.
-      //
-      // Bumped twice now on direct feedback (380ms, then 480ms) — both
-      // still read as "instant"/"rapid" rather than smooth and intentional.
-      // 650ms is a deliberately bigger jump rather than another timid
-      // increment: a pause under ~500ms doesn't give the eye enough time to
-      // register "done" as its own distinct moment before the next motion
-      // starts, no matter how smooth that next motion is.
+      // A full bar means done: move on almost at once (see SCAN_DONE_HOLD_MS).
       setTimeout(() => {
         if (!cancelled) setScanRevealActive(false);
-      }, 650);
+      }, SCAN_DONE_HOLD_MS);
     }, { from });
 
     return () => {

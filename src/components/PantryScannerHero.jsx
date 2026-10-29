@@ -12,6 +12,7 @@ import { Camera, Image as ImageIcon, CheckCircle2 } from "../icons";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import {
+  SCAN_DONE_HOLD_MS,
   TOTAL_SCAN_DURATION,
   PANTRY_SCAN_STEPS,
 } from "../constants/scanChoreography";
@@ -202,11 +203,10 @@ export default function PantryScannerHero() {
       () => {
         setProgressPct(100);
         setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
-        // Bumped twice now — see the identical change (and its reasoning)
-        // in FridgeScannerHero's own hold timer.
+        // A full bar means done: move on almost at once (see SCAN_DONE_HOLD_MS).
         setTimeout(() => {
           if (!cancelled) setHoldingAtComplete(false);
-        }, 650);
+        }, SCAN_DONE_HOLD_MS);
       },
       { useNativeDriver: false, from }
     );

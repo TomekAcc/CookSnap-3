@@ -1,6 +1,13 @@
 /** Canonical fridge-scan choreography length (ms). */
 export const TOTAL_SCAN_DURATION = 3200;
 
+/**
+ * How long the full bar stays before the scan card turns into the result. The bar's own fill to 100% is now an
+ * eased 0.5-1.5s, so the finish is already a visible moment; a longer hold (it was 650ms) read as the app
+ * hanging on a full bar. Just enough for the eye to see "full" before the card moves on.
+ */
+export const SCAN_DONE_HOLD_MS = 120;
+
 export const SCAN_STEPS = [
   {
     id: 1,
