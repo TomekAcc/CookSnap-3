@@ -30,6 +30,7 @@ import { useNavigation } from "../context/NavigationContext";
 import { useOnboarding } from "../context/OnboardingContext";
 import { usePreferences } from "../context/PreferencesContext";
 import { EMERALD, WHITE } from "../theme/palette";
+import { SHOW_TESTING_TOOLS } from "../config/flags";
 
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
@@ -476,99 +477,101 @@ export default function SettingsScreen() {
             the free tier short of clearing app storage. Labeled plainly as
             a testing switch, not real subscription management, so it never
             reads as a "cancel subscription" control once payments exist. */}
-        <View style={{ marginBottom: 14 }}>
-          <Text
-            style={{
-              fontSize: 13,
-              fontWeight: "700",
-              color: colors.textPrimary,
-              marginBottom: 8,
-            }}
-          >
-            {t("settings.testingSectionTitle")}
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              backgroundColor: colors.card,
-              borderRadius: 18,
-              paddingVertical: 14,
-              paddingHorizontal: 16,
-              borderWidth: 1,
-              borderColor: colors.cardBorder,
-            }}
-          >
-            <View style={{ flex: 1, marginRight: 12 }}>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "700",
-                  color: colors.textPrimary,
-                }}
-              >
-                {t("settings.proTestingToggle")}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "500",
-                  color: colors.textSecondary,
-                  marginTop: 2,
-                }}
-              >
-                {t("settings.proTestingToggleDesc")}
-              </Text>
+        {SHOW_TESTING_TOOLS ? (
+          <View style={{ marginBottom: 14 }}>
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: "700",
+                color: colors.textPrimary,
+                marginBottom: 8,
+              }}
+            >
+              {t("settings.testingSectionTitle")}
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                backgroundColor: colors.card,
+                borderRadius: 18,
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+                borderWidth: 1,
+                borderColor: colors.cardBorder,
+              }}
+            >
+              <View style={{ flex: 1, marginRight: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "700",
+                    color: colors.textPrimary,
+                  }}
+                >
+                  {t("settings.proTestingToggle")}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: "500",
+                    color: colors.textSecondary,
+                    marginTop: 2,
+                  }}
+                >
+                  {t("settings.proTestingToggleDesc")}
+                </Text>
+              </View>
+              <Switch
+                value={isPro}
+                onValueChange={(next) => (next ? activatePro() : deactivatePro())}
+                trackColor={{ false: colors.cardBorder, true: EMERALD[500] }}
+                thumbColor={WHITE}
+              />
             </View>
-            <Switch
-              value={isPro}
-              onValueChange={(next) => (next ? activatePro() : deactivatePro())}
-              trackColor={{ false: colors.cardBorder, true: EMERALD[500] }}
-              thumbColor={WHITE}
-            />
-          </View>
 
-          <TouchableOpacity
-            onPress={resetOnboarding}
-            activeOpacity={0.7}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              backgroundColor: colors.card,
-              borderRadius: 18,
-              paddingVertical: 14,
-              paddingHorizontal: 16,
-              borderWidth: 1,
-              borderColor: colors.cardBorder,
-              marginTop: 10,
-            }}
-          >
-            <View style={{ flex: 1, marginRight: 12 }}>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "700",
-                  color: colors.textPrimary,
-                }}
-              >
-                {t("settings.replayOnboardingToggle")}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "500",
-                  color: colors.textSecondary,
-                  marginTop: 2,
-                }}
-              >
-                {t("settings.replayOnboardingToggleDesc")}
-              </Text>
-            </View>
-            <ChevronRight size={18} color={colors.textSecondary} />
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={resetOnboarding}
+              activeOpacity={0.7}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                backgroundColor: colors.card,
+                borderRadius: 18,
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+                borderWidth: 1,
+                borderColor: colors.cardBorder,
+                marginTop: 10,
+              }}
+            >
+              <View style={{ flex: 1, marginRight: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    fontWeight: "700",
+                    color: colors.textPrimary,
+                  }}
+                >
+                  {t("settings.replayOnboardingToggle")}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    fontWeight: "500",
+                    color: colors.textSecondary,
+                    marginTop: 2,
+                  }}
+                >
+                  {t("settings.replayOnboardingToggleDesc")}
+                </Text>
+              </View>
+              <ChevronRight size={18} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+        ) : null}
       </ScrollView>
 
       {/* Sticky "Done" CTA — confirmed real failure from live user testing:
