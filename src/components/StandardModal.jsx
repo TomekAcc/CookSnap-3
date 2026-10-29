@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Pressable,
   Text,
+  Animated as RNAnimated,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -23,9 +24,9 @@ import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "../context/LanguageContext";
 import {
   BACKDROP_COLOR,
-  BACKDROP_FADE_MS,
   BACKDROP_SHADOW_KILL,
   EXIT_ANIM_MS,
+  useBackdropFade,
   useModalPresence,
 } from "../utils/bottomSheet";
 import { SLATE, WHITE } from "../theme/palette";
@@ -134,7 +135,10 @@ export default function StandardModal({
   const { present, animate } = useModalPresence(!!visible);
 
   const translateY = useSharedValue(isBottom ? SCREEN_HEIGHT : 0);
-  const backdropOpacity = useSharedValue(0);
+  // The dim behind the sheet is driven by RN's own Animated (JS driver), not by a Reanimated shared value:
+  // on the phone the Reanimated opacity stayed at 0, which left no dim AND no tap target (iOS gives no
+  // touches to a view that is fully transparent).
+  const dimOpacity = useBackdropFade(animate);
   // Measured sheet height (for the proportional dismiss distance).
   const sheetHeight = useSharedValue(0);
 
@@ -154,7 +158,6 @@ export default function StandardModal({
           easing: Easing.out(Easing.cubic),
         });
       }
-      backdropOpacity.value = withTiming(1, { duration: BACKDROP_FADE_MS });
     } else {
       if (gestureDismissingRef.current) return;
       if (isBottom) {
@@ -163,7 +166,6 @@ export default function StandardModal({
           easing: Easing.in(Easing.cubic),
         });
       }
-      backdropOpacity.value = withTiming(0, { duration: EXIT_ANIM_MS });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animate]);
@@ -206,7 +208,6 @@ export default function StandardModal({
           duration: EXIT_ANIM_MS,
           easing: Easing.in(Easing.cubic),
         });
-        backdropOpacity.value = withTiming(0, { duration: EXIT_ANIM_MS });
         runOnJS(handleClose)();
       } else {
         translateY.value = withSpring(0, { duration: 280, dampingRatio: 1 });
@@ -269,9 +270,6 @@ export default function StandardModal({
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: isBottom ? [{ translateY: translateY.value }] : [],
-  }));
-  const backdropAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: backdropOpacity.value,
   }));
 
   const sheetNode = (
@@ -337,29 +335,31 @@ export default function StandardModal({
             <Text style={{ color: WHITE, fontSize: 12, fontWeight: "700" }}>{`touch ${dbg.t}  press ${dbg.p}  gesture ${dbg.g}`}</Text>
           </View>
         ) : null}
-        <Animated.View
-          style={[
-            styles.backdrop,
-            BACKDROP_SHADOW_KILL,
-            { backgroundColor: colors.backdrop || BACKDROP_COLOR },
-            backdropAnimatedStyle,
-          ]}
-          pointerEvents="box-none"
-        >
+        {/* Touch catcher: a plain view that is never transparent to the system, so it always gets the tap. */}
+        <View style={styles.backdrop}>
           {/* Two routes to the same close: the Pressable (web, screen readers) and a gesture-handler tap,
               which is the same machinery that already carries the drag-to-dismiss inside this native
               Modal. closeFromBackdrop ignores the second call when both fire for one tap. */}
           <GestureDetector gesture={backdropTap}>
-            <Animated.View style={StyleSheet.absoluteFill}>
+            <View style={StyleSheet.absoluteFill}>
               <Pressable
                 style={StyleSheet.absoluteFill}
                 onPress={() => closeFromBackdrop("p")}
                 accessibilityRole="button"
                 accessibilityLabel={t("a11y.dismiss")}
               />
-            </Animated.View>
+            </View>
           </GestureDetector>
-        </Animated.View>
+        </View>
+        {/* The dim itself: its own layer above the catcher, letting every touch through. */}
+        <RNAnimated.View
+          pointerEvents="none"
+          style={[
+            styles.backdrop,
+            BACKDROP_SHADOW_KILL,
+            { backgroundColor: colors.backdrop || BACKDROP_COLOR, opacity: dimOpacity, pointerEvents: "none" },
+          ]}
+        />
 
         {/* Always wrapped for bottom sheets and switched on/off with .enabled():
             toggling the wrapper itself would remount the sheet's children
