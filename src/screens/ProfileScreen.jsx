@@ -429,20 +429,27 @@ export default function ProfileScreen() {
                 <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
                   {stat.value}
                 </Text>
-                <Text
+                <View
                   style={{
-                    color: colors.textSecondary,
-                    fontWeight: "700",
-                    fontSize: 11,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
                     marginTop: 4,
-                    textAlign: "center",
                     paddingHorizontal: 6,
                   }}
                 >
-                  {t(stat.labelKey)}
-                </Text>
-                <View style={{ position: "absolute", top: 10, right: 8 }}>
-                  <ChevronRight size={14} color={colors.textTertiary || colors.textSecondary} />
+                  <Text
+                    style={{
+                      flexShrink: 1,
+                      color: colors.textSecondary,
+                      fontWeight: "700",
+                      fontSize: 11,
+                      textAlign: "center",
+                    }}
+                  >
+                    {t(stat.labelKey)}
+                  </Text>
+                  <ChevronRight size={12} color={colors.textSecondary} style={{ marginLeft: 1 }} />
                 </View>
               </TouchableOpacity>
             </React.Fragment>
@@ -463,40 +470,7 @@ export default function ProfileScreen() {
         >
           {t("profile.quickActions")}
         </Text>
-        {/* Meal Planner is the one real feature here, so it gets its own, larger card; scan history and
-            help are the occasional ones and share a quieter card with indented dividers. */}
-        {QUICK_ACTIONS.slice(0, 1).map((action) => (
-          <TouchableOpacity
-            key={action.id}
-            onPress={action.onPress}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              padding: 16,
-              marginBottom: 12,
-              backgroundColor: colors.card,
-              borderRadius: 24,
-              borderWidth: 1,
-              borderColor: colors.cardBorder,
-            }}
-          >
-            <ActionIcon Icon={action.Icon} size={44} colors={colors} />
-            <Text
-              style={{
-                flex: 1,
-                color: colors.textPrimary,
-                fontWeight: "700",
-                fontSize: 16,
-                marginLeft: 14,
-              }}
-            >
-              {t(action.labelKey)}
-            </Text>
-            <ChevronRight size={18} color={colors.textSecondary} />
-          </TouchableOpacity>
-        ))}
+        {/* One grouped list: three identical rows, dividers inset from both sides. */}
         <View
           style={{
             backgroundColor: colors.card,
@@ -506,37 +480,26 @@ export default function ProfileScreen() {
             overflow: "hidden",
           }}
         >
-          {QUICK_ACTIONS.slice(1).map((action, idx, rest) => (
+          {QUICK_ACTIONS.map((action, idx) => (
             <TouchableOpacity
               key={action.id}
               onPress={action.onPress}
               activeOpacity={0.7}
               accessibilityRole="button"
-              style={{ flexDirection: "row", alignItems: "center", paddingVertical: 12, paddingHorizontal: 16 }}
+              style={{ flexDirection: "row", alignItems: "center", paddingVertical: 14, paddingHorizontal: 16 }}
             >
               <ActionIcon Icon={action.Icon} size={36} colors={colors} />
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginLeft: 12,
-                  // indented divider: starts under the text, not under the icon
-                  paddingVertical: 8,
-                }}
-              >
-                <Text style={{ flex: 1, color: colors.textPrimary, fontWeight: "600", fontSize: 15 }}>
-                  {t(action.labelKey)}
-                </Text>
-                <ChevronRight size={18} color={colors.textSecondary} />
-              </View>
-              {idx < rest.length - 1 ? (
+              <Text style={{ flex: 1, color: colors.textPrimary, fontWeight: "600", fontSize: 15, marginLeft: 12 }}>
+                {t(action.labelKey)}
+              </Text>
+              <ChevronRight size={18} color={colors.textTertiary || colors.textSecondary} />
+              {idx < QUICK_ACTIONS.length - 1 ? (
                 <View
                   pointerEvents="none"
                   style={{
                     position: "absolute",
                     left: 64,
-                    right: 0,
+                    right: 16,
                     bottom: 0,
                     height: 1,
                     backgroundColor: colors.cardBorder,

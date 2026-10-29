@@ -78,7 +78,8 @@ export default function BottomNav() {
   // away) a few hundred ms before the scan card actually finishes revealing.
   if (isScanning || scanRevealActive) return null;
 
-  const activeColor = colors.greenBright;
+  // greenStrong, not greenBright: the bright green on its own pale pill was about 2:1.
+  const activeColor = colors.greenStrong;
   // Inactive tabs were #8E8E93 (about 3:1 on white); the secondary text colour reads clearly in both themes.
   const INACTIVE = colors.textSecondary;
   const bottomPad = Math.max(insets.bottom, 8);
