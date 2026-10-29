@@ -216,7 +216,12 @@ export default function StandardModal({
   // TEMPORARY diagnostics (preview only): T = touches reaching the sheet container, P = Pressable taps on
   // the backdrop, G = gesture-handler taps on the backdrop. Remove once the "tap above the sheet does
   // not close it" report is understood.
-  const [dbg, setDbg] = useState({ t: 0, p: 0, g: 0 });
+  const [dbg, setDbg] = useState({ t: 0, p: 0, g: 0, y: 0, h: 0, dim: -1 });
+  useEffect(() => {
+    if (!SHOW_TESTING_TOOLS) return undefined;
+    const id = dimOpacity.addListener(({ value }) => setDbg((d) => (Math.abs(d.dim - value) > 0.05 ? { ...d, dim: Math.round(value * 100) / 100 } : d)));
+    return () => dimOpacity.removeListener(id);
+  }, [dimOpacity]);
   const bump = (key) => {
     if (SHOW_TESTING_TOOLS) setDbg((d) => ({ ...d, [key]: d[key] + 1 }));
   };
@@ -325,14 +330,15 @@ export default function StandardModal({
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={[styles.container, !isBottom && styles.centerContainer]}
-        onTouchStart={SHOW_TESTING_TOOLS ? () => bump("t") : undefined}
+        onLayout={SHOW_TESTING_TOOLS ? (e) => setDbg((d) => ({ ...d, h: Math.round(e.nativeEvent.layout.height) })) : undefined}
+        onTouchStart={SHOW_TESTING_TOOLS ? (e) => setDbg((d) => ({ ...d, t: d.t + 1, y: Math.round(e.nativeEvent.pageY) })) : undefined}
       >
         {SHOW_TESTING_TOOLS ? (
           <View
             pointerEvents="none"
             style={{ position: "absolute", top: 54, left: 12, zIndex: 99, backgroundColor: "rgba(0,0,0,0.75)", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
           >
-            <Text style={{ color: WHITE, fontSize: 12, fontWeight: "700" }}>{`touch ${dbg.t}  press ${dbg.p}  gesture ${dbg.g}`}</Text>
+            <Text style={{ color: WHITE, fontSize: 12, fontWeight: "700" }}>{`d2  touch ${dbg.t}  press ${dbg.p}  gesture ${dbg.g}  y ${dbg.y}  box ${dbg.h}  dim ${dbg.dim}`}</Text>
           </View>
         ) : null}
         {/* Touch catcher: a plain view that is never transparent to the system, so it always gets the tap. */}
