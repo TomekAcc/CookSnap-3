@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Modal,
   View,
@@ -7,7 +7,6 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Pressable,
-  Text,
   Animated as RNAnimated,
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -30,7 +29,6 @@ import {
   useModalPresence,
 } from "../utils/bottomSheet";
 import { SLATE, WHITE } from "../theme/palette";
-import { SHOW_TESTING_TOOLS } from "../config/flags";
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const ENTER_DURATION_MS = 300;
@@ -213,21 +211,8 @@ export default function StandardModal({
         translateY.value = withSpring(0, { duration: 280, dampingRatio: 1 });
       }
     });
-  // TEMPORARY diagnostics (preview only): T = touches reaching the sheet container, P = Pressable taps on
-  // the backdrop, G = gesture-handler taps on the backdrop. Remove once the "tap above the sheet does
-  // not close it" report is understood.
-  const [dbg, setDbg] = useState({ t: 0, p: 0, g: 0, y: 0, h: 0, dim: -1 });
-  useEffect(() => {
-    if (!SHOW_TESTING_TOOLS) return undefined;
-    const id = dimOpacity.addListener(({ value }) => setDbg((d) => (Math.abs(d.dim - value) > 0.05 ? { ...d, dim: Math.round(value * 100) / 100 } : d)));
-    return () => dimOpacity.removeListener(id);
-  }, [dimOpacity]);
-  const bump = (key) => {
-    if (SHOW_TESTING_TOOLS) setDbg((d) => ({ ...d, [key]: d[key] + 1 }));
-  };
   const closedAtRef = useRef(0);
-  const closeFromBackdrop = (via) => {
-    bump(via === "g" ? "g" : "p");
+  const closeFromBackdrop = () => {
     const now = Date.now();
     if (now - closedAtRef.current < 400) return;
     closedAtRef.current = now;
@@ -236,7 +221,7 @@ export default function StandardModal({
   const backdropTap = Gesture.Tap()
     .maxDistance(12)
     .onEnd((_e, success) => {
-      if (success) runOnJS(closeFromBackdrop)("g");
+      if (success) runOnJS(closeFromBackdrop)();
     });
   const panGesture = buildPan(1, 45);
   const panAnywhere = buildPan(8, 30);
@@ -330,17 +315,7 @@ export default function StandardModal({
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={[styles.container, !isBottom && styles.centerContainer]}
-        onLayout={SHOW_TESTING_TOOLS ? (e) => setDbg((d) => ({ ...d, h: Math.round(e.nativeEvent.layout.height) })) : undefined}
-        onTouchStart={SHOW_TESTING_TOOLS ? (e) => setDbg((d) => ({ ...d, t: d.t + 1, y: Math.round(e.nativeEvent.pageY) })) : undefined}
       >
-        {SHOW_TESTING_TOOLS ? (
-          <View
-            pointerEvents="none"
-            style={{ position: "absolute", top: 54, left: 12, zIndex: 99, backgroundColor: "rgba(0,0,0,0.75)", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 }}
-          >
-            <Text style={{ color: WHITE, fontSize: 12, fontWeight: "700" }}>{`d2  touch ${dbg.t}  press ${dbg.p}  gesture ${dbg.g}  y ${dbg.y}  box ${dbg.h}  dim ${dbg.dim}`}</Text>
-          </View>
-        ) : null}
         {/* Touch catcher: a plain view that is never transparent to the system, so it always gets the tap. */}
         <View style={styles.backdrop}>
           {/* Two routes to the same close: the Pressable (web, screen readers) and a gesture-handler tap,
@@ -350,7 +325,7 @@ export default function StandardModal({
             <View style={StyleSheet.absoluteFill}>
               <Pressable
                 style={StyleSheet.absoluteFill}
-                onPress={() => closeFromBackdrop("p")}
+                onPress={closeFromBackdrop}
                 accessibilityRole="button"
                 accessibilityLabel={t("a11y.dismiss")}
               />
