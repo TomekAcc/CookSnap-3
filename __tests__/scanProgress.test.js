@@ -12,15 +12,26 @@ afterEach(() => {
 });
 
 describe("finishProgress", () => {
-  it("takes longer from further back, and always ends at the full bar", () => {
+  it("has a fixed fallback pace when the bar's speed is unknown, and always ends at the full bar", () => {
     const spy = jest.spyOn(Animated, "timing");
-    for (const [from, expected] of [[0.6, 900], [0.95, 550], [1, 500]]) {
+    for (const [from, expected] of [[0.6, 700], [0.95, 700], [1, 700]]) {
       const anim = new Animated.Value(from);
       finishProgress(anim, () => {});
       const config = spy.mock.calls[spy.mock.calls.length - 1][1];
       expect(config.toValue).toBe(1);
       expect(config.duration).toBe(expected);
     }
+  });
+
+  it("fills at most twice as fast as the bar was moving, within 0.45s to 1.1s", () => {
+    const spy = jest.spyOn(Animated, "timing");
+    const run = (from, speed) => {
+      finishProgress(new Animated.Value(from), () => {}, { from, speed });
+      return spy.mock.calls[spy.mock.calls.length - 1][1].duration;
+    };
+    expect(run(0.5, 0.25)).toBe(1000); // 0.5 left at twice 0.25/s
+    expect(run(0.93, 0.03)).toBe(1100); // a creeping bar: capped, not dragged to full in a rush
+    expect(run(0.9, 1)).toBe(450); // already fast: not slower than 0.45s
   });
 
   it("does not call back after it is cancelled", () => {
@@ -82,6 +93,7 @@ describe("scan progress curve", () => {
     const anim = new Animated.Value(0);
     const progress = startScanProgress(anim, { expectedMs: 6500, useNativeDriver: false });
     expect(progress.estimate()).toBe(0);
+    expect(progress.speed()).toBeGreaterThan(0);
     jest.setSystemTime(6500);
     expect(progress.estimate()).toBeCloseTo(0.88, 2);
     jest.setSystemTime(10 * 60 * 1000);

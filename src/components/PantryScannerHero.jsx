@@ -160,6 +160,7 @@ export default function PantryScannerHero() {
   const badgeTranslate = useRef(new Animated.Value(18)).current;
   const progressAnimRef = useRef(null);
   const progressEstimateRef = useRef(null);
+  const progressSpeedRef = useRef(null);
   const scanStartedAtRef = useRef(0);
   useEffect(() => {
     loadScanTimings();
@@ -195,6 +196,7 @@ export default function PantryScannerHero() {
     let cancelled = false;
     // Stop the creep first, or its next tick cancels the fill (see finishProgress).
     const from = progressEstimateRef.current?.();
+    const speed = progressSpeedRef.current?.();
     if (scanStartedAtRef.current) recordScanTiming("pantry", Date.now() - scanStartedAtRef.current);
     progressAnimRef.current?.stop?.();
     progressAnimRef.current = null;
@@ -208,7 +210,7 @@ export default function PantryScannerHero() {
           if (!cancelled) setHoldingAtComplete(false);
         }, SCAN_DONE_HOLD_MS);
       },
-      { useNativeDriver: false, from }
+      { useNativeDriver: false, from, speed }
     );
 
     return () => {
@@ -259,6 +261,7 @@ export default function PantryScannerHero() {
     });
     progressAnimRef.current = progress;
     progressEstimateRef.current = progress.estimate;
+    progressSpeedRef.current = progress.speed;
     const endTimer = setTimeout(() => {
       setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
       endPantryScanChoreography();

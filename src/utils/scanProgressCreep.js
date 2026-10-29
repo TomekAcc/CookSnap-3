@@ -70,19 +70,27 @@ export function startScanProgress(anim, { expectedMs = 6500, useNativeDriver = t
   return {
     stop: () => timing.stop(),
     estimate: () => scanProgressAt(Math.min(span, Date.now() - startedAt), expectedMs),
+    // How fast the bar is moving right now, in bar-lengths per second.
+    speed: () => {
+      const t = Math.min(span, Date.now() - startedAt);
+      return (scanProgressAt(t + 100, expectedMs) - scanProgressAt(t, expectedMs)) / 0.1;
+    },
   };
 }
 
 /**
- * Fills a progress bar the rest of the way to 100% once the real result has landed, from wherever
- * the bar currently is (`from`, e.g. startScanProgress's estimate; otherwise the JS-side value). The caller must
- * stop its own driver first: anything that keeps calling setValue on the same Animated.Value cancels the fill,
- * which is how the bar used to flash forward and fall back to ~60% right before it disappeared.
+ * Fills a progress bar the rest of the way to 100% once the real result has landed, from wherever the bar
+ * currently is (`from`, e.g. startScanProgress's estimate; otherwise the JS-side value). The caller must stop its
+ * own driver first: anything that keeps calling setValue on the same Animated.Value cancels the fill, which is how
+ * the bar used to flash forward and fall back to ~60% right before it disappeared.
  *
- * The time scales with the distance left (about 0.9s from 60%, 0.6s from 90%) and it eases in but not out, so the
- * end reads as a deliberate finish instead of a sudden dash, without a lull on a full bar. Returns a cancel function; `onDone` is not called after it.
+ * The fill continues at the bar's own pace instead of dashing: it is at most twice as fast as the bar was moving a
+ * moment ago (`speed`, bar-lengths per second; a bar that was creeping at 0.03/s used to be dragged to full at
+ * 5-10 times that, which read as a violent rush), within 0.45s to 1.1s. The curve starts at the old pace (a third
+ * of the way in a half-speed start) and arrives still moving, so the card can move on straight away. Returns a
+ * cancel function; `onDone` is not called after it.
  */
-export function finishProgress(anim, onDone, { useNativeDriver = true, from } = {}) {
+export function finishProgress(anim, onDone, { useNativeDriver = true, from, speed } = {}) {
   let cancelled = false;
   anim.stopAnimation();
   if (typeof from === "number") anim.setValue(from);
@@ -96,12 +104,11 @@ export function finishProgress(anim, onDone, { useNativeDriver = true, from } = 
         ? Number(anim.__getValue()) || 0
         : 0;
   const remaining = Math.min(1, Math.max(0, 1 - current));
+  const paced = speed > 0 ? remaining / (2 * speed) * 1000 : 700;
   Animated.timing(anim, {
     toValue: 1,
-    duration: Math.round(500 + remaining * 1000),
-    // Starts gently (the bar was creeping) and arrives at 100% still moving at its average speed, so the card can
-    // move on straight away: an ease-out here made the bar linger on "almost full" before the hand-off.
-    easing: Easing.bezier(0.4, 0, 0.8, 0.8),
+    duration: Math.round(Math.min(1100, Math.max(450, paced))),
+    easing: Easing.bezier(0.2, 0.1, 0.8, 0.8),
     useNativeDriver,
   }).start(() => {
     if (!cancelled) onDone();

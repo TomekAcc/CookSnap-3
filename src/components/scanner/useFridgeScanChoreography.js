@@ -188,6 +188,7 @@ export default function useFridgeScanChoreography() {
   const progressAnimRef = useRef(null);
   // Where the bar is right now (see startScanProgress); read when the real result lands.
   const progressEstimateRef = useRef(null);
+  const progressSpeedRef = useRef(null);
   const scanStartedAtRef = useRef(0);
   useEffect(() => {
     loadScanTimings();
@@ -262,6 +263,7 @@ export default function useFridgeScanChoreography() {
     // The creep is still ticking (scanStage reads "scanning" through the hold): stop it first, or its
     // next tick cancels the fill below.
     const from = progressEstimateRef.current?.();
+    const speed = progressSpeedRef.current?.();
     if (!scanIsDemoRef.current && scanStartedAtRef.current) {
       recordScanTiming("fridge", Date.now() - scanStartedAtRef.current);
     }
@@ -272,7 +274,7 @@ export default function useFridgeScanChoreography() {
       setTimeout(() => {
         if (!cancelled) setScanRevealActive(false);
       }, SCAN_DONE_HOLD_MS);
-    }, { from });
+    }, { from, speed });
 
     return () => {
       cancelled = true;
@@ -325,6 +327,7 @@ export default function useFridgeScanChoreography() {
     });
     progressAnimRef.current = progress;
     progressEstimateRef.current = progress.estimate;
+    progressSpeedRef.current = progress.speed;
     const endTimer = setTimeout(() => endScanChoreography(), TOTAL_SCAN_DURATION);
 
     const stepTimers = SCAN_STATUS_AT_MS.map((ms, idx) =>
