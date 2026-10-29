@@ -417,7 +417,10 @@ Don't claim a change is "tested" unless one of these actually ran.
   `npx expo export --platform ios --platform android` bundles (the jest icon
   stub hides broken icon imports), and only then publish.
 - Publish to the `preview` branch (`eas update --branch preview`) for all
-  testing. Don't create new branches ad hoc without a reason — it
+  testing, with `EXPO_PUBLIC_SHOW_TESTING=1` set in the shell of that command
+  (or in the EAS preview environment): it is what shows the PRO switch and
+  "Replay onboarding" in Settings (src/config/flags.js). A production publish
+  must not have it. Don't create new branches ad hoc without a reason — it
   fragments where "the latest version" actually is.
 - Write a real, specific `--message` on every publish — it's the only
   record of what changed in that update once several publishes have
