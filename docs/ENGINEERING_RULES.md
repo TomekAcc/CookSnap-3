@@ -477,6 +477,13 @@ been iOS/Expo Go on iPhone. Do not assume a fix confirmed on iOS behaves
 identically on Android — several of the exact subsystems most recently
 touched (gesture handling, `BlurView`) are the ones most likely to diverge.
 
+### The browser build can hide breakage that the phone shows
+Our browser checks run on react-native-web, which keeps some APIs React Native has removed. After the SDK 58 /
+React Native 0.88 upgrade, `...StyleSheet.absoluteFillObject` (removed in RN 0.88, still in react-native-web)
+silently became `{}` on the phone: every sheet's backdrop collapsed to zero size, so there was no dim and a tap above
+a sheet did nothing, while web and jest looked fine. ESLint now bans it (use `StyleSheet.absoluteFill`). After any
+React Native upgrade, check on a phone, and diff the names the app imports from `react-native` against its exports.
+
 ### Specific platform-divergent areas in this codebase
 - **`expo-blur` `BlurView`** — rendering cost and visual intensity differ
   by platform. `Header.jsx` and `BottomNav.jsx` both gate their blur off

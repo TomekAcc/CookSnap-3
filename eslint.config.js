@@ -17,6 +17,18 @@ module.exports = [
   },
   { ignores: ["dist/**", ".expo/**", "node_modules/**", "proxy/node_modules/**", "proxy/.wrangler/**", "scripts/smoke-test-screenshots/**"] },
   {
+    // React Native 0.88 removed StyleSheet.absoluteFillObject (react-native-web still has it, so the web build and
+    // jest cannot tell). Spreading it gives `undefined`: the view loses `position: absolute` and collapses to zero
+    // size, which is how every sheet lost its dim and its tap-outside target on the phone.
+    files: ["src/**/*.{js,jsx}", "App.jsx"],
+    rules: {
+      "no-restricted-properties": [
+        "error",
+        { object: "StyleSheet", property: "absoluteFillObject", message: "Removed in React Native 0.88. Use StyleSheet.absoluteFill." },
+      ],
+    },
+  },
+  {
     // Use src/utils/log.js (log.debug / log.warn / log.error) instead.
     files: ["src/**/*.{js,jsx}", "App.jsx", "index.js"],
     rules: { "no-console": "error" },

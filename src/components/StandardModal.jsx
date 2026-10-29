@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   sheet: {
     zIndex: 20,

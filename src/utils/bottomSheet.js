@@ -241,7 +241,7 @@ export function BottomSheetFrame({
 const styles = StyleSheet.create({
   modalRoot: { flex: 1, justifyContent: "flex-end" },
   staticBackdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   sheetCard: {
     backgroundColor: WHITE,
