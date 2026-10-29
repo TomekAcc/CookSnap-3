@@ -15,8 +15,11 @@ import { EMERALD } from "../theme/palette";
 
 const LASER_TOP = 14;
 const TRAIL_HEIGHT = 120;
-const SWEEP_MS = 2000;
-const HOLD_MS = 400;
+// A scanner moves at one steady speed. The sweep used to ease in and out (cubic), which measured 426, 592, 807, 608
+// and then 122 px/s over the five fifths of the pass: it nearly stopped at the bottom. Linear, and a shorter pause
+// before the next pass.
+const SWEEP_MS = 1800;
+const HOLD_MS = 250;
 const BRACKET_SIZE = 26;
 const BRACKET_INSET = 16;
 
@@ -48,7 +51,7 @@ export default function ScanLaserOverlay({
     progress.value = 0;
     progress.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: SWEEP_MS, easing: Easing.inOut(Easing.cubic) }),
+        withTiming(1, { duration: SWEEP_MS, easing: Easing.linear }),
         withTiming(1, { duration: HOLD_MS }),
         withTiming(0, { duration: 0 })
       ),

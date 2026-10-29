@@ -79,8 +79,8 @@ export function startScanProgress(anim, { expectedMs = 6500, useNativeDriver = t
  * stop its own driver first: anything that keeps calling setValue on the same Animated.Value cancels the fill,
  * which is how the bar used to flash forward and fall back to ~60% right before it disappeared.
  *
- * The time scales with the distance left (about 0.9s from 60%, 0.6s from 90%) and eases in and out, so the end
- * reads as a deliberate finish instead of a sudden dash. Returns a cancel function; `onDone` is not called after it.
+ * The time scales with the distance left (about 0.9s from 60%, 0.6s from 90%) and it eases in but not out, so the
+ * end reads as a deliberate finish instead of a sudden dash, without a lull on a full bar. Returns a cancel function; `onDone` is not called after it.
  */
 export function finishProgress(anim, onDone, { useNativeDriver = true, from } = {}) {
   let cancelled = false;
@@ -99,7 +99,9 @@ export function finishProgress(anim, onDone, { useNativeDriver = true, from } = 
   Animated.timing(anim, {
     toValue: 1,
     duration: Math.round(500 + remaining * 1000),
-    easing: Easing.inOut(Easing.quad),
+    // Starts gently (the bar was creeping) and arrives at 100% still moving at its average speed, so the card can
+    // move on straight away: an ease-out here made the bar linger on "almost full" before the hand-off.
+    easing: Easing.bezier(0.4, 0, 0.8, 0.8),
     useNativeDriver,
   }).start(() => {
     if (!cancelled) onDone();
