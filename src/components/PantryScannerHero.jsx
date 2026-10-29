@@ -15,7 +15,7 @@ import {
   TOTAL_SCAN_DURATION,
   PANTRY_SCAN_STEPS,
 } from "../constants/scanChoreography";
-import { finishProgress, startAsymptoticCreep } from "../utils/scanProgressCreep";
+import { finishProgress, startScanProgress } from "../utils/scanProgressCreep";
 import { translateCount } from "../i18n";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
@@ -157,6 +157,7 @@ export default function PantryScannerHero() {
   const badgeOpacity = useRef(new Animated.Value(0)).current;
   const badgeTranslate = useRef(new Animated.Value(18)).current;
   const progressAnimRef = useRef(null);
+  const progressEstimateRef = useRef(null);
   const shrinkStartedRef = useRef(false);
 
   // Drives the real fill-to-100% + a brief visible hold, keyed off the RAW
@@ -187,6 +188,7 @@ export default function PantryScannerHero() {
     // actual fill animation + hold timer + eventual release.
     let cancelled = false;
     // Stop the creep first, or its next tick cancels the fill (see finishProgress).
+    const from = progressEstimateRef.current?.();
     progressAnimRef.current?.stop?.();
     progressAnimRef.current = null;
     const cancelFill = finishProgress(
@@ -200,7 +202,7 @@ export default function PantryScannerHero() {
           if (!cancelled) setHoldingAtComplete(false);
         }, 650);
       },
-      { useNativeDriver: false }
+      { useNativeDriver: false, from }
     );
 
     return () => {
@@ -242,28 +244,15 @@ export default function PantryScannerHero() {
       setProgressPct(Math.min(100, Math.round(value * 100)));
     });
 
-    // Two-phase, never-lies-about-100% approach — same reasoning as
-    // FridgeScannerHero's identical fix (see its own comment for the full
-    // history). Phase 1 keeps the original TOTAL_SCAN_DURATION pacing,
-    // capped at 92% instead of running all the way to a literal 100% that
-    // may not be true yet. Phase 2 (startAsymptoticCreep) keeps the bar
-    // creeping slowly toward 99% for as long as it actually takes —
-    // continuously moving, never frozen — until the real response lands.
-    const phase1Anim = Animated.timing(progressBarAnim, {
-      toValue: 0.92,
-      duration: TOTAL_SCAN_DURATION,
-      easing: Easing.linear,
-      useNativeDriver: false,
-    });
-    progressAnimRef.current = phase1Anim;
-
-    phase1Anim.start(({ finished }) => {
-      if (!finished) return;
+    // One continuous curve instead of a 3.2s linear run plus a stepped creep (see startScanProgress). The scan
+    // always shows for TOTAL_SCAN_DURATION, then endPantryScanChoreography runs as before.
+    const progress = startScanProgress(progressBarAnim, { useNativeDriver: false });
+    progressAnimRef.current = progress;
+    progressEstimateRef.current = progress.estimate;
+    const endTimer = setTimeout(() => {
       setCurrentStepIdx(PANTRY_SCAN_STEPS.length - 1);
       endPantryScanChoreography();
-      const stopCreep = startAsymptoticCreep(progressBarAnim, { from: 0.92 });
-      progressAnimRef.current = { stop: stopCreep };
-    });
+    }, TOTAL_SCAN_DURATION);
 
     const stepDuration = TOTAL_SCAN_DURATION / PANTRY_SCAN_STEPS.length;
     const stepInterval = setInterval(() => {
@@ -273,6 +262,7 @@ export default function PantryScannerHero() {
     }, stepDuration);
 
     return () => {
+      clearTimeout(endTimer);
       clearInterval(stepInterval);
       progressBarAnim.removeListener(listenerId);
       progressAnimRef.current?.stop?.();

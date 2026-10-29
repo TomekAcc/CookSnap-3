@@ -34,27 +34,66 @@ export function startAsymptoticCreep(
 }
 
 /**
- * Fills a progress bar the rest of the way to 100% once the real result has landed, from wherever
- * the bar currently is. The caller must stop its creep first: the creep keeps calling setValue on
- * the same Animated.Value, and every setValue cancels a running animation, which is how the bar
- * used to flash forward and fall back to ~60% right before it disappeared.
+ * The scan bar's whole journey as ONE continuous curve: it climbs at a steady, readable pace at the start
+ * (a little over half way at the 3.2s the scan always takes, over 80% by 8s) and keeps easing toward 92% for as
+ * long as the real result takes. It is a single Animated.timing, so on the native driver it runs on the UI
+ * thread and does not stutter while the JS thread is busy preparing and uploading the photo. (It used to be a
+ * linear run to 60% followed by a JS timer that moved the bar in 100ms steps, which read as a stutter.)
  *
- * The time scales with the distance left (about 0.7s from 60%, 0.25s from 95%), so a bar that is
- * nearly there does not crawl and one that is far behind does not teleport. Returns a cancel
- * function; `onDone` is not called after it.
+ * `estimate()` says where the bar is now, from the clock and the same curve: a native animation does not
+ * report its value back, and the final fill needs to start from where the bar actually is.
  */
-export function finishProgress(anim, onDone, { useNativeDriver = true } = {}) {
+export const SCAN_PROGRESS_CEILING = 0.92;
+export const SCAN_PROGRESS_SPAN_MS = 30000;
+const CURVE_K = 9; // time constant of about 3.3s over the 30s span
+
+export function scanProgressCurve(t) {
+  return (1 - Math.exp(-CURVE_K * t)) / (1 - Math.exp(-CURVE_K));
+}
+
+export function startScanProgress(anim, { useNativeDriver = true } = {}) {
+  const startedAt = Date.now();
+  const timing = Animated.timing(anim, {
+    toValue: SCAN_PROGRESS_CEILING,
+    duration: SCAN_PROGRESS_SPAN_MS,
+    easing: scanProgressCurve,
+    useNativeDriver,
+  });
+  timing.start();
+  return {
+    stop: () => timing.stop(),
+    estimate: () =>
+      SCAN_PROGRESS_CEILING * scanProgressCurve(Math.min(1, (Date.now() - startedAt) / SCAN_PROGRESS_SPAN_MS)),
+  };
+}
+
+/**
+ * Fills a progress bar the rest of the way to 100% once the real result has landed, from wherever
+ * the bar currently is (`from`, e.g. startScanProgress's estimate; otherwise the JS-side value). The caller must
+ * stop its own driver first: anything that keeps calling setValue on the same Animated.Value cancels the fill,
+ * which is how the bar used to flash forward and fall back to ~60% right before it disappeared.
+ *
+ * The time scales with the distance left (about 0.9s from 60%, 0.6s from 90%) and eases in and out, so the end
+ * reads as a deliberate finish instead of a sudden dash. Returns a cancel function; `onDone` is not called after it.
+ */
+export function finishProgress(anim, onDone, { useNativeDriver = true, from } = {}) {
   let cancelled = false;
   anim.stopAnimation();
-  // The JS-side value is current here: the creep writes it every tick, and a finished native
-  // animation reports its end value. (stopAnimation's callback would ask the native module, which
-  // is asynchronous and never answers in tests.)
-  const current = typeof anim.__getValue === "function" ? Number(anim.__getValue()) || 0 : 0;
+  if (typeof from === "number") anim.setValue(from);
+  // The JS-side value is current when `from` is not given: the creep writes it every tick and a finished native
+  // animation reports its end value. (stopAnimation's callback would ask the native module, which is
+  // asynchronous and never answers in tests.)
+  const current =
+    typeof from === "number"
+      ? from
+      : typeof anim.__getValue === "function"
+        ? Number(anim.__getValue()) || 0
+        : 0;
   const remaining = Math.min(1, Math.max(0, 1 - current));
   Animated.timing(anim, {
     toValue: 1,
-    duration: Math.round(220 + remaining * 480),
-    easing: Easing.out(Easing.cubic),
+    duration: Math.round(500 + remaining * 1000),
+    easing: Easing.inOut(Easing.quad),
     useNativeDriver,
   }).start(() => {
     if (!cancelled) onDone();

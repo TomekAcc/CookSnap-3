@@ -7,11 +7,8 @@ import { useLanguage } from "../../context/LanguageContext";
 import { useOnboarding } from "../../context/OnboardingContext";
 import { useScan } from "../../context/ScanContext";
 import { log } from "../../utils/log";
-import { finishProgress, startAsymptoticCreep } from "../../utils/scanProgressCreep";
+import { finishProgress, startScanProgress } from "../../utils/scanProgressCreep";
 import { showToast } from "../../utils/toast";
-
-// Where the bar sits when the scripted first phase ends; it creeps on from here.
-const PHASE1_PROGRESS = 0.6;
 
 /** Compact header after AI detection completes. */
 const COMPACT_HEIGHT = 150;
@@ -188,6 +185,8 @@ export default function useFridgeScanChoreography() {
   // comment at the JSX below for why this exists.
   const firstScanHintPulse = useRef(new Animated.Value(0)).current;
   const progressAnimRef = useRef(null);
+  // Where the bar is right now (see startScanProgress); read when the real result lands.
+  const progressEstimateRef = useRef(null);
   const shrinkStartedRef = useRef(false);
 
   // Confirmed real feedback: a first-time user landing on this idle screen
@@ -257,6 +256,7 @@ export default function useFridgeScanChoreography() {
     let cancelled = false;
     // The creep is still ticking (scanStage reads "scanning" through the hold): stop it first, or its
     // next tick cancels the fill below.
+    const from = progressEstimateRef.current?.();
     progressAnimRef.current?.stop?.();
     progressAnimRef.current = null;
     const cancelFill = finishProgress(progressBarAnim, () => {
@@ -273,7 +273,7 @@ export default function useFridgeScanChoreography() {
       setTimeout(() => {
         if (!cancelled) setScanRevealActive(false);
       }, 650);
-    });
+    }, { from });
 
     return () => {
       cancelled = true;
@@ -314,63 +314,21 @@ export default function useFridgeScanChoreography() {
     progressBarAnim.setValue(0);
 
 
-    // Two-phase, never-lies-about-100% approach. This has been "fixed"
-    // twice before and regressed both times, so here's the actual
-    // reasoning: a fixed-duration bar reaching literal 100% before the
-    // real network response lands is a contradiction no matter how the
-    // duration is tuned — either it's short enough to sometimes finish
-    // early (and then sits at a frozen "100%" for however much longer the
-    // real response actually takes, which is exactly what a user reported:
-    // "it stops for a while at 100% without being scanned"), or it's
-    // padded long enough to rarely finish early (which just reintroduces
-    // the earlier "freezes at 92%" complaint under a different number,
-    // since network latency varies run to run regardless of what constant
-    // is picked). No fixed duration can win against a variable network.
-    //
-    // Phase 1 runs the original pacing unchanged — TOTAL_SCAN_DURATION,
-    // linear, but capped at 92% instead of 100% — so the believable
-    // multi-stage choreography (the rotating step labels below) keeps its
-    // intended timing exactly as before. At that point endScanChoreography
-    // runs exactly like it used to; if the real response is already in
-    // hand, the scanStage === "completed" effect below fires within the
-    // same tick and snaps straight to 100% — a fast scan still looks
-    // identical to before this change.
-    //
-    // Phase 2 only matters when the real response ISN'T ready yet. Its
-    // first version was ALSO a fixed-duration Animated.timing (0.92→0.99
-    // over a flat 8000ms) — smooth for 8 seconds, then it simply stopped
-    // moving, which is exactly the "it still stops" a user reported: any
-    // fixed duration is just a deadline in disguise, and a deadline is
-    // always eventually wrong for a variable network call. Fixed by
-    // startAsymptoticCreep, which drives the value off Date.now() instead
-    // of a timing duration — there is no deadline to run out, so it keeps
-    // creeping (progressively more slowly) for as long as the real scan
-    // actually takes, never claiming "100%" and never going visibly flat,
-    // until real completion overrides it below.
-    const phase1Anim = Animated.timing(progressBarAnim, {
-      toValue: PHASE1_PROGRESS,
-      duration: TOTAL_SCAN_DURATION,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    });
-    progressAnimRef.current = phase1Anim;
-
-    phase1Anim.start(({ finished }) => {
-      if (!finished) return;
-      endScanChoreography();
-      const stopCreep = startAsymptoticCreep(progressBarAnim, {
-        from: PHASE1_PROGRESS,
-        ceiling: 0.96,
-        decayMs: 7000,
-      });
-      progressAnimRef.current = { stop: stopCreep };
-    });
+    // One continuous curve, never claiming 100% before the real result lands (see startScanProgress). The
+    // scan always shows for TOTAL_SCAN_DURATION; at that point endScanChoreography runs, exactly as it did when
+    // this was a two-phase animation, and if the real response is already in hand the completed effect above
+    // fills the bar from wherever the curve has got to.
+    const progress = startScanProgress(progressBarAnim, { useNativeDriver: true });
+    progressAnimRef.current = progress;
+    progressEstimateRef.current = progress.estimate;
+    const endTimer = setTimeout(() => endScanChoreography(), TOTAL_SCAN_DURATION);
 
     const stepTimers = SCAN_STATUS_AT_MS.map((ms, idx) =>
       idx === 0 ? null : setTimeout(() => setCurrentStepIdx(idx), ms)
     );
 
     return () => {
+      clearTimeout(endTimer);
       stepTimers.forEach((id) => id && clearTimeout(id));
       progressAnimRef.current?.stop?.();
       progressAnimRef.current = null;
