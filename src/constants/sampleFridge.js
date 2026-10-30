@@ -23,12 +23,19 @@ export const SAMPLE_FRIDGE_ITEMS = [
   { id: "butter", icon: "🧈" },
   { id: "eggs", icon: "🥚" },
   { id: "orangeJuice", icon: "🍊" },
+  { id: "olives", icon: "🫒" },
+  { id: "strawberries", icon: "🍓" },
   { id: "tomatoes", icon: "🍅" },
   { id: "bellPepper", icon: "🫑" },
   { id: "lemon", icon: "🍋" },
   { id: "onion", icon: "🧅" },
   { id: "spinach", icon: "🥬" },
   { id: "carrots", icon: "🥕" },
+  { id: "ketchup", icon: "🍅" },
+  { id: "oliveOil", icon: "🫒" },
+  { id: "mustard", icon: "🟡" },
+  { id: "water", icon: "💧" },
+  { id: "jam", icon: "🍯" },
 ];
 
 /**
