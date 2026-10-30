@@ -15,7 +15,7 @@ import { useEntitlements } from "./EntitlementsContext";
 import { usePreferences } from "./PreferencesContext";
 import { useLibrary } from "./LibraryContext";
 import { useInventory } from "./InventoryContext";
-import { pantryForGeneration } from "../constants/samplePantry";
+import { pantryForGeneration, usesSamplePantry } from "../constants/samplePantry";
 
 const RecipesContext = createContext(null);
 
@@ -129,7 +129,8 @@ export function RecipesProvider({ children }) {
         false,
         previousTitles,
         unitSystem,
-        recipeLanguageName
+        recipeLanguageName,
+        { sampleKitchen: includePantryStaples && usesSamplePantry(pantryItems, scanIsDemo) }
       );
 
       // generateRecipesWithGemini throws rather than returning an empty

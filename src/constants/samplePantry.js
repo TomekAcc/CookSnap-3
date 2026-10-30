@@ -62,7 +62,11 @@ export function buildSamplePantry(t) {
  * sample fridge is showing and they have stocked nothing themselves — the sample pantry.
  */
 export function pantryForGeneration(pantryItems, scanIsDemo, t) {
-  const inStock = (pantryItems || []).filter((item) => item.inStock);
-  if (scanIsDemo && inStock.length === 0) return buildSamplePantry(t);
-  return inStock;
+  if (usesSamplePantry(pantryItems, scanIsDemo)) return buildSamplePantry(t);
+  return (pantryItems || []).filter((item) => item.inStock);
+}
+
+/** True while the sample pantry (not the person's own) is what a recipe request would use. */
+export function usesSamplePantry(pantryItems, scanIsDemo) {
+  return !!scanIsDemo && !(pantryItems || []).some((item) => item.inStock);
 }

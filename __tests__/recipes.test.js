@@ -74,6 +74,7 @@ describe("generateRecipes", () => {
       act(() => result.current.inv.markScanDemo(true));
       await act(() => result.current.rec.generateRecipes());
       expect(gemini.generateRecipesWithGemini.mock.calls[0][1].map((p) => p.name)).toEqual(sampleNames);
+      expect(gemini.generateRecipesWithGemini.mock.calls[0][12]).toEqual({ sampleKitchen: true });
       expect(result.current.inv.pantryItems).toEqual([]);
       expect(JSON.parse((await AsyncStorage.getItem(STORAGE_KEYS.pantryItems)) || "[]")).toEqual([]);
     });
@@ -87,6 +88,7 @@ describe("generateRecipes", () => {
       });
       await act(() => result.current.rec.generateRecipes());
       expect(gemini.generateRecipesWithGemini.mock.calls[0][1].map((p) => p.name)).toEqual(["Salt"]);
+      expect(gemini.generateRecipesWithGemini.mock.calls[0][12]).toEqual({ sampleKitchen: false });
     });
 
     it("is not used for a real fridge, or when pantry staples are switched off", async () => {
@@ -94,6 +96,7 @@ describe("generateRecipes", () => {
       const { result } = await withFridge();
       await act(() => result.current.rec.generateRecipes());
       expect(gemini.generateRecipesWithGemini.mock.calls[0][1]).toEqual([]);
+      expect(gemini.generateRecipesWithGemini.mock.calls[0][12]).toEqual({ sampleKitchen: false });
 
       act(() => {
         result.current.inv.markScanDemo(true);
@@ -101,6 +104,7 @@ describe("generateRecipes", () => {
       });
       await act(() => result.current.rec.generateRecipes());
       expect(gemini.generateRecipesWithGemini.mock.calls[1][1]).toEqual([]);
+      expect(gemini.generateRecipesWithGemini.mock.calls[1][12]).toEqual({ sampleKitchen: false });
     });
   });
 

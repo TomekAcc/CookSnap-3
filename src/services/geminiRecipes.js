@@ -480,6 +480,23 @@ function hasTitleFlavorMismatch(recipe) {
   return false;
 }
 
+// Second line of defence for ENGLISH recipes only. hasTitleFlavorMismatch
+// relies on the model tagging its own title (titleFlavorWords), and it does
+// not always do so: a live batch came back "Garlic Spinach Pasta" with no
+// garlic in its ingredients and no tag, so the check never ran. When the
+// recipe language is English the title and ingredientsList are both English,
+// so the descriptor words can be compared directly — no tags needed.
+export function hasEnglishTitleIngredientMismatch(recipe) {
+  const title = String(recipe?.title || "").toLowerCase();
+  const ingredients = (Array.isArray(recipe?.ingredientsList) ? recipe.ingredientsList : [])
+    .map((line) => String(line || "").toLowerCase())
+    .join(" | ");
+  return Object.entries(TITLE_FLAVOR_REQUIREMENTS).some(
+    ([word, terms]) =>
+      new RegExp(`\\b${word}\\b`).test(title) && !terms.some((term) => ingredients.includes(term))
+  );
+}
+
 // Flattened, deduplicated vocabulary the model is allowed to use for
 // `flavorEvidenceTags` — single source of truth shared with
 // TITLE_FLAVOR_REQUIREMENTS so the two can never drift out of sync.
@@ -1099,7 +1116,8 @@ function buildPrompt(
   excludeTitles = [],
   unitSystem = "us",
   language = "English",
-  usedDishTypes = []
+  usedDishTypes = [],
+  sampleKitchen = false
 ) {
   const isMetric = unitSystem === "metric";
   const isEnglish = language === "English";
@@ -1162,6 +1180,14 @@ The other recipes already kept for this same batch have these "dishType" values:
         .join(", ")}. None of the recipe(s) you generate now may use any of these dishType values — pick a genuinely different format from the real range available for this meal, not just a different title on the same format.\n`
     : "";
 
+  // The very first batch a new user sees (onboarding sample fridge + sample
+  // pantry — the same inventory for everyone). Without this it settled on two
+  // egg dishes and left most of the pantry unused.
+  const sampleKitchenGuardrail = sampleKitchen
+    ? `═══ SAMPLE KITCHEN SHOWCASE (MANDATORY) ═══
+This is the very first batch a new user sees, meant to show what the app can do with a fridge plus a stocked pantry. Build the ${recipeCount} dishes on clearly DIFFERENT main components — never two dishes whose main component is the same ingredient (for example two egg dishes). Between them, put real PANTRY items to work as main components or defining flavors (grains, pasta, oats, flour, honey, soy sauce, spices) — not only salt, pepper and oil — so the pantry list visibly matters. All of this stays INSIDE the requested meal type above: a breakfast batch is still breakfast dishes (eggs, oats, pancakes or crepes from flour, toast-style plates), never pasta or rice mains. Title honesty and the inventory lock still apply in full: never name a flavor or ingredient in a title that is not in the lists above.\n`
+    : "";
+
   const diversityOrMainMealsRule = mainMealsOnly
     ? `═══ ABSOLUTE RULE FOR WEEKLY MEAL PLANNER (MANDATORY) ═══
 Generate ONLY substantial, savory, satisfying main meals (lunches and dinners) like pastas, stir-fries, skillet bakes, soups, and hearty salads. STRICTLY FORBIDDEN: do NOT include sweet desserts, sugary breakfast bowls, parfaits, or pancakes anywhere in this batch. Every single recipe must be a proper, comforting home-cooked meal — vary the cooking style (pasta, stir-fry, skillet, soup/stew, hearty salad, casserole/bake) across the batch so it doesn't feel repetitive, but never break the savory-main-meal rule to do so.`
@@ -1181,7 +1207,7 @@ MEAL TYPE CONSTRAINT: ${mealTypeConstraint}
 SERVINGS: ${servings}
 HUNGER LEVEL: ${hungerLevel} ("light", "normal", "hungry")
 
-${regenerateGuardrail}${usedDishTypesGuardrail}═══ CULINARY HARMONY (MANDATORY) ═══
+${regenerateGuardrail}${usedDishTypesGuardrail}${sampleKitchenGuardrail}═══ CULINARY HARMONY (MANDATORY) ═══
 - Select ONLY ingredients that pair harmoniously in flavor for each dish.
 - Do NOT force unrelated ingredients into one dish just to use them up.
 - From a long fridge list, pick however many items genuinely belong in that classic meal — not a fixed count. A simple dish may only need 2-3; a proper stir-fry, curry, or pasta sauce often legitimately needs 6-9 (protein, vegetables, aromatics, sauce, seasoning). Never drop a relevant available ingredient just to keep the list artificially short, and never pad in an irrelevant one just to look fuller — match whatever a real version of that dish actually uses.
@@ -2383,9 +2409,13 @@ export async function generateRecipesWithGemini(
   // "Polish", "Spanish", ...) — user-selected in Settings. Controls only
   // the natural-language text values; "category"/"dishType" always stay
   // fixed English tokens regardless (see LANGUAGE block in buildPrompt).
-  language = "English"
+  language = "English",
+  // { sampleKitchen: true } while the onboarding sample fridge + sample pantry
+  // are on screen: adds the SAMPLE KITCHEN SHOWCASE block to the prompt.
+  options = {}
 ) {
   const apiKey = resolveApiKey(userApiKey);
+  const sampleKitchen = !!options?.sampleKitchen;
 
   if (!apiKey) {
     throw new GeminiRecipeError("Missing API key.");
@@ -2458,7 +2488,8 @@ export async function generateRecipesWithGemini(
       excludeForCall,
       unitSystem,
       language,
-      usedDishTypesForCall
+      usedDishTypesForCall,
+      sampleKitchen
     ).trim()}`;
 
   // One raw fetch + JSON parse against a specific model URL for a specific
@@ -2555,6 +2586,7 @@ export async function generateRecipesWithGemini(
 
     const beforeFlavorMismatchFilter = normalized.length;
     normalized = normalized.filter((r) => !hasTitleFlavorMismatch(r));
+    if (language === "English") normalized = normalized.filter((r) => !hasEnglishTitleIngredientMismatch(r));
     if (normalized.length < beforeFlavorMismatchFilter) {
       log.warn(
         `[Cook AI] ${label} returned ${beforeFlavorMismatchFilter - normalized.length} recipe(s) whose title claimed a flavor/ingredient not actually in ingredientsList.`
