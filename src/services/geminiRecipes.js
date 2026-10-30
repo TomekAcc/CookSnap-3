@@ -480,6 +480,30 @@ function hasTitleFlavorMismatch(recipe) {
   return false;
 }
 
+// "Upgrade" tips are meant to name something the user does NOT have yet ("a splash of soy sauce would
+// add depth"). The model suggested soy sauce straight after being handed a pantry that holds it, and cheese
+// and yogurt from a fridge that holds both. Compared by words, singular/plural-insensitive, against the
+// fridge + pantry names the request itself carried (same language as the app, which is what those names are in).
+const inventoryWords = (name) =>
+  String(name || "")
+    .toLowerCase()
+    .split(/[^\p{L}]+/u)
+    .filter((w) => w.length > 1)
+    .map((w) => w.replace(/(es|s)$/, ""));
+
+export function isUpgradeAlreadyOwned(upgradeIngredient, inventoryNames) {
+  const wanted = inventoryWords(upgradeIngredient);
+  if (!wanted.length) return false;
+  return (inventoryNames || []).some((name) => {
+    const owned = inventoryWords(name);
+    return wanted.every((w) => owned.includes(w)); // "Feta Cheese" is still news to someone who has "Cheese"
+  });
+}
+
+// Dish types that are sweet or breakfast by nature. In a lunch/dinner batch the prompt already forbids them,
+// yet "Spiced Carrot Porridge" came back labelled dinner; a code check is what makes the rule hold.
+const NON_SAVORY_DISH_TYPES = new Set(["oatmeal", "pudding", "cake", "chocolate", "sweet_bowl", "coffee"]);
+
 // Second line of defence for ENGLISH recipes only. hasTitleFlavorMismatch
 // relies on the model tagging its own title (titleFlavorWords), and it does
 // not always do so: a live batch came back "Garlic Spinach Pasta" with no
@@ -1286,7 +1310,7 @@ Return ONLY a raw JSON array of exactly ${recipeCount} objects with these exact 
 - "servings": string, written entirely in ${language} — translate both the number-word phrasing AND "Serves"/"people" (or whatever ${language}'s natural equivalent phrase is), not just the surrounding words. ${isEnglish ? `E.g. "Serves ${servings} people".` : `Do NOT leave this field in English — e.g. for Polish this would be "Dla ${servings} osób", for Spanish "Sirve a ${servings} personas"; produce the real ${language} equivalent, not a transliteration.`}
 - "ingredientsList": array of Quantity + Ingredient + Emoji strings ONLY (inventory only, scaled for ${servings}, ingredient names in ${language}) — every entry must be a real food item, NEVER an instruction. Confirmed real failure: a past batch put "Preheat the oven to 350°F. 🫙" as an ingredientsList entry — that is a step, not an ingredient, and must never appear here even for oven recipes (the preheat instruction goes in "steps" only). Quantities MUST use ONLY the ${isMetric ? "METRIC (grams/ml)" : "US CUSTOMARY"} system per UNIT SYSTEM above${isMetric ? ` — e.g. "120g Mąka 🌾" (ingredient translated, "g"/"ml" written as-is)` : isEnglish ? ` — e.g. "1 cup Flour 🌾"` : ` — e.g. for Polish "1 szklanka Mąka 🌾" NOT "1 cup Mąka 🌾" (the unit WORD translates too — see UNIT SYSTEM above)`}.
 - "steps": array of 3 to 5 imperative strings in ${language} per the DYNAMIC STEP COUNT rule above, each ending with a period. If the recipe uses an oven/broiler/grill, one step MUST be an explicit preheat instruction with a real ${isMetric ? "°C" : "°F"} temperature. Any step finishing meat/poultry/seafood must pair its time with a real doneness cue (temperature or a visual/textural check), never a time estimate alone — see MEAT/POULTRY/SEAFOOD DONENESS & TECHNIQUE above, which also governs matching the cook time/technique to the actual cut.
-- "upgradeIngredient": JSON null on most recipes, or a short ${language} ingredient name (e.g. ${isEnglish ? `"Fresh Basil"` : `the real ${language} name, not a transliteration`}) — This is rare; only set it when genuinely true, never fill it in "to be thorough."
+- "upgradeIngredient": JSON null on most recipes, or a short ${language} ingredient name (e.g. ${isEnglish ? `"Fresh Basil"` : `the real ${language} name, not a transliteration`}) — This is rare; only set it when genuinely true, never fill it in "to be thorough." It must be something the user does NOT have: never an ingredient that is in the fridge or pantry lists above.
 - "upgradeNote": JSON null whenever "upgradeIngredient" is null, otherwise one short sentence in ${language} explaining what it would actually add. Both fields are null together or filled together, never just one.
 
 Do NOT include an "image" field — Cook AI stamps emoji badges client-side.
@@ -2464,6 +2488,11 @@ export async function generateRecipesWithGemini(
     .filter(Boolean)
     .join(", ");
 
+  const inventoryNames = [
+    ...(scannedIngredients || []).map((i) => i?.name),
+    ...(pantryItems || []).filter((p) => p?.inStock !== false).map((p) => p?.name),
+  ].filter(Boolean);
+
   // Plain-language diet summary for the QA editor (rule 4) — names of the
   // active restrictions plus any user-typed exclusions.
   const qaDietText = [
@@ -2554,7 +2583,12 @@ export async function generateRecipesWithGemini(
   function normalizeAndFilter(rawRecipes, count, excludeForCall, label) {
     let normalized = (Array.isArray(rawRecipes) ? rawRecipes : [])
       .slice(0, count)
-      .map((r, i) => normalizeRecipe(r, i, mealType, servings, language));
+      .map((r, i) => normalizeRecipe(r, i, mealType, servings, language))
+      .map((r) =>
+        r.upgradeIngredient && isUpgradeAlreadyOwned(r.upgradeIngredient, inventoryNames)
+          ? { ...r, upgradeIngredient: null, upgradeNote: null }
+          : r
+      );
 
     const beforeDishTypeDedupe = normalized.length;
     normalized = dedupeDishType(normalized);
@@ -2599,6 +2633,16 @@ export async function generateRecipesWithGemini(
       log.warn(
         `[Cook AI] ${label} returned ${beforeThinSoupFilter - normalized.length} recipe(s) labeled "soup" with fewer than 5 ingredients.`
       );
+    }
+
+    if (mainMealsOnly || mealType === "lunch" || mealType === "dinner") {
+      const beforeSavoryFilter = normalized.length;
+      normalized = normalized.filter((r) => !NON_SAVORY_DISH_TYPES.has(r.dishType));
+      if (normalized.length < beforeSavoryFilter) {
+        log.warn(
+          `[Cook AI] ${label} returned ${beforeSavoryFilter - normalized.length} sweet/breakfast-type recipe(s) in a lunch/dinner batch.`
+        );
+      }
     }
 
     const beforeDoughFeasibilityFilter = normalized.length;

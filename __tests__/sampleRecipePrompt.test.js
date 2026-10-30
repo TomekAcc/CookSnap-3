@@ -1,5 +1,5 @@
 import { generateContent } from "../src/services/geminiClient";
-import { generateRecipesWithGemini, hasEnglishTitleIngredientMismatch } from "../src/services/geminiRecipes";
+import { generateRecipesWithGemini, hasEnglishTitleIngredientMismatch, isUpgradeAlreadyOwned } from "../src/services/geminiRecipes";
 
 jest.mock("../src/services/geminiClient", () => ({
   ...jest.requireActual("../src/services/geminiClient"),
@@ -36,5 +36,23 @@ describe("hasEnglishTitleIngredientMismatch", () => {
     expect(hasEnglishTitleIngredientMismatch(recipe("Garlic Spinach Pasta", ["2 cups Pasta", "2 cloves Garlic"]))).toBe(false);
     expect(hasEnglishTitleIngredientMismatch(recipe("Honey Cinnamon Oatmeal", ["1 cup Rolled oats", "1 tbsp Honey"]))).toBe(false);
     expect(hasEnglishTitleIngredientMismatch(recipe("Tomato Pepper Rice", ["1 cup Rice", "1 Bell Pepper"]))).toBe(false);
+  });
+});
+
+describe("isUpgradeAlreadyOwned", () => {
+  const inventory = ["Milk", "Cheese", "Tomatoes", "Soy sauce", "Black pepper", "Rolled oats"];
+
+  it("recognises an upgrade the person already has, whatever the plural or case", () => {
+    expect(isUpgradeAlreadyOwned("Soy sauce", inventory)).toBe(true);
+    expect(isUpgradeAlreadyOwned("cheese", inventory)).toBe(true);
+    expect(isUpgradeAlreadyOwned("Tomato", inventory)).toBe(true);
+    expect(isUpgradeAlreadyOwned("Oats", inventory)).toBe(true);
+  });
+
+  it("keeps a real suggestion, and an empty one", () => {
+    expect(isUpgradeAlreadyOwned("Fresh Basil", inventory)).toBe(false);
+    expect(isUpgradeAlreadyOwned("Feta Cheese", inventory)).toBe(false);
+    expect(isUpgradeAlreadyOwned("", inventory)).toBe(false);
+    expect(isUpgradeAlreadyOwned("Basil", [])).toBe(false);
   });
 });
