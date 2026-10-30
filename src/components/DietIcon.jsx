@@ -2,10 +2,10 @@ import React from "react";
 import { View } from "react-native";
 import {
   Carrot,
-  Vegan,
+  Sprout,
   WheatOff,
   MilkOff,
-  IceCreamBowl,
+  GlassWater,
   Beef,
   NutOff,
   Fish,
@@ -22,14 +22,15 @@ import { EMERALD, WHITE } from "../theme/palette";
 // Nine shapes that read as nine different things. "Bez laktozy" and "Bez
 // nabiału" used to be a crossed-out milk bottle and a plain one — the plain
 // bottle looked like "contains milk" — and vegetarian/vegan were both
-// plants. Now: carrot / the vegan leaf-V, crossed-out milk for lactose, an
-// ice-cream bowl for dairy products in general.
+// plants. Now: carrot / a sprout for vegan (lucide's leaf-V "vegan" mark
+// blurs into a blob at 18px), crossed-out milk for lactose, a plain glass
+// for dairy-free (an ice-cream bowl read as "contains dairy").
 const DIET_ICONS = {
   vegetarian: Carrot,
-  vegan: Vegan,
+  vegan: Sprout,
   gluten_free: WheatOff,
   lactose_free: MilkOff,
-  dairy_free: IceCreamBowl,
+  dairy_free: GlassWater,
   keto: Beef,
   nut_free: NutOff,
   pescatarian: Fish,
