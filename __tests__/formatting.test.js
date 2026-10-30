@@ -7,7 +7,7 @@ import {
 import { formatTimeLabel, sumTimeLabel, hasRealMinutes } from "../src/utils/timeFormat";
 import { breakLigatures } from "../src/utils/textLigatures";
 import { isAssumedStapleIngredient } from "../src/utils/assumedStaples";
-import { getIngredientEmoji } from "../src/utils/ingredientEmoji";
+import { getIngredientEmoji, foodEmojiOrFallback } from "../src/utils/ingredientEmoji";
 import {
   stripQuantityFromName,
   prettyPantryName,
@@ -92,6 +92,8 @@ describe("pantry text helpers", () => {
   it("maps known ingredients to emoji with a jar fallback", () => {
     expect(getIngredientEmoji("tomato")).toBe("🍅");
     expect(getIngredientEmoji("zzzz")).toBe("🫙");
+    expect(getIngredientEmoji("Radishes")).toBe("🥕");
+    expect(getIngredientEmoji("Rzodkiewki")).toBe("🥕");
   });
 });
 
@@ -99,5 +101,23 @@ describe("breakLigatures", () => {
   it("inserts a zero-width non-joiner so 'fi' does not render as a ligature", () => {
     expect(breakLigatures("Profile")).toBe("Prof‌ile");
     expect(breakLigatures("Pantry")).toBe("Pantry");
+  });
+});
+
+describe("foodEmojiOrFallback", () => {
+  it("keeps the model's food emoji", () => {
+    expect(foodEmojiOrFallback("🥒", "Pickled Cucumbers")).toBe("🥒");
+    expect(foodEmojiOrFallback(" 🧀 ", "Mascarpone")).toBe("🧀");
+  });
+
+  it("replaces plants, flowers and packaging with our own match for the name", () => {
+    expect(foodEmojiOrFallback("🪴", "Radishes")).toBe("🥕");
+    expect(foodEmojiOrFallback("📦", "Tomatoes")).toBe("🍅");
+    expect(foodEmojiOrFallback("🌸", "zzzz")).toBe("🫙");
+  });
+
+  it("falls back to our own match when the model gave nothing", () => {
+    expect(foodEmojiOrFallback("", "Eggs")).toBe("🥚");
+    expect(foodEmojiOrFallback(undefined, "Eggs")).toBe("🥚");
   });
 });

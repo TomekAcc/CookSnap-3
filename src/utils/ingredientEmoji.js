@@ -14,6 +14,9 @@ const EXACT_MAP = [
   { keys: ["broccoli"], emoji: "🥦", category: "veg" },
   { keys: ["cabbage", "lettuce", "spinach", "szpinak", "kale", "greens", "arugula", "sałata", "salata"], emoji: "🥬", category: "veg" },
   { keys: ["carrot"], emoji: "🥕", category: "veg" },
+  // No radish emoji exists. The vision model reached for 🪴 (a potted plant) for "Radishes"; a root vegetable
+  // reads as the right kind of food.
+  { keys: ["radish", "rzodkiew"], emoji: "🥕", category: "veg" },
   { keys: ["celery"], emoji: "🥬", category: "veg" },
   { keys: ["corn"], emoji: "🌽", category: "veg" },
   { keys: ["cucumber"], emoji: "🥒", category: "veg" },
@@ -150,6 +153,19 @@ const CATEGORY_KEYWORDS = [
  * @param {string} name
  * @returns {string} emoji
  */
+/**
+ * Emoji that are plants, flowers or packaging rather than food. The vision model sometimes picks one when no
+ * food emoji matches exactly (🪴 for radishes); it is replaced by our own match for the name.
+ */
+const NON_FOOD_EMOJI = /[🪴🌳🌲🌴🌵🪵🌸🌹🌺🌻🌼🌷🪻🪷💐🏵📦🛒🛍🧺🪣🧴🧪]/u;
+
+/** The model's icon if it is a food emoji, otherwise the one from our own table for this name. */
+export function foodEmojiOrFallback(icon, name = "") {
+  const raw = typeof icon === "string" ? icon.trim() : "";
+  if (raw && !NON_FOOD_EMOJI.test(raw)) return raw;
+  return getIngredientEmoji(name);
+}
+
 export function getIngredientEmoji(name = "") {
   const clean = String(name || "")
     .toLowerCase()

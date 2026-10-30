@@ -1,6 +1,6 @@
 import * as ImageManipulator from "expo-image-manipulator";
 import { getIngredientStyle } from "../utils/imageUtils";
-import { getIngredientEmoji } from "../utils/ingredientEmoji";
+import { getIngredientEmoji, foodEmojiOrFallback } from "../utils/ingredientEmoji";
 import { log } from "../utils/log";
 import {
   VISION_MODELS,
@@ -361,11 +361,7 @@ Return ONLY a JSON array of {"name","icon"} objects.
             // keyword guesser, which can't match a name that's now in the
             // user's selected language and was silently discarding the
             // AI's real icon on every scan.
-            const icon =
-              (typeof item.icon === "string" && item.icon.trim()) ||
-              getIngredientEmoji(name) ||
-              getIngredientStyle(name).emoji ||
-              "🛒";
+            const icon = foodEmojiOrFallback(item.icon, name) || getIngredientStyle(name).emoji || "🛒";
             return {
               id: (Date.now() + idx).toString(),
               name,
@@ -457,10 +453,10 @@ ${JSON.stringify(
           typeof entry?.name === "string" && entry.name.trim()
             ? entry.name.trim()
             : item.name;
-        const icon =
-          typeof entry?.icon === "string" && entry.icon.trim()
-            ? entry.icon.trim()
-            : item.icon || item.emoji;
+        const icon = foodEmojiOrFallback(
+          typeof entry?.icon === "string" && entry.icon.trim() ? entry.icon.trim() : item.icon || item.emoji,
+          name
+        );
         return { ...item, name, icon, emoji: icon };
       });
     } catch (err) {
@@ -560,9 +556,10 @@ function normalizePantryItems(items) {
       // has its own unconditional "🫙" fallback (so it was always winning
       // this comparison, silently masking the AI's real icon).
       const iconOrEmoji =
-        (typeof item.icon === "string" && item.icon.trim()) ||
-        (typeof item.emoji === "string" && item.emoji.trim()) ||
-        getIngredientEmoji(name) ||
+        foodEmojiOrFallback(
+          (typeof item.icon === "string" && item.icon.trim()) || item.emoji,
+          name
+        ) ||
         getIngredientStyle(name).emoji ||
         "🫙";
       const category =
