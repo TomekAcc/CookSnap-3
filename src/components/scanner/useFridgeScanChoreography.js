@@ -323,6 +323,7 @@ export default function useFridgeScanChoreography() {
     // The sample scan is scripted and quick; a real one takes what this phone's recent scans took.
     const progress = startScanProgress(progressBarAnim, {
       expectedMs: scanIsDemoRef.current ? 3400 : expectedScanMs("fridge"),
+      ...(scanIsDemoRef.current ? { atExpected: 0.92, ceiling: 0.97 } : {}),
       useNativeDriver: true,
     });
     progressAnimRef.current = progress;

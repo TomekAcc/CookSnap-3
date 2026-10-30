@@ -18,17 +18,17 @@ describe("scan timing", () => {
     expect(expectedScanMs("fridge")).toBe(DEFAULT_SCAN_MS);
   });
 
-  it("learns the median of the recent scans, per kind, and keeps it across restarts", async () => {
+  it("learns the slow end (75th percentile) of the recent scans, per kind, and keeps it across restarts", async () => {
     await loadScanTimings();
     for (const ms of [9000, 11000, 10000]) await recordScanTiming("fridge", ms);
     await recordScanTiming("pantry", 5000);
-    expect(expectedScanMs("fridge")).toBe(10000);
+    expect(expectedScanMs("fridge")).toBe(11000); // not the median (10000): a scan that long should not look stuck
     expect(expectedScanMs("pantry")).toBe(5000);
 
     resetScanTimingsForTests(); // a restart: memory gone, storage stays
     expect(expectedScanMs("fridge")).toBe(DEFAULT_SCAN_MS);
     await loadScanTimings();
-    expect(expectedScanMs("fridge")).toBe(10000);
+    expect(expectedScanMs("fridge")).toBe(11000);
   });
 
   it("keeps the estimate within sane bounds and ignores values that cannot be a scan", async () => {

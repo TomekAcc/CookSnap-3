@@ -87,17 +87,17 @@ describe("finishProgress", () => {
 });
 
 describe("scan progress curve", () => {
-  it("starts at 0, only rises, and is at ~88% when the scan is expected to be done", () => {
+  it("starts at 0, only rises, and is at ~82% when the scan is expected to be done", () => {
     expect(scanProgressAt(0, 6500)).toBe(0);
-    expect(scanProgressAt(6500, 6500)).toBeCloseTo(0.88, 5);
+    expect(scanProgressAt(6500, 6500)).toBeCloseTo(0.82, 5);
     let last = -1;
     for (let t = 0; t <= 60000; t += 250) {
       const v = scanProgressAt(t, 6500);
       expect(v).toBeGreaterThanOrEqual(last);
       last = v;
     }
-    expect(last).toBeLessThan(0.97);
-    expect(last).toBeGreaterThan(0.95);
+    expect(last).toBeLessThan(0.95);
+    expect(last).toBeGreaterThan(0.93);
   });
 
   it("is paced to the expected time: a slower phone gets a slower bar", () => {
@@ -119,9 +119,9 @@ describe("scan progress curve", () => {
     expect(progress.estimate()).toBe(0);
     expect(progress.speed()).toBeGreaterThan(0);
     jest.setSystemTime(6500);
-    expect(progress.estimate()).toBeCloseTo(0.88, 2);
+    expect(progress.estimate()).toBeCloseTo(0.82, 2);
     jest.setSystemTime(10 * 60 * 1000);
-    expect(progress.estimate()).toBeLessThan(0.97);
+    expect(progress.estimate()).toBeLessThan(0.95);
     progress.stop();
   });
 });
