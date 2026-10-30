@@ -79,41 +79,58 @@ export function startScanProgress(anim, { expectedMs = 6500, useNativeDriver = t
 }
 
 /**
- * Fills a progress bar the rest of the way to 100% once the real result has landed, from wherever the bar
- * currently is (`from`, e.g. startScanProgress's estimate; otherwise the JS-side value). The caller must stop its
- * own driver first: anything that keeps calling setValue on the same Animated.Value cancels the fill, which is how
- * the bar used to flash forward and fall back to ~60% right before it disappeared.
+ * Fills a progress bar the rest of the way to 100% once the real result has landed, with no jump and no rush.
  *
- * The fill continues at the bar's own pace instead of dashing: it is at most twice as fast as the bar was moving a
- * moment ago (`speed`, bar-lengths per second; a bar that was creeping at 0.03/s used to be dragged to full at
- * 5-10 times that, which read as a violent rush), within 0.45s to 1.1s. The curve starts at the old pace (a third
- * of the way in a half-speed start) and arrives still moving, so the card can move on straight away. Returns a
- * cancel function; `onDone` is not called after it.
+ * - It starts from where the bar REALLY is. A natively driven value only knows its position natively, and on a
+ *   phone whose JS thread is busy preparing the photo the native animation can start late, so the position the
+ *   clock predicts (`from`) can be ahead of the bar; starting there made the bar leap forward in one frame. So the
+ *   native position is asked for (stopAnimation's callback) and `from`/the JS value are only the fallback, for
+ *   environments that never answer (tests) or answer too late (120ms).
+ * - It continues at the bar's own pace (`speed`, bar-lengths per second): the first moment of the fill moves as
+ *   fast as the bar was moving, and the fill peaks at about 1.4x that, within 0.5s to 2.2s. (A bar creeping at
+ *   0.03/s used to be dragged to full at 5-10 times that, and even at 2x it read as a rush.)
+ *
+ * The caller must stop its own driver first: anything that keeps calling setValue on the same Animated.Value
+ * cancels the fill. Returns a cancel function; `onDone` is not called after it.
  */
 export function finishProgress(anim, onDone, { useNativeDriver = true, from, speed } = {}) {
   let cancelled = false;
-  anim.stopAnimation();
-  if (typeof from === "number") anim.setValue(from);
-  // The JS-side value is current when `from` is not given: the creep writes it every tick and a finished native
-  // animation reports its end value. (stopAnimation's callback would ask the native module, which is
-  // asynchronous and never answers in tests.)
-  const current =
-    typeof from === "number"
-      ? from
-      : typeof anim.__getValue === "function"
-        ? Number(anim.__getValue()) || 0
-        : 0;
-  const remaining = Math.min(1, Math.max(0, 1 - current));
-  const paced = speed > 0 ? remaining / (2 * speed) * 1000 : 700;
-  Animated.timing(anim, {
-    toValue: 1,
-    duration: Math.round(Math.min(1100, Math.max(450, paced))),
-    easing: Easing.bezier(0.2, 0.1, 0.8, 0.8),
-    useNativeDriver,
-  }).start(() => {
-    if (!cancelled) onDone();
-  });
+  let started = false;
+  let fallbackTimer = null;
+
+  const begin = (position) => {
+    if (cancelled || started) return;
+    started = true;
+    if (fallbackTimer) clearTimeout(fallbackTimer);
+    const current = Math.min(1, Math.max(0, Number(position) || 0));
+    anim.setValue(current);
+    const remaining = 1 - current;
+    let duration = 900;
+    let startSlope = 0.5; // the curve's initial speed as a fraction of its average speed
+    if (speed > 0) {
+      duration = Math.min(2200, Math.max(500, (remaining / (1.4 * speed)) * 1000));
+      const average = remaining / (duration / 1000);
+      startSlope = Math.min(1, Math.max(0.2, speed / average));
+    }
+    Animated.timing(anim, {
+      toValue: 1,
+      duration: Math.round(duration),
+      // Starts at the pace the bar already had, then runs on to 100% still moving, so the card can move on at once.
+      easing: Easing.bezier(0.25, 0.25 * startSlope, 0.7, 0.7),
+      useNativeDriver,
+    }).start(() => {
+      if (!cancelled) onDone();
+    });
+  };
+
+  anim.stopAnimation((value) => begin(value));
+  fallbackTimer = setTimeout(() => {
+    const js = typeof anim.__getValue === "function" ? Number(anim.__getValue()) || 0 : 0;
+    begin(typeof from === "number" ? from : js);
+  }, 120);
+
   return () => {
     cancelled = true;
+    if (fallbackTimer) clearTimeout(fallbackTimer);
   };
 }
