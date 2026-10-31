@@ -952,10 +952,13 @@ export default function RecipeDetailModal() {
             >
               {t("recipeDetail.instructionsTitle")}
             </Text>
-            {/* Same discovery-hint → progress-count pattern as Ingredients:
-                it starts as a hint so a first-time viewer knows the rows are
-                tappable, then switches to a live "2 of 4" count once they
-                check the first step, and turns green when all are done. */}
+            {/* Progress count, unlike Ingredients without a hint first:
+                no label before the first tap (the step rows are plainly
+                numbered cards, and a "tap to check off" line next to a
+                recipe's instructions read as noise — the ingredients still
+                carry it, where ticking off what you have is the point), then a
+                live "2 of 4" count once they check the first step, turning
+                green when all are done. */}
             {stepsCheckedCount > 0 ? (
               <Text
                 style={[
@@ -973,11 +976,7 @@ export default function RecipeDetailModal() {
                   total: steps.length,
                 })}
               </Text>
-            ) : (
-              <Text style={[styles.sectionHint, { color: colors.textSecondary }]}>
-                {t("recipeDetail.tapToCheckOff")}
-              </Text>
-            )}
+            ) : null}
           </View>
           <View style={styles.listStack}>
             {steps.map((step, idx) => {
