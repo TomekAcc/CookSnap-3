@@ -1,4 +1,4 @@
-name = "cook-ai-gemini-proxy"
+name = "cooksnap-proxy"
 main = "src/index.js"
 compatibility_date = "2025-09-01"
 

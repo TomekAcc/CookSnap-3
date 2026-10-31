@@ -21,8 +21,8 @@ You need a free Cloudflare account and Node 18+ on a computer.
 cd proxy
 npx wrangler login                      # opens a browser to sign in
 npx wrangler secret put GEMINI_API_KEY  # paste the key when asked (it is not shown or stored locally)
-npx wrangler deploy                     # prints the proxy URL, https://cook-ai-gemini-proxy.<you>.workers.dev
-curl https://cook-ai-gemini-proxy.<you>.workers.dev/health    # {"ok":true}
+npx wrangler deploy                     # prints the proxy URL, https://cooksnap-proxy.<you>.workers.dev
+curl https://cooksnap-proxy.<you>.workers.dev/health    # {"ok":true}
 ```
 
 Use a NEW key for the secret (restricted to the Gemini API in Google Cloud Console), then delete
@@ -46,7 +46,7 @@ the old key once the app has switched over.
 
 ## Operating it
 
-- Switch it off instantly: Cloudflare dashboard -> Workers -> cook-ai-gemini-proxy -> Settings ->
+- Switch it off instantly: Cloudflare dashboard -> Workers -> cooksnap-proxy -> Settings ->
   Variables -> `PROXY_DISABLED` = `1` (or `npx wrangler deploy --var PROXY_DISABLED:1`).
 - Change the limits: edit the `[vars]` in `wrangler.toml` and `npx wrangler deploy`.
 - Watch usage: Cloudflare dashboard -> Workers -> Metrics, and AI Studio -> Spend.

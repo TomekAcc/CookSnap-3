@@ -1,5 +1,5 @@
 {
-  "name": "cook-ai-gemini-proxy",
+  "name": "cooksnap-proxy",
   "private": true,
   "type": "module",
   "scripts": {
