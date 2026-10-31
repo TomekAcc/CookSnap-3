@@ -2,6 +2,7 @@ import React from "react";
 import { Animated, TextInput, Text, TouchableOpacity, View } from "react-native";
 import { Plus, X } from "../../icons";
 import PillTag from "../PillTag";
+import { foodEmojiOrFallback } from "../../utils/ingredientEmoji";
 import { getIngredientStyle } from "../../utils/imageUtils";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -242,7 +243,7 @@ export default function DetectedIngredientsCard({
             (typeof item?.icon === "string" && item.icon.trim()) ||
             (typeof item?.emoji === "string" && item.emoji.trim());
           const style = getIngredientStyle(cleanName);
-          const rawEmoji = aiIcon || style.emoji || "";
+          const rawEmoji = foodEmojiOrFallback(aiIcon, cleanName) || style.emoji || "";
           const slot = Math.min(index, 11) / Math.min(Math.max(count, 1), 12);
           const revealStart = slot * 0.6;
           return (

@@ -40,6 +40,7 @@ const EXACT_MAP = [
   { keys: ["potato", "sweet potato"], emoji: "🥔", category: "veg" },
   { keys: ["tomato", "cherry tomato", "pomidor"], emoji: "🍅", category: "veg" },
   { keys: ["zucchini", "courgette"], emoji: "🥒", category: "veg" },
+  { keys: ["pesto"], emoji: "🌿", category: "pantry" },
   { keys: ["herb", "basil", "parsley", "cilantro", "coriander", "mint", "dill", "thyme", "rosemary"], emoji: "🌿", category: "veg" },
 
   // Protein
@@ -154,10 +155,10 @@ const CATEGORY_KEYWORDS = [
  * @returns {string} emoji
  */
 /**
- * Emoji that are plants, flowers or packaging rather than food. The vision model sometimes picks one when no
+ * Emoji that are plants, flowers, packaging or "unknown item" placeholders rather than food. The vision model sometimes picks one when no
  * food emoji matches exactly (🪴 for radishes); it is replaced by our own match for the name.
  */
-const NON_FOOD_EMOJI = /[🪴🌳🌲🌴🌵🪵🌸🌹🌺🌻🌼🌷🪻🪷💐🏵📦🛒🛍🧺🪣🧴🧪]/u;
+const NON_FOOD_EMOJI = /[🪴🌳🌲🌴🌵🪵🌸🌹🌺🌻🌼🌷🪻🪷💐🏵📦🛒🛍🧺🪣🧴🧪🫙🍽❓]/u;
 
 /** The model's icon if it is a food emoji, otherwise the one from our own table for this name. */
 export function foodEmojiOrFallback(icon, name = "") {

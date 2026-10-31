@@ -94,6 +94,7 @@ describe("pantry text helpers", () => {
     expect(getIngredientEmoji("zzzz")).toBe("🫙");
     expect(getIngredientEmoji("Radishes")).toBe("🥕");
     expect(getIngredientEmoji("Rzodkiewki")).toBe("🥕");
+    expect(getIngredientEmoji("Pesto")).toBe("🌿");
   });
 });
 
@@ -113,6 +114,7 @@ describe("foodEmojiOrFallback", () => {
   it("replaces plants, flowers and packaging with our own match for the name", () => {
     expect(foodEmojiOrFallback("🪴", "Radishes")).toBe("🥕");
     expect(foodEmojiOrFallback("📦", "Tomatoes")).toBe("🍅");
+    expect(foodEmojiOrFallback("🫙", "Pesto")).toBe("🌿"); // the model's generic jar gives way to ours
     expect(foodEmojiOrFallback("🌸", "zzzz")).toBe("🫙");
   });
 

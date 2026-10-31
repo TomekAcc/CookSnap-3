@@ -45,8 +45,9 @@ export default function PillTag({
           {emoji}
         </Text>
       ) : reserveEmojiSpace ? (
-        // Keeps names in one column when some chips have no emoji.
-        <View style={{ width: 22 }} />
+        // Keeps names in one column when some chips have no emoji — and keeps the chip as tall as the others:
+        // the emoji's line height is what sets a chip's height, so the spacer needs it too.
+        <View style={{ width: 22, height: emojiLine(18) }} />
       ) : null}
       {label ? (
         <Text
