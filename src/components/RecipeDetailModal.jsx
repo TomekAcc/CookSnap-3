@@ -1,0 +1,1511 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useSharedValue } from "react-native-reanimated";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Animated,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import {
+  Clock,
+  Flame,
+  Sparkles,
+  Heart,
+  Check,
+  Snowflake,
+  Lock,
+  Crown,
+  ShoppingCart,
+  X,
+  Info,
+} from "../icons";
+import { useModalState } from "../context/ModalContext";
+import { useTheme } from "../context/ThemeContext";
+import {
+  getDishEmojiAndColor,
+  resolveCategoryBadgeColors,
+  getIngredientEmoji,
+  getIngredientStyle,
+} from "../utils/imageUtils";
+import StandardModal from "./StandardModal";
+import { EXIT_DURATION_MS } from "../utils/bottomSheet";
+import { DS } from "../utils/designSystem";
+import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
+import { emojiLine, SPACE, strokeFor } from "../theme/tokens";
+import { splitLeadingQuantity } from "../utils/ingredientQuantity";
+import { isAssumedStapleIngredient } from "../utils/assumedStaples";
+import { useEntitlements } from "../context/EntitlementsContext";
+import { useInventory } from "../context/InventoryContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useLibrary } from "../context/LibraryContext";
+import { usePreferences } from "../context/PreferencesContext";
+import { useRecipes } from "../context/RecipesContext";
+import { showToast } from "../utils/toast";
+import { AMBER, EMERALD, INDIGO, ROSE, SKY, SLATE, WHITE } from "../theme/palette";
+
+/** Hermes-safe emoji strip (no /u flag). */
+function stripInlineEmojis(str) {
+  return String(str || "")
+    .replace(/(?:[\uD800-\uDBFF][\uDC00-\uDFFF])/g, "")
+    .replace(/[\u2600-\u27BF]/g, "")
+    .replace(/[\uFE0F\u200D]/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/**
+ * Gemini's "ingredientsList" strings already end with a real, accurate
+ * emoji per line ("120g M\u0105ka \uD83C\uDF3E") \u2014 language-independent since it's
+ * chosen from the food itself, not guessed from the (possibly
+ * non-English) name text. Pull that out before stripInlineEmojis
+ * discards it, so the ingredient row can use the AI's real icon instead
+ * of a local English-keyword re-guess that fails once the name isn't
+ * English.
+ */
+function extractTrailingEmoji(str) {
+  const match = String(str || "").match(
+    /(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[\u2600-\u27BF])(?:[\uFE0F\u200D](?:[\uD800-\uDBFF][\uDC00-\uDFFF])?)*\s*$/
+  );
+  return match ? match[0].trim() : null;
+}
+
+function cleanIngredientName(str) {
+  if (!str) return "";
+  let cleaned = stripInlineEmojis(
+    typeof str === "string" ? str : str?.name || ""
+  );
+  if (!cleaned) return "";
+  if (cleaned.toLowerCase().startsWith("slices ")) {
+    cleaned = cleaned.replace(/^slices\s+/i, "") + " (slices)";
+  }
+  return cleaned;
+}
+
+// A plain-string ingredient (the normal case — Gemini's ingredientsList
+// entries, e.g. "120g Mąka 🌾") already has its quantity baked into the
+// name text itself, so this returns null rather than a fake "1 pcs" —
+// that badge was previously always English AND always wrong (every
+// ingredient showed "1 pcs" regardless of its real amount/unit). A real
+// quantity badge is only meaningful for genuinely structured
+// {amount, unit} objects (legacy/static fixtures).
+function formatQtyFromItem(item) {
+  if (!item || typeof item !== "object") return null;
+  if (item.quantity) return String(item.quantity);
+  if (item.qtyLabel) return String(item.qtyLabel);
+  if (item.amount != null) {
+    const u = item.unit ? ` ${item.unit}` : "";
+    return `${item.amount}${u}`.trim() || null;
+  }
+  return null;
+}
+
+/**
+ * Compact no-bloat recipe detail — sticky favorites CTA.
+ * Wired to the recipes and library contexts (mounted with no props).
+ */
+export default function RecipeDetailModal() {
+  const { servings } = usePreferences();
+  const { toggleSaveRecipe, isRecipeSaved } = useLibrary();
+  const { isPro } = useEntitlements();
+  const { modifyRecipe, ensureRecipeLanguage } = useRecipes();
+  const { recipeLanguageId, t } = useLanguage();
+  const { addToShoppingList, markPantryItemOutOfStock } = useInventory();
+  const { selectedRecipe, setSelectedRecipe, setProModalOpen } =
+    useModalState();
+  const { colors, isDark } = useTheme();
+
+  const [checkedIngredients, setCheckedIngredients] = useState({});
+  // Confirmed real failure: tapping "Add to Shopping List" DID add the
+  // item (verified against AsyncStorage), but nothing on screen actually
+  // said so persistently — the only signal was a toast at the very top of
+  // the screen, far from this button, gone again in ~3s. This tracks
+  // whether THIS recipe's upgrade tip has been added so the button itself
+  // can show a lasting "Added" state instead of relying on the toast alone.
+  const [upgradeAdded, setUpgradeAdded] = useState(false);
+  const [checkedSteps, setCheckedSteps] = useState({});
+  const [modifierOpen, setModifierOpen] = useState(false);
+  const [modifierInstruction, setModifierInstruction] = useState("");
+  const [isModifying, setIsModifying] = useState(false);
+  const heartScaleAnim = useRef(new Animated.Value(1)).current;
+  const scrollRef = useRef(null);
+  const modifierYRef = useRef(0);
+
+  // Keep showing the last recipe's data while closing (selectedRecipe goes
+  // null immediately, but OverlayHost/useModalPresence keep this component
+  // mounted through the exit animation — without this, the sheet would go
+  // blank mid-slide-out instead of showing the recipe it's closing).
+  const [displayRecipe, setDisplayRecipe] = useState(selectedRecipe);
+  useEffect(() => {
+    if (selectedRecipe) setDisplayRecipe(selectedRecipe);
+  }, [selectedRecipe]);
+
+  // A saved recipe left over from a previous language selection — translate
+  // it in place so it never stays stuck in whatever language it was
+  // generated in. Silent background swap: the recipe is fully viewable while
+  // this is in flight, it just quietly updates once the translation lands.
+  useEffect(() => {
+    if (!selectedRecipe) return;
+    if (!selectedRecipe.languageId || selectedRecipe.languageId === recipeLanguageId) {
+      return;
+    }
+    let cancelled = false;
+    ensureRecipeLanguage(selectedRecipe).then((updated) => {
+      if (!cancelled && updated) setDisplayRecipe(updated);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedRecipe, recipeLanguageId, ensureRecipeLanguage]);
+
+  const recipe = displayRecipe;
+  const visible = !!selectedRecipe;
+  const isFavorite = recipe ? !!isRecipeSaved?.(recipe.id) : false;
+
+  useEffect(() => {
+    setCheckedIngredients({});
+    // setActiveStepIdx(0); // REMOVED: activeStepIdx state was removed
+    setModifierOpen(false);
+    setModifierInstruction("");
+    setUpgradeAdded(false);
+  }, [recipe?.id]);
+
+  // The input autoFocuses the instant this opens, so the keyboard rises
+  // immediately — without this the modifier card can end up mostly hidden
+  // under the keyboard inside the sheet's keyboard-shrunk viewport. Two
+  // passes (post-commit, then post-keyboard-animation) mirrors the same
+  // scroll-after-layout pattern NavigationContext uses for scrollToRecipesTop.
+  useEffect(() => {
+    if (!modifierOpen) return;
+    const scroll = () => {
+      scrollRef.current?.scrollTo?.({
+        y: Math.max(modifierYRef.current - 12, 0),
+        animated: true,
+      });
+    };
+    const raf = requestAnimationFrame(() => {
+      setTimeout(scroll, 80);
+      setTimeout(scroll, 320);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [modifierOpen]);
+
+  const handleModifyRecipe = async () => {
+    const instruction = modifierInstruction.trim();
+    if (!instruction || isModifying || !recipe) return;
+    setIsModifying(true);
+    try {
+      const updated = await modifyRecipe(recipe, instruction);
+      setDisplayRecipe(updated);
+      setModifierOpen(false);
+      setModifierInstruction("");
+      showToast?.(t("recipeDetail.recipeUpdated"), "success");
+    } catch (err) {
+      showToast?.(
+        err?.message || t("recipeDetail.modifyFailed"),
+        "error"
+      );
+    } finally {
+      setIsModifying(false);
+    }
+  };
+
+  const onClose = () => setSelectedRecipe?.(null);
+  // True while the recipe body is scrolled to the very top: then pulling down
+  // anywhere moves the whole sheet (StandardModal.scrollTopSignal).
+  const listAtTop = useSharedValue(true);
+  useEffect(() => {
+    if (visible) listAtTop.value = true;
+  }, [visible, listAtTop]);
+  const onToggleFavorite = () => {
+    // Heart Pop — identical physics to RecipeCard. No haptics.
+    Animated.sequence([
+      Animated.timing(heartScaleAnim, {
+        toValue: 1.3,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.spring(heartScaleAnim, {
+        toValue: 1,
+        friction: 3,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    if (recipe) toggleSaveRecipe?.(recipe);
+  };
+  // Same close-first-then-delay handoff MealPlannerModal uses for this
+  // exact reason — a bare setProModalOpen(true) while this sheet's own
+  // native Modal is still visible tries to mount a second native Modal
+  // mid-transition, which is the proven-on-device iOS multi-Modal freeze
+  // this app has already had to fix more than once.
+  const onOpenProModal = () => {
+    onClose();
+    setTimeout(() => setProModalOpen?.(true), EXIT_DURATION_MS + 40);
+  };
+
+  // "Staple" ingredients (salt/pepper/oil) are never actually from the
+  // user's scan — they're assumed on every recipe unless scanned AND
+  // marked out of stock in Pantry (see BASIC_STAPLES in geminiRecipes.js).
+  // First version of this sent the user to the Pantry tab to fix it
+  // themselves, but confirmed real confusion from a live tester: landing
+  // on a blank Pantry screen with just a toast gave no clear next step.
+  // This stays on the recipe entirely — a direct confirm that writes the
+  // out-of-stock flag itself, so there's exactly one thing to decide and
+  // nothing to figure out on another screen.
+  const onAssumedStaplePress = (ingredientName) => {
+    Alert.alert(
+      t("recipeDetail.assumedStapleConfirmTitle"),
+      t("recipeDetail.assumedStapleConfirmMessage", {
+        ingredient: ingredientName,
+      }),
+      [
+        { text: t("recipeDetail.cancel"), style: "cancel" },
+        {
+          text: t("recipeDetail.assumedStapleConfirmAction"),
+          onPress: () => {
+            markPantryItemOutOfStock?.(ingredientName);
+            showToast?.(t("recipeDetail.assumedStapleConfirmedToast"), "success");
+          },
+        },
+      ]
+    );
+  };
+
+  const dishStyle = getDishEmojiAndColor(recipe?.title, recipe?.dishType);
+  const badgeColors = resolveCategoryBadgeColors(dishStyle, isDark);
+  const dishEmoji = dishStyle?.emoji || "🥘";
+  const rawIngredients = Array.isArray(recipe?.ingredientsList)
+    ? recipe.ingredientsList
+    : Array.isArray(recipe?.ingredients)
+      ? recipe.ingredients
+      : [];
+  const steps = Array.isArray(recipe?.steps)
+    ? recipe.steps
+    : Array.isArray(recipe?.instructions)
+      ? recipe.instructions
+      : [];
+
+  const toggleIngredientCheck = (idx) => {
+    setCheckedIngredients((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
+
+  const toggleStepCheck = (idx) => {
+    setCheckedSteps((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
+
+  const checkedCount = Object.values(checkedIngredients).filter(Boolean).length;
+  const stepsCheckedCount = Object.values(checkedSteps).filter(Boolean).length;
+
+  const handleAddUpgradeIngredient = () => {
+    if (!recipe?.upgradeIngredient || upgradeAdded) return;
+    addToShoppingList?.([recipe.upgradeIngredient]);
+    setUpgradeAdded(true);
+    showToast?.(
+      t("recipeDetail.upgradeTipAdded", { ingredient: recipe.upgradeIngredient }),
+      "success"
+    );
+  };
+
+  const isNoCook =
+    !recipe?.cookTime ||
+    recipe.cookTime === "0 min" ||
+    recipe.cookTime === "0m" ||
+    recipe.cookTime === "0" ||
+    recipe.cookTime === 0;
+
+  const minUnit = t("cookingTime.minUnit");
+  const timeLabel = cookTimeLabel(recipe, minUnit);
+
+  return (
+    <StandardModal
+      visible={visible}
+      onClose={onClose}
+      scrollTopSignal={listAtTop}
+      type="bottom-sheet"
+      // Taller than the app-wide 75% bottom-sheet default on purpose —
+      // this modal's content (stats grid, ingredients, instructions) is
+      // heavier than a typical sheet, so it gets more of the screen to
+      // show title/stats/ingredients without needing to scroll right away.
+      maxHeight="92%"
+      // At 92% tall, the grab handle sits close to the top of the screen —
+      // a stretch for a one-handed thumb. Widen the drag-to-dismiss zone
+      // well past the shared default so it's reachable without needing to
+      // reach all the way up; stops short of the stats grid's own PRO
+      // MACROS touchable so that tap target still works normally.
+      dragZoneHeight={185}
+      // Carves out the close button's corner (see StandardModal's own
+      // comment on this prop) — the rest of the drag zone is untouched.
+      dragZoneRightInset={60}
+      contentStyle={{
+        backgroundColor: colors.card,
+        borderColor: colors.cardBorder,
+      }}
+    >
+      {/* Standard iOS grabber sizing/color (~36x5, translucent gray) —
+          same shared style every other sheet in the app uses. An earlier
+          version of this bumped it to 52x6 solid textTertiary to fix a
+          real tester not realizing this no-close-X modal was draggable,
+          but a second tester flagged the bigger/darker bar as looking
+          out of place next to every other sheet's handle, not native
+          iOS. Reverted then, with a note that the next step should be "an
+          explicit hint" instead of resizing the handle again — a second
+          tester has now independently hit the same discoverability
+          problem, so this adds that explicit hint: a real close button
+          below, alongside the handle rather than instead of it. */}
+      <View
+        style={[
+          styles.grabHandle,
+          { backgroundColor: colors.sheetHandle || colors.cardBorder },
+        ]}
+      />
+
+      {/* Header — pastel emoji tile matches the same dish category color
+          as its RecipeCard thumbnail on the feed, via resolveCategoryBadgeColors. */}
+      <View
+        style={[styles.headerBar, { borderBottomColor: colors.cardBorder }]}
+      >
+        <View
+          style={[
+            styles.dishBadge,
+            { backgroundColor: badgeColors.backgroundColor },
+          ]}
+        >
+          <Text style={styles.dishBadgeEmoji} allowFontScaling={false}>
+            {dishEmoji}
+          </Text>
+        </View>
+
+        <View style={styles.headerTitles}>
+          {/* Real complaint: a Polish (or other longer-translation) title
+              was minimized so aggressively by adjustsFontSizeToFit that it
+              became hard to read. headerBar already grows to fit content —
+              there is no fixed-height constraint forcing a shrink — so the
+              title should wrap at FULL size. Removing adjustsFontSizeToFit
+              entirely (not just raising the scale) is what guarantees a
+              long pollack/non-English title stays readable instead of
+              silently shrinking.
+              SECOND confirmed real failure, same root cause: the 3-line cap
+              added here still truncated longer titles mid-phrase with an
+              ellipsis ("Żółtym Serem, ..."), live-verified with a longer
+              Polish title. Same fix RecipeCard already applied for the
+              same reason (see its own "Unrestrict recipe title lines"
+              commit) — drop the line cap entirely since nothing here needs
+              a fixed height. */}
+          <Text style={[styles.recipeTitle, { color: colors.textPrimary }]}>
+            {recipe?.title || t("recipeDetail.fallbackTitle")}
+          </Text>
+          {/* Real icon component instead of an inline "⏱️" glyph — emoji
+              metrics vary by platform/font and were clipping at the top
+              against this row's tight line height. */}
+          <View style={styles.recipeSubtitleRow}>
+            <Clock size={12} color={colors.textSecondary} strokeWidth={2.5} />
+            <Text
+              style={[styles.recipeSubtitle, { color: colors.textSecondary }]}
+              numberOfLines={1}
+            >
+              {timeLabel}
+              {"  ·  "}
+              {recipe?.servings ||
+                t(
+                  servings === 1
+                    ? "recipeDetail.servesOne"
+                    : "recipeDetail.servesOther",
+                  { count: servings }
+                )}
+            </Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          onPress={onClose}
+          activeOpacity={0.7}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityRole="button"
+          accessibilityLabel={t("a11y.closeRecipeDetail")}
+          style={[
+            styles.closeButton,
+            { backgroundColor: colors.inputBg, borderColor: colors.cardBorder },
+          ]}
+        >
+          <X size={16} color={colors.textSecondary} strokeWidth={2.5} />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        ref={scrollRef}
+        style={styles.scrollFlex}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        bounces={false}
+        scrollEventThrottle={16}
+        onScroll={(e) => {
+          listAtTop.value = e.nativeEvent.contentOffset.y <= 0;
+        }}
+      >
+        {/* Redesigned from 7 separately-bordered boxes (4 stat cards + 3
+            macro cards) down to one borderless row of plain columns with
+            thin dividers — the box-per-datum treatment was the actual
+            source of the "chaotic, not minimalistic" feedback, not the
+            spacing between boxes (already tightened once; wasn't enough).
+            No background fill, no per-item border — just typography,
+            icons, and hairline rules, closer to how a premium recipe app
+            (NYT Cooking, Apple Health summary rows) presents a meta strip. */}
+        <View
+          style={[styles.metaHairline, { backgroundColor: colors.cardBorder }]}
+        />
+        <View style={styles.metaRow}>
+          <View style={styles.metaCol}>
+            <Text style={styles.metaValueEmerald}>
+              {formatTimeLabel(recipe?.prepTime, minUnit, `5 ${minUnit}`)}
+            </Text>
+            <View style={styles.metaLabelRow}>
+              <Clock size={11} color={EMERALD[600]} strokeWidth={2.5} />
+              <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
+                {t("recipeDetail.prepLabel")}
+              </Text>
+            </View>
+          </View>
+
+          <View style={[styles.metaDivider, { backgroundColor: colors.cardBorder }]} />
+
+          <View style={styles.metaCol}>
+            <Text style={isNoCook ? styles.metaValueIndigo : styles.metaValueAmber}>
+              {isNoCook ? t("recipeDetail.noCook") : formatTimeLabel(recipe?.cookTime, minUnit)}
+            </Text>
+            <View style={styles.metaLabelRow}>
+              {isNoCook ? (
+                <Snowflake size={11} color={INDIGO[600]} strokeWidth={2.5} />
+              ) : (
+                <Flame size={11} color={AMBER[500]} strokeWidth={2.5} />
+              )}
+              <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
+                {isNoCook ? t("recipeDetail.coldLabel") : t("recipeDetail.cookLabel")}
+              </Text>
+            </View>
+          </View>
+
+          <View style={[styles.metaDivider, { backgroundColor: colors.cardBorder }]} />
+
+          <TouchableOpacity
+            onPress={!isPro ? onOpenProModal : undefined}
+            activeOpacity={0.7}
+            style={styles.metaCol}
+          >
+            {!isPro ? (
+              <>
+                <Text style={styles.metaValuePro}>{t("menu.proBadge")}</Text>
+                <View style={styles.metaLabelRow}>
+                  <Lock size={10} color={AMBER[700]} strokeWidth={2.5} />
+                  <Text style={[styles.metaLabel, { color: AMBER[700] }]}>
+                    {t("recipeDetail.unlockLabel")}
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <>
+                <Text style={[styles.metaValueDark, { color: colors.textPrimary }]}>
+                  {recipe?.calories || t("recipeDetail.caloriesFallback")}
+                </Text>
+                <View style={styles.metaLabelRow}>
+                  <Sparkles size={11} color={AMBER[600]} strokeWidth={2.5} />
+                  <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
+                    {t("recipeDetail.caloriesLabel")}
+                  </Text>
+                </View>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Servings deliberately NOT repeated here — the header subtitle
+            ("15 min · Serves 2 people") already states it; a "2 PEOPLE"
+            column below was pure duplication, and the user caught it
+            directly ("the two people is too much... if it's at the top
+            already"). Down to 3 columns: Prep, Cook, Calories — each one
+            genuinely new information, nothing restated. */}
+
+        {/* Macros — same borderless column treatment, one thin rule above
+            to separate from the row above. Only renders when the AI
+            actually estimated these fields (never fabricated), and only
+            per-macro if present. */}
+        {isPro && (recipe?.protein || recipe?.carbs || recipe?.fat) ? (
+          <>
+            <View
+              style={[styles.metaHairline, { backgroundColor: colors.cardBorder }]}
+            />
+            <View style={styles.metaRow}>
+              {recipe?.protein ? (
+                <View style={styles.metaCol}>
+                  <Text style={[styles.metaValueMacro, { color: ROSE[600] }]}>
+                    {recipe.protein}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.metaLabel,
+                      { color: colors.roseText },
+                    ]}
+                  >
+                    {t("recipeDetail.proteinLabel")}
+                  </Text>
+                </View>
+              ) : null}
+              {recipe?.carbs ? (
+                <View style={styles.metaCol}>
+                  <Text style={[styles.metaValueMacro, { color: AMBER[600] }]}>
+                    {recipe.carbs}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.metaLabel,
+                      { color: colors.amberStrong },
+                    ]}
+                  >
+                    {t("recipeDetail.carbsLabel")}
+                  </Text>
+                </View>
+              ) : null}
+              {recipe?.fat ? (
+                <View style={styles.metaCol}>
+                  <Text style={[styles.metaValueMacro, { color: SKY[600] }]}>
+                    {recipe.fat}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.metaLabel,
+                      { color: colors.skyText },
+                    ]}
+                  >
+                    {t("recipeDetail.fatLabel")}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          </>
+        ) : null}
+        <View
+          style={[styles.metaHairline, { backgroundColor: colors.cardBorder }]}
+        />
+
+        <View
+          style={styles.modifierSection}
+          onLayout={(e) => {
+            modifierYRef.current = e.nativeEvent.layout.y;
+          }}
+        >
+          {!isPro ? (
+            <TouchableOpacity
+              onPress={onOpenProModal}
+              activeOpacity={0.85}
+              style={[
+                styles.modifierLockedRow,
+                {
+                  backgroundColor: colors.amberTint,
+                  borderColor: colors.amberRing,
+                },
+              ]}
+            >
+              <View style={styles.modifierIconBox}>
+                <Crown size={16} color={AMBER[500]} fill={AMBER[200]} />
+              </View>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text
+                  style={[
+                    styles.modifierLockedTitle,
+                    { color: colors.amberDeep },
+                  ]}
+                >
+                  {t("recipeDetail.modifyWithAI")}
+                </Text>
+                <Text
+                  style={[
+                    styles.modifierLockedSubtitle,
+                    { color: colors.amberCopy },
+                  ]}
+                  numberOfLines={2}
+                >
+                  {t("recipeDetail.modifyProDesc")}
+                </Text>
+              </View>
+              <Lock size={16} color={AMBER[700]} />
+            </TouchableOpacity>
+          ) : modifierOpen ? (
+            <View
+              style={[
+                styles.modifierOpenCard,
+                {
+                  backgroundColor: colors.amberFaint,
+                  borderColor: AMBER[400],
+                },
+              ]}
+            >
+              <View style={styles.modifierOpenHeader}>
+                <Sparkles size={15} color={AMBER[600]} />
+                <Text
+                  style={[
+                    styles.modifierOpenTitle,
+                    { color: colors.amberCopyBright },
+                  ]}
+                >
+                  {t("recipeDetail.modifyWithAI")}
+                </Text>
+              </View>
+              <TextInput
+                value={modifierInstruction}
+                onChangeText={setModifierInstruction}
+                placeholder={t("recipeDetail.modifyPlaceholder")}
+                placeholderTextColor={colors.textSecondary}
+                editable={!isModifying}
+                autoFocus
+                style={[
+                  styles.modifierInput,
+                  {
+                    backgroundColor: colors.card,
+                    borderColor: colors.cardBorder,
+                    color: colors.textPrimary,
+                  },
+                ]}
+                returnKeyType="send"
+                onSubmitEditing={handleModifyRecipe}
+              />
+              <View style={styles.modifierBtnRow}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setModifierOpen(false);
+                    setModifierInstruction("");
+                  }}
+                  disabled={isModifying}
+                  activeOpacity={0.8}
+                  style={[styles.modifierCancelBtn, { backgroundColor: colors.amberButton }]}
+                >
+                  <Text
+                    style={[
+                      styles.modifierCancelText,
+                      { color: colors.amberDeep },
+                    ]}
+                  >
+                    {t("recipeDetail.cancel")}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleModifyRecipe}
+                  disabled={isModifying || !modifierInstruction.trim()}
+                  activeOpacity={0.85}
+                  style={[
+                    styles.modifierSendBtn,
+                    { opacity: isModifying || !modifierInstruction.trim() ? 0.6 : 1 },
+                  ]}
+                >
+                  {isModifying ? (
+                    <ActivityIndicator size="small" color={WHITE} />
+                  ) : (
+                    <Text style={styles.modifierSendText}>{t("recipeDetail.apply")}</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <TouchableOpacity
+              onPress={() => setModifierOpen(true)}
+              activeOpacity={0.85}
+              style={[
+                styles.modifierRow,
+                {
+                  backgroundColor: colors.amberFaint,
+                  borderColor: AMBER[200],
+                },
+              ]}
+            >
+              <Sparkles size={16} color={colors.amberAccent} />
+              <Text
+                style={[
+                  styles.modifierRowText,
+                  { color: colors.amberAccent },
+                ]}
+              >
+                {t("recipeDetail.modifyWithAI")}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+              {t("recipeDetail.ingredientsTitle")}
+            </Text>
+            {/* Starts as the discovery hint so a first-time viewer knows the
+                rows are tappable; switches to a live "3 of 6 checked" count
+                the moment they check the first one, since at that point the
+                progress number is more useful than the instruction that got
+                them there. Turns accent green once everything's checked, a
+                small "you're done" signal while shopping/prepping. */}
+            {checkedCount > 0 ? (
+              <Text
+                style={[
+                  styles.sectionHint,
+                  {
+                    color:
+                      checkedCount === rawIngredients.length
+                        ? colors.accentGreen || EMERALD[500]
+                        : colors.textSecondary,
+                  },
+                ]}
+              >
+                {t("recipeDetail.ingredientsChecked", {
+                  checked: checkedCount,
+                  total: rawIngredients.length,
+                })}
+              </Text>
+            ) : (
+              <Text style={[styles.sectionHint, { color: colors.textSecondary }]}>
+                {t("recipeDetail.tapToCheckOff")}
+              </Text>
+            )}
+          </View>
+
+          <View style={[styles.groupCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+            {rawIngredients.map((item, idx) => {
+              const isChecked = !!checkedIngredients[idx];
+              const rawName = typeof item === "object" ? item?.name : item;
+              const cleanedTitle = cleanIngredientName(rawName);
+              const itemEmoji =
+                extractTrailingEmoji(rawName) ||
+                getIngredientStyle(cleanedTitle).emoji ||
+                getIngredientEmoji(cleanedTitle) ||
+                "🛒";
+              const itemQty = formatQtyFromItem(item);
+              // A plain-text line ("120g Hummus") carries its quantity in the text; set that apart from the name.
+              const split = itemQty ? { qty: "", name: cleanedTitle } : splitLeadingQuantity(cleanedTitle);
+              const isAssumedStaple = isAssumedStapleIngredient(
+                rawName,
+                recipeLanguageId
+              );
+
+              return (
+                <TouchableOpacity
+                  key={`ing-${idx}`}
+                  onPress={() => toggleIngredientCheck(idx)}
+                  activeOpacity={0.8}
+                  hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
+                  style={[
+                    styles.ingredientRow,
+                    idx > 0 && { borderTopWidth: 1, borderTopColor: colors.cardBorder },
+                    { opacity: isChecked ? 0.55 : 1 },
+                  ]}
+                >
+                  <View style={styles.ingredientLeft}>
+                    {/* Bare emoji, no tile behind it. A pastel chip here
+                        took the DISH's colour, so every row down the list
+                        repeated the identical square — same shape, same
+                        fill, no per-ingredient meaning. That's repetition
+                        rather than structure, so the ingredient reads
+                        better on its own. */}
+                    <Text style={styles.ingredientEmoji}>{itemEmoji}</Text>
+                    <Text
+                      style={[
+                        styles.ingredientName,
+                        { color: colors.textPrimary },
+                        isChecked && styles.ingredientNameChecked,
+                      ]}
+                      numberOfLines={2}
+                    >
+                      {split.qty ? (
+                        <Text style={[styles.ingredientQtyInline, { color: colors.greenStrong }]}>{split.qty} </Text>
+                      ) : null}
+                      {split.name || t("recipeDetail.ingredientFallback")}
+                    </Text>
+                    {isAssumedStaple ? (
+                      <TouchableOpacity
+                        onPress={() => onAssumedStaplePress(cleanedTitle)}
+                        activeOpacity={0.6}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        style={[
+                          styles.assumedStapleIconBtn,
+                          { backgroundColor: colors.inputBg },
+                        ]}
+                        accessibilityRole="button"
+                        accessibilityLabel={t("recipeDetail.assumedStapleTag")}
+                      >
+                        <Info
+                          size={16}
+                          color={colors.textSecondary}
+                          strokeWidth={strokeFor(16)}
+                        />
+                      </TouchableOpacity>
+                    ) : null}
+                  </View>
+
+                  <View style={styles.ingredientRight}>
+                    {itemQty ? (
+                      <Text style={styles.ingredientQty}>{itemQty}</Text>
+                    ) : null}
+                    <View
+                      style={[
+                        styles.checkCircle,
+                        isChecked
+                          ? styles.checkCircleActive
+                          : {
+                              ...styles.checkCircleInactive,
+                              backgroundColor: colors.card,
+                              borderColor: colors.cardBorder,
+                            },
+                      ]}
+                    >
+                      {isChecked ? (
+                        <Check size={14} color={WHITE} strokeWidth={2.5} />
+                      ) : null}
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Optional, rare — only rendered when the model set both
+              upgradeIngredient/upgradeNote (see geminiRecipes.js). This
+              recipe's own ingredientsList/steps NEVER include anything the
+              user doesn't actually have; this is a clearly separate,
+              purely informational aside about what a next-level version
+              would need, with a one-tap way to add just that one item to
+              the Shopping List for next time. */}
+          {recipe?.upgradeIngredient ? (
+            <View
+              style={[
+                styles.upgradeTipCard,
+                {
+                  backgroundColor: colors.greenTint,
+                  borderColor: colors.greenTintBorder,
+                },
+              ]}
+            >
+              <View style={styles.upgradeTipHeaderRow}>
+                <Sparkles size={16} color={colors.greenStrong} />
+                <Text
+                  style={[
+                    styles.upgradeTipLabel,
+                    { color: colors.greenText },
+                  ]}
+                >
+                  {t("recipeDetail.upgradeTipLabel", {
+                    ingredient: recipe.upgradeIngredient,
+                  })}
+                </Text>
+              </View>
+              <Text
+                style={[styles.upgradeTipNote, { color: colors.textSecondary }]}
+              >
+                {recipe.upgradeNote}
+              </Text>
+              <TouchableOpacity
+                onPress={handleAddUpgradeIngredient}
+                activeOpacity={0.8}
+                disabled={upgradeAdded}
+                style={[
+                  styles.upgradeTipButton,
+                  upgradeAdded
+                    ? {
+                        backgroundColor: "transparent",
+                        borderWidth: 1,
+                        borderColor: colors.greenRing,
+                      }
+                    : { backgroundColor: colors.greenFill },
+                ]}
+              >
+                {upgradeAdded ? (
+                  <Check size={14} color={colors.greenStrong} strokeWidth={2.5} />
+                ) : (
+                  <ShoppingCart size={14} color={WHITE} />
+                )}
+                <Text
+                  style={[
+                    styles.upgradeTipButtonText,
+                    upgradeAdded && { color: colors.greenStrong },
+                  ]}
+                >
+                  {upgradeAdded
+                    ? t("recipeDetail.upgradeTipAddedButton")
+                    : t("recipeDetail.upgradeTipAdd")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+        </View>
+
+        <View style={[styles.sectionContainer, styles.instructionsSection]}>
+          <View style={styles.sectionHeaderRow}>
+            <Text
+              style={[
+                styles.sectionTitle,
+                styles.sectionTitleSolo,
+                { color: colors.textPrimary },
+              ]}
+            >
+              {t("recipeDetail.instructionsTitle")}
+            </Text>
+            {/* Progress count, unlike Ingredients without a hint first:
+                no label before the first tap (the step rows are plainly
+                numbered cards, and a "tap to check off" line next to a
+                recipe's instructions read as noise — the ingredients still
+                carry it, where ticking off what you have is the point), then a
+                live "2 of 4" count once they check the first step, turning
+                green when all are done. */}
+            {stepsCheckedCount > 0 ? (
+              <Text
+                style={[
+                  styles.sectionHint,
+                  {
+                    color:
+                      stepsCheckedCount === steps.length
+                        ? colors.accentGreen || EMERALD[500]
+                        : colors.textSecondary,
+                  },
+                ]}
+              >
+                {t("recipeDetail.stepsChecked", {
+                  checked: stepsCheckedCount,
+                  total: steps.length,
+                })}
+              </Text>
+            ) : null}
+          </View>
+          <View style={[styles.groupCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+            {steps.map((step, idx) => {
+              const isChecked = !!checkedSteps[idx];
+              const stepText =
+                typeof step === "object"
+                  ? step?.text || step?.instruction || ""
+                  : String(step || "");
+
+              return (
+                <TouchableOpacity
+                  key={`step-${idx}`}
+                  onPress={() => toggleStepCheck(idx)}
+                  activeOpacity={0.7}
+                  style={[
+                    styles.stepCard,
+                    idx > 0 && { borderTopWidth: 1, borderTopColor: colors.cardBorder },
+                    isChecked && { backgroundColor: colors.greenGlass },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.checkCircle,
+                      isChecked
+                        ? styles.checkCircleActive
+                        : styles.checkCircleInactive,
+                    ]}
+                  >
+                    {isChecked ? (
+                      <Check size={12} color={WHITE} strokeWidth={3} />
+                    ) : (
+                      <Text
+                        style={[
+                          styles.checkCircleNumber,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
+                        {idx + 1}
+                      </Text>
+                    )}
+                  </View>
+                  <Text
+                    style={[
+                      styles.stepText,
+                      { color: colors.textPrimary },
+                      isChecked && { opacity: 0.5 },
+                    ]}
+                  >
+                    {stepText}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      </ScrollView>
+
+      <View
+        style={[
+          styles.stickyFooter,
+          {
+            backgroundColor: colors.card,
+            borderTopColor: colors.cardBorder,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={onToggleFavorite}
+          activeOpacity={0.8}
+          style={[
+            styles.favoriteButton,
+            // Solid = "do this", outline = "done". A sticky footer CTA is
+            // the strongest affordance on the screen, so the state that
+            // still WANTS a tap is the one that carries the weight; once
+            // saved it recedes to a quiet confirmation. This was inverted
+            // (pale when unsaved, solid once saved), which also put it in
+            // direct contradiction with the "Add to Shopping List" button
+            // higher up the same screen, which already works this way.
+            isFavorite
+              ? {
+                  backgroundColor: colors.accentGreenSoft,
+                  borderWidth: 1.5,
+                  borderColor: colors.greenRingDeep,
+                }
+              : styles.favoritePrimary,
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={
+            isFavorite ? t("a11y.removeFromFavorites") : t("a11y.saveToFavorites")
+          }
+        >
+          <Animated.View style={{ transform: [{ scale: heartScaleAnim }] }}>
+            <Heart
+              size={16}
+              color={isFavorite ? (colors.greenStrong) : WHITE}
+              fill={isFavorite ? (colors.greenStrong) : "transparent"}
+            />
+          </Animated.View>
+          <Text
+            style={[
+              styles.favoriteButtonText,
+              isFavorite && { color: colors.greenStrong },
+            ]}
+          >
+            {isFavorite
+              ? t("recipeDetail.recipeSavedFooter")
+              : t("recipeDetail.saveToFavoritesFooter")}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </StandardModal>
+  );
+}
+
+const styles = StyleSheet.create({
+  // Matches the shared handle size every other sheet uses — see the
+  // comment above where this is rendered.
+  grabHandle: {
+    width: 40,
+    height: 4.5,
+    borderRadius: 3,
+    alignSelf: "center",
+    marginVertical: 8,
+  },
+  headerBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: SLATE[100],
+    paddingBottom: 14,
+    marginBottom: 8,
+    gap: 12,
+  },
+  // Exactly matches RecipeCard's emoji tile (72x72, rounded-2xl) so the
+  // modal header reads as a seamless continuation of the card you tapped —
+  // no border, just the clean pastel fill (a static border read as an
+  // extra outer box wrapped around the thumbnail).
+  dishBadge: {
+    width: 72,
+    height: 72,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    overflow: "visible",
+  },
+  closeButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    alignSelf: "flex-start",
+  },
+  dishBadgeEmoji: {
+    fontSize: 40,
+    lineHeight: emojiLine(40),
+    textAlign: "center",
+  },
+  headerTitles: { flex: 1, minWidth: 0 },
+  recipeTitle: {
+    color: SLATE[900],
+    fontSize: 18,
+    fontWeight: "700",
+    lineHeight: 23,
+    letterSpacing: -0.3,
+  },
+  recipeSubtitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACE.xs + 1,
+    marginTop: SPACE.sm - 2,
+  },
+  recipeSubtitle: {
+    color: SLATE[500],
+    fontSize: 12,
+    fontWeight: "600",
+    lineHeight: 15,
+  },
+  scrollFlex: {
+    flexGrow: 0,
+    flexShrink: 1,
+  },
+  scrollContent: {
+    paddingTop: 18,
+    paddingBottom: 32,
+  },
+  // Borderless meta strip — replaced 7 separately-bordered boxes (4 stat
+  // cards + 3 macro cards) with plain columns + hairline dividers. The
+  // per-item box chrome was the actual source of "chaotic, not
+  // minimalistic" feedback; a prior pass that only tightened spacing
+  // between the same boxes didn't resolve it.
+  metaHairline: {
+    height: StyleSheet.hairlineWidth,
+    marginVertical: 10,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  metaCol: {
+    flex: 1,
+    alignItems: "center",
+  },
+  metaDivider: {
+    width: StyleSheet.hairlineWidth,
+    height: 28,
+  },
+  metaLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 3,
+  },
+  metaLabel: {
+    color: SLATE[400],
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    marginLeft: 3,
+  },
+  metaValueEmerald: { color: EMERALD[600], fontSize: 18, fontWeight: "700" },
+  metaValueAmber: { color: AMBER[600], fontSize: 18, fontWeight: "700" },
+  metaValueIndigo: { color: INDIGO[600], fontSize: 15, fontWeight: "700" },
+  metaValueDark: { fontSize: 18, fontWeight: "700" },
+  metaValuePro: { color: AMBER[700], fontSize: 15, fontWeight: "700" },
+  metaValueMacro: { fontSize: 16, fontWeight: "700" },
+  modifierSection: { marginTop: 0 },
+  modifierLockedRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: AMBER[50],
+    borderWidth: 1,
+    borderColor: AMBER[200],
+    borderRadius: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  modifierIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "rgba(245,158,11,0.16)",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  modifierLockedTitle: { fontSize: 13, fontWeight: "700", color: AMBER[900] },
+  modifierLockedSubtitle: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: AMBER[800],
+    marginTop: 1,
+  },
+  modifierRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingVertical: 11,
+  },
+  modifierRowText: { fontSize: 13, fontWeight: "700", color: AMBER[600] },
+  modifierOpenCard: {
+    borderWidth: 1.5,
+    borderRadius: 16,
+    padding: 12,
+  },
+  modifierOpenHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 8,
+  },
+  modifierOpenTitle: { fontSize: 13, fontWeight: "700", color: AMBER[800] },
+  modifierInput: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 13,
+    fontWeight: "600",
+    minHeight: 44,
+  },
+  modifierBtnRow: { flexDirection: "row", gap: 8, marginTop: 8 },
+  modifierCancelBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modifierCancelText: { fontSize: 12, fontWeight: "700", color: AMBER[900] },
+  modifierSendBtn: {
+    flex: 1,
+    height: 40,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: AMBER[600],
+  },
+  modifierSendText: { fontSize: 12, fontWeight: "700", color: WHITE },
+  sectionContainer: { marginTop: 10 },
+  /** Cooking Area — airy gap after Ingredients */
+  instructionsSection: { marginTop: 24 },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: DS.spacing.md,
+  },
+  sectionTitle: {
+    ...DS.typography.sectionTitle,
+    letterSpacing: -0.2,
+  },
+  sectionTitleSolo: {
+    marginBottom: DS.spacing.md,
+  },
+  sectionHint: {
+    ...DS.typography.hint,
+  },
+  listStack: { gap: 12 },
+  // One grouped card with hairlines between rows, like the lists in Profile and Settings, instead of a stack
+  // of separate bordered cards (those made a ten-ingredient recipe a very long scroll).
+  groupCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    overflow: "hidden",
+  },
+  ingredientQtyInline: {
+    fontWeight: "800",
+  },
+  upgradeTipCard: {
+    marginTop: 14,
+    borderRadius: DS.borderRadius.md,
+    borderWidth: 1,
+    padding: 14,
+    gap: 8,
+  },
+  upgradeTipHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  upgradeTipLabel: {
+    fontSize: 13,
+    fontWeight: "700",
+    flexShrink: 1,
+  },
+  upgradeTipNote: {
+    fontSize: 12.5,
+    lineHeight: 18,
+  },
+  upgradeTipButton: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    marginTop: 2,
+  },
+  upgradeTipButtonText: {
+    color: WHITE,
+    fontSize: 12.5,
+    fontWeight: "700",
+  },
+  ingredientRow: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    minHeight: 52,
+  },
+  ingredientUnchecked: {
+    backgroundColor: DS.colors.surface,
+    borderColor: DS.colors.border,
+  },
+  ingredientChecked: {
+    backgroundColor: EMERALD[50],
+    borderColor: EMERALD[100],
+  },
+  ingredientLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    paddingRight: 6,
+    minWidth: 0,
+  },
+  ingredientEmoji: { fontSize: 19, lineHeight: emojiLine(19), marginRight: 12 },
+  ingredientName: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: SLATE[800],
+    flex: 1,
+  },
+  assumedStapleIconBtn: {
+    marginLeft: 6,
+    flexShrink: 0,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ingredientNameChecked: {
+    color: SLATE[400],
+    textDecorationLine: "line-through",
+  },
+  ingredientRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexShrink: 0,
+  },
+  ingredientQty: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: SLATE[500],
+    marginRight: 8,
+  },
+  checkCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
+  checkCircleInactive: {
+    borderColor: SLATE[300],
+    backgroundColor: WHITE,
+  },
+  checkCircleActive: {
+    borderColor: EMERALD[500],
+    backgroundColor: EMERALD[500],
+  },
+  checkCircleNumber: {
+    fontSize: 11,
+    fontWeight: "700",
+    lineHeight: 13,
+  },
+  stepCard: {
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 14,
+    minHeight: 56,
+  },
+  stepCardInactive: {
+    backgroundColor: WHITE,
+    borderColor: SLATE[200],
+  },
+  stepCardActive: {
+    backgroundColor: AMBER[50],
+    borderColor: AMBER[400],
+    borderWidth: 1.5,
+  },
+  stepBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+    marginRight: 12,
+    flexShrink: 0,
+  },
+  // Inactive badges are navigational furniture, not content — as flat
+  // near-black circles they were the heaviest elements on an otherwise
+  // light page, and they blunted the amber "you are here" badge by making
+  // it compete against four equally heavy dark dots. Light neutral instead
+  // (applied inline above, isDark-aware) so the amber one actually leads.
+  // Ties to the same amber as stepCardActive so the "this one's selected"
+  // language is consistent card-to-badge.
+  stepBadgeActive: { backgroundColor: AMBER[600] },
+  stepBadgeText: {
+    color: WHITE,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  stepText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: SLATE[800],
+    lineHeight: 28,
+    flex: 1,
+    flexShrink: 1,
+  },
+  // No color override here on purpose — the inline {color: colors.textPrimary}
+  // already applied to the base stepText is theme-correct; overriding it with
+  // DS.colors.ink (a static near-black) made the active step's text
+  // unreadable in dark mode. Bold weight + the amber active background
+  // already convey the "selected" state without needing a color change too.
+  stepTextActive: {
+    fontWeight: "700",
+  },
+  stickyFooter: {
+    borderTopWidth: 1,
+    borderTopColor: DS.colors.borderSoft,
+    paddingTop: DS.spacing.md,
+    paddingBottom: DS.spacing.sm,
+    backgroundColor: DS.colors.surface,
+  },
+  favoriteButton: {
+    paddingVertical: 17,
+    borderRadius: DS.borderRadius.md,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  // The un-saved (action-wanted) state: solid primary emerald, same as
+  // every other primary CTA in the app. The saved state's lighter
+  // confirmation colors are applied inline above, since they're
+  // isDark-aware.
+  favoritePrimary: { backgroundColor: EMERALD[600] },
+  favoriteButtonText: {
+    color: WHITE,
+    fontSize: 15,
+    fontWeight: "700",
+    marginLeft: 8,
+  },
+});

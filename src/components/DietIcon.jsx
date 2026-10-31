@@ -1,0 +1,70 @@
+import React from "react";
+import { View } from "react-native";
+import {
+  Carrot,
+  Sprout,
+  WheatOff,
+  MilkOff,
+  GlassWater,
+  Beef,
+  NutOff,
+  Fish,
+  Droplet,
+} from "../icons";
+import { useTheme } from "../context/ThemeContext";
+import { EMERALD, WHITE } from "../theme/palette";
+
+// One vector icon per dietary restriction, replacing the emoji in
+// data/dietaryOptions.js (which stays for any other consumer). Emoji glyphs
+// are drawn differently by Apple and Google and never matched the app's own
+// icon language; these share one stroke weight and take the theme's emerald.
+//
+// Nine shapes that read as nine different things. "Bez laktozy" and "Bez
+// nabiału" used to be a crossed-out milk bottle and a plain one — the plain
+// bottle looked like "contains milk" — and vegetarian/vegan were both
+// plants. Now: carrot / a sprout for vegan (lucide's leaf-V "vegan" mark
+// blurs into a blob at 18px), crossed-out milk for lactose, a plain glass
+// for dairy-free (an ice-cream bowl read as "contains dairy").
+const DIET_ICONS = {
+  vegetarian: Carrot,
+  vegan: Sprout,
+  gluten_free: WheatOff,
+  lactose_free: MilkOff,
+  dairy_free: GlassWater,
+  keto: Beef,
+  nut_free: NutOff,
+  pescatarian: Fish,
+  diabetic: Droplet,
+};
+
+/**
+ * Icon in a round tinted disc. `active` flips it to a solid emerald disc with
+ * a white icon — the selected state.
+ */
+export default function DietIcon({ id, size = 32, active = false }) {
+  const { colors } = useTheme();
+  const Icon = DIET_ICONS[id] || Carrot;
+  const tint = colors.accentGreenSoft;
+  const border = colors.greenRing;
+  const ink = colors.greenStrong;
+  return (
+    <View
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: active ? EMERALD[500] : tint,
+        borderWidth: 1,
+        borderColor: active ? EMERALD[500] : border,
+      }}
+    >
+      <Icon
+        size={Math.round(size * 0.5)}
+        color={active ? WHITE : ink}
+        strokeWidth={2.2}
+      />
+    </View>
+  );
+}

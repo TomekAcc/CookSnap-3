@@ -1,0 +1,274 @@
+import {
+  getDishEmojiAndStyle,
+} from "../utils/imageUtils";
+import { log } from "../utils/log";
+import { AMBER, EMERALD, ORANGE, PINK, SLATE, TW_GREEN } from "../theme/palette";
+
+export const CATEGORY_STYLE = {
+  breakfast: { emoji: "🥐", colors: [AMBER[500], ORANGE[600]] },
+  lunch: { emoji: "🍲", colors: [EMERALD[500], EMERALD[600]] },
+  dinner: { emoji: "🌙", colors: [SLATE[900], SLATE[800]] },
+  snack: { emoji: "🥗", colors: [TW_GREEN[500], TW_GREEN[600]] },
+  dessert: { emoji: "🍰", colors: [PINK[500], PINK[700]] },
+};
+
+export const MEAL_TYPES = [
+  { id: "all", label: "All", emoji: "🥘" },
+  { id: "breakfast", label: "Breakfast", emoji: "🥐" },
+  { id: "lunch", label: "Lunch", emoji: "🍲" },
+  { id: "dinner", label: "Dinner", emoji: "🌙" },
+  { id: "snack", label: "Snack", emoji: "🥗" },
+  { id: "dessert", label: "Dessert", emoji: "🍰" },
+];
+
+export const HUNGER_LEVELS = [
+  { id: "light", label: "Light", emoji: "🥗", description: "Snack / Light portion" },
+  { id: "normal", label: "Normal", emoji: "🍝", description: "Standard portion" },
+  { id: "hungry", label: "Hearty", emoji: "🥩", description: "Filling / Hearty portion" },
+];
+
+export const POPULAR_PANTRY = [
+  { id: "rice", name: "Rice", emoji: "🍚" },
+  { id: "onion", name: "Onion", emoji: "🧅" },
+  { id: "cheese", name: "Cheese", emoji: "🧀" },
+  { id: "canned-tomatoes", name: "Canned Tomatoes", emoji: "🥫" },
+];
+
+// Suggestions for the "add to pantry" sheet, in the order they are offered.
+// `name` is English and only used to recognise an item the user already has;
+// the label shown (and the name stored) comes from `pantryStaple.<id>` in the
+// user's language. `category` is one of the four fixed pantry tokens.
+export const PANTRY_STAPLES = [
+  { id: "olive-oil", name: "Olive oil", emoji: "🫒", category: "Oils & Sauces" },
+  { id: "salt", name: "Salt", emoji: "🧂", category: "Spices & Herbs" },
+  { id: "pepper", name: "Black pepper", emoji: "🧂", category: "Spices & Herbs" },
+  { id: "garlic", name: "Garlic", emoji: "🧄", category: "Spices & Herbs" },
+  { id: "pasta", name: "Pasta", emoji: "🍝", category: "Grains & Baking" },
+  { id: "rice", name: "Rice", emoji: "🍚", category: "Grains & Baking" },
+  { id: "flour", name: "Flour", emoji: "🌾", category: "Grains & Baking" },
+  { id: "butter", name: "Butter", emoji: "🧈", category: "Oils & Sauces" },
+  { id: "sugar", name: "Sugar", emoji: "🍬", category: "Grains & Baking" },
+  { id: "soy-sauce", name: "Soy sauce", emoji: "🍾", category: "Oils & Sauces" },
+  { id: "canned-tomatoes", name: "Canned tomatoes", emoji: "🥫", category: "Condiments" },
+  { id: "vegetable-oil", name: "Vegetable oil", emoji: "🌻", category: "Oils & Sauces" },
+  { id: "vinegar", name: "Vinegar", emoji: "🍾", category: "Oils & Sauces" },
+  { id: "honey", name: "Honey", emoji: "🍯", category: "Condiments" },
+  { id: "paprika", name: "Paprika", emoji: "🌶️", category: "Spices & Herbs" },
+  { id: "oregano", name: "Oregano", emoji: "🌿", category: "Spices & Herbs" },
+  { id: "cinnamon", name: "Cinnamon", emoji: "🍂", category: "Spices & Herbs" },
+  { id: "baking-powder", name: "Baking powder", emoji: "🧁", category: "Grains & Baking" },
+  { id: "oats", name: "Rolled oats", emoji: "🥣", category: "Grains & Baking" },
+  { id: "ketchup", name: "Ketchup", emoji: "🍅", category: "Condiments" },
+  { id: "mustard", name: "Mustard", emoji: "🫙", category: "Condiments" },
+  { id: "mayonnaise", name: "Mayonnaise", emoji: "🫙", category: "Condiments" },
+];
+
+export const PANTRY_CATEGORIES = [
+  "All",
+  "Spices & Herbs",
+  "Oils & Sauces",
+  "Grains & Baking",
+  "Condiments",
+];
+
+// Exactly 5 default recipes — dish-matched emoji badges (🍳 🥘 🍞 🍨 🍝)
+const RAW_RECIPES = [
+  {
+    id: "1",
+    title: "Zesty Lemon Yogurt Poached Egg Bowl",
+    category: "breakfast",
+    vectorType: "egg_bowl",
+    prepTime: 8,
+    cookTime: 10,
+    baseServings: 2,
+    isPro: false,
+    matchBadge: "✨ Uses 4 items from fridge",
+    matchCount: 4,
+    ingredients: [
+      { name: "Eggs", amount: 2, unit: "pcs" },
+      { name: "Yogurt", amount: 150, unit: "g" },
+      { name: "Lemon", amount: 1, unit: "pcs" },
+      { name: "Fresh Herbs", amount: 1, unit: "handful" },
+    ],
+    steps: [
+      "Warm yogurt gently and season with lemon zest.",
+      "Poach eggs in simmering water for about 3 minutes.",
+      "Spoon yogurt into bowls and nestle a poached egg on top.",
+      "Finish with herbs, lemon juice, and black pepper.",
+    ],
+  },
+  {
+    id: "2",
+    title: "Red Bell Pepper and Tofu Stir-Fry",
+    category: "dinner",
+    vectorType: "stir_fry",
+    prepTime: 10,
+    cookTime: 12,
+    baseServings: 2,
+    isPro: false,
+    matchBadge: "✨ Uses 3 items from fridge",
+    matchCount: 3,
+    ingredients: [
+      { name: "Tofu", amount: 200, unit: "g" },
+      { name: "Red Bell Pepper", amount: 1, unit: "pcs" },
+      { name: "Garlic", amount: 2, unit: "cloves" },
+      { name: "Soy Sauce", amount: 30, unit: "ml" },
+    ],
+    steps: [
+      "Cube tofu and slice red bell pepper into strips.",
+      "Sear tofu in a hot pan until golden on the edges.",
+      "Add pepper and garlic; stir-fry 4–5 minutes.",
+      "Finish with soy sauce and serve hot from the pan.",
+    ],
+  },
+  {
+    id: "3",
+    title: "Sweet Jam and Butter Toast Snack",
+    category: "breakfast",
+    vectorType: "toast",
+    prepTime: 3,
+    cookTime: 5,
+    baseServings: 2,
+    isPro: false,
+    matchBadge: "✨ Uses 3 items from fridge",
+    matchCount: 3,
+    ingredients: [
+      { name: "Bread", amount: 4, unit: "slices" },
+      { name: "Butter", amount: 20, unit: "g" },
+      { name: "Jam", amount: 40, unit: "g" },
+    ],
+    steps: [
+      "Toast bread until crisp and golden.",
+      "Spread a thin layer of soft butter.",
+      "Add a generous spoon of jam.",
+      "Serve immediately while warm.",
+    ],
+  },
+  {
+    id: "4",
+    title: "Apple Yogurt Dessert Parfait",
+    category: "dessert",
+    vectorType: "parfait",
+    prepTime: 8,
+    cookTime: 5,
+    baseServings: 2,
+    isPro: false,
+    matchBadge: "✨ Uses 3 items from fridge",
+    matchCount: 3,
+    ingredients: [
+      { name: "Apple", amount: 2, unit: "pcs" },
+      { name: "Yogurt", amount: 200, unit: "g" },
+      { name: "Honey", amount: 20, unit: "g" },
+    ],
+    steps: [
+      "Dice apples and soften briefly with a drizzle of honey.",
+      "Cool the apples slightly.",
+      "Layer yogurt, apples, and a crunchy sprinkle in glasses.",
+      "Finish with honey and serve chilled or room temp.",
+    ],
+  },
+  {
+    id: "5",
+    title: "Garlic Butter Fettuccine Pasta",
+    category: "dinner",
+    vectorType: "pasta",
+    prepTime: 5,
+    cookTime: 12,
+    baseServings: 2,
+    isPro: false,
+    matchBadge: "✨ Uses 3 items from fridge",
+    matchCount: 3,
+    ingredients: [
+      { name: "Fettuccine", amount: 200, unit: "g" },
+      { name: "Garlic", amount: 3, unit: "cloves" },
+      { name: "Butter", amount: 40, unit: "g" },
+      { name: "Salt & Pepper", amount: 1, unit: "pinch" },
+    ],
+    steps: [
+      "Boil fettuccine in salted water until al dente, then drain.",
+      "Melt butter and sauté minced garlic until fragrant.",
+      "Toss pasta in the garlic butter until glossy.",
+      "Season and finish with fresh herbs if available.",
+    ],
+  },
+];
+
+/** Safe module-level init — Soft UI emoji + pastel badge metadata (no photos). */
+function buildRecipesWithEmojiBadges(raw) {
+  try {
+    return (raw || []).map((recipe, idx) => {
+      try {
+        const style = getDishEmojiAndStyle(recipe?.title);
+        return {
+          ...recipe,
+          emoji: style.emoji,
+          emojiBgClass: style.bgClass,
+          dishCategory: style.category,
+          cardIndex: idx,
+        };
+      } catch {
+        return {
+          ...recipe,
+          emoji: "🥘",
+          emojiBgClass: "bg-stone-100/60 border-stone-200/50",
+          dishCategory: "default",
+          cardIndex: idx,
+        };
+      }
+    });
+  } catch (err) {
+    log.warn("[Cook AI] Failed to stamp recipe emoji badges on boot:", err?.message);
+    return (raw || []).map((recipe, idx) => ({
+      ...recipe,
+      emoji: "🥘",
+      emojiBgClass: "bg-stone-100/60 border-stone-200/50",
+      dishCategory: "default",
+      cardIndex: idx,
+    }));
+  }
+}
+
+export const RECIPES = buildRecipesWithEmojiBadges(RAW_RECIPES);
+
+/** Guaranteed 5-recipe fallback used by context if filtering / network fails. */
+export const FALLBACK_RECIPES = RECIPES.slice(0, 5);
+
+export function scaleAmount(amount, baseServings, targetServings) {
+  const scaled = (amount * targetServings) / baseServings;
+  if (Number.isInteger(scaled)) return scaled;
+  return Math.round(scaled * 10) / 10;
+}
+
+/** Always return up to 5 free recipes for the default feed. Never throws. */
+export function filterRecipes(recipes, mealType, hungerLevel) {
+  try {
+    const list = Array.isArray(recipes) ? recipes : [];
+    let filtered = list.filter((r) => r && !r.isPro);
+
+    if (mealType !== "all") {
+      filtered = filtered.filter((r) => r.category === mealType);
+    }
+
+    if (hungerLevel === "light") {
+      filtered = filtered.filter(
+        (r) =>
+          r.category === "snack" ||
+          r.category === "dessert" ||
+          (Number(r.prepTime) || 0) + (Number(r.cookTime) || 0) <= 20
+      );
+    } else if (hungerLevel === "hungry") {
+      filtered = filtered.filter(
+        (r) => (r.baseServings || 0) >= 2 || (Number(r.cookTime) || 0) >= 10
+      );
+    }
+
+    if (filtered.length === 0) {
+      filtered = list.filter((r) => r && !r.isPro);
+    }
+
+    return filtered.slice(0, 5);
+  } catch (err) {
+    log.warn("[Cook AI] filterRecipes failed:", err?.message);
+    return Array.isArray(recipes) ? recipes.filter(Boolean).slice(0, 5) : [];
+  }
+}

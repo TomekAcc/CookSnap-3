@@ -1,0 +1,26 @@
+node_modules/
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+.DS_Store
+*.pem
+
+# local env files
+.env
+.env*.local
+
+# typescript
+*.tsbuildinfo
+scripts/smoke-test-screenshots/
+
+# Cloudflare Worker local state
+proxy/.wrangler/
+proxy/node_modules/
+proxy/.dev.vars
