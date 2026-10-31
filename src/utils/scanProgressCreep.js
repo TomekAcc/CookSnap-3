@@ -91,7 +91,7 @@ export function startScanProgress(
  *   phone whose JS thread is busy preparing the photo the native animation can start late, so the position the
  *   clock predicts (`from`) can be ahead of the bar; starting there made the bar leap forward in one frame. So the
  *   native position is asked for (stopAnimation's callback) and `from`/the JS value are only the fallback, for
- *   environments that never answer (tests) or answer too late (120ms).
+ *   environments that never answer (tests) or answer too late (NATIVE_POSITION_WAIT_MS).
  * - It continues at the bar's own pace (`speed`, bar-lengths per second): the first moment of the fill moves as
  *   fast as the bar was moving, and the fill peaks at about 1.4x that, within 0.5s to 2.2s. (A bar creeping at
  *   0.03/s used to be dragged to full at 5-10 times that, and even at 2x it read as a rush.)
@@ -99,6 +99,12 @@ export function startScanProgress(
  * The caller must stop its own driver first: anything that keeps calling setValue on the same Animated.Value
  * cancels the fill. Returns a cancel function; `onDone` is not called after it.
  */
+// How long to wait for the native position before falling back to the clock's estimate. The answer has to
+// cross to the UI thread and back, and it arrives just as the JS thread is busiest (parsing the result,
+// rendering the list), so 120ms was often too short: the estimate then won, and when the native bar was behind it
+// (it can start late while JS is busy preparing the photo) the bar visibly jumped forward.
+const NATIVE_POSITION_WAIT_MS = 450;
+
 export function finishProgress(anim, onDone, { useNativeDriver = true, from, speed } = {}) {
   let cancelled = false;
   let started = false;
@@ -133,7 +139,7 @@ export function finishProgress(anim, onDone, { useNativeDriver = true, from, spe
   fallbackTimer = setTimeout(() => {
     const js = typeof anim.__getValue === "function" ? Number(anim.__getValue()) || 0 : 0;
     begin(typeof from === "number" ? from : js);
-  }, 120);
+  }, NATIVE_POSITION_WAIT_MS);
 
   return () => {
     cancelled = true;

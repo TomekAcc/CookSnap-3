@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe("finishProgress", () => {
-  const settle = () => jest.advanceTimersByTime(130); // a native value that never answers: the fallback runs
+  const settle = () => jest.advanceTimersByTime(460); // a native value that never answers: the fallback runs
   // Stands in for a natively driven value in jest, whose position request is never answered.
   const silent = (value) => {
     const anim = new Animated.Value(value);
