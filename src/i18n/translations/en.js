@@ -372,8 +372,8 @@ export default {
   "recipeDetail.stepsChecked": "{checked} of {total} steps done",
   "recipeDetail.ingredientFallback": "Ingredient",
   "recipeDetail.instructionsTitle": "Instructions",
-  "recipeDetail.recipeSavedFooter": "RECIPE SAVED TO FAVORITES",
-  "recipeDetail.saveToFavoritesFooter": "SAVE TO FAVORITES",
+  "recipeDetail.recipeSavedFooter": "Recipe saved to favorites",
+  "recipeDetail.saveToFavoritesFooter": "Save to favorites",
   "recipeDetail.recipeUpdated": "✨ Recipe updated with AI",
   "recipeDetail.modifyFailed": "Could not modify this recipe. Please try again.",
 

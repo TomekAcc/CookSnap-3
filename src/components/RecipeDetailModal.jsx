@@ -37,6 +37,7 @@ import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { DS } from "../utils/designSystem";
 import { formatTimeLabel, cookTimeLabel } from "../utils/timeFormat";
 import { emojiLine, SPACE, strokeFor } from "../theme/tokens";
+import { splitLeadingQuantity } from "../utils/ingredientQuantity";
 import { isAssumedStapleIngredient } from "../utils/assumedStaples";
 import { useEntitlements } from "../context/EntitlementsContext";
 import { useInventory } from "../context/InventoryContext";
@@ -774,7 +775,7 @@ export default function RecipeDetailModal() {
             )}
           </View>
 
-          <View style={styles.listStack}>
+          <View style={[styles.groupCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
             {rawIngredients.map((item, idx) => {
               const isChecked = !!checkedIngredients[idx];
               const rawName = typeof item === "object" ? item?.name : item;
@@ -785,6 +786,8 @@ export default function RecipeDetailModal() {
                 getIngredientEmoji(cleanedTitle) ||
                 "🛒";
               const itemQty = formatQtyFromItem(item);
+              // A plain-text line ("120g Hummus") carries its quantity in the text; set that apart from the name.
+              const split = itemQty ? { qty: "", name: cleanedTitle } : splitLeadingQuantity(cleanedTitle);
               const isAssumedStaple = isAssumedStapleIngredient(
                 rawName,
                 recipeLanguageId
@@ -798,12 +801,8 @@ export default function RecipeDetailModal() {
                   hitSlop={{ top: 10, bottom: 10, left: 8, right: 8 }}
                   style={[
                     styles.ingredientRow,
-                    {
-                      ...styles.ingredientUnchecked,
-                      backgroundColor: colors.card,
-                      borderColor: colors.outline,
-                      opacity: isChecked ? 0.55 : 1,
-                    },
+                    idx > 0 && { borderTopWidth: 1, borderTopColor: colors.cardBorder },
+                    { opacity: isChecked ? 0.55 : 1 },
                   ]}
                 >
                   <View style={styles.ingredientLeft}>
@@ -822,7 +821,10 @@ export default function RecipeDetailModal() {
                       ]}
                       numberOfLines={2}
                     >
-                      {cleanedTitle || t("recipeDetail.ingredientFallback")}
+                      {split.qty ? (
+                        <Text style={[styles.ingredientQtyInline, { color: colors.greenStrong }]}>{split.qty} </Text>
+                      ) : null}
+                      {split.name || t("recipeDetail.ingredientFallback")}
                     </Text>
                     {isAssumedStaple ? (
                       <TouchableOpacity
@@ -978,7 +980,7 @@ export default function RecipeDetailModal() {
               </Text>
             ) : null}
           </View>
-          <View style={styles.listStack}>
+          <View style={[styles.groupCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
             {steps.map((step, idx) => {
               const isChecked = !!checkedSteps[idx];
               const stepText =
@@ -993,15 +995,8 @@ export default function RecipeDetailModal() {
                   activeOpacity={0.7}
                   style={[
                     styles.stepCard,
-                    isChecked
-                      ? {
-                          backgroundColor: colors.greenGlass,
-                          borderColor: colors.greenRingBright,
-                        }
-                      : {
-                          backgroundColor: colors.card,
-                          borderColor: colors.cardBorder,
-                        },
+                    idx > 0 && { borderTopWidth: 1, borderTopColor: colors.cardBorder },
+                    isChecked && { backgroundColor: colors.greenGlass },
                   ]}
                 >
                   <View
@@ -1311,6 +1306,16 @@ const styles = StyleSheet.create({
     ...DS.typography.hint,
   },
   listStack: { gap: 12 },
+  // One grouped card with hairlines between rows, like the lists in Profile and Settings, instead of a stack
+  // of separate bordered cards (those made a ten-ingredient recipe a very long scroll).
+  groupCard: {
+    borderRadius: 18,
+    borderWidth: 1,
+    overflow: "hidden",
+  },
+  ingredientQtyInline: {
+    fontWeight: "800",
+  },
   upgradeTipCard: {
     marginTop: 14,
     borderRadius: DS.borderRadius.md,
@@ -1348,10 +1353,8 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   ingredientRow: {
-    borderRadius: DS.borderRadius.md,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderWidth: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -1425,15 +1428,12 @@ const styles = StyleSheet.create({
     lineHeight: 13,
   },
   stepCard: {
-    borderRadius: 16,
-    paddingVertical: 16,
+    paddingVertical: 14,
     paddingHorizontal: 14,
-    borderWidth: 1,
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 16,
-    marginBottom: 8,
-    minHeight: 64,
+    gap: 14,
+    minHeight: 56,
   },
   stepCardInactive: {
     backgroundColor: WHITE,
@@ -1491,7 +1491,7 @@ const styles = StyleSheet.create({
     backgroundColor: DS.colors.surface,
   },
   favoriteButton: {
-    paddingVertical: 20,
+    paddingVertical: 17,
     borderRadius: DS.borderRadius.md,
     flexDirection: "row",
     alignItems: "center",
@@ -1504,9 +1504,8 @@ const styles = StyleSheet.create({
   favoritePrimary: { backgroundColor: EMERALD[600] },
   favoriteButtonText: {
     color: WHITE,
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: "700",
-    letterSpacing: 0.8,
     marginLeft: 8,
   },
 });

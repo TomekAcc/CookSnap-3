@@ -123,3 +123,26 @@ describe("foodEmojiOrFallback", () => {
     expect(foodEmojiOrFallback(undefined, "Eggs")).toBe("🥚");
   });
 });
+
+describe("splitLeadingQuantity", () => {
+  const { splitLeadingQuantity } = require("../src/utils/ingredientQuantity");
+
+  it("takes a leading number and a glued or following unit", () => {
+    expect(splitLeadingQuantity("120g Hummus")).toEqual({ qty: "120 g", name: "Hummus" });
+    expect(splitLeadingQuantity("2 pcs Tortillas")).toEqual({ qty: "2 pcs", name: "Tortillas" });
+    expect(splitLeadingQuantity("1/2 tsp Salt")).toEqual({ qty: "1/2 tsp", name: "Salt" });
+    expect(splitLeadingQuantity("1 1/2 cups Milk")).toEqual({ qty: "1 1/2 cups", name: "Milk" });
+    expect(splitLeadingQuantity("2 łyżki Masło")).toEqual({ qty: "2 łyżki", name: "Masło" });
+  });
+
+  it("keeps an unfamiliar unit in the name instead of losing it", () => {
+    expect(splitLeadingQuantity("1 Onion")).toEqual({ qty: "1", name: "Onion" });
+    expect(splitLeadingQuantity("2 cucharadas Aceite")).toEqual({ qty: "2", name: "cucharadas Aceite" });
+  });
+
+  it("leaves a line with no leading quantity alone", () => {
+    expect(splitLeadingQuantity("Salt to taste")).toEqual({ qty: "", name: "Salt to taste" });
+    expect(splitLeadingQuantity("")).toEqual({ qty: "", name: "" });
+    expect(splitLeadingQuantity("3")).toEqual({ qty: "", name: "3" });
+  });
+});
