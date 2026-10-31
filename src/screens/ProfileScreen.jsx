@@ -429,18 +429,12 @@ export default function ProfileScreen() {
                 <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
                   {stat.value}
                 </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginTop: 4,
-                    paddingHorizontal: 6,
-                  }}
-                >
+                {/* The label text is what sits centred under the number; the chevron hangs off its right edge
+                    instead of taking part in the centring (as part of the row it pushed the text 6px left of the
+                    number), and costs the text no width. */}
+                <View style={{ marginTop: 4, paddingHorizontal: 6 }}>
                   <Text
                     style={{
-                      flexShrink: 1,
                       color: colors.textSecondary,
                       fontWeight: "700",
                       fontSize: 11,
@@ -449,7 +443,12 @@ export default function ProfileScreen() {
                   >
                     {t(stat.labelKey)}
                   </Text>
-                  <ChevronRight size={12} color={colors.textSecondary} style={{ marginLeft: 1 }} />
+                  <View
+                    pointerEvents="none"
+                    style={{ position: "absolute", right: -7, top: 0, bottom: 0, justifyContent: "center" }}
+                  >
+                    <ChevronRight size={12} color={colors.textSecondary} />
+                  </View>
                 </View>
               </TouchableOpacity>
             </React.Fragment>
