@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Rezeptsprache",
   "settings.testingSectionTitle": "Tests",
   "settings.aboutSectionTitle": "Über die App",
-  "settings.privacyTitle": "Deine Fotos",
   "settings.proTestingToggle": "PRO-Status (Test)",
   "settings.proTestingToggleDesc": "Noch kein echtes Abonnement — aktiviere dies, um die kostenlose Version und das PRO-Erlebnis zu testen",
   "settings.replayOnboardingToggle": "Onboarding wiederholen (Testen)",

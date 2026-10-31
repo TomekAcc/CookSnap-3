@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Γλώσσα συνταγών",
   "settings.testingSectionTitle": "Δοκιμές",
   "settings.aboutSectionTitle": "Σχετικά",
-  "settings.privacyTitle": "Οι φωτογραφίες σας",
   "settings.proTestingToggle": "Κατάσταση PRO (Δοκιμή)",
   "settings.proTestingToggleDesc": "Χωρίς πραγματική συνδρομή ακόμα — ενεργοποιήστε για προεπισκόπηση της δωρεάν και της PRO εμπειρίας",
   "settings.replayOnboardingToggle": "Επανάληψη υποδοχής (Δοκιμή)",

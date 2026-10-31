@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Opskriftssprog",
   "settings.testingSectionTitle": "Test",
   "settings.aboutSectionTitle": "Om appen",
-  "settings.privacyTitle": "Dine billeder",
   "settings.proTestingToggle": "PRO-status (test)",
   "settings.proTestingToggleDesc": "Intet rigtigt abonnement endnu — slå til for at forhåndsvise oplevelsen med gratis vs. PRO",
   "settings.replayOnboardingToggle": "Afspil introduktion igen (Test)",

@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Receptspråk",
   "settings.testingSectionTitle": "Testning",
   "settings.aboutSectionTitle": "Om appen",
-  "settings.privacyTitle": "Dina foton",
   "settings.proTestingToggle": "PRO-status (testning)",
   "settings.proTestingToggleDesc": "Ingen riktig prenumeration än – slå på för att förhandsgranska fri- vs. PRO-upplevelsen",
   "settings.replayOnboardingToggle": "Spela upp introduktion igen (test)",

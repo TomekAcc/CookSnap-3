@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "لغة الوصفات",
   "settings.testingSectionTitle": "الاختبار",
   "settings.aboutSectionTitle": "حول التطبيق",
-  "settings.privacyTitle": "صورك",
   "settings.proTestingToggle": "حالة PRO (اختبار)",
   "settings.proTestingToggleDesc": "لا توجد اشتراكات حقيقية حتى الآن — قم بالتبديل لمعاينة التجربة المجانية مقابل تجربة PRO",
   "settings.replayOnboardingToggle": "إعادة تشغيل جولة الترحيب (للاختبار)",

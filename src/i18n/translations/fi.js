@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Reseptien kieli",
   "settings.testingSectionTitle": "Testaus",
   "settings.aboutSectionTitle": "Tietoja",
-  "settings.privacyTitle": "Kuvasi",
   "settings.proTestingToggle": "PRO-tila (testaus)",
   "settings.proTestingToggleDesc": "Ei vielä oikeaa tilausta – ota käyttöön esikatsellaksesi ilmaista ja PRO-kokemusta",
   "settings.replayOnboardingToggle": "Toista esittely uudelleen (testaus)",

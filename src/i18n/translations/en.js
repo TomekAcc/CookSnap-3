@@ -64,7 +64,6 @@ export default {
   "settings.recipeLanguage": "Recipe Language",
   "settings.testingSectionTitle": "Testing",
   "settings.aboutSectionTitle": "About",
-  "settings.privacyTitle": "Your photos",
   "settings.proTestingToggle": "PRO Status (Testing)",
   "settings.proTestingToggleDesc": "No real subscription yet — toggle to preview the free vs. PRO experience",
   "settings.replayOnboardingToggle": "Replay Onboarding (Testing)",

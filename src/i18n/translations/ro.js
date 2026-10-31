@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Limba rețetelor",
   "settings.testingSectionTitle": "Testare",
   "settings.aboutSectionTitle": "Despre",
-  "settings.privacyTitle": "Pozele tale",
   "settings.proTestingToggle": "Statut PRO (Testare)",
   "settings.proTestingToggleDesc": "Fără abonament real deocamdată — comută pentru a previzualiza experiența gratuită vs. PRO",
   "settings.replayOnboardingToggle": "Repornește prezentarea (Testare)",

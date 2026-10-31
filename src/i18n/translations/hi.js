@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "रेसिपी की भाषा",
   "settings.testingSectionTitle": "टेस्टिंग",
   "settings.aboutSectionTitle": "ऐप के बारे में",
-  "settings.privacyTitle": "आपकी फ़ोटो",
   "settings.proTestingToggle": "PRO स्टेटस (टेस्टिंग)",
   "settings.proTestingToggleDesc": "अभी कोई वास्तविक सब्सक्रिप्शन नहीं — फ्री बनाम PRO अनुभव का पूर्वावलोकन करने के लिए टॉगल करें",
   "settings.replayOnboardingToggle": "ऑन्बोर्डिंग दोबारा देखें (टेस्टिंग)",

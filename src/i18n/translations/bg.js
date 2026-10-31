@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Език на рецептите",
   "settings.testingSectionTitle": "Тестване",
   "settings.aboutSectionTitle": "За приложението",
-  "settings.privacyTitle": "Вашите снимки",
   "settings.proTestingToggle": "PRO статус (Тестов)",
   "settings.proTestingToggleDesc": "Все още няма реален абонамент — превключете, за да тествате безплатната и PRO версията",
   "settings.replayOnboardingToggle": "Повтори въвеждането (тестване)",

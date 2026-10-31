@@ -20,7 +20,6 @@ import {
   Check,
   ChevronRight,
   ChevronLeft,
-  Lock,
   MessageCircleQuestion,
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
@@ -516,34 +515,6 @@ export default function SettingsScreen() {
               </View>
               <ChevronRight size={18} color={colors.textSecondary} />
             </TouchableOpacity>
-            <View style={{ height: 1, backgroundColor: colors.cardBorder, marginLeft: 48 }} />
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "flex-start",
-                gap: 12,
-                paddingVertical: 14,
-                paddingHorizontal: 16,
-              }}
-            >
-              <Lock size={20} color={colors.textSecondary} strokeWidth={2} style={{ marginTop: 1 }} />
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
-                  {t("settings.privacyTitle")}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    lineHeight: 17,
-                    fontWeight: "500",
-                    color: colors.textSecondary,
-                    marginTop: 2,
-                  }}
-                >
-                  {t("scanner.privacyNote")}
-                </Text>
-              </View>
-            </View>
           </View>
           <Text
             style={{

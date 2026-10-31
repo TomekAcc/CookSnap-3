@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Ngôn ngữ công thức",
   "settings.testingSectionTitle": "Thử nghiệm",
   "settings.aboutSectionTitle": "Giới thiệu",
-  "settings.privacyTitle": "Ảnh của bạn",
   "settings.proTestingToggle": "Trạng thái PRO (Thử nghiệm)",
   "settings.proTestingToggleDesc": "Chưa có đăng ký thực tế — bật/tắt để xem trước trải nghiệm miễn phí và PRO",
   "settings.replayOnboardingToggle": "Xem lại hướng dẫn ban đầu (Kiểm tra)",

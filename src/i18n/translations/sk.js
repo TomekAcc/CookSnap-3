@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "Jazyk receptov",
   "settings.testingSectionTitle": "Testovanie",
   "settings.aboutSectionTitle": "O aplikácii",
-  "settings.privacyTitle": "Vaše fotografie",
   "settings.proTestingToggle": "PRO stav (Testovanie)",
   "settings.proTestingToggleDesc": "Zatiaľ žiadne skutočné predplatné — prepnutím si zobrazíte náhľad bezplatnej verzie vs. PRO",
   "settings.replayOnboardingToggle": "Zopakovať úvod (Testovanie)",

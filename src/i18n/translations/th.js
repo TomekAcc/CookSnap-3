@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "ภาษาของสูตรอาหาร",
   "settings.testingSectionTitle": "การทดสอบ",
   "settings.aboutSectionTitle": "เกี่ยวกับ",
-  "settings.privacyTitle": "รูปภาพของคุณ",
   "settings.proTestingToggle": "สถานะ PRO (สำหรับทดสอบ)",
   "settings.proTestingToggleDesc": "ยังไม่มีการสมัครสมาชิกจริง — เปิดปิดเพื่อดูตัวอย่างประสบการณ์ใช้งานแบบฟรีและแบบ PRO",
   "settings.replayOnboardingToggle": "ดูการแนะนำการใช้งานอีกครั้ง (สำหรับทดสอบ)",

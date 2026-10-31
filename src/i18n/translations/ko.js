@@ -56,7 +56,6 @@ export default {
   "settings.recipeLanguage": "레시피 언어",
   "settings.testingSectionTitle": "테스트",
   "settings.aboutSectionTitle": "앱 정보",
-  "settings.privacyTitle": "내 사진",
   "settings.proTestingToggle": "PRO 상태 (테스트)",
   "settings.proTestingToggleDesc": "아직 실제 구독 기능은 없으며 — 토글을 전환하여 무료 및 PRO 경험을 미리 볼 수 있습니다",
   "settings.replayOnboardingToggle": "온보딩 다시보기 (테스트)",
