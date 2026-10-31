@@ -9,6 +9,17 @@ import {
   resolveApiKey,
 } from "../src/services/geminiClient";
 
+// These suites cover the direct-to-Google path, so the proxy must not be configured, whatever the shell
+// (or CI) running them has set. The proxy path has its own file, geminiProxy.test.js.
+const savedProxyUrl = process.env.EXPO_PUBLIC_GEMINI_PROXY_URL;
+beforeEach(() => {
+  delete process.env.EXPO_PUBLIC_GEMINI_PROXY_URL;
+});
+afterEach(() => {
+  if (savedProxyUrl === undefined) delete process.env.EXPO_PUBLIC_GEMINI_PROXY_URL;
+  else process.env.EXPO_PUBLIC_GEMINI_PROXY_URL = savedProxyUrl;
+});
+
 describe("resolveApiKey", () => {
   const KEYS = ["EXPO_PUBLIC_GEMINI_API_KEY", "GEMINI_API_KEY"];
   const saved = Object.fromEntries(KEYS.map((k) => [k, process.env[k]]));
