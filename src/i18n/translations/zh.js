@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "优先储藏室",
   "settings.recipeLanguage": "食谱语言",
   "settings.testingSectionTitle": "测试",
+  "settings.aboutSectionTitle": "关于",
+  "settings.privacyTitle": "你的照片",
   "settings.proTestingToggle": "PRO 状态（测试）",
   "settings.proTestingToggleDesc": "暂无真实订阅 —— 切换以预览免费版与 PRO 体验",
   "settings.replayOnboardingToggle": "重新播放引导教程（测试）",

@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Garde-manger d'abord",
   "settings.recipeLanguage": "Langue des recettes",
   "settings.testingSectionTitle": "Tests",
+  "settings.aboutSectionTitle": "À propos",
+  "settings.privacyTitle": "Vos photos",
   "settings.proTestingToggle": "Statut PRO (Test)",
   "settings.proTestingToggleDesc": "Pas encore de vrai abonnement — activez pour tester l'expérience gratuite par rapport au PRO",
   "settings.replayOnboardingToggle": "Revoir l'accueil (Test)",

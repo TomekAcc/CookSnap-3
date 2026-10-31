@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Кладовая в приоритете",
   "settings.recipeLanguage": "Язык рецептов",
   "settings.testingSectionTitle": "Тестирование",
+  "settings.aboutSectionTitle": "О приложении",
+  "settings.privacyTitle": "Ваши фото",
   "settings.proTestingToggle": "Статус PRO (тест)",
   "settings.proTestingToggleDesc": "Подписка пока не оформлена — переключите, чтобы сравнить бесплатную версию и PRO",
   "settings.replayOnboardingToggle": "Повторить онбординг (тест)",

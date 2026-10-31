@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "מזווה קודם",
   "settings.recipeLanguage": "שפת המתכונים",
   "settings.testingSectionTitle": "בדיקות",
+  "settings.aboutSectionTitle": "אודות",
+  "settings.privacyTitle": "התמונות שלך",
   "settings.proTestingToggle": "מצב PRO (בדיקות)",
   "settings.proTestingToggleDesc": "אין עדיין מנוי אמיתי — הקישו כדי לצפות בתצוגה מקדימה של חוויית חינם לעומת PRO",
   "settings.replayOnboardingToggle": "הצג הדרכה מחדש (בדיקה)",

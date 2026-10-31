@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Kamra előre",
   "settings.recipeLanguage": "Receptek nyelve",
   "settings.testingSectionTitle": "Tesztelés",
+  "settings.aboutSectionTitle": "Névjegy",
+  "settings.privacyTitle": "Fotóid",
   "settings.proTestingToggle": "PRO státusz (teszt)",
   "settings.proTestingToggleDesc": "Még nincs éles előfizetés – kapcsold be az ingyenes és a PRO élmény előnézetéhez",
   "settings.replayOnboardingToggle": "Bevezető újrajátszása (Tesztelés)",

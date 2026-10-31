@@ -20,6 +20,8 @@ import {
   Check,
   ChevronRight,
   ChevronLeft,
+  Lock,
+  MessageCircleQuestion,
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
@@ -27,10 +29,12 @@ import StandardModal from "../components/StandardModal";
 import { useEntitlements } from "../context/EntitlementsContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
+import { useModalState } from "../context/ModalContext";
 import { useOnboarding } from "../context/OnboardingContext";
 import { usePreferences } from "../context/PreferencesContext";
 import { EMERALD, WHITE } from "../theme/palette";
 import { SHOW_TESTING_TOOLS } from "../config/flags";
+import appConfig from "../../app.json";
 
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
@@ -41,6 +45,7 @@ export default function SettingsScreen() {
   const { isPro, activatePro, deactivatePro } = useEntitlements();
   const { resetOnboarding, settingsDoneHintShown, markSettingsDoneHintShown } = useOnboarding();
   const { setActiveTab } = useNavigation();
+  const { setHelpModalOpen } = useModalState();
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
   // True while the language list is scrolled to the very top: then pulling down anywhere on
   // the sheet moves the whole sheet (StandardModal.scrollTopSignal), like the recipe sheet.
@@ -469,6 +474,88 @@ export default function SettingsScreen() {
             </View>
             <ChevronRight size={18} color={colors.textSecondary} />
           </TouchableOpacity>
+        </View>
+
+        <View style={{ marginBottom: 14 }}>
+          <Text
+            style={{
+              fontSize: 13,
+              fontWeight: "700",
+              color: colors.textPrimary,
+              marginBottom: 8,
+            }}
+          >
+            {t("settings.aboutSectionTitle")}
+          </Text>
+          <View
+            style={{
+              backgroundColor: colors.card,
+              borderRadius: 18,
+              borderWidth: 1,
+              borderColor: colors.cardBorder,
+              overflow: "hidden",
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => setHelpModalOpen(true)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                <MessageCircleQuestion size={20} color={colors.textSecondary} strokeWidth={2} />
+                <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
+                  {t("menu.helpFeedback")}
+                </Text>
+              </View>
+              <ChevronRight size={18} color={colors.textSecondary} />
+            </TouchableOpacity>
+            <View style={{ height: 1, backgroundColor: colors.cardBorder, marginLeft: 48 }} />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "flex-start",
+                gap: 12,
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+              }}
+            >
+              <Lock size={20} color={colors.textSecondary} strokeWidth={2} style={{ marginTop: 1 }} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
+                  {t("settings.privacyTitle")}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    lineHeight: 17,
+                    fontWeight: "500",
+                    color: colors.textSecondary,
+                    marginTop: 2,
+                  }}
+                >
+                  {t("scanner.privacyNote")}
+                </Text>
+              </View>
+            </View>
+          </View>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: "500",
+              color: colors.textSecondary,
+              textAlign: "center",
+              marginTop: 12,
+            }}
+          >
+            {`CookSnap ${appConfig.expo.version}`}
+          </Text>
         </View>
 
         {/* No real payment processor is wired up yet (see the PRO

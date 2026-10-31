@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "パントリー優先",
   "settings.recipeLanguage": "レシピの言語",
   "settings.testingSectionTitle": "テスト",
+  "settings.aboutSectionTitle": "アプリについて",
+  "settings.privacyTitle": "あなたの写真",
   "settings.proTestingToggle": "PROステータス（テスト用）",
   "settings.proTestingToggleDesc": "まだ実際のサブスクリプションはありません。切り替えて無料版とPRO版の体験をプレビューできます",
   "settings.replayOnboardingToggle": "チュートリアルをもう一度見る（テスト用）",

@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Voorraadkast eerst",
   "settings.recipeLanguage": "Recepttaal",
   "settings.testingSectionTitle": "Testen",
+  "settings.aboutSectionTitle": "Over de app",
+  "settings.privacyTitle": "Je foto's",
   "settings.proTestingToggle": "PRO-status (Testen)",
   "settings.proTestingToggleDesc": "Nog geen echt abonnement — schakel in om de gratis en PRO-ervaring te bekijken",
   "settings.replayOnboardingToggle": "Onboarding opnieuw afspelen (Testen)",

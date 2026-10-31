@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Spiskammer først",
   "settings.recipeLanguage": "Oppskriftsspråk",
   "settings.testingSectionTitle": "Testing",
+  "settings.aboutSectionTitle": "Om appen",
+  "settings.privacyTitle": "Bildene dine",
   "settings.proTestingToggle": "PRO-status (testing)",
   "settings.proTestingToggleDesc": "Ikke noe ekte abonnement ennå – slå på/av for å forhåndsvise gratis- og PRO-opplevelsen",
   "settings.replayOnboardingToggle": "Vis introduksjon på nytt (Test)",

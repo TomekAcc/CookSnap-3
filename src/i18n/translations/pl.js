@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Najpierw spiżarnia",
   "settings.recipeLanguage": "Język przepisów",
   "settings.testingSectionTitle": "Testy",
+  "settings.aboutSectionTitle": "O aplikacji",
+  "settings.privacyTitle": "Twoje zdjęcia",
   "settings.proTestingToggle": "Status PRO (Testy)",
   "settings.proTestingToggleDesc": "Brak aktywnej subskrypcji — przełącz, aby podejrzeć wersję darmową i PRO",
   "settings.replayOnboardingToggle": "Odtwórz wprowadzenie (testowe)",

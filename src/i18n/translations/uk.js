@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Комора в пріоритеті",
   "settings.recipeLanguage": "Мова рецептів",
   "settings.testingSectionTitle": "Тестування",
+  "settings.aboutSectionTitle": "Про застосунок",
+  "settings.privacyTitle": "Ваші фото",
   "settings.proTestingToggle": "PRO-статус (тестування)",
   "settings.proTestingToggleDesc": "Справжньої підписки ще немає — перемикайте, щоб протестувати безкоштовну та PRO-версії",
   "settings.replayOnboardingToggle": "Повторити ознайомлення (тестування)",

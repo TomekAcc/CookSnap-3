@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Lemari Dapur Dulu",
   "settings.recipeLanguage": "Bahasa Resep",
   "settings.testingSectionTitle": "Pengujian",
+  "settings.aboutSectionTitle": "Tentang",
+  "settings.privacyTitle": "Foto Anda",
   "settings.proTestingToggle": "Status PRO (Pengujian)",
   "settings.proTestingToggleDesc": "Belum ada langganan aktif — aktifkan untuk melihat pratinjau pengalaman gratis vs PRO",
   "settings.replayOnboardingToggle": "Putar Ulang Pengenalan (Pengujian)",

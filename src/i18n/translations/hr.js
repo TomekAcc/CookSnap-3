@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Prvo smočnica",
   "settings.recipeLanguage": "Jezik recepata",
   "settings.testingSectionTitle": "Testiranje",
+  "settings.aboutSectionTitle": "O aplikaciji",
+  "settings.privacyTitle": "Vaše fotografije",
   "settings.proTestingToggle": "PRO status (testiranje)",
   "settings.proTestingToggleDesc": "Još nema prave pretplate — uključi/isključi za pregled besplatnog i PRO iskustva",
   "settings.replayOnboardingToggle": "Ponovno pokreni uvod (Testiranje)",

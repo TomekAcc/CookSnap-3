@@ -55,6 +55,8 @@ export default {
   "settings.priorityPantry": "Önce Kiler",
   "settings.recipeLanguage": "Tarif Dili",
   "settings.testingSectionTitle": "Test Etme",
+  "settings.aboutSectionTitle": "Hakkında",
+  "settings.privacyTitle": "Fotoğraflarınız",
   "settings.proTestingToggle": "PRO Durumu (Test)",
   "settings.proTestingToggleDesc": "Henüz gerçek bir abonelik yok — ücretsiz ve PRO deneyimini önizlemek için açıp kapatın",
   "settings.replayOnboardingToggle": "Tanıtımı Tekrar Oynat (Test)",
