@@ -5,6 +5,8 @@ import {
   buildGenerationConfig,
   extractText,
   generateContent,
+  getRequestLog,
+  clearRequestLog,
   parseModelJson,
   resolveApiKey,
 } from "../src/services/geminiClient";
@@ -180,5 +182,34 @@ describe("generateContent", () => {
     await expect(
       generateContent({ apiKey: "k", model: "m", body: {}, timeoutMs: 1000 })
     ).rejects.toThrow("Network request failed");
+  });
+});
+
+describe("request log", () => {
+  const realFetch = global.fetch;
+  beforeEach(() => clearRequestLog());
+  afterEach(() => {
+    global.fetch = realFetch;
+  });
+
+  it("records each request with its size, duration and how it ended, newest first", async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({}), text: async () => "" })
+      .mockResolvedValueOnce({ ok: false, status: 503, json: async () => ({}), text: async () => "busy" });
+    await generateContent({ apiKey: "k", model: "m1", body: { a: 1 }, timeoutMs: 1000 });
+    await generateContent({ apiKey: "k", model: "m2", body: { a: 1 }, timeoutMs: 1000 });
+    const log = getRequestLog();
+    expect(log.map((e) => [e.model, e.outcome])).toEqual([["m2", "http 503"], ["m1", "ok 200"]]);
+    expect(log[0].kb).toBe(0);
+    expect(typeof log[0].ms).toBe("number");
+  });
+
+  it("records a timeout and a network failure, and still throws", async () => {
+    const abortErr = Object.assign(new Error("aborted"), { name: "AbortError" });
+    global.fetch = jest.fn().mockRejectedValueOnce(abortErr).mockRejectedValueOnce(new Error("Network request failed"));
+    await expect(generateContent({ apiKey: "k", model: "m1", body: {}, timeoutMs: 1000 })).rejects.toThrow();
+    await expect(generateContent({ apiKey: "k", model: "m2", body: {}, timeoutMs: 1000 })).rejects.toThrow();
+    expect(getRequestLog().map((e) => e.outcome)).toEqual(["network: Network request failed", "timeout"]);
   });
 });

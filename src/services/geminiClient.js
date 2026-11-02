@@ -124,6 +124,10 @@ export function parseModelJson(text) {
 export async function generateContent({ apiKey, model, body, timeoutMs }) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const startedAt = Date.now();
+  const payload = JSON.stringify(body);
+  const entry = { at: startedAt, model, kb: Math.round(payload.length / 1024), timeoutMs, ms: 0, outcome: "pending" };
+  recordRequest(entry);
   try {
     const proxy = proxyUrl();
     const response = await fetch(`${proxy ? `${proxy}/v1beta` : GEMINI_BASE_URL}/models/${model}:generateContent`, {
@@ -131,16 +135,38 @@ export async function generateContent({ apiKey, model, body, timeoutMs }) {
       headers: proxy
         ? { "Content-Type": "application/json", "X-Device-Id": await getDeviceId() }
         : authHeaders(apiKey),
-      body: JSON.stringify(body),
+      body: payload,
       signal: controller.signal,
     });
+    entry.headersMs = Date.now() - startedAt;
     if (!response.ok) {
       const errorText = await response.text().catch(() => "");
+      entry.outcome = `http ${response.status}`;
       return { ok: false, status: response.status, errorText };
     }
     const data = await response.json();
+    entry.outcome = `ok ${response.status}`;
     return { ok: true, status: response.status, data, text: extractText(data) };
+  } catch (err) {
+    entry.outcome = err?.name === "AbortError" ? "timeout" : `network: ${String(err?.message || err).slice(0, 60)}`;
+    throw err;
   } finally {
+    entry.ms = Date.now() - startedAt;
     clearTimeout(timer);
   }
+}
+
+// The last few model requests (when, which model, how big, how long, how it ended), newest first. Only kept in
+// memory; Settings > Testing shows it so a slow or stuck scan on a phone can be diagnosed from a screenshot.
+const requestLog = [];
+function recordRequest(entry) {
+  requestLog.unshift(entry);
+  if (requestLog.length > 30) requestLog.pop();
+}
+export function getRequestLog() {
+  return requestLog.map((e) => ({ ...e }));
+}
+/** Test hook. */
+export function clearRequestLog() {
+  requestLog.length = 0;
 }

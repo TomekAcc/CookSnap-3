@@ -34,6 +34,7 @@ import { usePreferences } from "../context/PreferencesContext";
 import { EMERALD, WHITE } from "../theme/palette";
 import { SHOW_TESTING_TOOLS } from "../config/flags";
 import appConfig from "../../app.json";
+import { getRequestLog } from "../services/geminiClient";
 
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
@@ -45,6 +46,7 @@ export default function SettingsScreen() {
   const { resetOnboarding, settingsDoneHintShown, markSettingsDoneHintShown } = useOnboarding();
   const { setActiveTab } = useNavigation();
   const { setHelpModalOpen } = useModalState();
+  const [requestLog, setRequestLog] = useState(null);
   const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
   // True while the language list is scrolled to the very top: then pulling down anywhere on
   // the sheet moves the whole sheet (StandardModal.scrollTopSignal), like the recipe sheet.
@@ -627,6 +629,42 @@ export default function SettingsScreen() {
                 </Text>
               </View>
               <ChevronRight size={18} color={colors.textSecondary} />
+            </TouchableOpacity>
+
+            {/* Testing builds only: what the last model requests did, for diagnosing a slow or stuck scan. */}
+            <TouchableOpacity
+              onPress={() => setRequestLog(getRequestLog())}
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: colors.card,
+                borderRadius: 18,
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+                borderWidth: 1,
+                borderColor: colors.cardBorder,
+                marginTop: 10,
+              }}
+            >
+              <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
+                Last model requests
+              </Text>
+              <Text style={{ fontSize: 12, fontWeight: "500", color: colors.textSecondary, marginTop: 2 }}>
+                Tap to refresh. Time, model, size, duration, result.
+              </Text>
+              {requestLog ? (
+                requestLog.length ? (
+                  requestLog.slice(0, 12).map((e, i) => (
+                    <Text
+                      key={i}
+                      style={{ fontSize: 11, color: colors.textPrimary, marginTop: i === 0 ? 8 : 3, fontVariant: ["tabular-nums"] }}
+                    >
+                      {`${new Date(e.at).toTimeString().slice(0, 8)}  ${String(e.model).replace("gemini-", "")}  ${e.kb}KB  ${(e.ms / 1000).toFixed(1)}s  ${e.outcome}`}
+                    </Text>
+                  ))
+                ) : (
+                  <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 8 }}>No requests yet.</Text>
+                )
+              ) : null}
             </TouchableOpacity>
           </View>
         ) : null}
