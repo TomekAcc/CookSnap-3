@@ -14,7 +14,7 @@ import { log } from "./log";
  */
 export function persistPhotoToDevice(sourceUri) {
   try {
-    const scansDir = new Directory(Paths.document, "cookai-scans");
+    const scansDir = new Directory(Paths.document, "cooksnap-scans");
     scansDir.create({ intermediates: true, idempotent: true });
     const sourceFile = new File(sourceUri);
     const ext = sourceFile.extension || ".jpg";
@@ -22,7 +22,7 @@ export function persistPhotoToDevice(sourceUri) {
     sourceFile.copy(destFile);
     return destFile.uri;
   } catch (err) {
-    log.warn("[Cook AI] Could not persist scan photo to device:", err?.message);
+    log.warn("[CookSnap] Could not persist scan photo to device:", err?.message);
     return sourceUri;
   }
 }

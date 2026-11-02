@@ -44,17 +44,17 @@ describe("fridge ingredients", () => {
     const [manual, scanned] = result.current.inv.ingredients;
     act(() => result.current.inv.removeIngredient(manual.id));
     await act(async () => {});
-    expect(await AsyncStorage.getItem("cookai:feedbackLog:v1")).toBeNull();
+    expect(await AsyncStorage.getItem("cooksnap:feedbackLog:v1")).toBeNull();
     act(() => result.current.inv.removeIngredient(scanned.id));
     await waitFor(async () => {
-      const log = JSON.parse(await AsyncStorage.getItem("cookai:feedbackLog:v1"));
+      const log = JSON.parse(await AsyncStorage.getItem("cooksnap:feedbackLog:v1"));
       expect(log[0]).toMatchObject({ type: "scanIngredientFlagged", name: "Scanned" });
     });
     expect(result.current.inv.ingredients).toEqual([]);
   });
 
   it("never saves the onboarding sample list over the user's real ingredients", async () => {
-    await AsyncStorage.setItem("cookai:ingredients:v1", JSON.stringify([{ id: "real", name: "Real", source: "scan" }]));
+    await AsyncStorage.setItem("cooksnap:ingredients:v1", JSON.stringify([{ id: "real", name: "Real", source: "scan" }]));
     const { result } = await renderApp();
     expect(names(result.current.inv.ingredients)).toEqual(["Real"]);
     act(() => {
@@ -62,16 +62,16 @@ describe("fridge ingredients", () => {
       result.current.inv.setIngredients([{ id: "s1", name: "Sample", source: "demo" }]);
     });
     await act(async () => {});
-    expect(JSON.parse(await AsyncStorage.getItem("cookai:ingredients:v1"))).toEqual([{ id: "real", name: "Real", source: "scan" }]);
+    expect(JSON.parse(await AsyncStorage.getItem("cooksnap:ingredients:v1"))).toEqual([{ id: "real", name: "Real", source: "scan" }]);
     act(() => {
       result.current.inv.markScanDemo(false);
       result.current.inv.setIngredients([{ id: "r2", name: "Real two", source: "scan" }]);
     });
-    await waitFor(async () => expect(names(JSON.parse(await AsyncStorage.getItem("cookai:ingredients:v1")))).toEqual(["Real two"]));
+    await waitFor(async () => expect(names(JSON.parse(await AsyncStorage.getItem("cooksnap:ingredients:v1")))).toEqual(["Real two"]));
   });
 
   it("re-translates stored names when the language changes after startup (not on startup)", async () => {
-    await AsyncStorage.setItem("cookai:ingredients:v1", JSON.stringify([{ id: "1", name: "Milk" }]));
+    await AsyncStorage.setItem("cooksnap:ingredients:v1", JSON.stringify([{ id: "1", name: "Milk" }]));
     const { result } = await renderApp();
     await act(async () => {});
     expect(translateIngredientNames).not.toHaveBeenCalled();

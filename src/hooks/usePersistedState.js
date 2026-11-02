@@ -45,7 +45,7 @@ export function usePersistedState(key, { initial, codec, fallback, shouldPersist
         if (parsed !== undefined) setValue(parsed);
         else if (f) setValue(f());
       } catch (err) {
-        log.warn(`[Cook AI] ${key} hydrate failed:`, err?.message);
+        log.warn(`[CookSnap] ${key} hydrate failed:`, err?.message);
       } finally {
         if (!cancelled) setHydrated(true);
       }
@@ -61,7 +61,7 @@ export function usePersistedState(key, { initial, codec, fallback, shouldPersist
     if (allowed && !allowed()) return;
     const raw = c.serialize(value);
     const write = raw == null ? storage.removeItem(key) : storage.setItem(key, raw);
-    write.catch((err) => log.warn(`[Cook AI] ${key} persist failed:`, err?.message));
+    write.catch((err) => log.warn(`[CookSnap] ${key} persist failed:`, err?.message));
   }, [key, hydrated, value]);
 
   return [value, setValue, hydrated];

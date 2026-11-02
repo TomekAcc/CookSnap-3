@@ -63,14 +63,14 @@ describe("device id", () => {
     expect(await getDeviceId()).toBe(first);
     resetDeviceIdCache(); // simulates a fresh app start
     expect(await getDeviceId()).toBe(first);
-    expect(await AsyncStorage.getItem("cookai:deviceId:v1")).toBe(first);
+    expect(await AsyncStorage.getItem("cooksnap:deviceId:v1")).toBe(first);
   });
 
   it("replaces a corrupt stored value", async () => {
-    await AsyncStorage.setItem("cookai:deviceId:v1", "bad value!");
+    await AsyncStorage.setItem("cooksnap:deviceId:v1", "bad value!");
     const id = await getDeviceId();
     expect(id).toMatch(/^[a-f0-9]{32}$/);
-    expect(await AsyncStorage.getItem("cookai:deviceId:v1")).toBe(id);
+    expect(await AsyncStorage.getItem("cooksnap:deviceId:v1")).toBe(id);
   });
 
   it("differs between installs", async () => {

@@ -54,7 +54,7 @@ const DISMISS_VELOCITY = 900;
 const FLICK_MIN_DISTANCE = 30;
 
 /**
- * StandardModal — single source of truth for Cook AI overlays.
+ * StandardModal — single source of truth for CookSnap overlays.
  *
  * Sheet position and backdrop opacity are driven entirely by Reanimated
  * shared values on the UI thread (worklets), not the classic `Animated` API.

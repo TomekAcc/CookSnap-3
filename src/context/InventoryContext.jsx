@@ -245,7 +245,7 @@ export function InventoryProvider({ children }) {
           const translated = await translateIngredientNames(ingredients, recipeLanguageName);
           if (!cancelled) setIngredients(translated);
         } catch (err) {
-          log.warn("[Cook AI] Fridge inventory auto-translate failed:", err?.message);
+          log.warn("[CookSnap] Fridge inventory auto-translate failed:", err?.message);
         }
       }
       if (pantryItems.length > 0) {
@@ -253,7 +253,7 @@ export function InventoryProvider({ children }) {
           const translated = await translateIngredientNames(pantryItems, recipeLanguageName);
           if (!cancelled) setPantryItems(translated);
         } catch (err) {
-          log.warn("[Cook AI] Pantry auto-translate failed:", err?.message);
+          log.warn("[CookSnap] Pantry auto-translate failed:", err?.message);
         }
       }
     })();

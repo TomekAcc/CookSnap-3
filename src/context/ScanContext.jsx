@@ -214,7 +214,7 @@ export function ScanProvider({ children }) {
   const completeScan = useCallback(async (photoUri, source = "camera") => {
     const rawUri = Array.isArray(photoUri) ? photoUri[0] : photoUri;
     if (!rawUri || typeof rawUri !== "string") {
-      log.warn("[Cook AI] completeScan called with no photo");
+      log.warn("[CookSnap] completeScan called with no photo");
       return;
     }
     // Every real scan funnels through here regardless of entry point (main
@@ -280,7 +280,7 @@ export function ScanProvider({ children }) {
         // every time, instead of the scan silently finishing with zero
         // ingredients and no explanation.
         log.warn(
-          "Cook AI Vision scan failed, retrying once:",
+          "CookSnap Vision scan failed, retrying once:",
           firstErr?.message
         );
         await new Promise((resolve) => setTimeout(resolve, 900));
@@ -292,7 +292,7 @@ export function ScanProvider({ children }) {
     } catch (err) {
       if (scanSessionIdRef.current !== sessionId) return;
       if (ingredientsCommittedRef.current) return;
-      log.warn("Cook AI Vision scan failed after retry:", err?.message);
+      log.warn("CookSnap Vision scan failed after retry:", err?.message);
       pendingDetectedRef.current = [];
       showToast(t("errors.readPhotoFailed"), "error", 4200);
     }
@@ -538,7 +538,7 @@ export function ScanProvider({ children }) {
       } catch (err) {
         if (pantryScanSessionIdRef.current !== sessionId) return;
         if (pantryIngredientsCommittedRef.current) return;
-        log.warn("[Cook AI] Pantry scan failed:", err?.message);
+        log.warn("[CookSnap] Pantry scan failed:", err?.message);
         pantryPendingDetectedRef.current = [];
         showToast(t("errors.analyzePantryFailed"), "error");
       }

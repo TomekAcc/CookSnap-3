@@ -767,8 +767,8 @@ function isRenameOfKeptTitle(title, keptTitles) {
 }
 
 /**
- * Cook AI Engine recipe generator.
- * Sends fridge scan (scannedIngredients) + pantry staples to Cook AI Vision Engine and ALWAYS
+ * CookSnap Engine recipe generator.
+ * Sends fridge scan (scannedIngredients) + pantry staples to CookSnap Vision Engine and ALWAYS
  * asks for exactly 5 distinct creative recipes (never 3 or 4).
  *
  * Goldilocks standard: step COUNT is dynamic (3-5) based on dish
@@ -1313,7 +1313,7 @@ Return ONLY a raw JSON array of exactly ${recipeCount} objects with these exact 
 - "upgradeIngredient": JSON null on most recipes, or a short ${language} ingredient name (e.g. ${isEnglish ? `"Fresh Basil"` : `the real ${language} name, not a transliteration`}) — This is rare; only set it when genuinely true, never fill it in "to be thorough." It must be something the user does NOT have: never an ingredient that is in the fridge or pantry lists above.
 - "upgradeNote": JSON null whenever "upgradeIngredient" is null, otherwise one short sentence in ${language} explaining what it would actually add. Both fields are null together or filled together, never just one.
 
-Do NOT include an "image" field — Cook AI stamps emoji badges client-side.
+Do NOT include an "image" field — CookSnap stamps emoji badges client-side.
 
 Example JSON Output:
 [
@@ -2036,7 +2036,7 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
       if (v.verdict === "reject") {
         if (rejected < maxRejects) {
           rejected += 1;
-          log.debug(`[Cook AI] Recipe QA rejected "${recipe.title}": ${v.reason || "no reason given"}`);
+          log.debug(`[CookSnap] Recipe QA rejected "${recipe.title}": ${v.reason || "no reason given"}`);
           return;
         }
         result.push(recipe);
@@ -2066,11 +2066,11 @@ export async function reviewRecipesWithGemini(rawRecipes, options = {}) {
       result.push(recipe);
     });
     if (fixed || rejected) {
-      log.debug(`[Cook AI] Recipe QA: fixed ${fixed}, rejected ${rejected} of ${rawRecipes.length}.`);
+      log.debug(`[CookSnap] Recipe QA: fixed ${fixed}, rejected ${rejected} of ${rawRecipes.length}.`);
     }
     return result;
   } catch (err) {
-    log.warn(`[Cook AI] Recipe QA skipped (${err?.message}) — using the batch as generated.`);
+    log.warn(`[CookSnap] Recipe QA skipped (${err?.message}) — using the batch as generated.`);
     return rawRecipes;
   }
 }
@@ -2378,7 +2378,7 @@ export async function generatePlannerMealsWithGemini(
       .filter((r) => !r?.isSmartFallback)
       .map(toPlannerCard);
   } catch (err) {
-    log.warn("[Cook AI] Planner Gemini generation failed:", err?.message);
+    log.warn("[CookSnap] Planner Gemini generation failed:", err?.message);
   }
 
   if (cards.length >= count) return cards.slice(0, count);
@@ -2594,7 +2594,7 @@ export async function generateRecipesWithGemini(
     normalized = dedupeDishType(normalized);
     if (normalized.length < beforeDishTypeDedupe) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforeDishTypeDedupe - normalized.length} recipe(s) sharing a dishType with an earlier recipe in the same batch.`
+        `[CookSnap] ${label} returned ${beforeDishTypeDedupe - normalized.length} recipe(s) sharing a dishType with an earlier recipe in the same batch.`
       );
     }
 
@@ -2606,7 +2606,7 @@ export async function generateRecipesWithGemini(
     );
     if (normalized.length < beforeRenameDedupe) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforeRenameDedupe - normalized.length} recipe(s) that repeat an earlier recipe in the same batch under a new name.`
+        `[CookSnap] ${label} returned ${beforeRenameDedupe - normalized.length} recipe(s) that repeat an earlier recipe in the same batch under a new name.`
       );
     }
 
@@ -2614,7 +2614,7 @@ export async function generateRecipesWithGemini(
     normalized = normalized.filter((r) => !hasCutTechniqueMismatch(r));
     if (normalized.length < beforeCutTechniqueFilter) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforeCutTechniqueFilter - normalized.length} recipe(s) using a tough braising cut with a too-short cook time.`
+        `[CookSnap] ${label} returned ${beforeCutTechniqueFilter - normalized.length} recipe(s) using a tough braising cut with a too-short cook time.`
       );
     }
 
@@ -2623,7 +2623,7 @@ export async function generateRecipesWithGemini(
     if (language === "English") normalized = normalized.filter((r) => !hasEnglishTitleIngredientMismatch(r));
     if (normalized.length < beforeFlavorMismatchFilter) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforeFlavorMismatchFilter - normalized.length} recipe(s) whose title claimed a flavor/ingredient not actually in ingredientsList.`
+        `[CookSnap] ${label} returned ${beforeFlavorMismatchFilter - normalized.length} recipe(s) whose title claimed a flavor/ingredient not actually in ingredientsList.`
       );
     }
 
@@ -2631,7 +2631,7 @@ export async function generateRecipesWithGemini(
     normalized = normalized.filter((r) => !hasThinSoup(r));
     if (normalized.length < beforeThinSoupFilter) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforeThinSoupFilter - normalized.length} recipe(s) labeled "soup" with fewer than 5 ingredients.`
+        `[CookSnap] ${label} returned ${beforeThinSoupFilter - normalized.length} recipe(s) labeled "soup" with fewer than 5 ingredients.`
       );
     }
 
@@ -2640,7 +2640,7 @@ export async function generateRecipesWithGemini(
       normalized = normalized.filter((r) => !NON_SAVORY_DISH_TYPES.has(r.dishType));
       if (normalized.length < beforeSavoryFilter) {
         log.warn(
-          `[Cook AI] ${label} returned ${beforeSavoryFilter - normalized.length} sweet/breakfast-type recipe(s) in a lunch/dinner batch.`
+          `[CookSnap] ${label} returned ${beforeSavoryFilter - normalized.length} sweet/breakfast-type recipe(s) in a lunch/dinner batch.`
         );
       }
     }
@@ -2649,7 +2649,7 @@ export async function generateRecipesWithGemini(
     normalized = normalized.filter((r) => !hasUnrealisticFromScratchDough(r));
     if (normalized.length < beforeDoughFeasibilityFilter) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforeDoughFeasibilityFilter - normalized.length} recipe(s) requiring from-scratch dough on an unrealistically short timeline.`
+        `[CookSnap] ${label} returned ${beforeDoughFeasibilityFilter - normalized.length} recipe(s) requiring from-scratch dough on an unrealistically short timeline.`
       );
     }
 
@@ -2657,7 +2657,7 @@ export async function generateRecipesWithGemini(
     normalized = normalized.filter((r) => !hasMissingOvenTemp(r));
     if (normalized.length < beforeOvenTempFilter) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforeOvenTempFilter - normalized.length} recipe(s) using the oven/broiler/grill with no temperature stated anywhere in the steps.`
+        `[CookSnap] ${label} returned ${beforeOvenTempFilter - normalized.length} recipe(s) using the oven/broiler/grill with no temperature stated anywhere in the steps.`
       );
     }
 
@@ -2665,7 +2665,7 @@ export async function generateRecipesWithGemini(
     normalized = normalized.filter((r) => !hasMissingPanSize(r));
     if (normalized.length < beforePanSizeFilter) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforePanSizeFilter - normalized.length} recipe(s) naming a baking dish/pan with no size stated anywhere in the steps.`
+        `[CookSnap] ${label} returned ${beforePanSizeFilter - normalized.length} recipe(s) naming a baking dish/pan with no size stated anywhere in the steps.`
       );
     }
 
@@ -2673,7 +2673,7 @@ export async function generateRecipesWithGemini(
     normalized = normalized.filter((r) => !hasMissingDonenessCue(r));
     if (normalized.length < beforeDonenessCueFilter) {
       log.warn(
-        `[Cook AI] ${label} returned ${beforeDonenessCueFilter - normalized.length} recipe(s) with meat/poultry/fish but no checkable doneness cue (temperature or visual/textural signal) anywhere in the steps.`
+        `[CookSnap] ${label} returned ${beforeDonenessCueFilter - normalized.length} recipe(s) with meat/poultry/fish but no checkable doneness cue (temperature or visual/textural signal) anywhere in the steps.`
       );
     }
 
@@ -2684,7 +2684,7 @@ export async function generateRecipesWithGemini(
       );
       if (normalized.length < beforeDuplicateFilter) {
         log.warn(
-          `[Cook AI] ${label} returned ${beforeDuplicateFilter - normalized.length} recipe(s) too similar to an excluded title.`
+          `[CookSnap] ${label} returned ${beforeDuplicateFilter - normalized.length} recipe(s) too similar to an excluded title.`
         );
       }
     }
@@ -2699,7 +2699,7 @@ export async function generateRecipesWithGemini(
         // prompt's own "HIGHEST PRIORITY / zero exceptions" guardrail isn't
         // reliable enough on its own, so this is not a hypothetical check.
         log.warn(
-          `[Cook AI] ${label} returned ${beforeDietFilter - normalized.length} recipe(s) violating an active diet restriction.`
+          `[CookSnap] ${label} returned ${beforeDietFilter - normalized.length} recipe(s) violating an active diet restriction.`
         );
       }
     }
@@ -2711,7 +2711,7 @@ export async function generateRecipesWithGemini(
 
   for (const modelName of RECIPE_MODELS) {
     try {
-      log.debug(`[Cook AI] Generating recipes with ${modelName}`);
+      log.debug(`[CookSnap] Generating recipes with ${modelName}`);
       // Ask for one spare recipe up front. Measured live: the most common
       // reason a batch ran short was a single recipe dropped by the safety
       // filters (usually a repeated dishType), and each top-up round to
@@ -2736,7 +2736,7 @@ export async function generateRecipesWithGemini(
         // like that without waiting for the second candidate model AND the
         // final static fallback to also be reached.
         log.warn(
-          `[Cook AI] ${modelName} failed once (${firstErr?.message}) — retrying the same model once before moving on.`
+          `[CookSnap] ${modelName} failed once (${firstErr?.message}) — retrying the same model once before moving on.`
         );
         rawRecipes = await fetchRawRecipes(modelName, mainRequestCount, excludeTitles);
       }
@@ -2744,7 +2744,7 @@ export async function generateRecipesWithGemini(
       if (Array.isArray(rawRecipes) && rawRecipes.length > 0) {
         if (rawRecipes.length !== mainRequestCount) {
           log.warn(
-            `[Cook AI] Expected ${mainRequestCount} recipes, got ${rawRecipes.length} from ${modelName} — padding/trimming to ${recipeCount}`
+            `[CookSnap] Expected ${mainRequestCount} recipes, got ${rawRecipes.length} from ${modelName} — padding/trimming to ${recipeCount}`
           );
         }
         let normalized = normalizeAndFilter(rawRecipes, mainRequestCount, excludeTitles, modelName).slice(
@@ -2802,7 +2802,7 @@ export async function generateRecipesWithGemini(
           const retryExclude = [...new Set(cumulativeExclude)];
           try {
             log.debug(
-              `[Cook AI] ${modelName} batch came up ${shortfall} short after safety filters — top-up attempt ${attempt}/${MAX_TOPUP_ATTEMPTS} for fresh replacements before falling back to static recipes.`
+              `[CookSnap] ${modelName} batch came up ${shortfall} short after safety filters — top-up attempt ${attempt}/${MAX_TOPUP_ATTEMPTS} for fresh replacements before falling back to static recipes.`
             );
             const usedDishTypesSoFar = normalized.map((r) => r.dishType).filter(Boolean);
             // Over-fetch a couple of extra candidates beyond the literal
@@ -2854,7 +2854,7 @@ export async function generateRecipesWithGemini(
             }
           } catch (retryErr) {
             log.warn(
-              `[Cook AI] Top-up attempt ${attempt} failed:`,
+              `[CookSnap] Top-up attempt ${attempt} failed:`,
               retryErr?.message
             );
           }
@@ -2883,7 +2883,7 @@ export async function generateRecipesWithGemini(
         // as if it were a normal, if small, result.
         if (finalBatch.length > 0) {
           log.debug(
-            `[Cook AI] Generated ${finalBatch.length} recipes using ${modelName}`
+            `[CookSnap] Generated ${finalBatch.length} recipes using ${modelName}`
           );
           return finalBatch;
         }
@@ -2898,18 +2898,18 @@ export async function generateRecipesWithGemini(
     } catch (err) {
       if (err?.name === "AbortError") {
         log.warn(
-          `[Cook AI] ${modelName} timed out after ${REQUEST_TIMEOUT_MS}ms`
+          `[CookSnap] ${modelName} timed out after ${REQUEST_TIMEOUT_MS}ms`
         );
         lastError = new GeminiRecipeError("The AI response timed out.");
       } else {
-        log.warn(`[Cook AI] Fetch error for ${modelName}:`, err?.message);
+        log.warn(`[CookSnap] Fetch error for ${modelName}:`, err?.message);
         lastError = err;
       }
     }
   }
 
   log.warn(
-    "[Cook AI] All Vision Engine endpoints failed:",
+    "[CookSnap] All Vision Engine endpoints failed:",
     lastError?.message || lastError
   );
   throw (
@@ -2995,7 +2995,7 @@ Return ONLY a single raw JSON object (not an array) with these exact keys:
 
   for (const modelName of RECIPE_MODELS) {
     try {
-      log.debug(`[Cook AI] Modifying recipe via ${modelName}: "${cleanInstruction}"`);
+      log.debug(`[CookSnap] Modifying recipe via ${modelName}: "${cleanInstruction}"`);
       const response = await generateContent({
         apiKey,
         model: modelName,
@@ -3028,7 +3028,7 @@ Return ONLY a single raw JSON object (not an array) with these exact keys:
         const violation = getDietViolation(result.ingredientsList, dietaryRestrictions);
         if (violation) {
           log.warn(
-            `[Cook AI] ${modelName} modify result violated an active diet restriction — retrying:`,
+            `[CookSnap] ${modelName} modify result violated an active diet restriction — retrying:`,
             `"${violation.ingredient}" (${violation.word}, ${violation.dietId})`
           );
           lastError = new GeminiRecipeError(

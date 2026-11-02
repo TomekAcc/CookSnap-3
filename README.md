@@ -1,4 +1,4 @@
-# Cook AI
+# CookSnap
 
 Production-grade React Native app built with Expo. Scan your fridge, set meal preferences, and get AI-suggested recipes.
 

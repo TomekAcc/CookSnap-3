@@ -137,7 +137,7 @@ export default function ScanMoreSheet({ kind = "fridge", anchor }) {
           if (picked.status !== "picked") return;
           await importPhoto?.(picked.uri, "gallery");
         } catch (err) {
-          log.warn(`[Cook AI] ${isPantry ? "Pantry " : ""}Scan More gallery failed:`, err?.message);
+          log.warn(`[CookSnap] ${isPantry ? "Pantry " : ""}Scan More gallery failed:`, err?.message);
           showToast?.(t("errors.loadPhotoFailed"), "error");
         }
       })();

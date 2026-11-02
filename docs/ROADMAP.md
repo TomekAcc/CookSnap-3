@@ -15,8 +15,9 @@ app), SDK 58, the web smoke test in the normal workflow.
 - **App name and identifiers: decided.** Display name "CookSnap", iOS bundle id and Android package
   `com.tomekacc.cooksnap` (they cannot be changed after the first store upload), iPad support off for
   the first release (it would need iPad screenshots and an iPad layout pass). The EAS project slug
-  stays `cook-ai`; it is internal and changing it would break the update URLs. Storage keys keep the
-  `cookai:` prefix on purpose: renaming them would wipe users' saved data.
+  stays `cook-ai`: it is registered at Expo, and a different slug means a new Expo project (new project
+  id, variables re-entered, new update links). Stored data uses the `cooksnap:` key prefix (renamed from
+  `cookai:` while only the owner's phone held data; after a release such a rename needs a migration).
 - **Real payments.** PRO is a local mock (`EntitlementsContext.activatePro`); nobody can pay.
   Needs Apple Developer and Google Play accounts, the two subscriptions (monthly, annual with a
   7-day trial) in both stores, and an integration (RevenueCat is the usual route). The daily free-tier

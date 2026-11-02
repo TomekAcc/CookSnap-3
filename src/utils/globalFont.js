@@ -75,6 +75,6 @@ export function installGlobalFont() {
     reactJsxRuntime.jsxs = wrapJsxFn(reactJsxRuntime.jsxs);
     if (reactJsxRuntime.jsxDEV) reactJsxRuntime.jsxDEV = wrapJsxFn(reactJsxRuntime.jsxDEV);
   } catch (err) {
-    log.warn("[Cook AI] global font: react jsx-runtime patch failed:", err?.message);
+    log.warn("[CookSnap] global font: react jsx-runtime patch failed:", err?.message);
   }
 }

@@ -1,4 +1,4 @@
-# Cook AI — Product Requirements Document
+# CookSnap — Product Requirements Document
 
 **Status:** Living document, reflects shipped app state
 **Owner:** Tomasz Białasiewicz
@@ -8,7 +8,7 @@
 
 ## 1. Summary
 
-Cook AI (marketed as "CookSnap") turns a photo of your fridge or pantry into a
+CookSnap (marketed as "CookSnap") turns a photo of your fridge or pantry into a
 ready-to-cook meal plan. A user photographs their shelves, an AI vision model
 identifies the actionable ingredients, and an AI recipe engine turns that
 inventory into real, appetizing, cookable recipes — scaled to servings, tuned
@@ -138,7 +138,7 @@ browsing, not a recipe box to build over years.
 - Meal preferences (servings, hunger level, dietary restrictions) persist
   across sessions.
 
-### Monetization — Cook AI PRO
+### Monetization — CookSnap PRO
 - **Free tier:** 2 fridge scans/day, 2 recipe generations/day (3 recipes
   each), full recipe detail, calories. Hitting a limit opens the paywall
   naming the exact limit that was reached.

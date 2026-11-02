@@ -20,6 +20,6 @@ export async function appendFeedbackLog(entry) {
     ].slice(0, 200);
     await storage.setItem(STORAGE_KEYS.feedbackLog, JSON.stringify(next));
   } catch (err) {
-    log.warn("[Cook AI] feedback log append failed:", err?.message);
+    log.warn("[CookSnap] feedback log append failed:", err?.message);
   }
 }

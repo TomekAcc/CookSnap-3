@@ -11,7 +11,7 @@ export function safeStorageRead(reader, fallback) {
     const value = typeof reader === "function" ? reader() : fallback;
     return value == null ? fallback : value;
   } catch (err) {
-    log.warn("[Cook AI] storage read failed, using fallback:", err?.message);
+    log.warn("[CookSnap] storage read failed, using fallback:", err?.message);
     return fallback;
   }
 }
@@ -23,7 +23,7 @@ export function enrichRecipes(rawRecipes) {
       Array.isArray(rawRecipes) ? rawRecipes.filter(Boolean) : []
     );
   } catch (err) {
-    log.warn("[Cook AI] enrichRecipes failed:", err?.message);
+    log.warn("[CookSnap] enrichRecipes failed:", err?.message);
     return Array.isArray(rawRecipes)
       ? rawRecipes.filter(Boolean).slice(0, 5)
       : [];
@@ -123,7 +123,7 @@ export function safeVisibleRecipes(
       };
     });
   } catch (err) {
-    log.warn("[Cook AI] visibleRecipes failed:", err?.message);
+    log.warn("[CookSnap] visibleRecipes failed:", err?.message);
   }
 
   try {

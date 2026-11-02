@@ -530,7 +530,7 @@ export default function useFridgeScanChoreography() {
     try {
       await completeScan?.(uri, source);
     } catch (err) {
-      log.warn("[Cook AI] Instant scan failed:", err?.message);
+      log.warn("[CookSnap] Instant scan failed:", err?.message);
       showToast?.(t("errors.analyzePhotoFailed"), "error");
     }
   };

@@ -28,7 +28,7 @@ function enrichRecipe(recipe) {
     const [stamped] = stampRecipeEmojis([recipe].filter(Boolean));
     return stamped || recipe;
   } catch (err) {
-    log.warn("[Cook AI] enrichRecipe (modal) failed:", err?.message);
+    log.warn("[CookSnap] enrichRecipe (modal) failed:", err?.message);
     return recipe;
   }
 }
@@ -130,7 +130,7 @@ export function ModalProvider({ children }) {
       setActiveModalId(null);
       setSelectedRecipeState(enrichRecipe(recipe));
     } catch (err) {
-      log.warn("[Cook AI] setSelectedRecipe failed:", err?.message);
+      log.warn("[CookSnap] setSelectedRecipe failed:", err?.message);
       setSelectedRecipeState(recipe);
     }
   }, []);

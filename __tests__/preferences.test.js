@@ -13,7 +13,7 @@ describe("preferences", () => {
     expect(["breakfast", "lunch", "dinner", "all"]).toContain(result.current.prefs.mealType);
     act(() => result.current.prefs.setMealType("dessert"));
     await act(async () => {});
-    expect(await AsyncStorage.getItem("cookai:mealType:v1")).toBeNull();
+    expect(await AsyncStorage.getItem("cooksnap:mealType:v1")).toBeNull();
   });
 
   it("servings, hunger level, units, ingredient priority and diet persist and restore", async () => {
@@ -26,7 +26,7 @@ describe("preferences", () => {
       first.result.current.prefs.toggleDietaryRestriction("vegan");
       first.result.current.prefs.setCustomDietAvoid("peanut, shrimp");
     });
-    await waitFor(async () => expect(await AsyncStorage.getItem("cookai:servings:v1")).toBe("4"));
+    await waitFor(async () => expect(await AsyncStorage.getItem("cooksnap:servings:v1")).toBe("4"));
     first.unmount();
     const second = await renderApp();
     const p = second.result.current.prefs;
@@ -97,7 +97,7 @@ describe("entitlements", () => {
     const first = await renderApp();
     expect(first.result.current.ent.isPro).toBe(false);
     act(() => first.result.current.ent.activatePro());
-    await waitFor(async () => expect(await AsyncStorage.getItem("cookai:isPro:v1")).toBe("true"));
+    await waitFor(async () => expect(await AsyncStorage.getItem("cooksnap:isPro:v1")).toBe("true"));
     first.unmount();
     const second = await renderApp();
     expect(second.result.current.ent.isPro).toBe(true);

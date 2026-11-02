@@ -1,5 +1,5 @@
 /**
- * Cook AI Design System — Ultimate Premium Native.
+ * CookSnap Design System — Ultimate Premium Native.
  * Spatial canvas #F5F5F7, pure white cards, 24px continuous curves, airy type.
  */
 import { APPLE, BLACK, EMERALD, WHITE } from "../theme/palette";

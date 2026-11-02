@@ -78,7 +78,7 @@ describe("library (saved recipes + favorites)", () => {
   it("persists across a restart", async () => {
     const first = await renderApp();
     act(() => first.result.current.lib.toggleSaveRecipe(recipe("keep")));
-    await waitFor(async () => expect(JSON.parse(await AsyncStorage.getItem("cookai:savedRecipes:v1")).map((r) => r.id)).toContain("keep"));
+    await waitFor(async () => expect(JSON.parse(await AsyncStorage.getItem("cooksnap:savedRecipes:v1")).map((r) => r.id)).toContain("keep"));
     first.unmount();
     const second = await renderApp();
     expect(second.result.current.lib.isRecipeSaved("keep")).toBe(true);

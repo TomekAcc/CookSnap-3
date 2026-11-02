@@ -63,21 +63,21 @@ describe("STORAGE_KEYS", () => {
   it("has unique, versioned, namespaced keys", () => {
     const values = Object.values(STORAGE_KEYS);
     expect(new Set(values).size).toBe(values.length);
-    for (const v of values) expect(v).toMatch(/^cookai:[A-Za-z]+:v\d+$/);
+    for (const v of values) expect(v).toMatch(/^cooksnap:[A-Za-z]+:v\d+$/);
   });
 
   it("keeps the exact key strings existing installs already wrote (renaming one silently loses user data)", () => {
     expect(STORAGE_KEYS).toMatchObject({
-      favorites: "cookai:favorites:v1",
-      savedRecipes: "cookai:savedRecipes:v1",
-      pantryItems: "cookai:pantryItems:v1",
-      isPro: "cookai:isPro:v1",
-      dailyFridgeScans: "cookai:dailyFridgeScans:v1",
-      dailyPantryScans: "cookai:dailyPantryScans:v1",
-      dailyRecipeGenerations: "cookai:dailyRecipeGenCount:v1",
-      recipeLanguage: "cookai:recipeLanguage:v1",
-      dietaryRestrictions: "cookai:dietaryRestrictions:v1",
-      onboardingComplete: "cookai:onboardingComplete:v1",
+      favorites: "cooksnap:favorites:v1",
+      savedRecipes: "cooksnap:savedRecipes:v1",
+      pantryItems: "cooksnap:pantryItems:v1",
+      isPro: "cooksnap:isPro:v1",
+      dailyFridgeScans: "cooksnap:dailyFridgeScans:v1",
+      dailyPantryScans: "cooksnap:dailyPantryScans:v1",
+      dailyRecipeGenerations: "cooksnap:dailyRecipeGenCount:v1",
+      recipeLanguage: "cooksnap:recipeLanguage:v1",
+      dietaryRestrictions: "cooksnap:dietaryRestrictions:v1",
+      onboardingComplete: "cooksnap:onboardingComplete:v1",
     });
   });
 });

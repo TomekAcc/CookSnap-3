@@ -55,7 +55,7 @@ export function useScanCapture(kind, onPhoto) {
       }
       setCameraOpen(true);
     } catch (err) {
-      log.warn("[Cook AI] Failed to open camera:", err?.message);
+      log.warn("[CookSnap] Failed to open camera:", err?.message);
       showToast?.(t("errors.openCameraFailed"), "error");
     }
   };
@@ -69,7 +69,7 @@ export function useScanCapture(kind, onPhoto) {
       setCameraOpen(false);
       await onPhoto(photo.uri, "camera");
     } catch (err) {
-      log.warn("[Cook AI] Failed to capture photo:", err?.message);
+      log.warn("[CookSnap] Failed to capture photo:", err?.message);
       setCameraOpen(false);
       showToast?.(t("errors.capturePhotoFailed"), "error");
     }
@@ -88,7 +88,7 @@ export function useScanCapture(kind, onPhoto) {
         await onPhoto(picked.uri, "gallery");
       }
     } catch (err) {
-      log.warn("[Cook AI] Failed to pick photo from gallery:", err?.message);
+      log.warn("[CookSnap] Failed to pick photo from gallery:", err?.message);
       showToast?.(t("errors.loadPhotoFailed"), "error");
     }
   };

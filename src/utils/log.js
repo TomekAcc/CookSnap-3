@@ -5,7 +5,7 @@
 //              crash reporter later.
 // A message that already starts with its own "[Tag]" is printed as written;
 // anything else gets the app tag so Metro/Xcode output is easy to filter.
-const TAG = "[Cook AI]";
+const TAG = "[CookSnap]";
 
 /* eslint-disable no-console */
 // The console method is looked up per call (not captured at import) so tests

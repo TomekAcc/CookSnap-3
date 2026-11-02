@@ -1,4 +1,4 @@
-# Cook AI — Project Memory
+# CookSnap — Project Memory
 
 Read this first, every session, before non-trivial work. It's an index —
 the real rules and product context live in the files it points to; nothing

@@ -55,9 +55,9 @@ describe("fridge scan", () => {
     expect(result.current.scan.scanHistory[0]).toMatchObject({ photoUri: "kept:file://fridge.jpg", source: "gallery", itemCount: 2 });
     expect(names(result.current.scan.scanHistory[0].ingredients)).toEqual(["Milk", "Egg"]);
 
-    await waitFor(async () => expect(names(await stored("cookai:ingredients:v1"))).toEqual(["Milk", "Egg"]));
-    expect(await stored("cookai:fridgePhoto:v1")).toBe("kept:file://fridge.jpg");
-    expect(await stored("cookai:scanHistory:v1")).toHaveLength(1);
+    await waitFor(async () => expect(names(await stored("cooksnap:ingredients:v1"))).toEqual(["Milk", "Egg"]));
+    expect(await stored("cooksnap:fridgePhoto:v1")).toBe("kept:file://fridge.jpg");
+    expect(await stored("cooksnap:scanHistory:v1")).toHaveLength(1);
   });
 
   it("a second scan appends to what is already there instead of replacing it", async () => {
@@ -171,20 +171,20 @@ describe("the onboarding sample scan", () => {
 
     await act(async () => {});
     // The empty default is written on first load; what must never be written is the sample itself.
-    expect(JSON.parse((await AsyncStorage.getItem("cookai:ingredients:v1")) ?? "[]")).toEqual([]);
-    expect((await AsyncStorage.getItem("cookai:fridgePhoto:v1")) ?? "").not.toContain("sample.jpg");
-    expect((await AsyncStorage.getItem("cookai:scanHistory:v1")) ?? "[]").toBe("[]");
+    expect(JSON.parse((await AsyncStorage.getItem("cooksnap:ingredients:v1")) ?? "[]")).toEqual([]);
+    expect((await AsyncStorage.getItem("cooksnap:fridgePhoto:v1")) ?? "").not.toContain("sample.jpg");
+    expect((await AsyncStorage.getItem("cooksnap:scanHistory:v1")) ?? "[]").toBe("[]");
   });
 
   it("does not wipe the ingredients saved from the user's real fridge", async () => {
     useFakeTimers();
-    await AsyncStorage.setItem("cookai:ingredients:v1", JSON.stringify([{ id: "real", name: "Real", source: "scan" }]));
+    await AsyncStorage.setItem("cooksnap:ingredients:v1", JSON.stringify([{ id: "real", name: "Real", source: "scan" }]));
     const { result } = await renderApp();
     act(() => result.current.scan.completeDemoScan("file://sample.jpg"));
     act(() => jest.advanceTimersByTime(1400));
     act(() => result.current.scan.endScanChoreography());
     await act(async () => {});
-    expect(names(await stored("cookai:ingredients:v1"))).toEqual(["Real"]);
+    expect(names(await stored("cooksnap:ingredients:v1"))).toEqual(["Real"]);
   });
 
   it("a real scan afterwards replaces the sample items instead of merging into them", async () => {
@@ -266,7 +266,7 @@ describe("history, reset and scan-more", () => {
 
 describe("the reveal hold (scanRevealActive)", () => {
   it("is NOT triggered by a saved photo loading at startup (that is not a scan finishing)", async () => {
-    await AsyncStorage.setItem("cookai:fridgePhoto:v1", JSON.stringify("kept:file://old.jpg"));
+    await AsyncStorage.setItem("cooksnap:fridgePhoto:v1", JSON.stringify("kept:file://old.jpg"));
     const { result } = await renderApp();
     await waitFor(() => expect(result.current.scan.hasScanned).toBe(true));
     expect(result.current.scan.scanRevealActive).toBe(false);

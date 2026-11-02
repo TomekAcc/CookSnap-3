@@ -743,7 +743,7 @@ export function stampRecipeEmojis(recipes) {
         }
       });
   } catch (err) {
-    log.warn("[Cook AI] stampRecipeEmojis failed:", err?.message);
+    log.warn("[CookSnap] stampRecipeEmojis failed:", err?.message);
     return Array.isArray(recipes) ? recipes.filter(Boolean) : [];
   }
 }

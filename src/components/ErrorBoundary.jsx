@@ -39,7 +39,7 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     log.error(
-      "[Cook AI] Caught a render crash in ErrorBoundary:",
+      "[CookSnap] Caught a render crash in ErrorBoundary:",
       error,
       info?.componentStack
     );

@@ -250,7 +250,7 @@ describe("recipe language", () => {
 
   it("switching the language re-translates the saved recipes written in the old one", async () => {
     gemini.modifyRecipeWithGemini.mockImplementation(async (r) => ({ title: `${r.title} (pl)` }));
-    await AsyncStorage.setItem("cookai:savedRecipes:v1", JSON.stringify([ai("a"), ai("b", { languageId: "pl" })]));
+    await AsyncStorage.setItem("cooksnap:savedRecipes:v1", JSON.stringify([ai("a"), ai("b", { languageId: "pl" })]));
     const { result } = await renderApp();
     await act(async () => {});
     expect(gemini.modifyRecipeWithGemini).not.toHaveBeenCalled(); // not on startup

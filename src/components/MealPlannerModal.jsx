@@ -321,7 +321,7 @@ export default function MealPlannerModal() {
       if (isMountedRef.current) mealPoolRef.current = pool;
       return pool;
     } catch (err) {
-      log.warn("[Cook AI] Meal pool refresh failed:", err?.message);
+      log.warn("[CookSnap] Meal pool refresh failed:", err?.message);
       return mealPoolRef.current;
     }
   }, [getPlannerMealsFromInventory]);
@@ -452,7 +452,7 @@ export default function MealPlannerModal() {
         "success"
       );
     } catch (err) {
-      log.warn("[Cook AI] Auto-fill week failed:", err?.message);
+      log.warn("[CookSnap] Auto-fill week failed:", err?.message);
       showToast?.(t("mealPlanner.planWeekFailed"), "error");
     } finally {
       if (isMountedRef.current) setIsGeneratingWeek(false);
@@ -477,7 +477,7 @@ export default function MealPlannerModal() {
       }
       setDay(dayId, meal);
     } catch (err) {
-      log.warn("[Cook AI] Generate day meal failed:", err?.message);
+      log.warn("[CookSnap] Generate day meal failed:", err?.message);
       showToast?.(t("mealPlanner.generateMealFailed"), "error");
     } finally {
       if (isMountedRef.current) setLoadingDayId(null);
@@ -498,7 +498,7 @@ export default function MealPlannerModal() {
       setDay(dayId, meal);
       showToast?.(t("mealPlanner.mealSwappedToast"), "info");
     } catch (err) {
-      log.warn("[Cook AI] Swap meal failed:", err?.message);
+      log.warn("[CookSnap] Swap meal failed:", err?.message);
       showToast?.(t("mealPlanner.swapMealFailed"), "error");
     } finally {
       if (isMountedRef.current) setLoadingDayId(null);

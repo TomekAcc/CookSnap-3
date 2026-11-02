@@ -151,7 +151,7 @@ export function RecipesProvider({ children }) {
 
       scrollToRecipesTop();
     } catch (err) {
-      log.warn("[Cook AI] Recipe generation failed:", err?.message);
+      log.warn("[CookSnap] Recipe generation failed:", err?.message);
       // Never disguise a failure as a real batch: if a previous real batch
       // is still on screen (this was a failed "Regenerate"), leave it
       // exactly as it was and just tell the user this attempt failed —
@@ -288,7 +288,7 @@ export function RecipesProvider({ children }) {
         replaceSavedRecipe(updated);
         return updated;
       } catch (err) {
-        log.warn("[Cook AI] Recipe auto-translate failed:", err?.message);
+        log.warn("[CookSnap] Recipe auto-translate failed:", err?.message);
         return recipe;
       }
     },

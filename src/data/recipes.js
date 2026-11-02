@@ -217,7 +217,7 @@ function buildRecipesWithEmojiBadges(raw) {
       }
     });
   } catch (err) {
-    log.warn("[Cook AI] Failed to stamp recipe emoji badges on boot:", err?.message);
+    log.warn("[CookSnap] Failed to stamp recipe emoji badges on boot:", err?.message);
     return (raw || []).map((recipe, idx) => ({
       ...recipe,
       emoji: "🥘",
@@ -268,7 +268,7 @@ export function filterRecipes(recipes, mealType, hungerLevel) {
 
     return filtered.slice(0, 5);
   } catch (err) {
-    log.warn("[Cook AI] filterRecipes failed:", err?.message);
+    log.warn("[CookSnap] filterRecipes failed:", err?.message);
     return Array.isArray(recipes) ? recipes.filter(Boolean).slice(0, 5) : [];
   }
 }

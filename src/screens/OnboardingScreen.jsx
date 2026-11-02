@@ -184,7 +184,7 @@ export default function OnboardingScreen({ onContinue }) {
       if (uri) completeDemoScan(uri);
     } catch (err) {
       // The sample is a nicety: if it can't start, just open the app.
-      log.warn("[Cook AI] sample scan could not start:", err?.message);
+      log.warn("[CookSnap] sample scan could not start:", err?.message);
     }
     onContinue();
   };

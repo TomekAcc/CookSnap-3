@@ -35,7 +35,7 @@ export async function loadScanTimings() {
       }
     }
   } catch (err) {
-    log.warn("[Cook AI] scan timings could not be read:", err?.message);
+    log.warn("[CookSnap] scan timings could not be read:", err?.message);
   }
 }
 
@@ -53,7 +53,7 @@ export async function recordScanTiming(kind, ms) {
   try {
     await AsyncStorage.setItem(STORAGE_KEYS.scanTimings, JSON.stringify(cache));
   } catch (err) {
-    log.warn("[Cook AI] scan timing could not be saved:", err?.message);
+    log.warn("[CookSnap] scan timing could not be saved:", err?.message);
   }
 }
 

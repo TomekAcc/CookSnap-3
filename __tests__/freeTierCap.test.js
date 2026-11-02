@@ -3,7 +3,7 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { countFor, emptyCounter, increment, parseCounter, todayKey } from "../src/utils/dailyCounter";
 import { useFreeTierCap } from "../src/hooks/useFreeTierCap";
 
-const KEY = "cookai:test:cap";
+const KEY = "cooksnap:test:cap";
 
 beforeEach(async () => {
   await AsyncStorage.clear();

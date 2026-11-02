@@ -1,4 +1,4 @@
-# Cook AI — Engineering Rules
+# CookSnap — Engineering Rules
 
 These are the working conventions for this codebase — grounded in real
 incidents from this project's own history, not generic boilerplate. The

@@ -1,4 +1,4 @@
-# Cook AI Gemini proxy
+# CookSnap Gemini proxy
 
 A small Cloudflare Worker that sits between the app and Google's Gemini API. The Gemini key
 lives here, as a secret, and never ships inside the app.
