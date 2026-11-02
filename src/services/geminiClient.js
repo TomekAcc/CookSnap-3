@@ -163,6 +163,10 @@ function recordRequest(entry) {
   requestLog.unshift(entry);
   if (requestLog.length > 30) requestLog.pop();
 }
+/** Records a non-request step in the same log (e.g. preparing the photo), so its duration shows next to the requests. */
+export function recordStep({ label, ms, kb = 0, outcome }) {
+  recordRequest({ at: Date.now() - ms, model: label, kb, timeoutMs: 0, ms, outcome });
+}
 export function getRequestLog() {
   return requestLog.map((e) => ({ ...e }));
 }

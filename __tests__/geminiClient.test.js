@@ -7,6 +7,7 @@ import {
   generateContent,
   getRequestLog,
   clearRequestLog,
+  recordStep,
   parseModelJson,
   resolveApiKey,
 } from "../src/services/geminiClient";
@@ -211,5 +212,11 @@ describe("request log", () => {
     await expect(generateContent({ apiKey: "k", model: "m1", body: {}, timeoutMs: 1000 })).rejects.toThrow();
     await expect(generateContent({ apiKey: "k", model: "m2", body: {}, timeoutMs: 1000 })).rejects.toThrow();
     expect(getRequestLog().map((e) => e.outcome)).toEqual(["network: Network request failed", "timeout"]);
+  });
+
+  it("lets other steps share the log", () => {
+    recordStep({ label: "photo prep", ms: 1500, kb: 300, outcome: "ok" });
+    const [step] = getRequestLog();
+    expect([step.model, step.ms, step.kb, step.outcome]).toEqual(["photo prep", 1500, 300, "ok"]);
   });
 });

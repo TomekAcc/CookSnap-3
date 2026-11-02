@@ -8,6 +8,7 @@ import {
   buildGenerationConfig,
   generateContent,
   parseModelJson,
+  recordStep,
   resolveApiKey,
 } from "./geminiClient";
 
@@ -135,6 +136,7 @@ function isMetaIngredientName(name = "") {
 export async function compressPhotoForVision(imageInput) {
   if (!imageInput) return null;
 
+  const prepStartedAt = Date.now();
   try {
     if (
       typeof imageInput === "string" &&
@@ -162,9 +164,16 @@ export async function compressPhotoForVision(imageInput) {
       COMPRESS_TIMEOUT_MS,
       "Photo compression"
     );
+    recordStep({
+      label: "photo prep",
+      ms: Date.now() - prepStartedAt,
+      kb: Math.round((manipResult.base64 || "").length / 1024),
+      outcome: manipResult.base64 ? "ok" : "no data",
+    });
 
     return manipResult.base64 ? manipResult.base64.trim() : null;
   } catch (err) {
+    recordStep({ label: "photo prep", ms: Date.now() - prepStartedAt, outcome: String(err?.message || err).slice(0, 50) });
     log.warn("[Cook AI Vision] Compression warning:", err?.message);
     if (typeof imageInput === "string" && imageInput.includes(",")) {
       return imageInput.split(",")[1].trim();
