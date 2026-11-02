@@ -35,6 +35,7 @@ import { EMERALD, WHITE } from "../theme/palette";
 import { SHOW_TESTING_TOOLS } from "../config/flags";
 import appConfig from "../../app.json";
 import { getRequestLog } from "../services/geminiClient";
+import { floatingCtaBottom } from "../constants/layout";
 
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
@@ -701,7 +702,7 @@ export default function SettingsScreen() {
             position: "absolute",
             left: 0,
             right: 0,
-            bottom: Math.max(insets.bottom, 8) + 56 + 10,
+            bottom: floatingCtaBottom(insets.bottom),
             paddingHorizontal: 20,
             zIndex: 39,
           }}

@@ -33,6 +33,7 @@ import PillTag from "./PillTag";
 import ShoppingListModal from "./ShoppingListModal";
 import PantryScannerHero from "./PantryScannerHero";
 import SamplePantryCard from "./SamplePantryCard";
+import { floatingCtaBottom, floatingCtaClearance } from "../constants/layout";
 import ErrorBoundary from "./ErrorBoundary";
 import Header from "./Header";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -454,7 +455,7 @@ export default function PantryTab() {
         style={{ flex: 1, backgroundColor: colors.bg }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: insets.bottom + 176,
+          paddingBottom: floatingCtaClearance(insets.bottom, 28),
         }}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={tabScroll.scrollEventThrottle}
@@ -984,7 +985,7 @@ export default function PantryTab() {
             position: "absolute",
             left: 16,
             right: 16,
-            bottom: Math.max(insets.bottom, 8) + 56 + 10,
+            bottom: floatingCtaBottom(insets.bottom),
           }}
           pointerEvents="box-none"
         >

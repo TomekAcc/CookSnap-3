@@ -17,6 +17,7 @@ import Header from "../components/Header";
 import FridgeScannerHero from "../components/FridgeScannerHero";
 import MealPreferences from "../components/MealPreferences";
 import ScanSteps from "../components/ScanSteps";
+import { floatingCtaBottom, floatingCtaClearance } from "../constants/layout";
 import RecipeFeed from "../components/RecipeFeed";
 import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
@@ -160,7 +161,7 @@ export default function ScannerScreen() {
           paddingBottom: stillScanning
             ? insets.bottom + 40
             : showFloatingCta
-              ? insets.bottom + 140
+              ? floatingCtaClearance(insets.bottom)
               : insets.bottom + 120,
         }}
         keyboardShouldPersistTaps="handled"
@@ -226,7 +227,7 @@ export default function ScannerScreen() {
           style={[
             styles.ctaHost,
             {
-              bottom: Math.max(insets.bottom, 8) + 56 + 10,
+              bottom: floatingCtaBottom(insets.bottom),
             },
           ]}
           pointerEvents="box-none"
