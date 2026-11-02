@@ -177,8 +177,10 @@ function RecipeCard({
                   borderColor: colors.roseRing,
                 }
               : {
-                  backgroundColor: colors.fillFaint,
-                  borderColor: colors.cardBorder,
+                  // Same soft rose as the saved state, so the control reads as a heart button on a white card;
+                  // saved differs by the heart being filled.
+                  backgroundColor: colors.roseSoft,
+                  borderColor: colors.roseRing,
                 },
           ]}
           accessibilityRole="button"
@@ -188,7 +190,7 @@ function RecipeCard({
         >
           <Heart
             size={ICON.md}
-            color={isFavorite ? APPLE.red : SLATE[400]}
+            color={APPLE.red}
             fill={isFavorite ? APPLE.red : "none"}
             strokeWidth={ICON.stroke}
           />

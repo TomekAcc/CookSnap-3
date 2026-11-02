@@ -20,6 +20,7 @@ import {
   ChevronDown,
   ChevronRight,
   Check,
+  SlidersHorizontal,
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { translateCount } from "../i18n";
@@ -250,15 +251,13 @@ export default function MealPreferences() {
 
       <View style={[card, styles.summaryCard]}>
         {summaryFields.map((f, i) => (
+          <React.Fragment key={f.kind}>
+            {i > 0 ? <View style={[styles.summaryDivider, { backgroundColor: colors.cardBorder }]} /> : null}
           <TouchableOpacity
-            key={f.kind}
             onPress={() => setPicker(f.kind)}
             activeOpacity={0.7}
             accessibilityRole="button"
-            style={[
-              styles.summaryCol,
-              i > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: colors.cardBorder },
-            ]}
+            style={styles.summaryCol}
           >
             <Text
               style={[styles.summaryLabel, { color: colors.textSecondary }]}
@@ -280,6 +279,7 @@ export default function MealPreferences() {
               <ChevronDown size={12} color={colors.textSecondary} strokeWidth={2.6} />
             </View>
           </TouchableOpacity>
+          </React.Fragment>
         ))}
       </View>
 
@@ -289,6 +289,14 @@ export default function MealPreferences() {
         accessibilityRole="button"
         style={[card, styles.moreCard]}
       >
+        <View
+          style={[
+            styles.moreIcon,
+            { backgroundColor: colors.accentGreenSoft, borderColor: colors.greenRing },
+          ]}
+        >
+          <SlidersHorizontal size={17} color={colors.greenStrong} strokeWidth={2.2} />
+        </View>
         <View style={{ flex: 1, minWidth: 0 }}>
           <Text style={[styles.moreLabel, { color: colors.textPrimary }]}>
             {t("mealPrefs.moreOptions")}
@@ -462,7 +470,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 8,
     marginBottom: 12,
-    gap: 16,
+    gap: 12,
   },
   sectionTitle: {
     fontWeight: "700",
@@ -483,16 +491,31 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     marginVertical: 24,
   },
+  // Three equal columns with room around the text; the hairlines between them stop short of the card's edges.
   summaryCard: {
     flexDirection: "row",
-    paddingVertical: 14,
+    alignItems: "stretch",
+    paddingVertical: 6,
     paddingHorizontal: 6,
+  },
+  summaryDivider: {
+    width: StyleSheet.hairlineWidth,
+    marginVertical: 14,
   },
   moreCard: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingVertical: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  moreIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   moreSummary: {
     fontSize: 13,
@@ -511,8 +534,9 @@ const styles = StyleSheet.create({
   summaryCol: {
     flex: 1,
     minWidth: 0,
-    paddingHorizontal: 8,
-    gap: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    gap: 6,
   },
   summaryLabel: {
     fontSize: 12,
@@ -525,7 +549,7 @@ const styles = StyleSheet.create({
   },
   summaryValue: {
     flexShrink: 1,
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "700",
   },
   optionRow: {

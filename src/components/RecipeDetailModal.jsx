@@ -873,74 +873,6 @@ export default function RecipeDetailModal() {
             })}
           </View>
 
-          {/* Optional, rare — only rendered when the model set both
-              upgradeIngredient/upgradeNote (see geminiRecipes.js). This
-              recipe's own ingredientsList/steps NEVER include anything the
-              user doesn't actually have; this is a clearly separate,
-              purely informational aside about what a next-level version
-              would need, with a one-tap way to add just that one item to
-              the Shopping List for next time. */}
-          {recipe?.upgradeIngredient ? (
-            <View
-              style={[
-                styles.upgradeTipCard,
-                {
-                  backgroundColor: colors.greenTint,
-                  borderColor: colors.greenTintBorder,
-                },
-              ]}
-            >
-              <View style={styles.upgradeTipHeaderRow}>
-                <Sparkles size={16} color={colors.greenStrong} />
-                <Text
-                  style={[
-                    styles.upgradeTipLabel,
-                    { color: colors.greenText },
-                  ]}
-                >
-                  {t("recipeDetail.upgradeTipLabel", {
-                    ingredient: recipe.upgradeIngredient,
-                  })}
-                </Text>
-              </View>
-              <Text
-                style={[styles.upgradeTipNote, { color: colors.textSecondary }]}
-              >
-                {recipe.upgradeNote}
-              </Text>
-              <TouchableOpacity
-                onPress={handleAddUpgradeIngredient}
-                activeOpacity={0.8}
-                disabled={upgradeAdded}
-                style={[
-                  styles.upgradeTipButton,
-                  upgradeAdded
-                    ? {
-                        backgroundColor: "transparent",
-                        borderWidth: 1,
-                        borderColor: colors.greenRing,
-                      }
-                    : { backgroundColor: colors.greenFill },
-                ]}
-              >
-                {upgradeAdded ? (
-                  <Check size={14} color={colors.greenStrong} strokeWidth={2.5} />
-                ) : (
-                  <ShoppingCart size={14} color={WHITE} />
-                )}
-                <Text
-                  style={[
-                    styles.upgradeTipButtonText,
-                    upgradeAdded && { color: colors.greenStrong },
-                  ]}
-                >
-                  {upgradeAdded
-                    ? t("recipeDetail.upgradeTipAddedButton")
-                    : t("recipeDetail.upgradeTipAdd")}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : null}
         </View>
 
         <View style={[styles.sectionContainer, styles.instructionsSection]}>
@@ -1033,6 +965,78 @@ export default function RecipeDetailModal() {
               );
             })}
           </View>
+
+          {/* The upgrade tip is an aside about a next-level version of the dish, not part of it, so it sits after
+              the instructions instead of between the ingredients and the steps, where it read as a leftover
+              ingredient box. */}
+          {/* Optional, rare — only rendered when the model set both
+              upgradeIngredient/upgradeNote (see geminiRecipes.js). This
+              recipe's own ingredientsList/steps NEVER include anything the
+              user doesn't actually have; this is a clearly separate,
+              purely informational aside about what a next-level version
+              would need, with a one-tap way to add just that one item to
+              the Shopping List for next time. */}
+          {recipe?.upgradeIngredient ? (
+            <View
+              style={[
+                styles.upgradeTipCard,
+                {
+                  backgroundColor: colors.greenTint,
+                  borderColor: colors.greenTintBorder,
+                },
+              ]}
+            >
+              <View style={styles.upgradeTipHeaderRow}>
+                <Sparkles size={16} color={colors.greenStrong} />
+                <Text
+                  style={[
+                    styles.upgradeTipLabel,
+                    { color: colors.greenText },
+                  ]}
+                >
+                  {t("recipeDetail.upgradeTipLabel", {
+                    ingredient: recipe.upgradeIngredient,
+                  })}
+                </Text>
+              </View>
+              <Text
+                style={[styles.upgradeTipNote, { color: colors.textSecondary }]}
+              >
+                {recipe.upgradeNote}
+              </Text>
+              <TouchableOpacity
+                onPress={handleAddUpgradeIngredient}
+                activeOpacity={0.8}
+                disabled={upgradeAdded}
+                style={[
+                  styles.upgradeTipButton,
+                  upgradeAdded
+                    ? {
+                        backgroundColor: "transparent",
+                        borderWidth: 1,
+                        borderColor: colors.greenRing,
+                      }
+                    : { backgroundColor: colors.greenFill },
+                ]}
+              >
+                {upgradeAdded ? (
+                  <Check size={14} color={colors.greenStrong} strokeWidth={2.5} />
+                ) : (
+                  <ShoppingCart size={14} color={WHITE} />
+                )}
+                <Text
+                  style={[
+                    styles.upgradeTipButtonText,
+                    upgradeAdded && { color: colors.greenStrong },
+                  ]}
+                >
+                  {upgradeAdded
+                    ? t("recipeDetail.upgradeTipAddedButton")
+                    : t("recipeDetail.upgradeTipAdd")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
         </View>
       </ScrollView>
 

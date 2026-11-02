@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { Lock, SlidersHorizontal } from "../icons";
 import { useModalState } from "../context/ModalContext";
@@ -6,6 +6,40 @@ import { useTheme } from "../context/ThemeContext";
 import { useEntitlements } from "../context/EntitlementsContext";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
+import { EMERALD } from "../theme/palette";
+
+/**
+ * A single-line text field in the iOS style: white (or dark inset) fill, a thin border that turns emerald while
+ * the field is being edited, comfortable padding and 16pt text (which is also what keeps iOS from zooming in).
+ */
+function DietField({ value, onChangeText, placeholder, colors, isDark }) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <TextInput
+      value={value}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={colors.textSecondary}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      style={{
+        // Dark: a darker inset than the card it sits on, or the field vanishes into it.
+        backgroundColor: isDark ? colors.inputBg : colors.card,
+        borderWidth: 1.5,
+        borderColor: focused ? EMERALD[500] : colors.outline,
+        borderRadius: 12,
+        paddingHorizontal: 14,
+        paddingVertical: 13,
+        fontSize: 16,
+        fontWeight: "500",
+        color: colors.textPrimary,
+      }}
+      returnKeyType="done"
+      selectionColor={EMERALD[500]}
+      autoCorrect={false}
+    />
+  );
+}
 
 /**
  * Custom Diet (PRO) — free-text "always avoid" / "prefer more of" lists.
@@ -22,7 +56,7 @@ export default function CustomDietSection() {
     setCustomDietPrefer,
   } = usePreferences();
   const { setProModalOpen } = useModalState();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   // Custom Diet — PRO only. Two free-text lists rather than an
   // open-ended "describe your diet" field: "always avoid" plugs
@@ -142,23 +176,12 @@ export default function CustomDietSection() {
             >
               {t("settings.customDietAvoidLabel")}
             </Text>
-            <TextInput
+            <DietField
               value={customDietAvoid}
               onChangeText={setCustomDietAvoid}
               placeholder={t("settings.customDietAvoidPlaceholder")}
-              placeholderTextColor={colors.textSecondary}
-              style={{
-                backgroundColor: colors.inputBg,
-                borderWidth: 1,
-                borderColor: colors.cardBorder,
-                borderRadius: 14,
-                paddingHorizontal: 14,
-                paddingVertical: 11,
-                fontSize: 14,
-                fontWeight: "500",
-                color: colors.textPrimary,
-              }}
-              returnKeyType="done"
+              colors={colors}
+              isDark={isDark}
             />
             <Text
               style={{
@@ -183,23 +206,12 @@ export default function CustomDietSection() {
             >
               {t("settings.customDietPreferLabel")}
             </Text>
-            <TextInput
+            <DietField
               value={customDietPrefer}
               onChangeText={setCustomDietPrefer}
               placeholder={t("settings.customDietPreferPlaceholder")}
-              placeholderTextColor={colors.textSecondary}
-              style={{
-                backgroundColor: colors.inputBg,
-                borderWidth: 1,
-                borderColor: colors.cardBorder,
-                borderRadius: 14,
-                paddingHorizontal: 14,
-                paddingVertical: 11,
-                fontSize: 14,
-                fontWeight: "500",
-                color: colors.textPrimary,
-              }}
-              returnKeyType="done"
+              colors={colors}
+              isDark={isDark}
             />
             <Text
               style={{

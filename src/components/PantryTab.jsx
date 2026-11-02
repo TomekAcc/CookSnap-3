@@ -454,7 +454,7 @@ export default function PantryTab() {
         style={{ flex: 1, backgroundColor: colors.bg }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: insets.bottom + 156,
+          paddingBottom: insets.bottom + 176,
         }}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={tabScroll.scrollEventThrottle}

@@ -91,7 +91,7 @@ export default function SavedScreen() {
         <View
           style={{
             flexDirection: "row",
-            alignItems: "center",
+            alignItems: "baseline",
             marginBottom: mealChips.length ? 16 : 20,
           }}
         >
@@ -108,16 +108,20 @@ export default function SavedScreen() {
             {t("menu.savedRecipes")}
           </Text>
           {savedRecipes.length > 0 ? (
-            <View
-              style={[
-                styles.countPill,
-                { backgroundColor: colors.card, borderColor: colors.cardBorder },
-              ]}
+            // A quiet number next to the title, not a bubble of its own.
+            <Text
+              style={{
+                marginLeft: 8,
+                color: colors.textSecondary,
+                fontWeight: "600",
+                fontSize: 20,
+                letterSpacing: -0.2,
+                fontVariant: ["tabular-nums"],
+              }}
+              accessibilityLabel={`${savedRecipes.length}`}
             >
-              <Text style={{ color: colors.textSecondary, fontWeight: "700", fontSize: 13 }}>
-                {savedRecipes.length}
-              </Text>
-            </View>
+              {savedRecipes.length}
+            </Text>
           ) : null}
         </View>
 
@@ -217,16 +221,6 @@ export default function SavedScreen() {
 }
 
 const styles = StyleSheet.create({
-  countPill: {
-    marginLeft: 10,
-    minWidth: 28,
-    height: 28,
-    paddingHorizontal: 9,
-    borderRadius: RADIUS.pill,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   chipScroll: { marginHorizontal: -20, marginBottom: 16, flexGrow: 0 },
   chipRow: { paddingHorizontal: 20, gap: 8 },
   chip: {
