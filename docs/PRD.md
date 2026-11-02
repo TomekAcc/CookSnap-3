@@ -164,6 +164,9 @@ browsing, not a recipe box to build over years.
   React Context for state, `react-native-reanimated` +
   `react-native-gesture-handler` for UI-thread animations/gestures,
   AsyncStorage for local persistence.
+- **AI gateway:** the app never holds a Gemini key. Every model request goes to a small Cloudflare
+  Worker (`proxy/`) that checks the request shape, rate-limits per device and globally, adds the key
+  and forwards it. See `proxy/README.md` and the Security section of `docs/ENGINEERING_RULES.md`.
 - **AI — Vision:** Google Gemini (vision-capable models), structured JSON
   output, per-request timeouts with automatic retry on transient failures.
 - **AI — Recipes:** Google Gemini (text), structured JSON output, a fixed

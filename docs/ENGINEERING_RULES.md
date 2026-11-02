@@ -358,9 +358,20 @@ Don't claim a change is "tested" unless one of these actually ran.
   --output-dir <dir>`, then `npm run check:bundle -- <dir>` (fails if any Google key is in the
   bundle), and publish with `--clear-cache`. Metro caches inlined env values, so a key removed
   from `.env` can still ride along from a stale cache (seen while building the check).
+- `eas update` runs its own local `expo export`, which reads the local `.env`. That, not the EAS
+  environment variables, is how a key in `.env` ended up in published bundles before the proxy.
+  Publish with the key blanked in the shell (shell values win over `.env`):
+  `EXPO_PUBLIC_GEMINI_PROXY_URL=<proxy url> EXPO_PUBLIC_GEMINI_API_KEY= GEMINI_API_KEY= npx eas-cli update ...`
+  and run `check:bundle` on an export made in the same shell right before. The published assets
+  cannot be downloaded by outsiders (EAS answers 403), so the local export is the only check.
 - Never hardcode a key in source, never print one in full to a terminal or log, never commit
   `.env`. If a key is ever suspected exposed (posted in a log, a screenshot, a shared zip, or
   a published bundle), rotate it: deleting the local reference is not enough.
+- Current deployment: Worker `cooksnap-proxy` at `https://cooksnap-proxy.cooksnap.workers.dev`
+  (account subdomain `cooksnap`), one Google API key named "CookSnap" restricted to the Gemini
+  API; the old keys and the first Worker (`cook-ai-gemini-proxy`) are deleted. The Worker's key
+  is replaced with `npx wrangler secret put GEMINI_API_KEY` from `proxy/` (takes effect at once).
+  `EXPO_PUBLIC_GEMINI_PROXY_URL` is a plain-text EAS variable on `preview` and `production`.
 - Cost guards, in layers: the proxy's per-device and global daily limits (`proxy/wrangler.toml`),
   the monthly spend cap in AI Studio, and the Cloud Billing budget alert.
 

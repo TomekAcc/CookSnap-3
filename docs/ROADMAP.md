@@ -1,77 +1,59 @@
-# Cook AI — Roadmap
+# CookSnap — Roadmap
 
 **Status:** Living document, reviewed alongside `docs/PRD.md`
 **Horizon buckets, not dates:** Now (in progress / next up), Next (planned,
 not started), Later (worth doing, not yet prioritized)
 
+Last full revision: November 2026. Shipped since the previous revision: first-run onboarding with a
+sample fridge and pantry, 31 languages, dynamic recipe step counts, the Gemini proxy (no key in the
+app), SDK 58, the web smoke test in the normal workflow.
+
 ---
 
-## Now
+## Now — before the first store release
 
-- **Dynamic recipe step counts.** Recipes currently always force exactly 5
-  steps regardless of dish complexity. In progress: quick/cold dishes (e.g.
-  yogurt bowl, sandwich) get 3 steps, standard pan dishes (omelet, tacos)
-  get 4, full/complex dishes (pasta, curry, frittata) get 5 — plus explicit
-  "no bizarre ingredient combinations" and "assume basic staples are
-  available" rules in the recipe prompt. Needs the prompt update and the
-  code-side step-count enforcement (currently hardcoded to exactly 5) to be
-  finished together.
-- **Production build for app store submission.** The app is currently only
-  testable via Expo Go + EAS Update — there is no standalone signed build
-  yet. Needed before any real store listing, TestFlight, or Play Console
-  submission.
-- **Automated web smoke testing in the normal workflow.** A Playwright-based
-  smoke test (`scripts/web-smoke-test.js`) now exists and already caught a
-  real crash-causing bug. Next: make running it a habit before every publish
-  for anything touching shared components, not just an ad hoc check.
+- **Decide the app's name and identifiers.** The brand is CookSnap, but `app.json` still has
+  `com.tomekacc.cookai` for the iOS bundle id and Android package. They cannot be changed after the
+  first store upload, so decide first.
+- **Real payments.** PRO is a local mock (`EntitlementsContext.activatePro`); nobody can pay.
+  Needs Apple Developer and Google Play accounts, the two subscriptions (monthly, annual with a
+  7-day trial) in both stores, and an integration (RevenueCat is the usual route). The daily free-tier
+  limits are counted on the phone and can be bypassed; move them somewhere that can be trusted.
+- **Privacy policy, terms and support contact.** Both stores require them, more so with
+  subscriptions. Photos go to Google's AI, which has to be stated plainly in the policy and in the
+  store's privacy declaration. Settings > About has the place for the links.
+- **Production builds and a real-device pass.** `eas.json` has a `production` profile but no build
+  has been made. Build iOS and Android, install via TestFlight / internal track, re-run the whole
+  manual pass (scan, recipes, payments) on the compiled app.
+- **Android parity pass.** Nearly all hands-on testing so far was iPhone in Expo Go.
+- **Store listing.** Screenshots, description, icon, age rating, category.
+- **Finish the key clean-up.** Google Cloud Billing budget alert; confirm the old Worker is gone.
 
 ## Next
 
-- **Onboarding for first-time users.** Right now a new user lands straight
-  on the Scanner tab with no explanation of the free-tier limit (3 scans/
-  day), how pantry staples factor into recipes, or what PRO unlocks. A short
-  first-run flow would reduce "why didn't this work" confusion.
-- **Gemini model resilience.** This has already required manual intervention
-  more than once as Google deprecated model versions mid-project (a
-  hardcoded model returning 404 broke scanning until it was caught and
-  fixed). Needs to become a maintained, periodically-verified candidate
-  model list rather than something that's only checked when a feature
-  breaks.
-- **Usage-informed tuning of the free tier and pricing.** The 3 scans/day
-  limit and the $4.99/mo–$24.99/yr pricing are both reasoned judgment calls,
-  not validated against real conversion data yet. Once there's real usage,
-  revisit both against actual free→PRO conversion and scan-limit
-  hit-rate.
-- **Recipe/scan quality feedback loop.** No current way for a user to flag
-  "this recipe was bad" or "this scan missed obvious items" beyond generic
-  Help & Feedback. A lightweight per-recipe/per-scan signal would surface
-  prompt-quality regressions faster than word-of-mouth bug reports.
-- **Android parity pass.** Most hands-on testing this cycle has been
-  iOS/Expo Go on iPhone; Android-specific behavior (gesture handling, blur
-  rendering, safe-area insets) hasn't had the same level of direct
-  verification and should get a dedicated pass before wider release.
+- **Crash reporting and basic analytics** (e.g. Sentry). None known to be in the app; without it
+  failures on users' phones are invisible.
+- **Gemini model resilience.** The proxy allows exactly the three models the app uses
+  (`proxy/src/policy.js`); a deprecation means changing both. Needs a periodic check rather than
+  discovery by breakage.
+- **Slow or stuck scans.** A first scan has been seen hanging with the bar at the end. Settings >
+  Testing > "Last model requests" records what each request did; use it to decide whether the
+  per-request limit (10 s) is too tight or a request really hangs.
+- **Recipe and scan quality feedback.** No way to flag "this recipe was bad" or "the scan missed
+  obvious items" beyond Help & Feedback.
+- **Usage-informed tuning of the free tier and pricing.** The limits and the $4.99/mo - $24.99/yr
+  prices are judgment calls until there is conversion data.
 
 ## Later
 
-- **Multi-language support.** The product is strictly English-only by
-  design today (recipe titles, steps, everything) — worth reconsidering
-  once there's a clear signal of demand from a specific market.
-- **Barcode scanning for packaged goods.** Currently out of scope (vision-
-  based shelf scanning only); would reduce ambiguity for sealed/packaged
-  items the camera can't read a label on.
-- **Nutrition tracking beyond per-recipe macros.** A running diary/log is
-  explicitly a non-goal today; the product's core loop is "what can I cook
-  now," not fitness tracking — revisit only if users ask for it directly.
-- **Social / sharing.** No feed, no following, no public recipe sharing
-  today. Worth reconsidering once there's a retained user base worth
-  connecting to each other, not before.
-- **Grocery delivery integration.** Out of scope — the Shopping List
-  (already shipped, generated from out-of-stock pantry items) stops at "here's
-  what to buy," not "buy it for me."
+- **Barcode scanning for packaged goods** (today: vision-based shelf scanning only).
+- **Nutrition tracking beyond per-recipe macros** (a diary is a non-goal today).
+- **Social / sharing.** Worth reconsidering once there is a retained user base.
+- **Grocery delivery integration.** The Shopping List stops at "here's what to buy".
+- **Stronger abuse protection for the proxy** (sign-in, App Attest / Play Integrity) if usage or
+  revenue justifies it; today a device id plus global limits and a Google spend cap are the guards.
 
 ## Explicitly Not Planned
 
-Carried over from the PRD's non-goals — listed here so they don't quietly
-creep back onto the roadmap without a deliberate decision: manual full
-recipe authoring by users, and anything that turns the product from
-AI-first into a user-generated recipe box.
+Carried over from the PRD's non-goals: manual full recipe authoring by users, and anything that
+turns the product from AI-first into a user-generated recipe box.
