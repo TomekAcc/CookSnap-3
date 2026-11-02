@@ -290,6 +290,10 @@ Return ONLY a JSON array of {"name","icon"} objects.
   // fallback): every extra candidate is pure downside for speed, another full
   // timeout window before falling through.
   let lastError = null;
+  // True once a model has answered "nothing here". One empty answer is not trusted on its own: a model can
+  // return [] for a photo that plainly shows food (a user's first upload came back empty, the second found
+  // everything), so the next candidate gets a go before the scan reports an empty fridge.
+  let sawEmptyAnswer = false;
 
   for (const modelName of VISION_MODELS) {
     try {
@@ -340,7 +344,8 @@ Return ONLY a JSON array of {"name","icon"} objects.
 
       if (jsonString === "[]") {
         log.debug(`[Cook AI Vision] ${modelName} returned empty food list.`);
-        return [];
+        sawEmptyAnswer = true;
+        continue;
       }
 
       const items = JSON.parse(jsonString);
@@ -378,6 +383,12 @@ Return ONLY a JSON array of {"name","icon"} objects.
           return true;
         });
 
+        if (unique.length === 0) {
+          log.debug(`[Cook AI Vision] ${modelName} found no usable items.`);
+          sawEmptyAnswer = true;
+          continue;
+        }
+
         log.debug(
           `[Cook AI Vision] SUCCESS! Master scan detected ${unique.length} items:`,
           unique
@@ -389,6 +400,9 @@ Return ONLY a JSON array of {"name","icon"} objects.
       lastError = err;
     }
   }
+
+  // Every candidate that answered said "nothing here" (any that failed outright don't change that).
+  if (sawEmptyAnswer) return [];
 
   throw (
     lastError ||
