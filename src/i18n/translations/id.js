@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Ramah Diabetes",
   "diet.diabetic.desc": "Makanan dengan indeks glikemik rendah",
   "scanner.creatingRecipes": "Membuat resep...",
+  "scanner.checkingRecipes": "Memeriksa resep...",
   "scanner.regenerateRecipes": "Buat Ulang Resep AI",
   "scanner.generationsLeftToday": "{count} dari {total} kesempatan gratis tersisa hari ini",
   "scanner.generationsUsedUpToday": "Batas gratis hari ini telah tercapai — akan diatur ulang besok",

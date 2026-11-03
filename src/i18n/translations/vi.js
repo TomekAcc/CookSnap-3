@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Thân thiện với người tiểu đường",
   "diet.diabetic.desc": "Các bữa ăn có chỉ số đường huyết thấp",
   "scanner.creatingRecipes": "Đang tạo công thức...",
+  "scanner.checkingRecipes": "Đang kiểm tra công thức...",
   "scanner.regenerateRecipes": "Tạo lại công thức AI",
   "scanner.generationsLeftToday": "Còn {count}/{total} lượt miễn phí hôm nay",
   "scanner.generationsUsedUpToday": "Đã hết lượt miễn phí hôm nay — làm mới vào ngày mai",

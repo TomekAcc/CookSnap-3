@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Vhodné pro diabetiky",
   "diet.diabetic.desc": "Jídla s nízkým glykemickým indexem",
   "scanner.creatingRecipes": "Vytvářím recepty...",
+  "scanner.checkingRecipes": "Kontroluji recepty...",
   "scanner.regenerateRecipes": "Vygenerovat nové AI recepty",
   "scanner.generationsLeftToday": "Dnes zbývá {count} z {total} bezplatných generování",
   "scanner.generationsUsedUpToday": "Dnešní bezplatný limit je vyčerpán – obnoví se zítra",

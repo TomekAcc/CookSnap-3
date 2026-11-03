@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "डायबिटिक फ्रेंडली",
   "diet.diabetic.desc": "कम ग्लाइसेमिक इंडेक्स वाले भोजन",
   "scanner.creatingRecipes": "रेसिपी बनाई जा रही हैं...",
+  "scanner.checkingRecipes": "रेसिपी जाँची जा रही हैं...",
   "scanner.regenerateRecipes": "AI रेसिपी दोबारा जनरेट करें",
   "scanner.generationsLeftToday": "आज {total} में से {count} मुफ़्त जनरेशन शेष हैं",
   "scanner.generationsUsedUpToday": "आज की मुफ़्त सीमा समाप्त — कल रीसेट होगी",

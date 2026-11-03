@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "เป็นมิตรกับผู้ป่วยเบาหวาน",
   "diet.diabetic.desc": "อาหารดัชนีน้ำตาลต่ำ",
   "scanner.creatingRecipes": "กำลังสร้างสูตรอาหาร...",
+  "scanner.checkingRecipes": "กำลังตรวจสอบสูตร...",
   "scanner.regenerateRecipes": "สร้างสูตร AI ใหม่",
   "scanner.generationsLeftToday": "เหลือสิทธิ์ฟรีอีก {count} จาก {total} ครั้งในวันนี้",
   "scanner.generationsUsedUpToday": "ใช้สิทธิ์ฟรีครบแล้วในวันนี้ — รีเซ็ตพรุ่งนี้",

@@ -39,6 +39,8 @@ export function RecipesProvider({ children }) {
   const { savedHydrated, savedRecipesRaw: savedRecipes, replaceSavedRecipe } = useLibrary();
   const { ingredients, pantryItems, scanIsDemo } = useInventory();
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
+  // "create" while the model writes the recipes, "review" while a second pass checks them (shown on the Generate button).
+  const [generationPhase, setGenerationPhase] = useState("create");
   const generatingRef = useRef(false);
   const [generatedRecipes, setGeneratedRecipes] = useState(null);
   // True only when a generate/regenerate call failed AND there was no
@@ -94,6 +96,7 @@ export function RecipesProvider({ children }) {
     }
 
     generatingRef.current = true;
+    setGenerationPhase("create");
     setIsGeneratingRecipes(true);
     setRecipeGenerationFailed(false);
     // Scroll to the recipes section immediately, not just after the fetch
@@ -130,7 +133,10 @@ export function RecipesProvider({ children }) {
         previousTitles,
         unitSystem,
         recipeLanguageName,
-        { sampleKitchen: includePantryStaples && usesSamplePantry(pantryItems, scanIsDemo) }
+        {
+          sampleKitchen: includePantryStaples && usesSamplePantry(pantryItems, scanIsDemo),
+          onPhase: setGenerationPhase,
+        }
       );
 
       // generateRecipesWithGemini throws rather than returning an empty
@@ -351,6 +357,7 @@ export function RecipesProvider({ children }) {
     () => ({
       generatedRecipes,
       isGeneratingRecipes,
+      generationPhase,
       recipeGenerationFailed,
       visibleRecipes,
       recipes: visibleRecipes,
@@ -360,7 +367,7 @@ export function RecipesProvider({ children }) {
       ensureRecipeLanguage,
       clearRecipes,
     }),
-    [generatedRecipes, isGeneratingRecipes, recipeGenerationFailed, visibleRecipes, generateRecipes, getPlannerMealsFromInventory, modifyRecipe, ensureRecipeLanguage, clearRecipes]
+    [generatedRecipes, isGeneratingRecipes, generationPhase, recipeGenerationFailed, visibleRecipes, generateRecipes, getPlannerMealsFromInventory, modifyRecipe, ensureRecipeLanguage, clearRecipes]
   );
 
   return <RecipesContext.Provider value={value}>{children}</RecipesContext.Provider>;

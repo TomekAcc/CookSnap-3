@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Per diabetici",
   "diet.diabetic.desc": "Pasti a basso indice glicemico",
   "scanner.creatingRecipes": "Creazione ricette...",
+  "scanner.checkingRecipes": "Controllo le ricette...",
   "scanner.regenerateRecipes": "Rigenera ricette con IA",
   "scanner.generationsLeftToday": "{count} di {total} generazioni gratuite rimanenti oggi",
   "scanner.generationsUsedUpToday": "Limite gratuito giornaliero raggiunto — si azzera domani",

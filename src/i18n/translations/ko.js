@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "당뇨식",
   "diet.diabetic.desc": "저혈당 지수 식단",
   "scanner.creatingRecipes": "레시피를 만드는 중...",
+  "scanner.checkingRecipes": "레시피 확인 중...",
   "scanner.regenerateRecipes": "AI 레시피 다시 생성",
   "scanner.generationsLeftToday": "오늘 남은 무료 생성 횟수: {count}/{total}",
   "scanner.generationsUsedUpToday": "오늘 무료 횟수를 모두 사용했습니다. 내일 다시 충전됩니다.",

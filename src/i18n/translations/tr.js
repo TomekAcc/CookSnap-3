@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Diyabet Dostu",
   "diet.diabetic.desc": "Düşük glisemik indeksli öğünler",
   "scanner.creatingRecipes": "Tarifler oluşturuluyor...",
+  "scanner.checkingRecipes": "Tarifler kontrol ediliyor...",
   "scanner.regenerateRecipes": "Yapay Zeka ile Yeniden Oluştur",
   "scanner.generationsLeftToday": "Bugün kalan ücretsiz hak: {count}/{total}",
   "scanner.generationsUsedUpToday": "Bugünkü ücretsiz sınır doldu — yarın yenilenir",

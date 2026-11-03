@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Подходяща за диабетици",
   "diet.diabetic.desc": "Ястия с нисък гликемичен индекс",
   "scanner.creatingRecipes": "Създаване на рецепти...",
+  "scanner.checkingRecipes": "Проверка на рецептите...",
   "scanner.regenerateRecipes": "Пресъздай с AI",
   "scanner.generationsLeftToday": "Остават {count} от {total} безплатни генерирания днес",
   "scanner.generationsUsedUpToday": "Достигнат е дневният лимит — нулира се утре",

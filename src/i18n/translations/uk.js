@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Для діабетиків",
   "diet.diabetic.desc": "Страви з низьким глікемічним індексом",
   "scanner.creatingRecipes": "Створення рецептів...",
+  "scanner.checkingRecipes": "Перевіряємо рецепти...",
   "scanner.regenerateRecipes": "Згенерувати рецепти знову",
   "scanner.generationsLeftToday": "Залишилося безкоштовних генерацій сьогодні: {count} з {total}",
   "scanner.generationsUsedUpToday": "Безкоштовний ліміт на сьогодні вичерпано — оновиться завтра",

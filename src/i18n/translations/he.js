@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "מתאים לסוכרתיים",
   "diet.diabetic.desc": "ארוחות בעלות אינדקס גליקמי נמוך",
   "scanner.creatingRecipes": "יוצר מתכונים...",
+  "scanner.checkingRecipes": "בודק את המתכונים...",
   "scanner.regenerateRecipes": "יצירת מתכוני AI מחדש",
   "scanner.generationsLeftToday": "נותרו עוד {count} מתוך {total} חינם להיום",
   "scanner.generationsUsedUpToday": "הגעת למגבלת החינם להיום — תתאפס מחר",

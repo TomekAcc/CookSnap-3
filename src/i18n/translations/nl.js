@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Geschikt voor diabetici",
   "diet.diabetic.desc": "Maaltijden met lage glycemische index",
   "scanner.creatingRecipes": "Recepten maken...",
+  "scanner.checkingRecipes": "Recepten controleren...",
   "scanner.regenerateRecipes": "AI-recepten opnieuw genereren",
   "scanner.generationsLeftToday": "Nog {count} van de {total} gratis generaties over vandaag",
   "scanner.generationsUsedUpToday": "Gratis limiet bereikt voor vandaag — wordt morgen gereset",

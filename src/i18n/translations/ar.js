@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "مناسب لمرضى السكري",
   "diet.diabetic.desc": "وجبات منخفضة المؤشر الجلايسيمي",
   "scanner.creatingRecipes": "جاري إنشاء الوصفات...",
+  "scanner.checkingRecipes": "جارٍ فحص الوصفات...",
   "scanner.regenerateRecipes": "إعادة توليد وصفات الذكاء الاصطناعي",
   "scanner.generationsLeftToday": "تبقى لديك {count} من {total} محاولات مجانية اليوم",
   "scanner.generationsUsedUpToday": "تم استنفاد الحد المجاني لهذا اليوم - يتجدد غداً",

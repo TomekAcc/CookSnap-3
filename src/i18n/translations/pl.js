@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Dla cukrzyków",
   "diet.diabetic.desc": "Posiłki o niskim indeksie glikemicznym",
   "scanner.creatingRecipes": "Tworzenie przepisów...",
+  "scanner.checkingRecipes": "Sprawdzam przepisy...",
   "scanner.regenerateRecipes": "Wygeneruj przepisy AI ponownie",
   "scanner.generationsLeftToday": "Pozostało {count} z {total} darmowych generacji na dziś",
   "scanner.generationsUsedUpToday": "Wyczerpano dzisiejszy darmowy limit – odnowi się jutro",

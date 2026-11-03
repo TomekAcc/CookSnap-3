@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Bun pentru diabetici",
   "diet.diabetic.desc": "Mese cu indice glicemic scăzut",
   "scanner.creatingRecipes": "Se creează rețetele...",
+  "scanner.checkingRecipes": "Verific rețetele...",
   "scanner.regenerateRecipes": "Regenerează rețete AI",
   "scanner.generationsLeftToday": "{count} din {total} generări gratuite rămase azi",
   "scanner.generationsUsedUpToday": "Limita gratuită a fost atinsă pentru azi — se resetează mâine",

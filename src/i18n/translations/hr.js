@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Prilagođeno dijabetičarima",
   "diet.diabetic.desc": "Obroci s niskim glikemijskim indeksom",
   "scanner.creatingRecipes": "Stvaranje recepata...",
+  "scanner.checkingRecipes": "Provjeravam recepte...",
   "scanner.regenerateRecipes": "Regeneriraj AI recepte",
   "scanner.generationsLeftToday": "Preostalo {count} od {total} besplatnih generiranja danas",
   "scanner.generationsUsedUpToday": "Dosegnut besplatni limit za danas — resetira se sutra",

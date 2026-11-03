@@ -71,7 +71,7 @@ export default function ScannerScreen() {
   const { colors } = useTheme();
   const { scrollViewRef, setRecipesSectionY } = useNavigation();
   const { hasScanned, isScanning, scanRevealActive } = useScan();
-  const { isGeneratingRecipes, generatedRecipes, generateRecipes } = useRecipes();
+  const { isGeneratingRecipes, generationPhase, generatedRecipes, generateRecipes } = useRecipes();
   const { registerRecipeGenerationAttempt } = useEntitlements();
   const { ingredients, scanIsDemo } = useInventory();
   const { t } = useLanguage();
@@ -243,7 +243,7 @@ export default function ScannerScreen() {
               <>
                 <ActivityIndicator color={WHITE} size="small" />
                 <Text style={styles.ctaPrimaryText} numberOfLines={1}>
-                  {t("scanner.creatingRecipes")}
+                  {t(generationPhase === "review" ? "scanner.checkingRecipes" : "scanner.creatingRecipes")}
                 </Text>
               </>
             ) : hasGeneratedOnce ? (

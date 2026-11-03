@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Adapté aux diabétiques",
   "diet.diabetic.desc": "Repas à faible indice glycémique",
   "scanner.creatingRecipes": "Création des recettes...",
+  "scanner.checkingRecipes": "Vérification des recettes...",
   "scanner.regenerateRecipes": "Régénérer des recettes IA",
   "scanner.generationsLeftToday": "{count} sur {total} générations gratuites restantes aujourd'hui",
   "scanner.generationsUsedUpToday": "Limite gratuite atteinte pour aujourd'hui — réinitialisation demain",

@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Φιλική για διαβητικούς",
   "diet.diabetic.desc": "Γεύματα χαμηλού γλυκαιμικού δείκτη",
   "scanner.creatingRecipes": "Δημιουργία συνταγών...",
+  "scanner.checkingRecipes": "Έλεγχος συνταγών...",
   "scanner.regenerateRecipes": "Επαναδημιουργία συνταγών AI",
   "scanner.generationsLeftToday": "Απομένουν {count} από {total} δωρεάν δημιουργίες σήμερα",
   "scanner.generationsUsedUpToday": "Εξαντλήθηκε το σημερινό όριο — ανανεώνεται αύριο",

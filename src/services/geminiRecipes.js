@@ -2525,6 +2525,7 @@ export async function generateRecipesWithGemini(
   // recipe count/exclude list — shared by the main attempt and the top-up
   // retry below so both go through byte-identical request handling.
   async function fetchRawRecipes(modelName, count, excludeForCall, usedDishTypesForCall = []) {
+    options.onPhase?.("create");
     // buildGenerationConfig turns the "thinking" pass off for models that
     // support it, and only for them.
     //
@@ -2563,6 +2564,7 @@ export async function generateRecipesWithGemini(
     // Editor pass (see reviewRecipesWithGemini) — fixes missing doneness
     // cues, unmeasured salted water and odd pairings in ANY language before
     // the code-level checkers below decide what survives. Never throws.
+    options.onPhase?.("review"); // lets the Generate button say what the wait is for
     return reviewRecipesInParallel(parsed, {
       apiKey,
       language,

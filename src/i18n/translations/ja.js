@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "糖尿病対応",
   "diet.diabetic.desc": "低GI値の食事",
   "scanner.creatingRecipes": "レシピを作成中...",
+  "scanner.checkingRecipes": "レシピを確認中...",
   "scanner.regenerateRecipes": "AIレシピを再生成",
   "scanner.generationsLeftToday": "本日の無料生成回数：残り {count}/{total} 回",
   "scanner.generationsUsedUpToday": "本日の無料上限に達しました。明日リセットされます",

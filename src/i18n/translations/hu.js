@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Cukorbeteg-barát",
   "diet.diabetic.desc": "Alacsony glikémiás indexű ételek",
   "scanner.creatingRecipes": "Receptek készítése...",
+  "scanner.checkingRecipes": "Receptek ellenőrzése...",
   "scanner.regenerateRecipes": "AI receptek újragenerálása",
   "scanner.generationsLeftToday": "Még {count}/{total} ingyenes generálás maradt mára",
   "scanner.generationsUsedUpToday": "Elérted a mai ingyenes limitet – holnap újraindul",

@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Для диабетиков",
   "diet.diabetic.desc": "Блюда с низким гликемическим индексом",
   "scanner.creatingRecipes": "Создание рецептов...",
+  "scanner.checkingRecipes": "Проверяем рецепты...",
   "scanner.regenerateRecipes": "Создать другие ИИ-рецепты",
   "scanner.generationsLeftToday": "Осталось бесплатных генераций сегодня: {count} из {total}",
   "scanner.generationsUsedUpToday": "Лимит бесплатных генераций исчерпан — обновится завтра",

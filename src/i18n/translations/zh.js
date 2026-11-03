@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "控糖友好",
   "diet.diabetic.desc": "低升糖指数膳食",
   "scanner.creatingRecipes": "正在生成食谱...",
+  "scanner.checkingRecipes": "正在检查食谱...",
   "scanner.regenerateRecipes": "重新生成 AI 食谱",
   "scanner.generationsLeftToday": "今天还剩 {count}/{total} 次免费生成机会",
   "scanner.generationsUsedUpToday": "今日免费次数已用完，明天重置",

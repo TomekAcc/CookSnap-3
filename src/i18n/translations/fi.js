@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Diabeetikoille sopiva",
   "diet.diabetic.desc": "Matalan glykeemisen indeksin aterioita",
   "scanner.creatingRecipes": "Luodaan reseptejä...",
+  "scanner.checkingRecipes": "Tarkistetaan reseptejä...",
   "scanner.regenerateRecipes": "Luo tekoälyreseptit uudelleen",
   "scanner.generationsLeftToday": "{count} / {total} ilmaista reseptiluontia jäljellä tänään",
   "scanner.generationsUsedUpToday": "Tämän päivän ilmainen raja saavutettu – nollautuu huomenna",

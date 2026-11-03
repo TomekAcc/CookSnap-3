@@ -99,6 +99,7 @@ export default {
   "diet.diabetic.name": "Diabetesvenlig",
   "diet.diabetic.desc": "Måltider med lavt glykæmisk indeks",
   "scanner.creatingRecipes": "Opretter opskrifter...",
+  "scanner.checkingRecipes": "Tjekker opskrifterne...",
   "scanner.regenerateRecipes": "Generer AI-opskrifter igen",
   "scanner.generationsLeftToday": "{count} af {total} gratis genereringer tilbage i dag",
   "scanner.generationsUsedUpToday": "Gratis grænse nået for i dag – nulstilles i morgen",

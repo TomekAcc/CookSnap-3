@@ -111,6 +111,7 @@ export default {
   "diet.diabetic.desc": "Low glycemic index meals",
 
   "scanner.creatingRecipes": "Creating recipes...",
+  "scanner.checkingRecipes": "Checking the recipes...",
   "scanner.regenerateRecipes": "Regenerate AI Recipes",
   "scanner.generationsLeftToday": "{count} of {total} free generations left today",
   "scanner.generationsUsedUpToday": "Free limit reached for today — resets tomorrow",
