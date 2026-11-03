@@ -24,6 +24,7 @@ import {
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { translateCount } from "../i18n";
+import { summaryNeedsStacking } from "../utils/mealSummaryLayout";
 import StandardSmoothModal from "./StandardSmoothModal";
 import { useLanguage } from "../context/LanguageContext";
 import { usePreferences } from "../context/PreferencesContext";
@@ -212,11 +213,13 @@ export default function MealPreferences() {
   );
   const mealLabel = t((MEAL_CATEGORIES.find((o) => o.id === mealType) || MEAL_CATEGORIES[0]).labelKey);
   const hungerLabel = t((HUNGER_OPTIONS.find((o) => o.id === hungerLevel) || HUNGER_OPTIONS[1]).labelKey);
+  const [summaryWidth, setSummaryWidth] = useState(0);
   const summaryFields = [
     { kind: "meal", label: t("mealPrefs.mealTypeTitle"), value: mealLabel },
     { kind: "servings", label: t("mealPrefs.servings"), value: `${servings} ${unitText}` },
     { kind: "hunger", label: t("profile.hungerLevel"), value: hungerLabel },
   ];
+  const stacked = summaryNeedsStacking(summaryFields, summaryWidth);
   const pickerKind = picker || lastPickerRef.current;
   const pickerTitle =
     pickerKind === "meal"
@@ -249,36 +252,46 @@ export default function MealPreferences() {
         </Text>
       </View>
 
-      <View style={[card, styles.summaryCard]}>
+      <View
+        style={[card, styles.summaryCard, stacked ? styles.summaryCardStacked : null]}
+        onLayout={(e) => setSummaryWidth(Math.round(e.nativeEvent.layout.width - 12 - 2))}
+      >
         {summaryFields.map((f, i) => (
           <React.Fragment key={f.kind}>
-            {i > 0 ? <View style={[styles.summaryDivider, { backgroundColor: colors.cardBorder }]} /> : null}
-          <TouchableOpacity
-            onPress={() => setPicker(f.kind)}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            style={styles.summaryCol}
-          >
-            <Text
-              style={[styles.summaryLabel, { color: colors.textSecondary }]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.85}
+            {i > 0 ? (
+              <View
+                style={[
+                  stacked ? styles.summaryDividerStacked : styles.summaryDivider,
+                  { backgroundColor: colors.cardBorder },
+                ]}
+              />
+            ) : null}
+            <TouchableOpacity
+              onPress={() => setPicker(f.kind)}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              style={stacked ? styles.summaryRowStacked : styles.summaryCol}
             >
-              {f.label}
-            </Text>
-            <View style={styles.summaryValueRow}>
               <Text
-                style={[styles.summaryValue, { color: colors.textPrimary }]}
+                style={[styles.summaryLabel, { color: colors.textSecondary }, stacked ? styles.summaryLabelStacked : null]}
                 numberOfLines={1}
                 adjustsFontSizeToFit
-                minimumFontScale={0.8}
+                minimumFontScale={0.85}
               >
-                {f.value}
+                {f.label}
               </Text>
-              <ChevronDown size={12} color={colors.textSecondary} strokeWidth={2.6} />
-            </View>
-          </TouchableOpacity>
+              <View style={[styles.summaryValueRow, stacked ? styles.summaryValueRowStacked : null]}>
+                <Text
+                  style={[styles.summaryValue, { color: colors.textPrimary }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.8}
+                >
+                  {f.value}
+                </Text>
+                <ChevronDown size={12} color={colors.textSecondary} strokeWidth={2.6} />
+              </View>
+            </TouchableOpacity>
           </React.Fragment>
         ))}
       </View>
@@ -501,6 +514,31 @@ const styles = StyleSheet.create({
   summaryDivider: {
     width: StyleSheet.hairlineWidth,
     marginVertical: 14,
+  },
+  // Stacked variant (see summaryNeedsStacking): label on the left, value and chevron on the right.
+  summaryCardStacked: {
+    flexDirection: "column",
+    alignItems: "stretch",
+  },
+  summaryDividerStacked: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: 12,
+  },
+  summaryRowStacked: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+  },
+  summaryLabelStacked: {
+    flexShrink: 1,
+    fontSize: 14,
+  },
+  summaryValueRowStacked: {
+    flexShrink: 1,
+    justifyContent: "flex-end",
   },
   moreCard: {
     flexDirection: "row",
