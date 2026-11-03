@@ -56,3 +56,18 @@ describe("isUpgradeAlreadyOwned", () => {
     expect(isUpgradeAlreadyOwned("Basil", [])).toBe(false);
   });
 });
+
+describe("salt rules in the recipe editor prompt", () => {
+  const { RECIPE_QA_SYSTEM_PROMPT } = require("../src/services/geminiRecipes");
+
+  it("separates water boiled in a big pot from grains cooked by absorption, and caps the salt", () => {
+    expect(RECIPE_QA_SYSTEM_PROMPT).toMatch(/absorption method/);
+    expect(RECIPE_QA_SYSTEM_PROMPT).toMatch(/3 g of salt \(1\/2 teaspoon\) per 100 g of dry grain/);
+    expect(RECIPE_QA_SYSTEM_PROMPT).toMatch(/salt for the cooking water/);
+  });
+
+  it("no longer tells the editor to salt rice like pasta water, or to fold water salt into the single salt line", () => {
+    expect(RECIPE_QA_SYSTEM_PROMPT).not.toMatch(/\(pasta, rice, potatoes, vegetables, eggs\)/);
+    expect(RECIPE_QA_SYSTEM_PROMPT).not.toMatch(/water salt included/);
+  });
+});
