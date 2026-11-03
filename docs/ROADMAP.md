@@ -26,11 +26,11 @@ app), SDK 58, the web smoke test in the normal workflow.
   answers for Apple's "App Privacy" and Google's "Data safety"); they need the company details, a support
   mailbox, a lawyer's read and a public URL. Photos go to Google's AI, which has to be stated plainly.
   Settings > About has the place for the links.
-- **Help & Feedback inbox: deploy it.** Built: the app sends the message (kind, text, optional reply email) to the
-  proxy, which stores it for 90 days; the owner reads it at `/admin` of the proxy (see `proxy/README.md`). Recipes
-  have a "Report a problem with this recipe" link. Messages are saved on the phone first and retried until the server confirms them (no duplicates), with an
-  optional instant copy to Telegram. Still to do: set `ADMIN_TOKEN` (and the two Telegram secrets), deploy the
-  Worker, then publish the app. The email address stays as the fallback and as the store contact.
+- **Help & Feedback inbox: done and live.** The app saves each message on the phone, sends it to the proxy (kept 90
+  days, no duplicates, retried until confirmed), and the owner reads it at `/admin` of the proxy with an instant
+  copy to Telegram (the Telegram bot is optional: delete the two Telegram secrets to switch it off). Recipes have a
+  "Report a problem with this recipe" link. If Telegram stays on in the store release, the privacy policy must name
+  it (it does, in the draft). Store forms list the optional reply email.
 - **Consent before the first photo goes to the AI.** Done: a one-time sheet ("Before your first scan")
   appears before the camera or gallery is used for a scan (all three entry points, including Scan More);
   agreeing is stored (`cooksnap:aiConsent:v1`), "Not now" asks again next time. The sample scan sends no
