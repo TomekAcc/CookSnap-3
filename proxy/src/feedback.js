@@ -88,11 +88,11 @@ button{cursor:pointer}button.on{background:var(--accent);border-color:var(--acce
 .item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
 .meta{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--soft);margin-bottom:6px}
 .tag{border-radius:99px;padding:1px 9px;background:var(--line);color:var(--ink);font-weight:600}
-.msg{white-space:pre-wrap;word-break:break-word}.del{margin-top:8px;font-size:13px}
+.msg{white-space:pre-wrap;word-break:break-word}#tgout{flex-basis:100%;font-weight:600}.del{margin-top:8px;font-size:13px}
 </style></head><body><main>
 <h1>CookSnap feedback</h1><div class="soft" id="status">Enter your access token.</div>
 <div class="row" id="login"><input id="token" type="password" placeholder="Access token" autocomplete="current-password"><button id="go">Open</button></div>
-<div class="row" id="filters" hidden></div><div class="row" id="tools" hidden><button id="tg">Send Telegram test</button></div><div id="list"></div></main>
+<div class="row" id="filters" hidden></div><div class="row" id="tools" hidden><button id="tg">Send Telegram test</button><div id="tgout" class="soft"></div></div><div id="list"></div></main>
 <script>
 const KINDS=["all","bug","idea","recipe","other"];let items=[],kind="all",token=sessionStorage.getItem("t")||"";
 const $=(id)=>document.getElementById(id);
@@ -107,7 +107,7 @@ const t=document.createElement("div");t.className="msg";t.textContent=i.message;
 const b=document.createElement("button");b.className="del";b.textContent="Delete";b.onclick=async()=>{if(!confirm("Delete this message?"))return;await api("/admin/delete",{method:"POST",body:JSON.stringify({id:i.id})});items=items.filter(x=>x.id!==i.id);draw();};
 d.append(m,t,b);box.append(d);}}
 function filters(){const f=$("filters");f.hidden=false;f.textContent="";for(const k of KINDS){const b=document.createElement("button");b.textContent=k;b.className=k===kind?"on":"";b.onclick=()=>{kind=k;filters();draw();};f.append(b);}}
-$("tg").onclick=async()=>{$("status").textContent="Sending test...";try{const r=await api("/admin/telegram-test",{method:"POST",body:"{}"});$("status").textContent="Telegram: "+r.description;}catch(e){$("status").textContent=e.message;}};
+$("tg").onclick=async()=>{const out=$("tgout");out.textContent="Sending test...";try{const r=await api("/admin/telegram-test",{method:"POST",body:"{}"});out.textContent=(r.ok?"OK: ":"Problem: ")+r.description;}catch(e){out.textContent="Problem: "+e.message;}};
 async function load(){try{items=(await api("/admin/list")).items;$("login").hidden=true;$("tools").hidden=false;filters();draw();}catch(e){$("status").textContent=e.message;$("login").hidden=false;}}
 $("go").onclick=()=>{token=$("token").value.trim();sessionStorage.setItem("t",token);load();};
 if(token)load();
