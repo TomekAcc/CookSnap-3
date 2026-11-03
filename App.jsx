@@ -23,6 +23,8 @@ import RecipeDetailModal from "./src/components/RecipeDetailModal";
 import ScanHistoryModal from "./src/components/ScanHistoryModal";
 import MealPlannerModal from "./src/components/MealPlannerModal";
 import HelpFeedbackModal from "./src/components/HelpFeedbackModal";
+import AiConsentSheet from "./src/components/AiConsentSheet";
+import { useAiConsent } from "./src/context/AiConsentContext";
 import Toast from "./src/components/Toast";
 import ScannerScreen from "./src/screens/ScannerScreen";
 import PantryTab from "./src/components/PantryTab";
@@ -95,6 +97,8 @@ function OverlayHost() {
   const { present: scanHistoryPresent } = useModalPresence(scanHistoryOpen);
   const { present: mealPlannerPresent } = useModalPresence(mealPlannerOpen);
   const { present: helpPresent } = useModalPresence(helpModalOpen);
+  const { consentSheetOpen } = useAiConsent();
+  const { present: consentPresent } = useModalPresence(consentSheetOpen);
 
   return (
     <ErrorBoundary>
@@ -108,6 +112,7 @@ function OverlayHost() {
       {scanHistoryPresent ? <ScanHistoryModal /> : null}
       {mealPlannerPresent ? <MealPlannerModal /> : null}
       {helpPresent ? <HelpFeedbackModal /> : null}
+      {consentPresent ? <AiConsentSheet /> : null}
     </ErrorBoundary>
   );
 }

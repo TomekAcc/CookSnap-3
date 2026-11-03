@@ -46,6 +46,7 @@ function setPermission(granted, requestResult = { granted: true }) {
 
 beforeEach(async () => {
   await AsyncStorage.clear();
+  await AsyncStorage.setItem("cooksnap:aiConsent:v1", "true");
   jest.clearAllMocks();
   hideToast();
   jest.spyOn(console, "warn").mockImplementation(() => {});

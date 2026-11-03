@@ -19,6 +19,7 @@ import { pickImageFromLibrary } from "../../utils/imagePicker";
 import { useEntitlements } from "../../context/EntitlementsContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useScan } from "../../context/ScanContext";
+import { useAiConsent } from "../../context/AiConsentContext";
 import { showToast } from "../../utils/toast";
 import { BLACK } from "../../theme/palette";
 
@@ -54,6 +55,7 @@ export default function ScanMoreSheet({ kind = "fridge", anchor }) {
   const scan = useScan();
   const entitlements = useEntitlements();
   const modal = useModalState();
+  const { requestAiConsent } = useAiConsent();
   const { setProModalOpen, setProReason } = modal;
 
   const isPantry = kind === "pantry";
@@ -116,7 +118,13 @@ export default function ScanMoreSheet({ kind = "fridge", anchor }) {
       return;
     }
     setOpen?.(false);
-    setTimeout(() => startCamera?.(), GALLERY_HANDOFF_MS);
+    // The popover is closed first so the consent sheet (if it is still needed) is not hidden behind it.
+    setTimeout(() => {
+      void (async () => {
+        if (!(await requestAiConsent())) return;
+        startCamera?.();
+      })();
+    }, GALLERY_HANDOFF_MS);
   };
 
   const handlePickGallery = () => {
@@ -128,6 +136,7 @@ export default function ScanMoreSheet({ kind = "fridge", anchor }) {
     setTimeout(() => {
       void (async () => {
         try {
+          if (!(await requestAiConsent())) return;
           prepareImport?.();
           const picked = await pickImageFromLibrary();
           if (picked.status === "denied") {

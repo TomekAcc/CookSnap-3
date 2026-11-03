@@ -435,11 +435,14 @@ export default {
   "scanHistory.confirmBody": "The recipes you generated from your current scan will be replaced.",
   "scanHistory.confirmAction": "Restore",
 
-  "help.thanksTitle": "Thanks for your feedback!",
-  "help.thanksMessage": "Our team will get back to you shortly.",
   "help.introText": "Found a bug or have an idea? We'd love to hear from you.",
   "help.placeholder": "Type your message...",
   "help.sendFeedback": "Send Feedback",
+  "aiConsent.title": "Before your first scan",
+  "aiConsent.body": "To find ingredients, CookSnap sends your photo through our server to Google's AI. We don't keep it. Please photograph food and shelves, not people or documents.",
+  "aiConsent.agree": "Agree and continue",
+  "aiConsent.decline": "Not now",
+  "help.noMailApp": "Couldn't open your mail app. Please write to {email}.",
 
   "dayShort.mon": "Mon",
   "dayShort.tue": "Tue",

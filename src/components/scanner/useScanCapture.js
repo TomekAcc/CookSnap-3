@@ -3,6 +3,7 @@ import { useCameraPermissions } from "expo-camera";
 import { useEntitlements } from "../../context/EntitlementsContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { useModalState } from "../../context/ModalContext";
+import { useAiConsent } from "../../context/AiConsentContext";
 import { useScan } from "../../context/ScanContext";
 import { log } from "../../utils/log";
 import { pickImageFromLibrary } from "../../utils/imagePicker";
@@ -25,6 +26,7 @@ export function useScanCapture(kind, onPhoto) {
   const scan = useScan();
   const { canScanFridge, canScanPantry } = useEntitlements();
   const { setProModalOpen, setProReason } = useModalState();
+  const { requestAiConsent } = useAiConsent();
 
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
@@ -45,6 +47,8 @@ export function useScanCapture(kind, onPhoto) {
       showPaywall();
       return;
     }
+    // Before the camera (and its permission prompt): the photo is about to go to the AI.
+    if (!(await requestAiConsent())) return;
     try {
       if (!permission?.granted) {
         const result = await requestPermission();
@@ -80,6 +84,7 @@ export function useScanCapture(kind, onPhoto) {
       showPaywall();
       return;
     }
+    if (!(await requestAiConsent())) return;
     try {
       const picked = await pickImageFromLibrary();
       if (picked.status === "denied") {

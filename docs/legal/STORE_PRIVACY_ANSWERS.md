@@ -56,18 +56,8 @@ contacts, calendar, app activity, web browsing, files, audio, device-level diagn
 2. **Whether the photo counts as "collected".** Apple's definition covers data a third party can keep
    longer than the real-time request needs; Google may keep it briefly for abuse monitoring. The draft
    declares it as collected, which is the safe reading.
-3. **AI consent (Apple).** Apple's guideline 5.1.2(i) expects an app to clearly disclose, and get
-   explicit permission before, sharing personal data with a third-party AI. Today the app shows a
-   one-line note under the scan buttons until the first scan and nothing to accept. A one-time consent
-   screen before the first photo is sent is the safe fix.
-4. **AI content reporting (Google Play).** Google's policy for apps that generate content with AI expects
-   users to be able to flag or report offensive or harmful generated content inside the app. The current
-   Help & Feedback screen does not send anything anywhere (see below), so it does not meet this.
+3. **AI consent (Apple).** Done in the app: a one-time consent sheet appears before the first photo is
+   sent (camera, gallery, Scan More). Consider adding a way to withdraw it in Settings.
+4. **AI content reporting (Google Play).** Help & Feedback now opens a pre-filled email to [SUPPORT EMAIL],
+   which is the current in-app route for flagging harmful generated content. Requires the mailbox to exist.
 5. **Payments:** add purchases (and the provider) to both forms once subscriptions are added.
-
-## Known gap found while drafting: Help & Feedback sends nothing
-
-The "Send" button in Help & Feedback only closes the window and shows a thank-you message; the message
-text is discarded (`src/components/HelpFeedbackModal.jsx`, `handleSend`). A user who writes to us would
-think we got it. It needs a real destination (for example opening a pre-filled email to [SUPPORT EMAIL],
-or posting to our server) before release, and it is also what satisfies open question 4.

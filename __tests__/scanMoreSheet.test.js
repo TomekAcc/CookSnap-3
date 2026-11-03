@@ -46,10 +46,16 @@ const mount = async (kind) => {
 };
 const openSheet = (kind) => act(() => (kind === "pantry" ? ctx.modal.setPantryScanOpen(true) : ctx.modal.setScanMoreOpen(true)));
 const isOpen = (kind) => (kind === "pantry" ? ctx.modal.pantryScanOpen : ctx.modal.scanMoreOpen);
-const handoff = () => act(() => jest.advanceTimersByTime(EXIT_DURATION_MS + 60));
+// The camera opens after an awaited consent check, so let those microtasks settle too.
+const handoff = async () => {
+  await act(async () => {
+    jest.advanceTimersByTime(EXIT_DURATION_MS + 60);
+  });
+};
 
 beforeEach(async () => {
   await AsyncStorage.clear();
+  await AsyncStorage.setItem("cooksnap:aiConsent:v1", "true");
   jest.clearAllMocks();
   hideToast();
   jest.spyOn(console, "warn").mockImplementation(() => {});
@@ -87,7 +93,7 @@ describe.each([
     fireEvent.press(screen.getByLabelText("Take Photo"));
     expect(isOpen(kind)).toBe(false);
     expect(cfg.camera(ctx)).toBe(false); // not in the same tick as the popover closing
-    handoff();
+    await handoff();
     expect(cfg.camera(ctx)).toBe(true);
   });
 
@@ -96,7 +102,7 @@ describe.each([
     act(() => cfg.exhaust(ctx));
     await openSheet(kind);
     fireEvent.press(screen.getByLabelText("Take Photo"));
-    handoff();
+    await handoff();
     expect(cfg.camera(ctx)).toBe(false);
     expect(ctx.modal.proModalOpen).toBe(true);
     expect(ctx.modal.proReason).toBe(cfg.reason);
@@ -146,7 +152,7 @@ describe.each([
     act(() => cfg.exhaust(ctx));
     await openSheet(kind);
     fireEvent.press(screen.getByLabelText("From Gallery"));
-    handoff();
+    await handoff();
     expect(pickImageFromLibrary).not.toHaveBeenCalled();
     expect(ctx.modal.proReason).toBe(cfg.reason);
   });

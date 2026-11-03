@@ -37,4 +37,6 @@ export const STORAGE_KEYS = {
   // analytics pass has real "was this detection right" data (see
   // docs/IMPLEMENTATION_ROADMAP.md #7).
   feedbackLog: "cooksnap:feedbackLog:v1",
+  // Whether the person agreed to their photos going to the AI (see AiConsentContext).
+  aiConsent: "cooksnap:aiConsent:v1",
 };

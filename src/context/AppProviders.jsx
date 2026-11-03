@@ -2,6 +2,7 @@ import React from "react";
 import { NavigationProvider } from "./NavigationContext";
 import { OnboardingProvider } from "./OnboardingContext";
 import { LanguageProvider } from "./LanguageContext";
+import { AiConsentProvider } from "./AiConsentContext";
 import { EntitlementsProvider } from "./EntitlementsContext";
 import { PreferencesProvider } from "./PreferencesContext";
 import { LibraryProvider } from "./LibraryContext";
@@ -19,6 +20,7 @@ export function AppProviders({ children }) {
     <NavigationProvider>
       <OnboardingProvider>
         <LanguageProvider>
+          <AiConsentProvider>
           <EntitlementsProvider>
             <PreferencesProvider>
               <LibraryProvider>
@@ -30,6 +32,7 @@ export function AppProviders({ children }) {
               </LibraryProvider>
             </PreferencesProvider>
           </EntitlementsProvider>
+          </AiConsentProvider>
         </LanguageProvider>
       </OnboardingProvider>
     </NavigationProvider>
