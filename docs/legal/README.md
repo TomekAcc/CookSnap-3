@@ -11,7 +11,7 @@ Drafts for the first store release. None of them is legal advice; have a lawyer 
 ## Fill in before publishing (search for `[` in the files)
 
 - `[COMPANY NAME AS IN CEIDG]`, `[BUSINESS ADDRESS]`, `[NIP]`
-- `[SUPPORT EMAIL]` (a dedicated mailbox, not a private one; planned: `cooksnap.support@gmail.com`)
+- `cooksnap.support@gmail.com` (set: `cooksnap.support@gmail.com`; the same address is `SUPPORT_EMAIL` in `src/constants/contact.js`)
 - `[DATE]`, `[PRIVACY POLICY URL]`, subscription prices and limits (copy from `src/constants/limits.js` and
   the paywall), `[PAYMENT PROVIDER]`
 - The "Verify before publishing" list at the end of the privacy policy

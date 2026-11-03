@@ -12,7 +12,7 @@ CookSnap ("the app") is provided by **[COMPANY NAME AS IN CEIDG]** (sole proprie
 Białasiewicz), [BUSINESS ADDRESS], Poland, NIP [NIP] ("we", "us"). We are the controller of the personal
 data described here.
 
-Contact for anything about your data: **[SUPPORT EMAIL]**
+Contact for anything about your data: **cooksnap.support@gmail.com**
 
 ## 2. The short version
 
@@ -79,7 +79,7 @@ a portable form.
 Because we keep almost no data about you (the only record on our side is a random install ID counter
 that disappears the next day, and we cannot link it to you), in most cases there is nothing to hand over
 or delete beyond what is on your own phone, which you control: delete saved items inside the app or
-delete the app. Write to **[SUPPORT EMAIL]** if you want to exercise any right. You also have the right
+delete the app. Write to **cooksnap.support@gmail.com** if you want to exercise any right. You also have the right
 to complain to the Polish data protection authority, the **President of the Personal Data Protection
 Office (UODO)**, ul. Stawki 2, 00-193 Warsaw, uodo.gov.pl, or to the authority in your own country.
 

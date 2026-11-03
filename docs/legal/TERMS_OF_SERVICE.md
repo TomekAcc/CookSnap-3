@@ -12,7 +12,7 @@ CookSnap is provided by **[COMPANY NAME AS IN CEIDG]** (sole proprietorship of T
 terms. If you do not agree, do not use the app. How we handle data is described in the
 [Privacy Policy]([PRIVACY POLICY URL]).
 
-Contact: **[SUPPORT EMAIL]**
+Contact: **cooksnap.support@gmail.com**
 
 ## 2. What the app does
 
@@ -94,4 +94,4 @@ Play.
 
 ## 12. Contact
 
-**[COMPANY NAME AS IN CEIDG]**, [BUSINESS ADDRESS] — **[SUPPORT EMAIL]**
+**[COMPANY NAME AS IN CEIDG]**, [BUSINESS ADDRESS] — **cooksnap.support@gmail.com**

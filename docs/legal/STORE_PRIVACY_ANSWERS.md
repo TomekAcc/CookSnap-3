@@ -36,7 +36,7 @@ usage data, financial info).
 - **Is all of the collected data encrypted in transit?** Yes (HTTPS).
 - **Do you provide a way for users to request that their data is deleted?** There is no account and no
   server-side profile; users can delete saved data in the app or by uninstalling. State that in the form
-  and give [SUPPORT EMAIL] for any other request.
+  and give cooksnap.support@gmail.com for any other request.
 
 | Data type | Collected | Shared with third parties | Purpose | Optional? |
 |---|---|---|---|---|
@@ -58,6 +58,6 @@ contacts, calendar, app activity, web browsing, files, audio, device-level diagn
    declares it as collected, which is the safe reading.
 3. **AI consent (Apple).** Done in the app: a one-time consent sheet appears before the first photo is
    sent (camera, gallery, Scan More). It can be withdrawn in Settings > About.
-4. **AI content reporting (Google Play).** Help & Feedback now opens a pre-filled email to [SUPPORT EMAIL],
+4. **AI content reporting (Google Play).** Help & Feedback now opens a pre-filled email to cooksnap.support@gmail.com,
    which is the current in-app route for flagging harmful generated content. Requires the mailbox to exist.
 5. **Payments:** add purchases (and the provider) to both forms once subscriptions are added.
