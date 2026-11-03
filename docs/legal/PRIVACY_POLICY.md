@@ -58,6 +58,7 @@ shelves and containers.
 - **Google** (Gemini API): reads photos and writes recipes.
 - **Cloudflare, Inc.**: runs the server that sits between the app and Google.
 - **Expo** (EAS Update): delivers app updates.
+- **Telegram** (only if switched on): receives a copy of each message you send us from Help & Feedback, so we are notified at once.
 - **Apple / Google Play**: distribute the app and process payments.
 - [**Payment provider** — if you use one.]
 
@@ -101,6 +102,10 @@ We may update this policy. The date at the top shows the latest version, and we 
 app if a change is material.
 
 ## Verify before publishing (delete this section afterwards)
+
+0. Telegram forwarding of feedback messages (if switched on): confirm the processor wording, the transfer
+   mechanism (Telegram is not an EU company) and that the store forms list the data as shared with a service
+   provider. If you prefer not to involve a third party, leave `TELEGRAM_BOT_TOKEN` unset and delete the line above.
 
 1. Google's current Gemini API terms: training use, retention period, region. The statement in section 4
    must match them.

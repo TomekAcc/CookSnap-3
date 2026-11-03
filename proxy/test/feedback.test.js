@@ -61,6 +61,63 @@ describe("POST /feedback", () => {
   });
 });
 
+describe("reliability", () => {
+  it("keeps one copy when the same message is sent twice, and answers ok both times", async () => {
+    const env = makeEnv();
+    const body = { ...goodFeedback(), id: "abcdef0123456789abcdef01" };
+    assert.equal((await send(body, env)).status, 200);
+    assert.equal((await send(body, env)).status, 200);
+    const { items } = await (await run(admin("/admin/list"), env)).json();
+    assert.equal(items.length, 1);
+    assert.ok(items[0].id.startsWith("m:"));
+  });
+
+  it("a repeat does not use up the phone's daily allowance", async () => {
+    const env = makeEnv();
+    const body = { ...goodFeedback(), id: "abcdef0123456789abcdef01" };
+    for (let i = 0; i < 5; i++) assert.equal((await send(body, env)).status, 200);
+  });
+
+  it("ignores an id that is not the expected shape", async () => {
+    const env = makeEnv();
+    await send({ ...goodFeedback(), id: "../../x" }, env);
+    await send({ ...goodFeedback(), id: "../../x" }, env);
+    const { items } = await (await run(admin("/admin/list"), env)).json();
+    assert.equal(items.length, 2);
+  });
+
+  it("sends a copy to Telegram when configured, and still stores the message when Telegram is down", async () => {
+    const calls = [];
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123:abc", TELEGRAM_CHAT_ID: "42" });
+    const ok = async (url, init) => (calls.push({ url, body: JSON.parse(init.body) }), new Response("{}", { status: 200 }));
+    await handle(request("/feedback", { body: goodFeedback() }), env, { now: NOW, fetch: ok });
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].url, "https://api.telegram.org/bot123:abc/sendMessage");
+    assert.equal(calls[0].body.chat_id, "42");
+    assert.match(calls[0].body.text, /The scan keeps spinning/);
+
+    const down = async () => {
+      throw new Error("network");
+    };
+    const res = await handle(request("/feedback", { body: { ...goodFeedback(), message: "second" } }), env, { now: NOW, fetch: down });
+    assert.equal(res.status, 200);
+    const { items } = await (await run(admin("/admin/list"), env)).json();
+    assert.equal(items.length, 2);
+  });
+
+  it("does not call Telegram for a repeated message, or when it is not configured", async () => {
+    let n = 0;
+    const count = async () => (n++, new Response("{}"));
+    await handle(request("/feedback", { body: goodFeedback() }), makeEnv(), { now: NOW, fetch: count });
+    assert.equal(n, 0);
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123:abc", TELEGRAM_CHAT_ID: "42" });
+    const body = { ...goodFeedback(), id: "abcdef0123456789abcdef01" };
+    await handle(request("/feedback", { body }), env, { now: NOW, fetch: count });
+    await handle(request("/feedback", { body }), env, { now: NOW, fetch: count });
+    assert.equal(n, 1);
+  });
+});
+
 describe("/admin", () => {
   it("does not exist without a long enough token", async () => {
     for (const token of [undefined, "short"]) {

@@ -46,6 +46,32 @@ Open `/admin`, type the password (it stays only in that browser tab), and you se
 filter by kind, and delete one. Without `ADMIN_TOKEN` (or with one shorter than 24 characters) `/admin` does not
 exist. Lost the password? Run `wrangler secret put ADMIN_TOKEN` again with a new one.
 
+### Reliability: nothing the person writes is lost
+
+- The app saves each message on the phone first and then sends it. If there is no connection (or the server
+  is busy or down) it stays saved and is retried when the app opens or comes back to the front, for up to 30 days.
+- Each message carries a random id, so a retry after a lost answer is stored once.
+- The server answers "ok" only after the message is written.
+
+### Instant copy on your phone (optional, recommended): Telegram
+
+With a Telegram bot the Worker also sends every new message to your own chat, so it arrives as a notification and
+exists in a second place. If Telegram is down, the message is still stored.
+
+1. In Telegram, open **@BotFather**, send `/newbot`, pick a name; it replies with a token (keep it private).
+2. Open a chat with your new bot and send it any message (for example "hi").
+3. In a browser open `https://api.telegram.org/bot<TOKEN>/getUpdates` (put your token in) and find
+   `"chat":{"id":123456789` — that number is your chat id.
+4. In this folder:
+   ```bash
+   npx wrangler secret put TELEGRAM_BOT_TOKEN
+   npx wrangler secret put TELEGRAM_CHAT_ID
+   npx wrangler deploy
+   ```
+
+Telegram then receives the message text, kind, app version, OS, language and optional recipe title / reply
+address. The privacy policy names it; keep it there as long as this is switched on.
+
 ## Point the app at it
 
 1. Put the URL in the EAS `preview` (and `production`) environment as a plain-text variable

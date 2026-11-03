@@ -24,6 +24,8 @@ export const STORAGE_KEYS = {
   theme: "cooksnap:theme:v1",
   // Random id created once per install; sent to the Gemini proxy so it can rate-limit per phone.
   deviceId: "cooksnap:deviceId:v1",
+  // Help & Feedback messages not yet accepted by the server; retried until they are (see feedbackOutbox.js).
+  feedbackOutbox: "cooksnap:feedbackOutbox:v1",
   // Entitlement and free-tier limits
   isPro: "cooksnap:isPro:v1",
   dailyFridgeScans: "cooksnap:dailyFridgeScans:v1",

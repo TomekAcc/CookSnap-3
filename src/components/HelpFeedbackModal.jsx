@@ -17,7 +17,8 @@ import { EMERALD, WHITE } from "../theme/palette";
 import { SUPPORT_EMAIL } from "../constants/contact";
 import appConfig from "../../app.json";
 import { log } from "../utils/log";
-import { FEEDBACK_KINDS, sendFeedback } from "../services/feedback";
+import { FEEDBACK_KINDS } from "../services/feedback";
+import { flushFeedbackOutbox, queueFeedback } from "../services/feedbackOutbox";
 import { takeFeedbackPrefill } from "../utils/feedbackPrefill";
 
 const KIND_LABEL_KEYS = {
@@ -49,16 +50,20 @@ export default function HelpFeedbackModal() {
     setHelpModalOpen?.(false);
   };
 
+  // The message is saved on the phone first, then sent. If the server cannot be reached it stays saved and goes out by
+  // itself the next time the app is open with a connection, so nothing the person wrote is lost.
   const handleSend = async () => {
     const text = message.trim();
     if (!text || sending) return;
     setSending(true);
     try {
-      await sendFeedback({ kind, message: text, contact: contact.trim(), recipeTitle, language: recipeLanguageId });
-      showToast(t("help.sent"), "success", 3000);
+      const id = await queueFeedback({ kind, message: text, contact: contact.trim(), recipeTitle, language: recipeLanguageId });
+      const waiting = await flushFeedbackOutbox();
+      if (waiting.includes(id)) showToast(t("help.queued"), "info", 5000);
+      else showToast(t("help.sent"), "success", 3000);
       handleClose();
     } catch (err) {
-      log.warn("[CookSnap] Could not send feedback:", err?.message);
+      log.warn("[CookSnap] Could not save feedback:", err?.message);
       showToast(t("help.sendFailed"), "error", 4500);
     } finally {
       setSending(false);

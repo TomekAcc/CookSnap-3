@@ -452,7 +452,8 @@ export default {
   "help.kindOther": "Other",
   "help.contactPlaceholder": "Your email, if you want a reply (optional)",
   "help.sent": "Thanks, we got your message.",
-  "help.sendFailed": "Couldn't send. Check your connection and try again.",
+  "help.queued": "No connection right now. Your message is saved and will be sent automatically.",
+  "help.sendFailed": "Couldn't save your message. Please try again.",
   "help.emailInstead": "Or email us at {email}",
   "help.sending": "Sending...",
 

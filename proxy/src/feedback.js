@@ -14,8 +14,10 @@ export function validateFeedback(body) {
   const message = typeof body.message === "string" ? body.message.trim() : "";
   if (!message) return { problem: "Message is empty" };
   if (message.length > MAX_MESSAGE) return { problem: "Message is too long" };
+  const id = typeof body.id === "string" && /^[a-f0-9]{16,40}$/.test(body.id) ? body.id : "";
   return {
     record: {
+      id,
       kind: body.kind,
       message,
       contact: text(body.contact, 120),
@@ -25,6 +27,33 @@ export function validateFeedback(body) {
       language: text(body.language, 10),
     },
   };
+}
+
+/**
+ * Sends a copy of a new message to the owner's Telegram chat, so it arrives on the phone at once and exists in a
+ * second place. Optional (needs TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID) and never allowed to break saving: any
+ * failure is swallowed, the message is already stored.
+ */
+export async function notifyTelegram(env, record, fetchFn = fetch) {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return false;
+  const lines = [
+    `CookSnap feedback: ${record.kind} (${record.platform} ${record.appVersion || "?"}, ${record.language || "?"})`,
+    "",
+    record.message.slice(0, 1800),
+  ];
+  if (record.recipeTitle) lines.push("", `Recipe: ${record.recipeTitle}`);
+  if (record.contact) lines.push("", `Reply to: ${record.contact}`);
+  try {
+    const res = await fetchFn(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: lines.join("\n"), disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(4000),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
 }
 
 /** Constant-time comparison, so the response time does not reveal how much of a guess was right. */

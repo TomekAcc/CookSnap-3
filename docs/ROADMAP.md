@@ -28,8 +28,9 @@ app), SDK 58, the web smoke test in the normal workflow.
   Settings > About has the place for the links.
 - **Help & Feedback inbox: deploy it.** Built: the app sends the message (kind, text, optional reply email) to the
   proxy, which stores it for 90 days; the owner reads it at `/admin` of the proxy (see `proxy/README.md`). Recipes
-  have a "Report a problem with this recipe" link. Still to do: set `ADMIN_TOKEN`, deploy the Worker, then publish
-  the app. The email address stays as the fallback and as the store contact.
+  have a "Report a problem with this recipe" link. Messages are saved on the phone first and retried until the server confirms them (no duplicates), with an
+  optional instant copy to Telegram. Still to do: set `ADMIN_TOKEN` (and the two Telegram secrets), deploy the
+  Worker, then publish the app. The email address stays as the fallback and as the store contact.
 - **Consent before the first photo goes to the AI.** Done: a one-time sheet ("Before your first scan")
   appears before the camera or gallery is used for a scan (all three entry points, including Scan More);
   agreeing is stored (`cooksnap:aiConsent:v1`), "Not now" asks again next time. The sample scan sends no

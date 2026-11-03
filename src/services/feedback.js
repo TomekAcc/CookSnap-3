@@ -11,7 +11,7 @@ const TIMEOUT_MS = 12000;
  * the email route instead. Nothing but what is listed here leaves the phone: the message, an optional reply
  * address the person typed, the recipe title when they reported a recipe, app version, platform and language.
  */
-export async function sendFeedback({ kind, message, contact = "", recipeTitle = "", language = "" }) {
+export async function sendFeedback({ id, kind, message, contact = "", recipeTitle = "", language = "" }) {
   const base = proxyUrl();
   if (!base) throw new Error("Feedback server is not configured");
   const controller = new AbortController();
@@ -22,6 +22,7 @@ export async function sendFeedback({ kind, message, contact = "", recipeTitle = 
       signal: controller.signal,
       headers: { "Content-Type": "application/json", "X-Device-Id": await getDeviceId() },
       body: JSON.stringify({
+        id,
         kind,
         message,
         contact,
@@ -31,8 +32,17 @@ export async function sendFeedback({ kind, message, contact = "", recipeTitle = 
         platform: Platform.OS,
       }),
     });
-    if (!res.ok) throw new Error(`Feedback server answered ${res.status}`);
+    if (!res.ok) {
+      const err = new Error(`Feedback server answered ${res.status}`);
+      err.status = res.status;
+      throw err;
+    }
   } finally {
     clearTimeout(timer);
   }
+}
+
+/** A refusal that retrying will never fix (the server says the message itself is wrong); anything else is worth another try. */
+export function isPermanentFailure(err) {
+  return err?.status === 400 || err?.status === 413;
 }

@@ -25,6 +25,7 @@ import MealPlannerModal from "./src/components/MealPlannerModal";
 import HelpFeedbackModal from "./src/components/HelpFeedbackModal";
 import AiConsentSheet from "./src/components/AiConsentSheet";
 import { useAiConsent } from "./src/context/AiConsentContext";
+import { useFeedbackOutbox } from "./src/hooks/useFeedbackOutbox";
 import Toast from "./src/components/Toast";
 import ScannerScreen from "./src/screens/ScannerScreen";
 import PantryTab from "./src/components/PantryTab";
@@ -119,6 +120,7 @@ function OverlayHost() {
 
 function AppShell() {
   const { colors, isDark } = useTheme();
+  useFeedbackOutbox();
 
   return (
     <>

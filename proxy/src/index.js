@@ -9,7 +9,7 @@
 
 import { Limiter } from "./limiter.js";
 import { Inbox } from "./inbox.js";
-import { ADMIN_PAGE, MAX_FEEDBACK_BYTES, tokenMatches, validateFeedback } from "./feedback.js";
+import { ADMIN_PAGE, MAX_FEEDBACK_BYTES, notifyTelegram, tokenMatches, validateFeedback } from "./feedback.js";
 import {
   ALLOWED_MODELS,
   MAX_BODY_BYTES,
@@ -47,7 +47,7 @@ export async function handle(request, env, deps = {}) {
     return Response.json({ ok: true }, { headers: CORS });
   }
 
-  if (url.pathname === "/feedback") return handleFeedback(request, env, now);
+  if (url.pathname === "/feedback") return handleFeedback(request, env, now, upstreamFetch);
   if (url.pathname.startsWith("/admin")) return handleAdmin(request, env, url);
 
   const model = modelFromPath(url.pathname);
@@ -111,7 +111,7 @@ const callInbox = async (env, payload) => (await inbox(env).fetch("https://inbox
 
 // POST /feedback — a message from Help & Feedback. Same device-id rule as the AI calls, plus its own
 // small daily limits so the inbox cannot be flooded.
-async function handleFeedback(request, env, now) {
+async function handleFeedback(request, env, now, fetchFn) {
   if (request.method !== "POST") return fail(405, "Method not allowed", "METHOD_NOT_ALLOWED");
   if (!env.INBOX) return fail(500, "Feedback is not configured", "INTERNAL");
   const device = request.headers.get("X-Device-Id");
@@ -136,6 +136,7 @@ async function handleFeedback(request, env, now) {
     globalLimit: Number(env.FEEDBACK_GLOBAL_DAILY_LIMIT) || 500,
   });
   if (!verdict.ok) return fail(429, "Too many messages today. Try again tomorrow.", "RESOURCE_EXHAUSTED");
+  if (!verdict.duplicate) await notifyTelegram(env, record, fetchFn);
   return Response.json({ ok: true }, { headers: CORS });
 }
 
