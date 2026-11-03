@@ -983,8 +983,8 @@ export default function PantryTab() {
         <View
           style={{
             position: "absolute",
-            left: 16,
-            right: 16,
+            left: 20,
+            right: 20,
             bottom: floatingCtaBottom(insets.bottom),
           }}
           pointerEvents="box-none"

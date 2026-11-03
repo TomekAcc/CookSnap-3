@@ -21,6 +21,7 @@ import {
   ChevronRight,
   ChevronLeft,
   MessageCircleQuestion,
+  Lock,
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
@@ -531,13 +532,16 @@ export default function SettingsScreen() {
                 paddingHorizontal: 16,
               }}
             >
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
-                  {t("settings.aiConsentLabel")}
-                </Text>
-                <Text style={{ fontSize: 12, fontWeight: "500", color: colors.textSecondary, marginTop: 2 }}>
-                  {t("settings.aiConsentHint")}
-                </Text>
+              <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 12 }}>
+                <Lock size={20} color={colors.textSecondary} strokeWidth={2} />
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
+                    {t("settings.aiConsentLabel")}
+                  </Text>
+                  <Text style={{ fontSize: 12, fontWeight: "500", color: colors.textSecondary, marginTop: 2 }}>
+                    {t("settings.aiConsentHint")}
+                  </Text>
+                </View>
               </View>
               <Switch
                 value={aiConsentAccepted}

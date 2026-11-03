@@ -471,9 +471,6 @@ export default function RecipeDetailModal() {
             No background fill, no per-item border — just typography,
             icons, and hairline rules, closer to how a premium recipe app
             (NYT Cooking, Apple Health summary rows) presents a meta strip. */}
-        <View
-          style={[styles.metaHairline, { backgroundColor: colors.cardBorder }]}
-        />
         <View style={styles.metaRow}>
           <View style={styles.metaCol}>
             <Text style={styles.metaValueEmerald}>
@@ -1189,8 +1186,9 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 1,
   },
+  // The sheet header already ends in a hairline, so the meta strip needs no rule of its own above it.
   scrollContent: {
-    paddingTop: 18,
+    paddingTop: 14,
     paddingBottom: 32,
   },
   // Borderless meta strip — replaced 7 separately-bordered boxes (4 stat
