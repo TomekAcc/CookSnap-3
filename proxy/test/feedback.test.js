@@ -88,11 +88,11 @@ describe("reliability", () => {
 
   it("sends a copy to Telegram when configured, and still stores the message when Telegram is down", async () => {
     const calls = [];
-    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123:abc", TELEGRAM_CHAT_ID: "42" });
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123456789:AAExampleExampleExampleExample_x", TELEGRAM_CHAT_ID: "42" });
     const ok = async (url, init) => (calls.push({ url, body: JSON.parse(init.body) }), new Response("{}", { status: 200 }));
     await handle(request("/feedback", { body: goodFeedback() }), env, { now: NOW, fetch: ok });
     assert.equal(calls.length, 1);
-    assert.equal(calls[0].url, "https://api.telegram.org/bot123:abc/sendMessage");
+    assert.equal(calls[0].url, "https://api.telegram.org/bot123456789:AAExampleExampleExampleExample_x/sendMessage");
     assert.equal(calls[0].body.chat_id, "42");
     assert.match(calls[0].body.text, /The scan keeps spinning/);
 
@@ -110,7 +110,7 @@ describe("reliability", () => {
     const count = async () => (n++, new Response("{}"));
     await handle(request("/feedback", { body: goodFeedback() }), makeEnv(), { now: NOW, fetch: count });
     assert.equal(n, 0);
-    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123:abc", TELEGRAM_CHAT_ID: "42" });
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123456789:AAExampleExampleExampleExample_x", TELEGRAM_CHAT_ID: "42" });
     const body = { ...goodFeedback(), id: "abcdef0123456789abcdef01" };
     await handle(request("/feedback", { body }), env, { now: NOW, fetch: count });
     await handle(request("/feedback", { body }), env, { now: NOW, fetch: count });
@@ -130,16 +130,32 @@ describe("Telegram test button", () => {
   });
 
   it("passes on Telegram's own reason when it refuses, without the token", async () => {
-    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123:secret-token", TELEGRAM_CHAT_ID: "42" });
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123456789:AAsecret-tokenExampleExample", TELEGRAM_CHAT_ID: "42" });
     const refuse = async () => new Response(JSON.stringify({ ok: false, description: "Bad Request: chat not found" }), { status: 400 });
     const out = await (await post(env, refuse)).json();
     assert.equal(out.ok, false);
     assert.match(out.description, /chat not found/);
-    assert.ok(!JSON.stringify(out).includes("secret-token"));
+    assert.ok(!JSON.stringify(out).includes("AAsecret-token"));
+  });
+
+  it("cleans stray characters off a pasted token and says when the shape is still wrong", async () => {
+    const good = "123456789:AAExampleExampleExampleExample_x";
+    const seen = [];
+    const ok = async (url) => (seen.push(url), new Response("{}", { status: 200 }));
+    for (const pasted of [` ${good}\n`, `bot${good}`, `"${good}"`]) {
+      const out = await (await post(makeEnv({ TELEGRAM_BOT_TOKEN: pasted, TELEGRAM_CHAT_ID: " 42 " }), ok)).json();
+      assert.equal(out.ok, true, pasted);
+    }
+    assert.ok(seen.every((u) => u === `https://api.telegram.org/bot${good}/sendMessage`));
+    const bad = await (await post(makeEnv({ TELEGRAM_BOT_TOKEN: "123:abc", TELEGRAM_CHAT_ID: "42" }), ok)).json();
+    assert.equal(bad.ok, false);
+    assert.match(bad.description, /wrong shape/);
+    const badChat = await (await post(makeEnv({ TELEGRAM_BOT_TOKEN: good, TELEGRAM_CHAT_ID: "abc" }), ok)).json();
+    assert.match(badChat.description, /only digits/);
   });
 
   it("reports success", async () => {
-    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123:abc", TELEGRAM_CHAT_ID: "42" });
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123456789:AAExampleExampleExampleExample_x", TELEGRAM_CHAT_ID: "42" });
     const out = await (await post(env, async () => new Response("{}", { status: 200 }))).json();
     assert.equal(out.ok, true);
   });

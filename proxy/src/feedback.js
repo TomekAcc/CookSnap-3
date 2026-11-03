@@ -38,11 +38,21 @@ export async function sendTelegram(env, text, fetchFn = fetch) {
   if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
     return { ok: false, description: "TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not set on the server" };
   }
+  // Secrets pasted from notes often carry a stray space, a line break, quotes or a leading "bot"; clean those off
+  // and say plainly when what is left still has the wrong shape (Telegram itself only answers "404 Not Found").
+  const token = String(env.TELEGRAM_BOT_TOKEN).trim().replace(/^["']|["']$/g, "").replace(/^bot(?=\d)/i, "");
+  const chat = String(env.TELEGRAM_CHAT_ID).trim().replace(/^["']|["']$/g, "");
+  if (!/^\d{5,}:[A-Za-z0-9_-]{20,}$/.test(token)) {
+    return { ok: false, description: `TELEGRAM_BOT_TOKEN has the wrong shape (${token.length} characters, ${token.includes(":") ? "has" : "has no"} a colon). It must be digits, a colon, then letters and digits: copy it again from BotFather.` };
+  }
+  if (!/^-?\d+$/.test(chat)) {
+    return { ok: false, description: "TELEGRAM_CHAT_ID must be only digits (the number after \"chat\":{\"id\": from getUpdates)." };
+  }
   try {
-    const res = await fetchFn(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const res = await fetchFn(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text, disable_web_page_preview: true }),
+      body: JSON.stringify({ chat_id: chat, text, disable_web_page_preview: true }),
       signal: AbortSignal.timeout(4000),
     });
     if (res.ok) return { ok: true, description: "Sent. Look in your chat with the bot." };
