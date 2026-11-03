@@ -2,6 +2,7 @@ import React from "react";
 import { Animated, TextInput, Text, TouchableOpacity, View } from "react-native";
 import { Plus, X } from "../../icons";
 import PillTag from "../PillTag";
+import { hitSlopFor } from "../../utils/touch";
 import { foodEmojiOrFallback } from "../../utils/ingredientEmoji";
 import { getIngredientStyle } from "../../utils/imageUtils";
 import { useLanguage } from "../../context/LanguageContext";
@@ -100,6 +101,7 @@ export default function DetectedIngredientsCard({
         <TouchableOpacity
           onPress={() => setShowAddInput(true)}
           activeOpacity={0.75}
+          hitSlop={hitSlopFor(66, 27)}
           style={{
             backgroundColor: colors.inputBg,
             paddingHorizontal: 12,

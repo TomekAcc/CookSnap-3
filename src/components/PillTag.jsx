@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { X } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { emojiLine } from "../theme/tokens";
+import { hitSlopFor } from "../utils/touch";
 
 /**
  * Uniform ingredient / filter pill.
@@ -19,6 +20,9 @@ import { emojiLine } from "../theme/tokens";
  * one component rendered "selected" two different ways on two screens.
  * Removing the prop removes the ability to drift.
  */
+// The "x" is 14px (12px icon + 1px padding each side); this brings its touch area up to 44px.
+const REMOVE_HIT_SLOP = hitSlopFor(14, 14);
+
 export default function PillTag({
   emoji,
   label,
@@ -66,7 +70,7 @@ export default function PillTag({
       {onRemove ? (
         <TouchableOpacity
           onPress={onRemove}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          hitSlop={REMOVE_HIT_SLOP}
           style={styles.remove}
           accessibilityLabel={label ? `Remove ${label}` : "Remove"}
         >

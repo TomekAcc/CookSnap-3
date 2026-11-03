@@ -10,6 +10,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { useScan } from "../../context/ScanContext";
 import { useInventory } from "../../context/InventoryContext";
 import { EMERALD, SLATE, WHITE } from "../../theme/palette";
+import { hitSlopFor } from "../../utils/touch";
 
 /** The scanned photo: laser overlay while scanning, then the compact header with the items-found badge, Scan More and start-over controls. */
 export default function FridgePhotoCard({
@@ -180,6 +181,7 @@ export default function FridgePhotoCard({
           ref={scanMoreButtonRef}
           onPress={handleScanMore}
           activeOpacity={0.85}
+          hitSlop={hitSlopFor(85, 33)}
           accessibilityLabel={t("a11y.scanMoreShelves")}
           style={{
             position: "absolute",
