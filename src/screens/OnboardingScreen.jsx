@@ -328,7 +328,7 @@ export default function OnboardingScreen({ onContinue }) {
                   numberOfLines={1}
                   ellipsizeMode="tail"
                   adjustsFontSizeToFit
-                  minimumFontScale={0.78}
+                  minimumFontScale={0.7}
                   style={{
                     fontSize: 13,
                     fontWeight: "700",
