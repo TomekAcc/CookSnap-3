@@ -28,6 +28,24 @@ curl https://cooksnap-proxy.<you>.workers.dev/health    # {"ok":true}
 Use a NEW key for the secret (restricted to the Gemini API in Google Cloud Console), then delete
 the old key once the app has switched over.
 
+## Feedback inbox (Help & Feedback)
+
+The same Worker keeps the messages from the app's Help & Feedback screen: `POST /feedback` (message, kind,
+optional reply email, app version, OS, language, recipe title; at most 10 per phone and 500 in total per day,
+kept 90 days). You read them on a private page, `https://cooksnap-proxy.<you>.workers.dev/admin`.
+
+One-time setup, in this folder:
+
+```bash
+openssl rand -hex 24                     # prints a long random password; copy it somewhere safe
+npx wrangler secret put ADMIN_TOKEN      # paste that password when asked
+npx wrangler deploy
+```
+
+Open `/admin`, type the password (it stays only in that browser tab), and you see the messages newest first,
+filter by kind, and delete one. Without `ADMIN_TOKEN` (or with one shorter than 24 characters) `/admin` does not
+exist. Lost the password? Run `wrangler secret put ADMIN_TOKEN` again with a new one.
+
 ## Point the app at it
 
 1. Put the URL in the EAS `preview` (and `production`) environment as a plain-text variable

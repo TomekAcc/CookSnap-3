@@ -25,6 +25,7 @@ import {
   Info,
 } from "../icons";
 import { useModalState } from "../context/ModalContext";
+import { setFeedbackPrefill } from "../utils/feedbackPrefill";
 import { useTheme } from "../context/ThemeContext";
 import {
   getDishEmojiAndColor,
@@ -115,7 +116,7 @@ export default function RecipeDetailModal() {
   const { modifyRecipe, ensureRecipeLanguage } = useRecipes();
   const { recipeLanguageId, t } = useLanguage();
   const { addToShoppingList, markPantryItemOutOfStock } = useInventory();
-  const { selectedRecipe, setSelectedRecipe, setProModalOpen } =
+  const { selectedRecipe, setSelectedRecipe, setProModalOpen, setHelpModalOpen } =
     useModalState();
   const { colors, isDark } = useTheme();
 
@@ -215,6 +216,14 @@ export default function RecipeDetailModal() {
   };
 
   const onClose = () => setSelectedRecipe?.(null);
+
+  // "Report a problem with this recipe": the recipe sheet leaves first, then Help & Feedback opens with the
+  // reason and the title already filled in (two sheets must not be on screen at once).
+  const reportRecipe = () => {
+    setFeedbackPrefill({ kind: "recipe", recipeTitle: recipe?.title || "" });
+    setSelectedRecipe?.(null);
+    setTimeout(() => setHelpModalOpen?.(true), 450);
+  };
   // True while the recipe body is scrolled to the very top: then pulling down
   // anywhere moves the whole sheet (StandardModal.scrollTopSignal).
   const listAtTop = useSharedValue(true);
@@ -1037,6 +1046,17 @@ export default function RecipeDetailModal() {
               </TouchableOpacity>
             </View>
           ) : null}
+
+          <TouchableOpacity
+            onPress={reportRecipe}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            style={styles.reportLink}
+          >
+            <Text style={[styles.reportLinkText, { color: colors.textSecondary }]}>
+              {t("recipeDetail.reportRecipe")}
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
@@ -1293,6 +1313,8 @@ const styles = StyleSheet.create({
   sectionContainer: { marginTop: 10 },
   /** Cooking Area — airy gap after Ingredients */
   instructionsSection: { marginTop: 24 },
+  reportLink: { alignSelf: "center", paddingVertical: 18, paddingHorizontal: 12 },
+  reportLinkText: { fontSize: 13, fontWeight: "500", textDecorationLine: "underline" },
   sectionHeaderRow: {
     flexDirection: "row",
     alignItems: "center",

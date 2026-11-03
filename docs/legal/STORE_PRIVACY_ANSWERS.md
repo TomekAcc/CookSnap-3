@@ -10,6 +10,8 @@ analytics, crash reporting, accounts, a payment SDK or push notifications, redo 
 - Photos (resized to about 1280 px) and request text (ingredients, diet switches, free text the user
   types) are sent over HTTPS to **our own server (Cloudflare Worker)**, which forwards them to **Google
   Gemini**. Our server stores nothing from the request; Google processes it as our service provider.
+- Messages from Help & Feedback (text, kind, app version, OS, language, recipe title for a recipe report, and an
+  optional reply email the person types) go to **our own server**, which keeps them 90 days for the owner to read.
 - A **random install ID** (made by the app, not an advertising ID, not linked to a person) is sent to our
   server only, to count daily requests per phone. The counter is deleted the next day.
 - Everything else (saved recipes, pantry, scan history, photos kept, settings) is on the phone only.
@@ -23,6 +25,8 @@ analytics, crash reporting, accounts, a payment SDK or push notifications, redo 
 |---|---|---|---|---|
 | Photos or Videos (User Content) | Yes | No (no accounts) | App Functionality | Photos of a fridge/pantry sent for ingredient detection |
 | Other User Content | Yes | No | App Functionality | Ingredient lists, diet switches, free text typed in "Always avoid / Prefer" |
+| Customer Support (User Content) | Yes | No | App Functionality | Help & Feedback messages, kept 90 days |
+| Email Address (Contact Info) | Yes, only if the person types one | No | App Functionality | Optional reply address in Help & Feedback; not used for anything else |
 | Device ID (Identifiers) | Yes | No | App Functionality | Random install ID, used only for the per-phone daily limit |
 | Purchases | **Add when subscriptions exist** | | App Functionality | Handled by Apple; add if you use a provider such as RevenueCat |
 | Health & Fitness | **Open question** | | | Dietary preferences such as "diabetic" may count; see below |
@@ -43,6 +47,8 @@ usage data, financial info).
 | Photos (Photos and videos) | Yes | No (Google acts as our service provider) | App functionality | No, needed to scan |
 | Other in-app content | Yes | No (same) | App functionality | Diet text is optional |
 | Device or other IDs | Yes | No | App functionality | Required |
+| Other in-app messages (Messages) | Yes | No | App functionality, customer support | Optional |
+| Email address (Personal info) | Yes, only if typed | No | App functionality (reply) | Optional |
 
 Not collected: personal info, financial info, health info (see open question), location, messages,
 contacts, calendar, app activity, web browsing, files, audio, device-level diagnostics.
@@ -58,6 +64,7 @@ contacts, calendar, app activity, web browsing, files, audio, device-level diagn
    declares it as collected, which is the safe reading.
 3. **AI consent (Apple).** Done in the app: a one-time consent sheet appears before the first photo is
    sent (camera, gallery, Scan More). It can be withdrawn in Settings > About.
-4. **AI content reporting (Google Play).** Help & Feedback now opens a pre-filled email to cooksnap.support@gmail.com,
-   which is the current in-app route for flagging harmful generated content. Requires the mailbox to exist.
+4. **AI content reporting (Google Play).** Done in the app: recipes have a "Report a problem with this recipe" link
+   that opens Help & Feedback with the kind and the recipe title filled in; the owner reads these on the private
+   feedback page (`/admin` of the proxy).
 5. **Payments:** add purchases (and the provider) to both forms once subscriptions are added.

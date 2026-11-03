@@ -1,4 +1,5 @@
 import { Limiter } from "../src/limiter.js";
+import { Inbox } from "../src/inbox.js";
 
 /** In-memory stand-in for Durable Object storage. */
 class FakeStorage {
@@ -20,14 +21,21 @@ class FakeStorage {
   }
 }
 
+export const ADMIN = "a-long-random-admin-token-for-tests-1234567890";
+
 export function makeEnv(overrides = {}) {
   const limiter = new Limiter({ storage: new FakeStorage() });
+  const inbox = new Inbox({ storage: new FakeStorage() });
   return {
     GEMINI_API_KEY: "REAL-SECRET-KEY",
     DEVICE_DAILY_LIMIT: "3",
     GLOBAL_DAILY_LIMIT: "5",
     PROXY_DISABLED: "0",
     LIMITER: { idFromName: () => "main", get: () => ({ fetch: (url, init) => limiter.fetch(new Request(url, init)) }) },
+    INBOX: { idFromName: () => "main", get: () => ({ fetch: (url, init) => inbox.fetch(new Request(url, init)) }) },
+    ADMIN_TOKEN: ADMIN,
+    FEEDBACK_DEVICE_DAILY_LIMIT: "2",
+    FEEDBACK_GLOBAL_DAILY_LIMIT: "3",
     ...overrides,
   };
 }
@@ -58,3 +66,12 @@ export function fakeUpstream(reply = { candidates: [{ content: { parts: [{ text:
 }
 
 export const PATH = "/v1beta/models/gemini-flash-latest:generateContent";
+
+export const goodFeedback = () => ({
+  kind: "bug",
+  message: "The scan keeps spinning",
+  contact: "me@example.com",
+  appVersion: "1.0.0",
+  platform: "ios",
+  language: "en",
+});

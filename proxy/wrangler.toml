@@ -12,7 +12,12 @@ GLOBAL_DAILY_LIMIT = "2000"
 # Set to "1" (dashboard or `wrangler deploy --var PROXY_DISABLED:1`) to switch the proxy off.
 PROXY_DISABLED = "0"
 
-# GEMINI_API_KEY is a secret, not a var: `npx wrangler secret put GEMINI_API_KEY`.
+# Help & Feedback inbox: messages one phone may send, and all phones together, per UTC day.
+FEEDBACK_DEVICE_DAILY_LIMIT = "10"
+FEEDBACK_GLOBAL_DAILY_LIMIT = "500"
+
+# GEMINI_API_KEY and ADMIN_TOKEN are secrets, not vars: `npx wrangler secret put GEMINI_API_KEY`
+# and `npx wrangler secret put ADMIN_TOKEN` (a long random string; it opens the /admin page).
 
 [[durable_objects.bindings]]
 name = "LIMITER"
@@ -21,3 +26,11 @@ class_name = "Limiter"
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["Limiter"]
+
+[[durable_objects.bindings]]
+name = "INBOX"
+class_name = "Inbox"
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Inbox"]

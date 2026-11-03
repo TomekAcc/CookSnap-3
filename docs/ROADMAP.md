@@ -26,11 +26,10 @@ app), SDK 58, the web smoke test in the normal workflow.
   answers for Apple's "App Privacy" and Google's "Data safety"); they need the company details, a support
   mailbox, a lawyer's read and a public URL. Photos go to Google's AI, which has to be stated plainly.
   Settings > About has the place for the links.
-- **Help & Feedback: create the support mailbox.** Done in the app: Send opens the person's mail app with
-  a pre-filled message (version and OS appended) to `SUPPORT_EMAIL` in `src/constants/contact.js`, and the
-  text is kept with a toast if no mail app exists. Still open: create that mailbox, and consider a server
-  endpoint later so reports do not depend on a mail app. Google Play also expects in-app reporting of
-  harmful AI content; this is the current route.
+- **Help & Feedback inbox: deploy it.** Built: the app sends the message (kind, text, optional reply email) to the
+  proxy, which stores it for 90 days; the owner reads it at `/admin` of the proxy (see `proxy/README.md`). Recipes
+  have a "Report a problem with this recipe" link. Still to do: set `ADMIN_TOKEN`, deploy the Worker, then publish
+  the app. The email address stays as the fallback and as the store contact.
 - **Consent before the first photo goes to the AI.** Done: a one-time sheet ("Before your first scan")
   appears before the camera or gallery is used for a scan (all three entry points, including Scan More);
   agreeing is stored (`cooksnap:aiConsent:v1`), "Not now" asks again next time. The sample scan sends no

@@ -18,7 +18,7 @@ import { getItem, setItem } from "../storage/storage";
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
 
 /** Base URL of the proxy, or "" when the app talks to Google directly. Read per call so tests can set it. */
-function proxyUrl() {
+export function proxyUrl() {
   return (process.env.EXPO_PUBLIC_GEMINI_PROXY_URL || "").trim().replace(/\/+$/, "");
 }
 
