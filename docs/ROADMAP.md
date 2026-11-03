@@ -71,3 +71,12 @@ app), SDK 58, the web smoke test in the normal workflow.
 
 Carried over from the PRD's non-goals: manual full recipe authoring by users, and anything that
 turns the product from AI-first into a user-generated recipe box.
+
+## Tried and not shipped
+
+- **Writing the first recipe batch as two parallel requests** (to cut the generation wait). Measured on the real
+  proxy, same inventory, 4 runs each: one request 9.3 s on average (7.7 to 12.7 s), two parallel requests 8.5 s
+  (7.1 to 9.7 s). About 1 s gained, mostly fewer slow outliers, but it sends the 51 KB instruction twice (about a
+  third more tokens per generation) and risks two halves picking the same dishes. Not worth it; reverted.
+  Remaining ideas, if real phone timings say the wait matters: show recipes before the quality pass finishes (saves
+  3 to 5 s, but a recipe may change or disappear after being shown) or shorten the 51 KB instruction.
