@@ -9,7 +9,7 @@
 
 import { Limiter } from "./limiter.js";
 import { Inbox } from "./inbox.js";
-import { ADMIN_PAGE, MAX_FEEDBACK_BYTES, notifyTelegram, tokenMatches, validateFeedback } from "./feedback.js";
+import { ADMIN_PAGE, MAX_FEEDBACK_BYTES, notifyTelegram, sendTelegram, tokenMatches, validateFeedback } from "./feedback.js";
 import {
   ALLOWED_MODELS,
   MAX_BODY_BYTES,
@@ -48,7 +48,7 @@ export async function handle(request, env, deps = {}) {
   }
 
   if (url.pathname === "/feedback") return handleFeedback(request, env, now, upstreamFetch);
-  if (url.pathname.startsWith("/admin")) return handleAdmin(request, env, url);
+  if (url.pathname.startsWith("/admin")) return handleAdmin(request, env, url, upstreamFetch);
 
   const model = modelFromPath(url.pathname);
   if (!model) return fail(404, "Not found", "NOT_FOUND");
@@ -142,7 +142,7 @@ async function handleFeedback(request, env, now, fetchFn) {
 
 // The owner's reading page: GET /admin (the page), GET /admin/list, POST /admin/delete. Needs the
 // ADMIN_TOKEN secret; without one (or with a short one) these paths do not exist.
-async function handleAdmin(request, env, url) {
+async function handleAdmin(request, env, url, fetchFn) {
   const NO_STORE = { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" };
   if (!env.INBOX || !env.ADMIN_TOKEN || env.ADMIN_TOKEN.length < 24) return new Response("Not found", { status: 404 });
   if (url.pathname === "/admin" && request.method === "GET") {
@@ -163,6 +163,9 @@ async function handleAdmin(request, env, url) {
     const { id } = await request.json().catch(() => ({}));
     if (typeof id !== "string" || !id.startsWith("m:")) return new Response("Bad request", { status: 400, headers: NO_STORE });
     return Response.json(await callInbox(env, { op: "delete", id }), { headers: NO_STORE });
+  }
+  if (url.pathname === "/admin/telegram-test" && request.method === "POST") {
+    return Response.json(await sendTelegram(env, "CookSnap: Telegram test. If you can read this, new feedback will reach you here.", fetchFn), { headers: NO_STORE });
   }
   return new Response("Not found", { status: 404, headers: NO_STORE });
 }

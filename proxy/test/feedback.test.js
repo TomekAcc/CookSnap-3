@@ -118,6 +118,38 @@ describe("reliability", () => {
   });
 });
 
+describe("Telegram test button", () => {
+  const post = (env, fetchFn) => handle(admin("/admin/telegram-test", { method: "POST", body: {} }), env, { now: NOW, fetch: fetchFn });
+
+  it("says what is missing when Telegram is not set up", async () => {
+    const res = await post(makeEnv(), async () => assert.fail("must not call Telegram"));
+    assert.equal(res.status, 200);
+    const out = await res.json();
+    assert.equal(out.ok, false);
+    assert.match(out.description, /not set/);
+  });
+
+  it("passes on Telegram's own reason when it refuses, without the token", async () => {
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123:secret-token", TELEGRAM_CHAT_ID: "42" });
+    const refuse = async () => new Response(JSON.stringify({ ok: false, description: "Bad Request: chat not found" }), { status: 400 });
+    const out = await (await post(env, refuse)).json();
+    assert.equal(out.ok, false);
+    assert.match(out.description, /chat not found/);
+    assert.ok(!JSON.stringify(out).includes("secret-token"));
+  });
+
+  it("reports success", async () => {
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123:abc", TELEGRAM_CHAT_ID: "42" });
+    const out = await (await post(env, async () => new Response("{}", { status: 200 }))).json();
+    assert.equal(out.ok, true);
+  });
+
+  it("needs the admin password", async () => {
+    const res = await handle(admin("/admin/telegram-test", { method: "POST", body: {}, token: "wrong" }), makeEnv(), { now: NOW });
+    assert.equal(res.status, 401);
+  });
+});
+
 describe("/admin", () => {
   it("does not exist without a long enough token", async () => {
     for (const token of [undefined, "short"]) {

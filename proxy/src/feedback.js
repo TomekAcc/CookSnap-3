@@ -30,12 +30,31 @@ export function validateFeedback(body) {
 }
 
 /**
- * Sends a copy of a new message to the owner's Telegram chat, so it arrives on the phone at once and exists in a
+ * Sends text to the owner's Telegram chat (used for a copy of each new message, and by the test button on /admin), so it arrives on the phone at once and exists in a
  * second place. Optional (needs TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID) and never allowed to break saving: any
  * failure is swallowed, the message is already stored.
  */
+export async function sendTelegram(env, text, fetchFn = fetch) {
+  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
+    return { ok: false, description: "TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not set on the server" };
+  }
+  try {
+    const res = await fetchFn(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text, disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(4000),
+    });
+    if (res.ok) return { ok: true, description: "Sent. Look in your chat with the bot." };
+    // Telegram's own wording ("Unauthorized", "Bad Request: chat not found", ...); it never contains the token.
+    const body = await res.json().catch(() => ({}));
+    return { ok: false, description: `Telegram answered ${res.status}: ${body.description || "no details"}` };
+  } catch (err) {
+    return { ok: false, description: `Could not reach Telegram: ${err?.message || err}` };
+  }
+}
+
 export async function notifyTelegram(env, record, fetchFn = fetch) {
-  if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return false;
   const lines = [
     `CookSnap feedback: ${record.kind} (${record.platform} ${record.appVersion || "?"}, ${record.language || "?"})`,
     "",
@@ -43,17 +62,7 @@ export async function notifyTelegram(env, record, fetchFn = fetch) {
   ];
   if (record.recipeTitle) lines.push("", `Recipe: ${record.recipeTitle}`);
   if (record.contact) lines.push("", `Reply to: ${record.contact}`);
-  try {
-    const res = await fetchFn(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: lines.join("\n"), disable_web_page_preview: true }),
-      signal: AbortSignal.timeout(4000),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
+  return (await sendTelegram(env, lines.join("\n"), fetchFn)).ok;
 }
 
 /** Constant-time comparison, so the response time does not reveal how much of a guess was right. */
@@ -83,7 +92,7 @@ button{cursor:pointer}button.on{background:var(--accent);border-color:var(--acce
 </style></head><body><main>
 <h1>CookSnap feedback</h1><div class="soft" id="status">Enter your access token.</div>
 <div class="row" id="login"><input id="token" type="password" placeholder="Access token" autocomplete="current-password"><button id="go">Open</button></div>
-<div class="row" id="filters" hidden></div><div id="list"></div></main>
+<div class="row" id="filters" hidden></div><div class="row" id="tools" hidden><button id="tg">Send Telegram test</button></div><div id="list"></div></main>
 <script>
 const KINDS=["all","bug","idea","recipe","other"];let items=[],kind="all",token=sessionStorage.getItem("t")||"";
 const $=(id)=>document.getElementById(id);
@@ -98,7 +107,8 @@ const t=document.createElement("div");t.className="msg";t.textContent=i.message;
 const b=document.createElement("button");b.className="del";b.textContent="Delete";b.onclick=async()=>{if(!confirm("Delete this message?"))return;await api("/admin/delete",{method:"POST",body:JSON.stringify({id:i.id})});items=items.filter(x=>x.id!==i.id);draw();};
 d.append(m,t,b);box.append(d);}}
 function filters(){const f=$("filters");f.hidden=false;f.textContent="";for(const k of KINDS){const b=document.createElement("button");b.textContent=k;b.className=k===kind?"on":"";b.onclick=()=>{kind=k;filters();draw();};f.append(b);}}
-async function load(){try{items=(await api("/admin/list")).items;$("login").hidden=true;filters();draw();}catch(e){$("status").textContent=e.message;$("login").hidden=false;}}
+$("tg").onclick=async()=>{$("status").textContent="Sending test...";try{const r=await api("/admin/telegram-test",{method:"POST",body:"{}"});$("status").textContent="Telegram: "+r.description;}catch(e){$("status").textContent=e.message;}};
+async function load(){try{items=(await api("/admin/list")).items;$("login").hidden=true;$("tools").hidden=false;filters();draw();}catch(e){$("status").textContent=e.message;$("login").hidden=false;}}
 $("go").onclick=()=>{token=$("token").value.trim();sessionStorage.setItem("t",token);load();};
 if(token)load();
 </script></body></html>`;
