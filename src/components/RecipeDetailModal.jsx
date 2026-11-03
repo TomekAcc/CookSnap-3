@@ -633,7 +633,7 @@ export default function RecipeDetailModal() {
                     styles.modifierLockedSubtitle,
                     { color: colors.amberCopy },
                   ]}
-                  numberOfLines={2}
+                  numberOfLines={3}
                 >
                   {t("recipeDetail.modifyProDesc")}
                 </Text>

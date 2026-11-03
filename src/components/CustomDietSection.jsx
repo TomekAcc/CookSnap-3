@@ -126,7 +126,6 @@ export default function CustomDietSection() {
               lineHeight: 18,
               color: colors.textPrimary,
             }}
-            numberOfLines={3}
           >
             {t("settings.customDietProDesc")}
           </Text>

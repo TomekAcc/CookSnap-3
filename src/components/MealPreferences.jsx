@@ -115,7 +115,7 @@ function CravingGrid({ tags, selectedIds, onToggle, t }) {
               >
                 <Icon size={18} color={selected ? WHITE : p.muted} strokeWidth={2.2} />
                 <Text
-                  numberOfLines={1}
+                  numberOfLines={2}
                   adjustsFontSizeToFit
                   minimumFontScale={0.8}
                   style={[
@@ -637,7 +637,8 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     minWidth: 0,
-    height: 50,
+    minHeight: 50,
+    paddingVertical: 6,
     borderRadius: 14,
     flexDirection: "row",
     alignItems: "center",
@@ -649,6 +650,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     fontSize: 14,
     letterSpacing: -0.1,
+    textAlign: "center",
   },
   moreLabel: {
     fontSize: 15,
