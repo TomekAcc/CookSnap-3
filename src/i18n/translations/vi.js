@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "Để tìm nguyên liệu, CookSnap gửi ảnh của bạn qua máy chủ của chúng tôi tới AI của Google. Chúng tôi không lưu giữ ảnh. Hãy chụp thực phẩm và kệ, không chụp người hoặc giấy tờ.",
   "aiConsent.agree": "Đồng ý và tiếp tục",
   "aiConsent.decline": "Để sau",
+  "settings.aiConsentLabel": "Gửi ảnh cho AI",
+  "settings.aiConsentHint": "Cần để quét. Nếu tắt, chúng tôi sẽ hỏi lại.",
   "help.noMailApp": "Không mở được ứng dụng email. Vui lòng viết tới {email}.",
   "dayShort.mon": "Th 2",
   "dayShort.tue": "Th 3",

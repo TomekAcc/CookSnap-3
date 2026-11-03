@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "Löytääkseen raaka-aineet CookSnap lähettää kuvasi palvelimemme kautta Googlen tekoälylle. Emme säilytä sitä. Kuvaa ruokaa ja hyllyjä, älä ihmisiä tai asiakirjoja.",
   "aiConsent.agree": "Hyväksy ja jatka",
   "aiConsent.decline": "Ei nyt",
+  "settings.aiConsentLabel": "Lähetä kuvat tekoälylle",
+  "settings.aiConsentHint": "Tarvitaan skannaukseen. Jos kytket pois, kysymme uudelleen.",
   "help.noMailApp": "Sähköpostisovellusta ei voitu avata. Kirjoita osoitteeseen {email}.",
   "dayShort.mon": "Ma",
   "dayShort.tue": "Ti",

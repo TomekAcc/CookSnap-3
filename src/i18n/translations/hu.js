@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "A hozzávalók felismeréséhez a CookSnap a szerverünkön keresztül elküldi a fotódat a Google mesterséges intelligenciájának. Nem tároljuk. Ételeket és polcokat fotózz, ne embereket vagy dokumentumokat.",
   "aiConsent.agree": "Elfogadom és tovább",
   "aiConsent.decline": "Most nem",
+  "settings.aiConsentLabel": "Fotók küldése az MI-nek",
+  "settings.aiConsentHint": "A szkenneléshez kell. Kikapcsolva újra rákérdezünk.",
   "help.noMailApp": "Nem sikerült megnyitni az e-mail alkalmazást. Írj ide: {email}.",
   "dayShort.mon": "Hé",
   "dayShort.tue": "Ke",

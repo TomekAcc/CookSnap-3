@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "For at finde ingredienser sender CookSnap dit foto via vores server til Googles AI. Vi gemmer det ikke. Fotografér mad og hylder, ikke personer eller dokumenter.",
   "aiConsent.agree": "Accepter og fortsæt",
   "aiConsent.decline": "Ikke nu",
+  "settings.aiConsentLabel": "Send fotos til AI",
+  "settings.aiConsentHint": "Nødvendigt for at scanne. Slår du fra, spørger vi igen.",
   "help.noMailApp": "Kunne ikke åbne din mail-app. Skriv til {email}.",
   "dayShort.mon": "Man",
   "dayShort.tue": "Tir",

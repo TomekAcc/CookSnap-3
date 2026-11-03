@@ -57,7 +57,7 @@ contacts, calendar, app activity, web browsing, files, audio, device-level diagn
    longer than the real-time request needs; Google may keep it briefly for abuse monitoring. The draft
    declares it as collected, which is the safe reading.
 3. **AI consent (Apple).** Done in the app: a one-time consent sheet appears before the first photo is
-   sent (camera, gallery, Scan More). Consider adding a way to withdraw it in Settings.
+   sent (camera, gallery, Scan More). It can be withdrawn in Settings > About.
 4. **AI content reporting (Google Play).** Help & Feedback now opens a pre-filled email to [SUPPORT EMAIL],
    which is the current in-app route for flagging harmful generated content. Requires the mailbox to exist.
 5. **Payments:** add purchases (and the provider) to both forms once subscriptions are added.

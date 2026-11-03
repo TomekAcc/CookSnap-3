@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "सामग्री पहचानने के लिए CookSnap आपकी फ़ोटो हमारे सर्वर के ज़रिए Google के AI को भेजता है। हम इसे सहेजते नहीं हैं। कृपया खाने और शेल्फ़ की फ़ोटो लें, लोगों या दस्तावेज़ों की नहीं।",
   "aiConsent.agree": "सहमत हूँ और आगे बढ़ें",
   "aiConsent.decline": "अभी नहीं",
+  "settings.aiConsentLabel": "फ़ोटो AI को भेजें",
+  "settings.aiConsentHint": "स्कैन के लिए ज़रूरी है। बंद करने पर हम दोबारा पूछेंगे।",
   "help.noMailApp": "मेल ऐप नहीं खुल सका। कृपया {email} पर लिखें।",
   "dayShort.mon": "सोम",
   "dayShort.tue": "मंगल",

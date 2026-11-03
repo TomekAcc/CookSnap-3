@@ -60,9 +60,21 @@ export function AiConsentProvider({ children }) {
     [setAccepted]
   );
 
+  // Settings switch: the person takes the consent back, so the next scan asks again.
+  const withdrawAiConsent = useCallback(() => {
+    acceptedRef.current = false;
+    setAccepted(false);
+  }, [setAccepted]);
+
   const value = useMemo(
-    () => ({ aiConsentAccepted: accepted, requestAiConsent, consentSheetOpen: open, answerAiConsent: settle }),
-    [accepted, requestAiConsent, open, settle]
+    () => ({
+      aiConsentAccepted: accepted,
+      requestAiConsent,
+      consentSheetOpen: open,
+      answerAiConsent: settle,
+      withdrawAiConsent,
+    }),
+    [accepted, requestAiConsent, open, settle, withdrawAiConsent]
   );
 
   return <AiConsentContext.Provider value={value}>{children}</AiConsentContext.Provider>;

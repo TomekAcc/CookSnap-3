@@ -73,6 +73,19 @@ describe("AiConsentContext", () => {
     await waitFor(() => expect(result.current.consentSheetOpen).toBe(true));
   });
 
+  it("asks again after the person withdraws consent in Settings", async () => {
+    await AsyncStorage.setItem(KEY, "true");
+    const { result } = await mountConsent();
+    await waitFor(() => expect(result.current.aiConsentAccepted).toBe(true));
+    await act(async () => result.current.withdrawAiConsent());
+    expect(result.current.aiConsentAccepted).toBe(false);
+    await waitFor(async () => expect(await AsyncStorage.getItem(KEY)).not.toBe("true"));
+    act(() => {
+      result.current.requestAiConsent();
+    });
+    await waitFor(() => expect(result.current.consentSheetOpen).toBe(true));
+  });
+
   it("shares one sheet between two simultaneous requests", async () => {
     const { result } = await mountConsent();
     const answers = [];

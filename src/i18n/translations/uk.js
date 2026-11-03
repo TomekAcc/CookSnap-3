@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "Щоб знайти продукти, CookSnap надсилає ваше фото через наш сервер ШІ Google. Ми його не зберігаємо. Фотографуйте їжу та полиці, а не людей чи документи.",
   "aiConsent.agree": "Погоджуюсь і продовжити",
   "aiConsent.decline": "Не зараз",
+  "settings.aiConsentLabel": "Надсилати фото до ШІ",
+  "settings.aiConsentHint": "Потрібно для сканування. Якщо вимкнути, запитаємо знову.",
   "help.noMailApp": "Не вдалося відкрити поштовий застосунок. Напишіть на {email}.",
   "dayShort.mon": "Пн",
   "dayShort.tue": "Вт",

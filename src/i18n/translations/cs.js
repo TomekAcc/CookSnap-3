@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "Aby CookSnap našel suroviny, pošle vaši fotku přes náš server umělé inteligenci Googlu. Neukládáme ji. Fotografujte jídlo a police, ne lidi ani dokumenty.",
   "aiConsent.agree": "Souhlasím a pokračovat",
   "aiConsent.decline": "Teď ne",
+  "settings.aiConsentLabel": "Odesílat fotky do AI",
+  "settings.aiConsentHint": "Potřebné ke skenování. Po vypnutí se zeptáme znovu.",
   "help.noMailApp": "Nepodařilo se otevřít e-mailovou aplikaci. Napište na {email}.",
   "dayShort.mon": "Po",
   "dayShort.tue": "Út",

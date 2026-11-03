@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "للعثور على المكونات، يرسل CookSnap صورتك عبر خادمنا إلى الذكاء الاصطناعي من Google. لا نحتفظ بها. يرجى تصوير الطعام والأرفف، وليس الأشخاص أو المستندات.",
   "aiConsent.agree": "أوافق وأتابع",
   "aiConsent.decline": "ليس الآن",
+  "settings.aiConsentLabel": "إرسال الصور إلى الذكاء الاصطناعي",
+  "settings.aiConsentHint": "مطلوب للمسح. إذا أوقفته فسنسألك مرة أخرى.",
   "help.noMailApp": "تعذّر فتح تطبيق البريد. يرجى مراسلة {email}.",
   "dayShort.mon": "الإثنين",
   "dayShort.tue": "الثلاثاء",

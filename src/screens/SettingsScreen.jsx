@@ -26,6 +26,7 @@ import { useTheme } from "../context/ThemeContext";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
 import StandardModal from "../components/StandardModal";
 import { useEntitlements } from "../context/EntitlementsContext";
+import { useAiConsent } from "../context/AiConsentContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useModalState } from "../context/ModalContext";
@@ -44,6 +45,7 @@ export default function SettingsScreen() {
   const { unitSystem, setUnitSystem, ingredientPriority, setIngredientPriority } = usePreferences();
   const { recipeLanguageId, setRecipeLanguageId, t } = useLanguage();
   const { isPro, activatePro, deactivatePro } = useEntitlements();
+  const { aiConsentAccepted, requestAiConsent, withdrawAiConsent } = useAiConsent();
   const { resetOnboarding, settingsDoneHintShown, markSettingsDoneHintShown } = useOnboarding();
   const { setActiveTab } = useNavigation();
   const { setHelpModalOpen } = useModalState();
@@ -518,6 +520,32 @@ export default function SettingsScreen() {
               </View>
               <ChevronRight size={18} color={colors.textSecondary} />
             </TouchableOpacity>
+            <View style={{ height: 1, backgroundColor: colors.cardBorder }} />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                paddingVertical: 12,
+                paddingHorizontal: 16,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
+                  {t("settings.aiConsentLabel")}
+                </Text>
+                <Text style={{ fontSize: 12, fontWeight: "500", color: colors.textSecondary, marginTop: 2 }}>
+                  {t("settings.aiConsentHint")}
+                </Text>
+              </View>
+              <Switch
+                value={aiConsentAccepted}
+                onValueChange={(on) => (on ? requestAiConsent() : withdrawAiConsent())}
+                trackColor={{ false: colors.cardBorder, true: EMERALD[500] }}
+                accessibilityLabel={t("settings.aiConsentLabel")}
+              />
+            </View>
           </View>
           <Text
             style={{

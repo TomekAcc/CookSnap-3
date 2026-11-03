@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "食材を見つけるため、CookSnapは写真を当社のサーバー経由でGoogleのAIに送信します。写真は当社では保存しません。撮影するのは食品や棚にして、人物や書類は写さないでください。",
   "aiConsent.agree": "同意して続ける",
   "aiConsent.decline": "今はしない",
+  "settings.aiConsentLabel": "写真をAIに送信",
+  "settings.aiConsentHint": "スキャンに必要です。オフにすると、次回あらためて確認します。",
   "help.noMailApp": "メールアプリを開けませんでした。{email} 宛にご連絡ください。",
   "dayShort.mon": "月",
   "dayShort.tue": "火",

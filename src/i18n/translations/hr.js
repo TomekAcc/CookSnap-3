@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "Kako bi pronašao sastojke, CookSnap šalje vašu fotografiju preko našeg poslužitelja Googleovoj umjetnoj inteligenciji. Ne spremamo je. Fotografirajte hranu i police, a ne ljude ni dokumente.",
   "aiConsent.agree": "Slažem se i nastavi",
   "aiConsent.decline": "Ne sada",
+  "settings.aiConsentLabel": "Slanje fotografija AI-ju",
+  "settings.aiConsentHint": "Potrebno za skeniranje. Ako isključite, pitat ćemo ponovno.",
   "help.noMailApp": "Nije moguće otvoriti aplikaciju za e-poštu. Pišite na {email}.",
   "dayShort.mon": "Pon",
   "dayShort.tue": "Uto",

@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "Malzemeleri bulmak için CookSnap fotoğrafını sunucumuz üzerinden Google'ın yapay zekâsına gönderir. Saklamıyoruz. Lütfen yiyecekleri ve rafları çek, insanları ya da belgeleri değil.",
   "aiConsent.agree": "Kabul et ve devam et",
   "aiConsent.decline": "Şimdi değil",
+  "settings.aiConsentLabel": "Fotoğrafları yapay zekâya gönder",
+  "settings.aiConsentHint": "Tarama için gerekli. Kapatırsanız tekrar soracağız.",
   "help.noMailApp": "E-posta uygulaması açılamadı. Lütfen {email} adresine yaz.",
   "dayShort.mon": "Pzt",
   "dayShort.tue": "Sal",

@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "재료를 찾기 위해 CookSnap은 사진을 당사 서버를 거쳐 Google AI로 보냅니다. 사진은 저장하지 않습니다. 사람이나 문서가 아닌 음식과 선반을 촬영해 주세요.",
   "aiConsent.agree": "동의하고 계속",
   "aiConsent.decline": "나중에",
+  "settings.aiConsentLabel": "사진을 AI로 전송",
+  "settings.aiConsentHint": "스캔에 필요합니다. 끄면 다시 물어봅니다.",
   "help.noMailApp": "메일 앱을 열 수 없습니다. {email}(으)로 문의해 주세요.",
   "dayShort.mon": "월",
   "dayShort.tue": "화",

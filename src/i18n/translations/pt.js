@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "Para encontrar ingredientes, o CookSnap envia a sua foto através do nosso servidor para a IA da Google. Não a guardamos. Fotografe alimentos e prateleiras, não pessoas nem documentos.",
   "aiConsent.agree": "Aceitar e continuar",
   "aiConsent.decline": "Agora não",
+  "settings.aiConsentLabel": "Enviar fotos para a IA",
+  "settings.aiConsentHint": "Necessário para digitalizar. Se desativar, perguntaremos de novo.",
   "help.noMailApp": "Não foi possível abrir a sua app de e-mail. Escreva para {email}.",
   "dayShort.mon": "Seg",
   "dayShort.tue": "Ter",

@@ -410,6 +410,8 @@ export default {
   "aiConsent.body": "כדי לזהות מצרכים, CookSnap שולח את התמונה שלך דרך השרת שלנו אל הבינה המלאכותית של Google. אנחנו לא שומרים אותה. צלמו אוכל ומדפים, לא אנשים או מסמכים.",
   "aiConsent.agree": "מסכים/ה והמשך",
   "aiConsent.decline": "לא עכשיו",
+  "settings.aiConsentLabel": "שליחת תמונות ל-AI",
+  "settings.aiConsentHint": "נדרש לסריקה. אם תכבו, נשאל שוב.",
   "help.noMailApp": "לא ניתן לפתוח את אפליקציית הדואר. כתבו אל {email}.",
   "dayShort.mon": "ב׳",
   "dayShort.tue": "ג׳",

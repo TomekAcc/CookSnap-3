@@ -34,7 +34,7 @@ app), SDK 58, the web smoke test in the normal workflow.
 - **Consent before the first photo goes to the AI.** Done: a one-time sheet ("Before your first scan")
   appears before the camera or gallery is used for a scan (all three entry points, including Scan More);
   agreeing is stored (`cooksnap:aiConsent:v1`), "Not now" asks again next time. The sample scan sends no
-  photo, so it asks nothing. Not yet: a way to withdraw consent in Settings.
+  photo, so it asks nothing. Settings > About has a "Send photos to AI" switch to withdraw it (and to give it again).
 - **Production builds and a real-device pass.** `eas.json` has a `production` profile but no build
   has been made. Build iOS and Android, install via TestFlight / internal track, re-run the whole
   manual pass (scan, recipes, payments) on the compiled app.
