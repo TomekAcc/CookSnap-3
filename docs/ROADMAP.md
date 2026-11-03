@@ -22,9 +22,16 @@ app), SDK 58, the web smoke test in the normal workflow.
   Needs Apple Developer and Google Play accounts, the two subscriptions (monthly, annual with a
   7-day trial) in both stores, and an integration (RevenueCat is the usual route). The daily free-tier
   limits are counted on the phone and can be bypassed; move them somewhere that can be trusted.
-- **Privacy policy, terms and support contact.** Both stores require them, more so with
-  subscriptions. Photos go to Google's AI, which has to be stated plainly in the policy and in the
-  store's privacy declaration. Settings > About has the place for the links.
+- **Privacy policy, terms and support contact.** Drafts are in `docs/legal/` (policy, terms, and draft
+  answers for Apple's "App Privacy" and Google's "Data safety"); they need the company details, a support
+  mailbox, a lawyer's read and a public URL. Photos go to Google's AI, which has to be stated plainly.
+  Settings > About has the place for the links.
+- **Help & Feedback must really send something.** The Send button currently only closes the window and
+  shows a thank-you; the text is thrown away. It needs a real destination (a pre-filled email to the
+  support address, or the server). Google Play also expects in-app reporting of harmful AI content.
+- **Consent before the first photo goes to the AI.** Apple's guideline 5.1.2(i) expects explicit
+  permission before personal data is shared with a third-party AI. Today there is a one-line note and
+  nothing to accept.
 - **Production builds and a real-device pass.** `eas.json` has a `production` profile but no build
   has been made. Build iOS and Android, install via TestFlight / internal track, re-run the whole
   manual pass (scan, recipes, payments) on the compiled app.
