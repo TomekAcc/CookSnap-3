@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Đồng ý và tiếp tục",
   "aiConsent.decline": "Để sau",
   "settings.aiConsentLabel": "Gửi ảnh cho AI",
-  "settings.aiConsentHint": "Cần để quét. Nếu tắt, chúng tôi sẽ hỏi lại.",
+  "settings.aiConsentHint": "Ảnh chỉ được gửi cho AI khi quét.",
   "settings.privacyPolicy": "Chính sách quyền riêng tư",
   "settings.manageSubscription": "Quản lý gói đăng ký",
   "settings.termsOfService": "Điều khoản dịch vụ",

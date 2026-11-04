@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "أوافق وأتابع",
   "aiConsent.decline": "ليس الآن",
   "settings.aiConsentLabel": "إرسال الصور إلى الذكاء الاصطناعي",
-  "settings.aiConsentHint": "مطلوب للمسح. إذا أوقفته فسنسألك مرة أخرى.",
+  "settings.aiConsentHint": "تُرسل الصور إلى الذكاء الاصطناعي أثناء المسح فقط.",
   "settings.privacyPolicy": "سياسة الخصوصية",
   "settings.manageSubscription": "إدارة الاشتراك",
   "settings.termsOfService": "شروط الخدمة",

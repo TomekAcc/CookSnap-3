@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Setuju dan lanjutkan",
   "aiConsent.decline": "Nanti saja",
   "settings.aiConsentLabel": "Kirim foto ke AI",
-  "settings.aiConsentHint": "Diperlukan untuk memindai. Jika dimatikan, kami akan bertanya lagi.",
+  "settings.aiConsentHint": "Foto hanya dikirim ke AI saat memindai.",
   "settings.privacyPolicy": "Kebijakan Privasi",
   "settings.manageSubscription": "Kelola langganan",
   "settings.termsOfService": "Ketentuan Layanan",

@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Accepter og fortsæt",
   "aiConsent.decline": "Ikke nu",
   "settings.aiConsentLabel": "Send fotos til AI",
-  "settings.aiConsentHint": "Nødvendigt for at scanne. Slår du fra, spørger vi igen.",
+  "settings.aiConsentHint": "Fotos sendes kun til AI under scanning.",
   "settings.privacyPolicy": "Privatlivspolitik",
   "settings.manageSubscription": "Administrer abonnement",
   "settings.termsOfService": "Servicevilkår",

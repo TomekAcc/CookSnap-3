@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Zustimmen und weiter",
   "aiConsent.decline": "Jetzt nicht",
   "settings.aiConsentLabel": "Fotos an die KI senden",
-  "settings.aiConsentHint": "Nötig zum Scannen. Wenn ausgeschaltet, fragen wir erneut.",
+  "settings.aiConsentHint": "Fotos gehen nur beim Scannen an die KI.",
   "settings.privacyPolicy": "Datenschutzerklärung",
   "settings.manageSubscription": "Abo verwalten",
   "settings.termsOfService": "Nutzungsbedingungen",

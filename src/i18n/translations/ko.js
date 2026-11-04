@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "동의하고 계속",
   "aiConsent.decline": "나중에",
   "settings.aiConsentLabel": "사진을 AI로 전송",
-  "settings.aiConsentHint": "스캔에 필요합니다. 끄면 다시 물어봅니다.",
+  "settings.aiConsentHint": "사진은 스캔할 때만 AI로 전송됩니다.",
   "settings.privacyPolicy": "개인정보 처리방침",
   "settings.manageSubscription": "구독 관리",
   "settings.termsOfService": "서비스 약관",

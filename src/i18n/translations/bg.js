@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Съгласен съм и продължи",
   "aiConsent.decline": "Не сега",
   "settings.aiConsentLabel": "Изпращане на снимки към ИИ",
-  "settings.aiConsentHint": "Необходимо за сканиране. Ако изключиш, ще попитаме отново.",
+  "settings.aiConsentHint": "Снимките отиват към ИИ само при сканиране.",
   "settings.privacyPolicy": "Политика за поверителност",
   "settings.manageSubscription": "Управление на абонамента",
   "settings.termsOfService": "Условия за ползване",

@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Hyväksy ja jatka",
   "aiConsent.decline": "Ei nyt",
   "settings.aiConsentLabel": "Lähetä kuvat tekoälylle",
-  "settings.aiConsentHint": "Tarvitaan skannaukseen. Jos kytket pois, kysymme uudelleen.",
+  "settings.aiConsentHint": "Kuvat lähtevät tekoälylle vain skannauksen aikana.",
   "settings.privacyPolicy": "Tietosuojaseloste",
   "settings.manageSubscription": "Hallitse tilausta",
   "settings.termsOfService": "Käyttöehdot",

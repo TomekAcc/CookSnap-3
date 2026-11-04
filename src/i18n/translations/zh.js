@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "同意并继续",
   "aiConsent.decline": "暂不",
   "settings.aiConsentLabel": "将照片发送给 AI",
-  "settings.aiConsentHint": "扫描所需。关闭后将再次询问。",
+  "settings.aiConsentHint": "照片仅在扫描时发送给 AI。",
   "settings.privacyPolicy": "隐私政策",
   "settings.manageSubscription": "管理订阅",
   "settings.termsOfService": "服务条款",

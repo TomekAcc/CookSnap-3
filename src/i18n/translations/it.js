@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Accetta e continua",
   "aiConsent.decline": "Non ora",
   "settings.aiConsentLabel": "Invia le foto all'IA",
-  "settings.aiConsentHint": "Necessario per la scansione. Se lo disattivi, te lo chiederemo di nuovo.",
+  "settings.aiConsentHint": "Le foto vanno all'IA solo durante la scansione.",
   "settings.privacyPolicy": "Informativa sulla privacy",
   "settings.manageSubscription": "Gestisci abbonamento",
   "settings.termsOfService": "Termini di servizio",

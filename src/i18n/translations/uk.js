@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Погоджуюсь і продовжити",
   "aiConsent.decline": "Не зараз",
   "settings.aiConsentLabel": "Надсилати фото до ШІ",
-  "settings.aiConsentHint": "Потрібно для сканування. Якщо вимкнути, запитаємо знову.",
+  "settings.aiConsentHint": "Фото потрапляють до ШІ лише під час сканування.",
   "settings.privacyPolicy": "Політика конфіденційності",
   "settings.manageSubscription": "Керування підпискою",
   "settings.termsOfService": "Умови використання",

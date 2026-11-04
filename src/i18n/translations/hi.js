@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "सहमत हूँ और आगे बढ़ें",
   "aiConsent.decline": "अभी नहीं",
   "settings.aiConsentLabel": "फ़ोटो AI को भेजें",
-  "settings.aiConsentHint": "स्कैन के लिए ज़रूरी है। बंद करने पर हम दोबारा पूछेंगे।",
+  "settings.aiConsentHint": "फ़ोटो केवल स्कैन के दौरान AI को भेजी जाती हैं।",
   "settings.privacyPolicy": "गोपनीयता नीति",
   "settings.manageSubscription": "सदस्यता प्रबंधित करें",
   "settings.termsOfService": "सेवा की शर्तें",

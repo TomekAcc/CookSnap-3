@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Godkänn och fortsätt",
   "aiConsent.decline": "Inte nu",
   "settings.aiConsentLabel": "Skicka foton till AI",
-  "settings.aiConsentHint": "Behövs för att skanna. Avstängt frågar vi igen.",
+  "settings.aiConsentHint": "Foton skickas till AI endast under skanning.",
   "settings.privacyPolicy": "Integritetspolicy",
   "settings.manageSubscription": "Hantera prenumeration",
   "settings.termsOfService": "Användarvillkor",

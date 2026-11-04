@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "ยอมรับและดำเนินการต่อ",
   "aiConsent.decline": "ไว้ก่อน",
   "settings.aiConsentLabel": "ส่งรูปภาพให้ AI",
-  "settings.aiConsentHint": "จำเป็นสำหรับการสแกน หากปิด เราจะถามอีกครั้ง",
+  "settings.aiConsentHint": "รูปภาพจะถูกส่งให้ AI เฉพาะตอนสแกน",
   "settings.privacyPolicy": "นโยบายความเป็นส่วนตัว",
   "settings.manageSubscription": "จัดการการสมัครสมาชิก",
   "settings.termsOfService": "ข้อกำหนดการให้บริการ",

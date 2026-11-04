@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Kabul et ve devam et",
   "aiConsent.decline": "Şimdi değil",
   "settings.aiConsentLabel": "Fotoğrafları yapay zekâya gönder",
-  "settings.aiConsentHint": "Tarama için gerekli. Kapatırsanız tekrar soracağız.",
+  "settings.aiConsentHint": "Fotoğraflar yalnızca tarama sırasında yapay zekâya gider.",
   "settings.privacyPolicy": "Gizlilik Politikası",
   "settings.manageSubscription": "Aboneliği yönet",
   "settings.termsOfService": "Hizmet Şartları",

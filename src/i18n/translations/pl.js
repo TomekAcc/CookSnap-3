@@ -418,7 +418,7 @@ export default {
   "aiConsent.agree": "Zgadzam się i kontynuuję",
   "aiConsent.decline": "Nie teraz",
   "settings.aiConsentLabel": "Wysyłanie zdjęć do AI",
-  "settings.aiConsentHint": "Potrzebne do skanowania. Po wyłączeniu zapytamy ponownie.",
+  "settings.aiConsentHint": "Zdjęcia trafiają do AI tylko podczas skanowania.",
   "settings.privacyPolicy": "Polityka prywatności",
   "settings.manageSubscription": "Zarządzaj subskrypcją",
   "settings.termsOfService": "Regulamin",

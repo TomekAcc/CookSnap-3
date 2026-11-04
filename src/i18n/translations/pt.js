@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Aceitar e continuar",
   "aiConsent.decline": "Agora não",
   "settings.aiConsentLabel": "Enviar fotos para a IA",
-  "settings.aiConsentHint": "Necessário para digitalizar. Se desativar, perguntaremos de novo.",
+  "settings.aiConsentHint": "As fotos só vão para a IA durante a digitalização.",
   "settings.privacyPolicy": "Política de privacidade",
   "settings.manageSubscription": "Gerenciar assinatura",
   "settings.termsOfService": "Termos de serviço",

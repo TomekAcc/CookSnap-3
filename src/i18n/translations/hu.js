@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Elfogadom és tovább",
   "aiConsent.decline": "Most nem",
   "settings.aiConsentLabel": "Fotók küldése az MI-nek",
-  "settings.aiConsentHint": "A szkenneléshez kell. Kikapcsolva újra rákérdezünk.",
+  "settings.aiConsentHint": "A fotók csak szkennelés közben kerülnek az AI-hoz.",
   "settings.privacyPolicy": "Adatvédelmi irányelvek",
   "settings.manageSubscription": "Előfizetés kezelése",
   "settings.termsOfService": "Felhasználási feltételek",

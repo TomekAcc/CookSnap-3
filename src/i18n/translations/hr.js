@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Slažem se i nastavi",
   "aiConsent.decline": "Ne sada",
   "settings.aiConsentLabel": "Slanje fotografija AI-ju",
-  "settings.aiConsentHint": "Potrebno za skeniranje. Ako isključite, pitat ćemo ponovno.",
+  "settings.aiConsentHint": "Fotografije idu AI-ju samo tijekom skeniranja.",
   "settings.privacyPolicy": "Pravila privatnosti",
   "settings.manageSubscription": "Upravljaj pretplatom",
   "settings.termsOfService": "Uvjeti korištenja",

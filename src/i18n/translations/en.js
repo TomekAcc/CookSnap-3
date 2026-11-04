@@ -451,7 +451,7 @@ export default {
   "aiConsent.agree": "Agree and continue",
   "aiConsent.decline": "Not now",
   "settings.aiConsentLabel": "Send photos to AI",
-  "settings.aiConsentHint": "Needed to scan. Turn off and you will be asked again.",
+  "settings.aiConsentHint": "Photos go to AI only while scanning.",
   "settings.privacyPolicy": "Privacy Policy",
   "settings.manageSubscription": "Manage subscription",
   "settings.termsOfService": "Terms of Service",

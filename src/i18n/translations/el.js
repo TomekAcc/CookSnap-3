@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Συμφωνώ και συνέχεια",
   "aiConsent.decline": "Όχι τώρα",
   "settings.aiConsentLabel": "Αποστολή φωτογραφιών στην τεχνητή νοημοσύνη",
-  "settings.aiConsentHint": "Απαραίτητο για τη σάρωση. Αν το απενεργοποιήσετε, θα ρωτήσουμε ξανά.",
+  "settings.aiConsentHint": "Οι φωτογραφίες πάνε στην AI μόνο κατά τη σάρωση.",
   "settings.privacyPolicy": "Πολιτική απορρήτου",
   "settings.manageSubscription": "Διαχείριση συνδρομής",
   "settings.termsOfService": "Όροι χρήσης",

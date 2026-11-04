@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Souhlasím a pokračovat",
   "aiConsent.decline": "Teď ne",
   "settings.aiConsentLabel": "Odesílat fotky do AI",
-  "settings.aiConsentHint": "Potřebné ke skenování. Po vypnutí se zeptáme znovu.",
+  "settings.aiConsentHint": "Fotky se odesílají AI jen při skenování.",
   "settings.privacyPolicy": "Zásady ochrany osobních údajů",
   "settings.manageSubscription": "Spravovat předplatné",
   "settings.termsOfService": "Podmínky služby",

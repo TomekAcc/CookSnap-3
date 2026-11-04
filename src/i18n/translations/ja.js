@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "同意して続ける",
   "aiConsent.decline": "今はしない",
   "settings.aiConsentLabel": "写真をAIに送信",
-  "settings.aiConsentHint": "スキャンに必要です。オフにすると、次回あらためて確認します。",
+  "settings.aiConsentHint": "写真はスキャン中のみAIに送られます。",
   "settings.privacyPolicy": "プライバシーポリシー",
   "settings.manageSubscription": "サブスクリプションを管理",
   "settings.termsOfService": "利用規約",

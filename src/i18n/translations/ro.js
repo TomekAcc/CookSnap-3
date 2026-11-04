@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Sunt de acord și continuă",
   "aiConsent.decline": "Nu acum",
   "settings.aiConsentLabel": "Trimite fotografii către IA",
-  "settings.aiConsentHint": "Necesar pentru scanare. Dezactivat, te vom întreba din nou.",
+  "settings.aiConsentHint": "Pozele ajung la AI doar în timpul scanării.",
   "settings.privacyPolicy": "Politica de confidențialitate",
   "settings.manageSubscription": "Gestionează abonamentul",
   "settings.termsOfService": "Termeni și condiții",

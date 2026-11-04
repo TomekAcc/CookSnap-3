@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "מסכים/ה והמשך",
   "aiConsent.decline": "לא עכשיו",
   "settings.aiConsentLabel": "שליחת תמונות ל-AI",
-  "settings.aiConsentHint": "נדרש לסריקה. אם תכבו, נשאל שוב.",
+  "settings.aiConsentHint": "תמונות נשלחות ל-AI רק בזמן סריקה.",
   "settings.privacyPolicy": "מדיניות פרטיות",
   "settings.manageSubscription": "ניהול מנוי",
   "settings.termsOfService": "תנאי שימוש",

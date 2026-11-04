@@ -419,7 +419,7 @@ export default {
   "aiConsent.agree": "Akkoord en doorgaan",
   "aiConsent.decline": "Nu niet",
   "settings.aiConsentLabel": "Foto's naar de AI sturen",
-  "settings.aiConsentHint": "Nodig om te scannen. Uitgezet vragen we het opnieuw.",
+  "settings.aiConsentHint": "Foto's gaan alleen tijdens het scannen naar de AI.",
   "settings.privacyPolicy": "Privacybeleid",
   "settings.manageSubscription": "Abonnement beheren",
   "settings.termsOfService": "Gebruiksvoorwaarden",
