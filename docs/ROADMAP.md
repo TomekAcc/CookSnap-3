@@ -18,10 +18,12 @@ app), SDK 58, the web smoke test in the normal workflow.
   stays `cook-ai`: it is registered at Expo, and a different slug means a new Expo project (new project
   id, variables re-entered, new update links). Stored data uses the `cooksnap:` key prefix (renamed from
   `cookai:` while only the owner's phone held data; after a release such a rename needs a migration).
-- **Real payments.** PRO is a local mock (`EntitlementsContext.activatePro`); nobody can pay.
-  Needs Apple Developer and Google Play accounts, the two subscriptions (monthly, annual with a
-  7-day trial) in both stores, and an integration (RevenueCat is the usual route). The daily free-tier
-  limits are counted on the phone and can be bypassed; move them somewhere that can be trusted.
+- **Real payments: code done, store side open.** The paywall, purchase/restore flow and a RevenueCat
+  integration are written and tested (`docs/PAYMENTS.md`); without keys the app uses a test provider and
+  production builds refuse to grant PRO. Still needs Apple Developer and Google Play accounts, the two
+  subscriptions (`cooksnap_pro_annual` with a 7-day trial, `cooksnap_pro_monthly`), a RevenueCat project
+  (entitlement `pro`), `react-native-purchases` installed and a store build with the keys. The daily
+  free-tier limits are counted on the phone and can be bypassed; move them somewhere that can be trusted.
 - **Privacy policy, terms and support contact.** Drafts are in `docs/legal/` (policy, terms, and draft
   answers for Apple's "App Privacy" and Google's "Data safety"); they need the company details, a support
   mailbox, a lawyer's read and a public URL. Photos go to Google's AI, which has to be stated plainly.

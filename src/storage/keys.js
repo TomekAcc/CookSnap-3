@@ -30,6 +30,8 @@ export const STORAGE_KEYS = {
   feedbackOutbox: "cooksnap:feedbackOutbox:v1",
   // Entitlement and free-tier limits
   isPro: "cooksnap:isPro:v1",
+  // The test payment provider's remembered subscription (never used by the real provider).
+  mockSubscription: "cooksnap:mockSubscription:v1",
   dailyFridgeScans: "cooksnap:dailyFridgeScans:v1",
   dailyPantryScans: "cooksnap:dailyPantryScans:v1",
   dailyRecipeGenerations: "cooksnap:dailyRecipeGenCount:v1",

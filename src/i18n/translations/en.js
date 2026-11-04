@@ -422,6 +422,12 @@ export default {
   "pro.trialDayReminder": "Day 5: We remind you before charging",
   "pro.trialDayCharge": "Day 7: {price}{period} unless cancelled",
   "pro.trialStartedToast": "🎉 Trial started — welcome to CookSnap PRO!",
+  "pro.restore": "Restore purchases",
+  "pro.restoring": "Restoring…",
+  "pro.restored": "Purchases restored — welcome back to PRO!",
+  "pro.restoreNone": "No earlier purchase found for this account.",
+  "pro.purchaseFailed": "The purchase did not go through. You were not charged — please try again.",
+  "pro.unavailable": "Purchases are not available in this version of the app.",
   "pro.welcomeToast": "🎉 Welcome to CookSnap PRO!",
 
 
@@ -447,6 +453,7 @@ export default {
   "settings.aiConsentLabel": "Send photos to AI",
   "settings.aiConsentHint": "Needed to scan. Turn off and you will be asked again.",
   "settings.privacyPolicy": "Privacy Policy",
+  "settings.manageSubscription": "Manage subscription",
   "settings.termsOfService": "Terms of Service",
   "help.noMailApp": "Couldn't open your mail app. Please write to {email}.",
   "help.kindBug": "Problem",

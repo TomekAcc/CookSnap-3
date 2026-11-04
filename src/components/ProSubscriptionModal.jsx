@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSharedValue } from "react-native-reanimated";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, ActivityIndicator, Linking } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -20,6 +20,9 @@ import { useModalState } from "../context/ModalContext";
 import { useTheme } from "../context/ThemeContext";
 import StandardModal from "./StandardModal";
 import { useEntitlements } from "../context/EntitlementsContext";
+import { usePurchases } from "../context/PurchasesContext";
+import { plansFromOfferings } from "../services/purchases/plans";
+import { legalLinksLive, privacyPolicyUrl, termsUrl } from "../constants/legal";
 import { useLanguage } from "../context/LanguageContext";
 import { showToast } from "../utils/toast";
 import { APPLE, EMERALD, WHITE } from "../theme/palette";
@@ -41,40 +44,6 @@ const HERO_WASH_TOP_OFFSET = 20.5;
 // Used for the first frame, before onLayout has reported the real hero
 // height — roughly a two-line title + two-line subtitle hero.
 const HERO_WASH_FALLBACK_HEIGHT = 200;
-
-// periodUnit/perMonthPrice drive translated display text at render time
-// (see PERIOD_SUFFIX_KEY below) — a plain "/year"/"/mo" literal here was a
-// confirmed real bug: every OTHER string on this screen is localized via
-// t(), but the price and perMonthValue read directly off this object, so
-// the period suffix stayed hardcoded English in every language ("Then
-// $24.99/year ($2.08/mo)" inside an otherwise-Polish sentence).
-export const PLANS = {
-  annual: {
-    id: "annual",
-    labelKey: "pro.annual",
-    badgeKey: "pro.saveBadge",
-    price: "$24.99",
-    // What the same $4.99/mo would cost paid monthly for a year ($59.88) —
-    // shown struck through next to the real price so "SAVE 58%" has a
-    // concrete number behind it instead of being an abstract badge claim.
-    anchorPrice: "$59.88",
-    periodUnit: "year",
-    perMonthKey: "pro.annualPerMonth",
-    perMonthPrice: "$2.08",
-    trial: true,
-  },
-  monthly: {
-    id: "monthly",
-    labelKey: "pro.monthly",
-    badgeKey: null,
-    price: "$4.99",
-    periodUnit: "month",
-    perMonthKey: "pro.monthlyPerMonth",
-    perMonthPrice: "$4.99",
-    trial: false,
-  },
-};
-
 const PERIOD_SUFFIX_KEY = { year: "pro.yearSuffix", month: "pro.monthSuffix" };
 
 // Each benefit string carries its own leading emoji baked in at the i18n
@@ -171,12 +140,13 @@ const PRO_BENEFIT_ICONS = {
 export default function ProSubscriptionModal() {
   const { proModalOpen, setProModalOpen, proReason, setProReason } = useModalState();
   const {
-    activatePro,
     dailyRecipeGenerationCount,
     freeDailyRecipeGenerations,
     freeDailyFridgeScans,
     freeDailyPantryScans,
   } = useEntitlements();
+  const { offerings, busy, purchase, restore } = usePurchases();
+  const plans = React.useMemo(() => plansFromOfferings(offerings), [offerings]);
   const { t } = useLanguage();
   const { colors } = useTheme();
   // The app's own pastel-emerald icon-badge tokens — the same fill/border/
@@ -199,7 +169,7 @@ export default function ProSubscriptionModal() {
   useEffect(() => {
     if (proModalOpen) listAtTop.value = true;
   }, [proModalOpen, listAtTop]);
-  const plan = PLANS[selectedPlanId];
+  const plan = plans[selectedPlanId];
   // One plan's pricing block: guarantee line, CTA, price disclosure. Rendered
   // for BOTH plans inside StableSwap so switching plans can never resize the
   // sheet — the trial vs. monthly copy wraps to different line counts.
@@ -228,10 +198,13 @@ export default function ProSubscriptionModal() {
         </View>
         <TouchableOpacity
           onPress={handleSubscribe}
+          disabled={!!busy}
           activeOpacity={0.88}
-          style={[styles.ctaButton, { backgroundColor: colors.accentAmber }]}
+          accessibilityRole="button"
+          accessibilityState={{ busy: busy === "purchase", disabled: !!busy }}
+          style={[styles.ctaButton, { backgroundColor: colors.accentAmber, opacity: busy ? 0.75 : 1 }]}
         >
-          <Sparkles size={18} color={ON_AMBER} />
+          {busy === "purchase" ? <ActivityIndicator size="small" color={ON_AMBER} /> : <Sparkles size={18} color={ON_AMBER} />}
           <Text style={styles.ctaButtonText}>
             {p.trial
               ? t("pro.startTrial")
@@ -249,6 +222,23 @@ export default function ProSubscriptionModal() {
               })
             : t("pro.billedMonthlyCancelAnytime")}
         </Text>
+        <View style={styles.footerLinks}>
+          <TouchableOpacity onPress={handleRestore} disabled={!!busy} accessibilityRole="button" hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
+            <Text style={[styles.footerLink, { color: colors.textSecondary }]}>
+              {busy === "restore" ? t("pro.restoring") : t("pro.restore")}
+            </Text>
+          </TouchableOpacity>
+          {legalLinksLive()
+            ? [
+                [t("settings.termsOfService"), termsUrl()],
+                [t("settings.privacyPolicy"), privacyPolicyUrl()],
+              ].map(([label, url]) => (
+                <TouchableOpacity key={url} onPress={() => Linking.openURL(url).catch(() => {})} accessibilityRole="link" hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
+                  <Text style={[styles.footerLink, { color: colors.textSecondary }]}>{label}</Text>
+                </TouchableOpacity>
+              ))
+            : null}
+        </View>
       </View>
     );
   };
@@ -303,14 +293,33 @@ export default function ProSubscriptionModal() {
           })
         : t("pro.tagline");
 
-  const handleSubscribe = () => {
-    activatePro();
-    close();
-    showToast(
-      plan.trial ? t("pro.trialStartedToast") : t("pro.welcomeToast"),
-      "pro",
-      4200
-    );
+  // A cancelled purchase is the person's choice, not an error: nothing is shown. Anything else gets a plain message.
+  const handleSubscribe = async () => {
+    if (busy) return;
+    const result = await purchase(selectedPlanId);
+    if (result.status === "success") {
+      close();
+      showToast(plan.trial ? t("pro.trialStartedToast") : t("pro.welcomeToast"), "pro", 4200);
+    } else if (result.status === "unavailable") {
+      showToast(t("pro.unavailable"), "error", 4500);
+    } else if (result.status === "error") {
+      showToast(t("pro.purchaseFailed"), "error", 4500);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (busy) return;
+    const result = await restore();
+    if (result.status === "restored") {
+      close();
+      showToast(t("pro.restored"), "pro", 4200);
+    } else if (result.status === "none") {
+      showToast(t("pro.restoreNone"), "info", 4500);
+    } else if (result.status === "unavailable") {
+      showToast(t("pro.unavailable"), "error", 4500);
+    } else if (result.status === "error") {
+      showToast(t("pro.purchaseFailed"), "error", 4500);
+    }
   };
 
   return (
@@ -463,7 +472,7 @@ export default function ProSubscriptionModal() {
         </View>
 
         <View style={styles.planRow}>
-          {[PLANS.annual, PLANS.monthly].map((p) => {
+          {[plans.annual, plans.monthly].map((p) => {
             const selected = p.id === selectedPlanId;
             return (
               <TouchableOpacity
@@ -581,7 +590,7 @@ export default function ProSubscriptionModal() {
             copy based on whether a trial is active, same Bell-vs-Check
             icon distinction either way. */}
         <StableSwap index={selectedPlanId === "annual" ? 0 : 1}>
-          {[PLANS.annual, PLANS.monthly].map((p) => renderCtaSection(p))}
+          {[plans.annual, plans.monthly].map((p) => renderCtaSection(p))}
         </StableSwap>
       </View>
     </StandardModal>
@@ -850,5 +859,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     marginTop: 10,
+  },
+  footerLinks: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignItems: "center",
+    columnGap: 16,
+    rowGap: 4,
+    marginTop: 12,
+  },
+  footerLink: {
+    fontSize: 12.5,
+    fontWeight: "600",
+    textDecorationLine: "underline",
   },
 });

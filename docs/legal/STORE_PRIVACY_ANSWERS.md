@@ -28,7 +28,7 @@ analytics, crash reporting, accounts, a payment SDK or push notifications, redo 
 | Customer Support (User Content) | Yes | No | App Functionality | Help & Feedback messages, kept 90 days |
 | Email Address (Contact Info) | Yes, only if the person types one | No | App Functionality | Optional reply address in Help & Feedback; not used for anything else |
 | Device ID (Identifiers) | Yes | No | App Functionality | Random install ID, used only for the per-phone daily limit |
-| Purchases | **Add when subscriptions exist** | | App Functionality | Handled by Apple; add if you use a provider such as RevenueCat |
+| Purchases | **Yes, once the RevenueCat build ships** | | App Functionality | Purchase history is read from Apple/Google through RevenueCat (anonymous ID, not linked to identity) |
 | Health & Fitness | **Open question** | | | Dietary preferences such as "diabetic" may count; see below |
 
 Everything else: not collected (name, email, phone, contacts, location, browsing history, diagnostics,

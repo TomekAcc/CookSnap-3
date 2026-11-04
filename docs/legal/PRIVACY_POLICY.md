@@ -38,9 +38,10 @@ Contact for anything about your data: **cooksnap.support@gmail.com**
 Everything else (saved recipes, favourites, pantry, scan history, settings, PRO status on your phone)
 is stored **only on your device**. We cannot see it. Deleting the app deletes it.
 
-When subscriptions are added, the App Store or Google Play handles your payment. We receive only
-confirmation that a subscription is active ([PAYMENT PROVIDER, for example RevenueCat — fill in when
-decided]). We never see your card details.
+The App Store or Google Play handles your payment. We receive only confirmation that a subscription
+is active, through RevenueCat (RevenueCat, Inc.), a service that checks subscriptions for us. It
+receives an anonymous app user ID and your purchase status, not your name or card details. We never
+see your card details.
 
 ## 4. Photos and the AI
 
@@ -60,7 +61,7 @@ shelves and containers.
 - **Expo** (EAS Update): delivers app updates.
 - **Telegram** (only if switched on): receives a copy of each message you send us from Help & Feedback, so we are notified at once.
 - **Apple / Google Play**: distribute the app and process payments.
-- [**Payment provider** — if you use one.]
+- **RevenueCat, Inc.**: confirms whether a subscription is active (anonymous ID and purchase status only).
 
 These companies act on our behalf or provide the platform. We do not sell your data and we do not
 share it for advertising.

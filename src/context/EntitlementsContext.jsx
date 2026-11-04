@@ -20,7 +20,7 @@ export function EntitlementsProvider({ children }) {
   // real payment SDK requires App Store Connect product IDs and API
   // credentials that live outside this codebase. activatePro() is the exact
   // spot a real `Purchases.purchasePackage(...)` call would replace this.
-  const [isPro, setIsPro] = usePersistedState(STORAGE_KEYS.isPro, {
+  const [isPro, setIsPro, proHydrated] = usePersistedState(STORAGE_KEYS.isPro, {
     initial: false,
     codec: booleanCodec,
   });
@@ -75,6 +75,7 @@ export function EntitlementsProvider({ children }) {
   const value = useMemo(
     () => ({
       isPro,
+      proHydrated,
       activatePro,
       deactivatePro,
       dailyFridgeScanCount,
@@ -90,7 +91,7 @@ export function EntitlementsProvider({ children }) {
       canGenerateRecipes,
       registerRecipeGenerationAttempt,
     }),
-    [isPro, activatePro, deactivatePro, dailyFridgeScanCount, canScanFridge, registerFridgeScanAttempt, dailyPantryScanCount, canScanPantry, registerPantryScanAttempt, dailyRecipeGenerationCount, canGenerateRecipes, registerRecipeGenerationAttempt]
+    [isPro, proHydrated, activatePro, deactivatePro, dailyFridgeScanCount, canScanFridge, registerFridgeScanAttempt, dailyPantryScanCount, canScanPantry, registerPantryScanAttempt, dailyRecipeGenerationCount, canGenerateRecipes, registerRecipeGenerationAttempt]
   );
 
   return <EntitlementsContext.Provider value={value}>{children}</EntitlementsContext.Provider>;

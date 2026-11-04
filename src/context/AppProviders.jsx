@@ -4,6 +4,7 @@ import { OnboardingProvider } from "./OnboardingContext";
 import { LanguageProvider } from "./LanguageContext";
 import { AiConsentProvider } from "./AiConsentContext";
 import { EntitlementsProvider } from "./EntitlementsContext";
+import { PurchasesProvider } from "./PurchasesContext";
 import { PreferencesProvider } from "./PreferencesContext";
 import { LibraryProvider } from "./LibraryContext";
 import { InventoryProvider } from "./InventoryContext";
@@ -22,15 +23,17 @@ export function AppProviders({ children }) {
         <LanguageProvider>
           <AiConsentProvider>
           <EntitlementsProvider>
-            <PreferencesProvider>
-              <LibraryProvider>
-                <InventoryProvider>
-                  <RecipesProvider>
-                    <ScanProvider>{children}</ScanProvider>
-                  </RecipesProvider>
-                </InventoryProvider>
-              </LibraryProvider>
-            </PreferencesProvider>
+            <PurchasesProvider>
+              <PreferencesProvider>
+                <LibraryProvider>
+                  <InventoryProvider>
+                    <RecipesProvider>
+                      <ScanProvider>{children}</ScanProvider>
+                    </RecipesProvider>
+                  </InventoryProvider>
+                </LibraryProvider>
+              </PreferencesProvider>
+            </PurchasesProvider>
           </EntitlementsProvider>
           </AiConsentProvider>
         </LanguageProvider>

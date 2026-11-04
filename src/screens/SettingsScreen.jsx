@@ -30,6 +30,7 @@ import { useTheme } from "../context/ThemeContext";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
 import StandardModal from "../components/StandardModal";
 import { useEntitlements } from "../context/EntitlementsContext";
+import { usePurchases } from "../context/PurchasesContext";
 import { useAiConsent } from "../context/AiConsentContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
@@ -50,6 +51,7 @@ export default function SettingsScreen() {
   const { unitSystem, setUnitSystem, ingredientPriority, setIngredientPriority } = usePreferences();
   const { recipeLanguageId, setRecipeLanguageId, t } = useLanguage();
   const { isPro, activatePro, deactivatePro } = useEntitlements();
+  const { isRealStore, manageUrl } = usePurchases();
   const { aiConsentAccepted, requestAiConsent, withdrawAiConsent } = useAiConsent();
   const { resetOnboarding, settingsDoneHintShown, markSettingsDoneHintShown } = useOnboarding();
   const { setActiveTab } = useNavigation();
@@ -525,6 +527,33 @@ export default function SettingsScreen() {
               </View>
               <ChevronRight size={18} color={colors.textSecondary} />
             </TouchableOpacity>
+            {isPro && isRealStore && manageUrl
+              ? [{ key: "manage", Icon: FileText, label: t("settings.manageSubscription"), url: manageUrl }].map(
+                  ({ key, Icon, label, url }) => (
+                    <React.Fragment key={key}>
+                      <View style={{ height: 1, backgroundColor: colors.cardBorder }} />
+                      <TouchableOpacity
+                        onPress={() => Linking.openURL(url).catch(() => {})}
+                        activeOpacity={0.7}
+                        accessibilityRole="link"
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          paddingVertical: 14,
+                          paddingHorizontal: 16,
+                        }}
+                      >
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                          <Icon size={20} color={colors.textSecondary} strokeWidth={2} />
+                          <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>{label}</Text>
+                        </View>
+                        <ChevronRight size={18} color={colors.textSecondary} />
+                      </TouchableOpacity>
+                    </React.Fragment>
+                  )
+                )
+              : null}
             {legalLinksLive()
               ? [
                   { key: "privacy", Icon: ShieldCheck, label: t("settings.privacyPolicy"), url: privacyPolicyUrl() },
