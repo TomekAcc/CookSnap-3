@@ -430,7 +430,7 @@ export default function PantryScannerHero() {
               // Matches FridgeScannerHero's "Take Photo" button — same
               // primary scan action, was the old dark-navy+amber pairing
               // left over from before that redesign shipped.
-              backgroundColor: EMERALD[600],
+              backgroundColor: EMERALD[700],
               paddingHorizontal: 14,
               borderRadius: 13,
               flexDirection: "row",
@@ -523,7 +523,7 @@ export default function PantryScannerHero() {
                   bottom: 12,
                   left: 12,
                   zIndex: 20,
-                  backgroundColor: EMERALD[600],
+                  backgroundColor: EMERALD[700],
                   paddingHorizontal: 11,
                   paddingVertical: 6,
                   borderRadius: 999,

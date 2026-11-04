@@ -625,7 +625,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     height: 48,
     borderRadius: 14,
-    backgroundColor: EMERALD[600],
+    backgroundColor: EMERALD[700],
     alignItems: "center",
     justifyContent: "center",
   },

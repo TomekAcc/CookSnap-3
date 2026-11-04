@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: DS.spacing.md,
     marginBottom: DS.spacing.xs,
-    backgroundColor: EMERALD[600],
+    backgroundColor: EMERALD[700],
   },
   doneButtonText: {
     fontSize: 16,

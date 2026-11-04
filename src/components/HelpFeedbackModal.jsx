@@ -110,8 +110,8 @@ export default function HelpFeedbackModal() {
               style={[
                 styles.kindChip,
                 {
-                  backgroundColor: selected ? EMERALD[600] : colors.fillMuted,
-                  borderColor: selected ? EMERALD[600] : colors.cardBorder,
+                  backgroundColor: selected ? EMERALD[700] : colors.fillMuted,
+                  borderColor: selected ? EMERALD[700] : colors.cardBorder,
                 },
               ]}
             >
@@ -170,7 +170,7 @@ export default function HelpFeedbackModal() {
         style={[
           styles.sendButton,
           {
-            backgroundColor: EMERALD[600],
+            backgroundColor: EMERALD[700],
             opacity: message.trim() && !sending ? 1 : 0.45,
           },
         ]}

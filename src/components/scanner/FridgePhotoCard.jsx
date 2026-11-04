@@ -142,7 +142,7 @@ export default function FridgePhotoCard({
             bottom: 12,
             left: 12,
             zIndex: 20,
-            backgroundColor: EMERALD[600],
+            backgroundColor: EMERALD[700],
             paddingHorizontal: 11,
             paddingVertical: 6,
             borderRadius: 999,

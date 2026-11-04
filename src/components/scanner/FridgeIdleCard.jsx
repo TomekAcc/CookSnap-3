@@ -171,7 +171,7 @@ export default function FridgeIdleCard({
                 left: -6,
                 right: -6,
                 borderRadius: 19,
-                backgroundColor: EMERALD[600],
+                backgroundColor: EMERALD[700],
                 opacity: firstScanHintPulse.interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 0.35],
@@ -195,7 +195,7 @@ export default function FridgeIdleCard({
             activeOpacity={0.9}
             style={{
               height: 46,
-              backgroundColor: EMERALD[600],
+              backgroundColor: EMERALD[700],
               borderRadius: 13,
               alignItems: "center",
               flexDirection: "row",

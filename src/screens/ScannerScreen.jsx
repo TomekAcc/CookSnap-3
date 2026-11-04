@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     // Emerald, not navy — matches "Take Photo" in FridgeScannerHero now
     // too, so this screen has one consistent primary-action color instead
     // of navy and the app's actual brand green both reading as "primary."
-    backgroundColor: EMERALD[600],
+    backgroundColor: EMERALD[700],
     paddingVertical: 17,
     borderRadius: 18,
     overflow: "hidden",

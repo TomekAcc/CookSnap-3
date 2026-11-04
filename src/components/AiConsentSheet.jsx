@@ -23,7 +23,7 @@ export default function AiConsentSheet() {
         onPress={() => answerAiConsent(true)}
         activeOpacity={0.85}
         accessibilityRole="button"
-        style={[styles.agree, { backgroundColor: EMERALD[600] }]}
+        style={[styles.agree, { backgroundColor: EMERALD[700] }]}
       >
         <Text style={styles.agreeText}>{t("aiConsent.agree")}</Text>
       </TouchableOpacity>

@@ -181,7 +181,7 @@ export default function SavedScreen() {
                       style={[
                         styles.chip,
                         selected
-                          ? { backgroundColor: EMERALD[600], borderColor: EMERALD[600] }
+                          ? { backgroundColor: EMERALD[700], borderColor: EMERALD[700] }
                           : { backgroundColor: colors.card, borderColor: colors.cardBorder },
                       ]}
                     >

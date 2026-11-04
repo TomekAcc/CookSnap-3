@@ -580,6 +580,7 @@ export default function PantryTab() {
                 label={t(CATEGORY_LABEL_KEYS[cat] || "pantryCategory.all")}
                 selected={isActive}
                 onPress={() => setSelectedCategory(cat)}
+                style={{ paddingVertical: 9 }}
               />
             );
           })}
@@ -654,8 +655,11 @@ export default function PantryTab() {
             </Text>
             <Text
               style={{
+                flexShrink: 1,
+                marginLeft: 12,
+                textAlign: "right",
                 color: colors.textSecondary,
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: "600",
               }}
             >
@@ -931,7 +935,7 @@ export default function PantryTab() {
               paddingHorizontal: 16,
               flexShrink: 0,
               borderRadius: 14,
-              backgroundColor: EMERALD[600],
+              backgroundColor: EMERALD[700],
               alignItems: "center",
               justifyContent: "center",
               opacity: newItemName.trim() ? 1 : 0.45,
@@ -995,7 +999,7 @@ export default function PantryTab() {
             accessibilityRole="button"
             style={{
               width: "100%",
-              backgroundColor: EMERALD[600],
+              backgroundColor: EMERALD[700],
               paddingVertical: 17,
               borderRadius: 18,
               flexDirection: "row",

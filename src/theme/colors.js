@@ -87,7 +87,7 @@ export const LIGHT_COLORS = {
   greenStrong: EMERALD[600],
   greenText: EMERALD[700],
   greenInk: EMERALD[700],
-  greenFill: EMERALD[600],
+  greenFill: EMERALD[700],
   greenRing: EMERALD[200],
   greenRingBright: EMERALD[200],
   greenRingDeep: EMERALD[200],

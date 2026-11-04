@@ -504,35 +504,20 @@ export default function RecipeDetailModal() {
 
           <View style={[styles.metaDivider, { backgroundColor: colors.cardBorder }]} />
 
-          <TouchableOpacity
-            onPress={!isPro ? onOpenProModal : undefined}
-            activeOpacity={0.7}
-            style={styles.metaCol}
-          >
-            {!isPro ? (
-              <>
-                <Text style={styles.metaValuePro}>{t("menu.proBadge")}</Text>
-                <View style={styles.metaLabelRow}>
-                  <Lock size={10} color={AMBER[700]} strokeWidth={2.5} />
-                  <Text style={[styles.metaLabel, { color: AMBER[700] }]}>
-                    {t("recipeDetail.unlockLabel")}
-                  </Text>
-                </View>
-              </>
-            ) : (
-              <>
-                <Text style={[styles.metaValueDark, { color: colors.textPrimary }]}>
-                  {recipe?.calories || t("recipeDetail.caloriesFallback")}
-                </Text>
-                <View style={styles.metaLabelRow}>
-                  <Sparkles size={11} color={AMBER[600]} strokeWidth={2.5} />
-                  <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
-                    {t("recipeDetail.caloriesLabel")}
-                  </Text>
-                </View>
-              </>
-            )}
-          </TouchableOpacity>
+          {/* Calories are free for everyone: the Saved list already shows the same kcal figure, so locking it
+              here read as an ad slipped into the stats row. The PRO upsell is the "Modify with AI" bar and the
+              macros below. */}
+          <View style={styles.metaCol}>
+            <Text style={[styles.metaValueDark, { color: colors.textPrimary }]}>
+              {recipe?.calories || t("recipeDetail.caloriesFallback")}
+            </Text>
+            <View style={styles.metaLabelRow}>
+              <Sparkles size={11} color={AMBER[600]} strokeWidth={2.5} />
+              <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
+                {t("recipeDetail.caloriesLabel")}
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Servings deliberately NOT repeated here — the header subtitle
@@ -1525,7 +1510,7 @@ const styles = StyleSheet.create({
   // every other primary CTA in the app. The saved state's lighter
   // confirmation colors are applied inline above, since they're
   // isDark-aware.
-  favoritePrimary: { backgroundColor: EMERALD[600] },
+  favoritePrimary: { backgroundColor: EMERALD[700] },
   favoriteButtonText: {
     color: WHITE,
     fontSize: 15,

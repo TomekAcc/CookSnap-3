@@ -146,7 +146,7 @@ export default function NoItemsFound({
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: EMERALD[600],
+              backgroundColor: EMERALD[700],
               paddingVertical: 13,
               borderRadius: 16,
             }}
