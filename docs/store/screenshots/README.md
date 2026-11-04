@@ -1,15 +1,22 @@
-# Store screenshots — first drafts
+# Store screenshots
 
-Captured from the web build in a phone-sized window with the app's real screens (the sample scan, real
-recipe generation through the proxy, and fixed sample data for Pantry / Saved / Profile).
+Finished drafts with captions, in English and Polish, ready to upload once the app name is final.
 
 | Folder | Size | For |
 |---|---|---|
-| `ios-6.9/` | 1290 x 2796 | App Store, 6.9" iPhone (Apple scales it down for the smaller sizes) |
-| `android/` | 1082 x 2163 | Google Play phone screenshots (2:1, within Google's limits) |
+| `final/ios-6.9/en`, `final/ios-6.9/pl` | 1290 x 2796 | App Store, 6.9" iPhone (Apple scales it down for the smaller sizes) |
+| `final/google/en`, `final/google/pl` | 1080 x 2160 (2:1) | Google Play phone screenshots |
 
-Order: 01 welcome, 02 scan, 03 recipes, 04-05 recipe, 06 pantry, 07 saved, 08 profile (diets), 09 meal planner (PRO, real AI week), 10 Modify with AI (PRO).
+Seven slides each, in this order: 01 scan, 02 recipes, 03 steps, 04 diets, 05 planner (PRO), 06 pantry, 07 Modify with AI (PRO).
 
-Known to fix before upload: the status-bar area is empty (the web build has no clock or battery; real device
-captures from TestFlight / an Android build would be better); no captions or device frames yet. Recipe names in 03-05 come from the AI and
-change on every capture.
+How they were made: the app's real screens captured in a phone-sized browser window (the sample scan, real AI recipes
+and a real AI week plan, in each language), cropped of the empty status-bar band, put in a phone frame on the brand
+green with a caption. The Polish set shows the Polish app with Polish recipes.
+
+Known limits, to fix before submitting:
+- No clock, battery or signal bar (the browser has none). Captures from a real phone (TestFlight / an Android build)
+  would be more convincing, and Apple's review may prefer them.
+- The sample-scan slide still says "This is a sample fridge".
+- The captions are drafts; a lawyer is not needed for them, but check the PRO wording once real prices exist.
+- If the app is renamed, the screens that show the "CookSnap" wordmark need recapturing.
+- The capture scripts are not kept in the repository.

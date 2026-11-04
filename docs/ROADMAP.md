@@ -39,8 +39,8 @@ app), SDK 58, the web smoke test in the normal workflow.
   has been made. Build iOS and Android, install via TestFlight / internal track, re-run the whole
   manual pass (scan, recipes, payments) on the compiled app.
 - **Android parity pass.** Nearly all hands-on testing so far was iPhone in Expo Go.
-- **Store listing.** Texts (EN + PL) are drafted in `docs/store/LISTING.md` with a length checker. Still to do:
-  screenshots, icon check, age rating and category answers, the support and privacy URLs.
+- **Store listing.** Texts (EN + PL) are drafted in `docs/store/LISTING.md` with a length checker. Screenshots with captions (EN + PL, App Store and Google sizes) are in
+  `docs/store/screenshots/final/`. Still to do: icon check, age rating and category answers, the support and privacy URLs.
 - **Finish the key clean-up.** Google Cloud Billing budget alert; confirm the old Worker is gone.
 
 ## Next
