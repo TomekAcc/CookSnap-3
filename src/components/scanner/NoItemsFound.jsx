@@ -100,7 +100,7 @@ export default function NoItemsFound({
             onPress={handleAddItem}
             activeOpacity={0.85}
             style={{
-              backgroundColor: EMERALD[500],
+              backgroundColor: colors.greenSolid,
               paddingHorizontal: 16,
               justifyContent: "center",
               borderRadius: 12,

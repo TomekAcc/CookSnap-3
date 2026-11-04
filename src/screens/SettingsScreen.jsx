@@ -168,7 +168,7 @@ export default function SettingsScreen() {
                 borderRadius: 16,
                 backgroundColor: colors.card,
                 borderWidth: 2,
-                borderColor: theme === "light" ? EMERALD[500] : colors.cardBorder,
+                borderColor: theme === "light" ? colors.greenStrong : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 // Guaranteed clip — see BottomNav.jsx's comment on why a
@@ -180,7 +180,7 @@ export default function SettingsScreen() {
             >
               <Sun
                 size={20}
-                color={theme === "light" ? EMERALD[500] : colors.textSecondary}
+                color={theme === "light" ? colors.greenStrong : colors.textSecondary}
               />
               <Text
                 numberOfLines={1}
@@ -192,7 +192,7 @@ export default function SettingsScreen() {
                   width: "100%",
                   minWidth: 0,
                   color:
-                    theme === "light" ? EMERALD[500] : colors.textPrimary,
+                    theme === "light" ? colors.greenStrong : colors.textPrimary,
                 }}
               >
                 {t("settings.light")}
@@ -209,7 +209,7 @@ export default function SettingsScreen() {
                 borderRadius: 16,
                 backgroundColor: colors.card,
                 borderWidth: 2,
-                borderColor: theme === "dark" ? EMERALD[500] : colors.cardBorder,
+                borderColor: theme === "dark" ? colors.greenStrong : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 overflow: "hidden",
@@ -327,7 +327,7 @@ export default function SettingsScreen() {
                 backgroundColor: colors.card,
                 borderWidth: 2,
                 borderColor:
-                  ingredientPriority === "balanced" ? EMERALD[500] : colors.cardBorder,
+                  ingredientPriority === "balanced" ? colors.greenStrong : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 overflow: "hidden",
@@ -336,7 +336,7 @@ export default function SettingsScreen() {
               <Scale
                 size={20}
                 color={
-                  ingredientPriority === "balanced" ? EMERALD[500] : colors.textSecondary
+                  ingredientPriority === "balanced" ? colors.greenStrong : colors.textSecondary
                 }
               />
               <Text
@@ -349,7 +349,7 @@ export default function SettingsScreen() {
                   width: "100%",
                   minWidth: 0,
                   color:
-                    ingredientPriority === "balanced" ? EMERALD[500] : colors.textPrimary,
+                    ingredientPriority === "balanced" ? colors.greenStrong : colors.textPrimary,
                 }}
               >
                 {t("settings.priorityBalanced")}
@@ -367,7 +367,7 @@ export default function SettingsScreen() {
                 backgroundColor: colors.card,
                 borderWidth: 2,
                 borderColor:
-                  ingredientPriority === "fridge" ? EMERALD[500] : colors.cardBorder,
+                  ingredientPriority === "fridge" ? colors.greenStrong : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 overflow: "hidden",
@@ -407,7 +407,7 @@ export default function SettingsScreen() {
                 backgroundColor: colors.card,
                 borderWidth: 2,
                 borderColor:
-                  ingredientPriority === "pantry" ? EMERALD[500] : colors.cardBorder,
+                  ingredientPriority === "pantry" ? colors.greenStrong : colors.cardBorder,
                 alignItems: "center",
                 gap: 4,
                 overflow: "hidden",
@@ -416,7 +416,7 @@ export default function SettingsScreen() {
               <Package
                 size={20}
                 color={
-                  ingredientPriority === "pantry" ? EMERALD[500] : colors.textSecondary
+                  ingredientPriority === "pantry" ? colors.greenStrong : colors.textSecondary
                 }
               />
               <Text
@@ -429,7 +429,7 @@ export default function SettingsScreen() {
                   width: "100%",
                   minWidth: 0,
                   color:
-                    ingredientPriority === "pantry" ? EMERALD[500] : colors.textPrimary,
+                    ingredientPriority === "pantry" ? colors.greenStrong : colors.textPrimary,
                 }}
               >
                 {t("settings.priorityPantry")}
@@ -805,7 +805,7 @@ export default function SettingsScreen() {
             onPress={() => setActiveTab("scanner")}
             activeOpacity={0.88}
             style={{
-              backgroundColor: EMERALD[500],
+              backgroundColor: colors.greenSolid,
               borderRadius: 18,
               paddingVertical: 16,
               alignItems: "center",
@@ -938,7 +938,7 @@ export default function SettingsScreen() {
                         width: 22,
                         height: 22,
                         borderRadius: 11,
-                        backgroundColor: EMERALD[500],
+                        backgroundColor: colors.greenSolid,
                         alignItems: "center",
                         justifyContent: "center",
                       }}
@@ -1052,7 +1052,7 @@ export default function SettingsScreen() {
                       width: 22,
                       height: 22,
                       borderRadius: 11,
-                      backgroundColor: EMERALD[500],
+                      backgroundColor: colors.greenSolid,
                       alignItems: "center",
                       justifyContent: "center",
                     }}

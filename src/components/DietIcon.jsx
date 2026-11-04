@@ -12,7 +12,7 @@ import {
   Droplet,
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
-import { EMERALD, WHITE } from "../theme/palette";
+import { WHITE } from "../theme/palette";
 
 // One vector icon per dietary restriction, replacing the emoji in
 // data/dietaryOptions.js (which stays for any other consumer). Emoji glyphs
@@ -55,9 +55,9 @@ export default function DietIcon({ id, size = 32, active = false }) {
         borderRadius: size / 2,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: active ? EMERALD[500] : tint,
+        backgroundColor: active ? colors.greenSolid : tint,
         borderWidth: 1,
-        borderColor: active ? EMERALD[500] : border,
+        borderColor: active ? colors.greenSolid : border,
       }}
     >
       <Icon

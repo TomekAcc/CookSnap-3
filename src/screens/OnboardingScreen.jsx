@@ -550,7 +550,7 @@ export default function OnboardingScreen({ onContinue }) {
                             width: 22,
                             height: 22,
                             borderRadius: 11,
-                            backgroundColor: EMERALD[500],
+                            backgroundColor: colors.greenSolid,
                             alignItems: "center",
                             justifyContent: "center",
                           }}
