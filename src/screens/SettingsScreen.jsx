@@ -589,17 +589,17 @@ export default function SettingsScreen() {
                 alignItems: "center",
                 justifyContent: "space-between",
                 gap: 12,
-                paddingVertical: 8,
+                paddingVertical: 14,
                 paddingHorizontal: 16,
               }}
             >
               <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 12 }}>
-                <Lock size={18} color={colors.textSecondary} strokeWidth={2} />
+                <Lock size={20} color={colors.textSecondary} strokeWidth={2} />
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: colors.textPrimary }}>
+                  <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
                     {t("settings.aiConsentLabel")}
                   </Text>
-                  <Text style={{ fontSize: 11.5, fontWeight: "500", color: colors.textSecondary, marginTop: 1 }}>
+                  <Text style={{ fontSize: 12, fontWeight: "500", color: colors.textSecondary, marginTop: 2 }}>
                     {t("settings.aiConsentHint")}
                   </Text>
                 </View>
@@ -607,7 +607,6 @@ export default function SettingsScreen() {
               <Switch
                 value={aiConsentAccepted}
                 onValueChange={(on) => (on ? requestAiConsent() : withdrawAiConsent())}
-                style={{ transform: [{ scale: 0.85 }] }}
                 trackColor={{ false: colors.cardBorder, true: EMERALD[500] }}
                 accessibilityLabel={t("settings.aiConsentLabel")}
               />
