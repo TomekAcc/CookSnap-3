@@ -289,3 +289,31 @@ describe("generation phase", () => {
     expect(result.current.rec.generationPhase).toBe("review");
   });
 });
+
+describe("titles to avoid", () => {
+  it("a second generation right after a scan avoids what the first one showed, even though nothing is on screen", async () => {
+    gemini.generateRecipesWithGemini.mockResolvedValueOnce(batch(3)).mockResolvedValueOnce(batch(3).map((r) => ({ ...r, id: `n${r.id}`, title: `New ${r.title}` })));
+    const { result } = await withFridge();
+    await act(() => result.current.rec.generateRecipes());
+    expect(gemini.generateRecipesWithGemini.mock.calls[0][9]).toEqual([]); // first ever: nothing to avoid
+    act(() => result.current.rec.clearRecipes()); // what a new scan does
+    await act(() => result.current.rec.generateRecipes());
+    expect(gemini.generateRecipesWithGemini.mock.calls[1][9]).toEqual(["Dish g1", "Dish g2", "Dish g3"].reverse());
+  });
+
+  it("a regenerate avoids the batch on screen first", async () => {
+    gemini.generateRecipesWithGemini.mockResolvedValue(batch(3));
+    const { result } = await withFridge();
+    await act(() => result.current.rec.generateRecipes());
+    await act(() => result.current.rec.generateRecipes());
+    expect(gemini.generateRecipesWithGemini.mock.calls[1][9].slice(0, 3)).toEqual(["Dish g1", "Dish g2", "Dish g3"]);
+  });
+
+  it("the sample batch neither avoids nor records titles", async () => {
+    gemini.generateRecipesWithGemini.mockResolvedValue(batch(5));
+    const { result } = await withFridge();
+    act(() => result.current.inv.markScanDemo(true));
+    await act(() => result.current.rec.generateRecipes());
+    expect(await AsyncStorage.getItem(STORAGE_KEYS.recentRecipeTitles)).not.toContain("Dish g1");
+  });
+});

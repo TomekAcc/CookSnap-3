@@ -716,7 +716,11 @@ function significantTitleWords(title) {
       .filter((w) => w.length > 2 && !TITLE_STOP_WORDS.has(w))
       // Singular/plural count as the same word — "Beef Stuffed Peppers" and
       // "Cheesy Beef Stuffed Pepper" landed in the same live batch.
-      .map((w) => (w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w))
+      .map((w) => {
+        if (w.length > 4 && w.endsWith("ies")) return `${w.slice(0, -3)}y`; // berries -> berry
+        if (w.length > 4 && w.endsWith("oes")) return w.slice(0, -2); // tomatoes -> tomato
+        return w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w;
+      })
   );
 }
 
@@ -731,15 +735,23 @@ function significantTitleWords(title) {
  * (ingredient/flavor nouns, not filler words like "with" or "fresh") is
  * treated as too similar to count as a genuinely new dish.
  */
-function isNearDuplicateOfExcluded(title, excludeTitles) {
+export function isNearDuplicateOfExcluded(title, excludeTitles) {
   const words = significantTitleWords(title);
   if (words.size === 0) return false;
   return (excludeTitles || []).some((excluded) => {
+    const other = significantTitleWords(excluded);
     let overlap = 0;
-    for (const w of significantTitleWords(excluded)) {
+    for (const w of other) {
       if (words.has(w)) overlap++;
     }
-    return overlap >= 2;
+    // A near-copy: at least three shared words that make up most of the longer title, or a title that is the other
+    // one plus a single word ("Tuna Pasta" / "Tuna Pasta Salad"). Two shared words between titles that each have
+    // others ("Creamy Potato Soup" / "Creamy Potato Bake") are different dishes: with a narrow inventory the old
+    // two-word rule threw away nearly every candidate on a regenerate.
+    const longer = Math.max(words.size, other.size);
+    const shorter = Math.min(words.size, other.size);
+    if (overlap >= 3) return overlap / longer >= 0.7;
+    return overlap >= 2 && overlap === shorter && longer - shorter <= 1;
   });
 }
 

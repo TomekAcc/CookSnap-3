@@ -5,6 +5,8 @@ export const STORAGE_KEYS = {
   // Recipes and inventory
   favorites: "cooksnap:favorites:v1",
   savedRecipes: "cooksnap:savedRecipes:v1",
+  // Titles shown in the last 24 hours, so the next batch can differ from them (see utils/recentRecipeTitles.js).
+  recentRecipeTitles: "cooksnap:recentRecipeTitles:v1",
   pantryItems: "cooksnap:pantryItems:v1",
   ingredients: "cooksnap:ingredients:v1",
   fridgePhoto: "cooksnap:fridgePhoto:v1",

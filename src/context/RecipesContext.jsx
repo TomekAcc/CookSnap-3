@@ -16,6 +16,10 @@ import { usePreferences } from "./PreferencesContext";
 import { useLibrary } from "./LibraryContext";
 import { useInventory } from "./InventoryContext";
 import { pantryForGeneration, usesSamplePantry } from "../constants/samplePantry";
+import { STORAGE_KEYS } from "../storage/keys";
+import { arrayCodec } from "../storage/codecs";
+import { usePersistedState } from "../hooks/usePersistedState";
+import { addRecent, titlesToAvoid } from "../utils/recentRecipeTitles";
 
 const RecipesContext = createContext(null);
 
@@ -41,6 +45,10 @@ export function RecipesProvider({ children }) {
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
   // "create" while the model writes the recipes, "review" while a second pass checks them (shown on the Generate button).
   const [generationPhase, setGenerationPhase] = useState("create");
+  const [recentTitles, setRecentTitles] = usePersistedState(STORAGE_KEYS.recentRecipeTitles, {
+    initial: [],
+    codec: arrayCodec,
+  });
   const generatingRef = useRef(false);
   const [generatedRecipes, setGeneratedRecipes] = useState(null);
   // True only when a generate/regenerate call failed AND there was no
@@ -110,9 +118,13 @@ export function RecipesProvider({ children }) {
       // exactly which titles it already gave the user so it can't reach for
       // the same "best fit" answer again. Empty on a first-time generate
       // (generatedRecipes is still null then).
-      const previousTitles = Array.isArray(generatedRecipes)
+      const onScreenTitles = Array.isArray(generatedRecipes)
         ? generatedRecipes.map((r) => r?.title).filter(Boolean)
         : [];
+      // The onboarding sample batch is its own showcase: it neither avoids nor adds to the recent titles.
+      const isSampleBatch = includePantryStaples && usesSamplePantry(pantryItems, scanIsDemo);
+      // Also avoid what was shown in the last 24 hours, so scanning again right after a scan gives different dishes.
+      const previousTitles = isSampleBatch ? onScreenTitles : titlesToAvoid(onScreenTitles, recentTitles);
 
       // Free tier gets a smaller batch per generation (see
       // FREE_RECIPES_PER_GENERATION) — PRO gets the full RECIPES_PER_SCAN
@@ -134,7 +146,7 @@ export function RecipesProvider({ children }) {
         unitSystem,
         recipeLanguageName,
         {
-          sampleKitchen: includePantryStaples && usesSamplePantry(pantryItems, scanIsDemo),
+          sampleKitchen: isSampleBatch,
           onPhase: setGenerationPhase,
         }
       );
@@ -145,6 +157,7 @@ export function RecipesProvider({ children }) {
       const stamped = enrichRecipes(recipes).slice(0, recipeCount);
 
       setGeneratedRecipes(stamped);
+      if (!isSampleBatch) setRecentTitles((prev) => addRecent(prev, stamped.map((r) => r?.title)));
       showToast(
         t(
           stamped.length === 1
@@ -178,6 +191,8 @@ export function RecipesProvider({ children }) {
       setIsGeneratingRecipes(false);
     }
   }, [
+    recentTitles,
+    setRecentTitles,
     ingredients,
     pantryItems,
     scanIsDemo,

@@ -80,3 +80,16 @@ turns the product from AI-first into a user-generated recipe box.
   third more tokens per generation) and risks two halves picking the same dishes. Not worth it; reverted.
   Remaining ideas, if real phone timings say the wait matters: show recipes before the quality pass finishes (saves
   3 to 5 s, but a recipe may change or disappear after being shown) or shorten the 51 KB instruction.
+
+## Done: recipes that differ from the ones just shown
+
+- The app remembers the titles it showed in the last 24 hours (up to 15, on the phone only, key
+  `cooksnap:recentRecipeTitles:v1`) and asks the next batch to differ from them: right after a scan or a
+  regenerate the dishes change, a scan days later starts fresh. The onboarding sample batch is left out.
+- The "too similar to an earlier title" filter used to drop a recipe that shared just two words with any earlier
+  title, which with a narrow fridge removed 3 to 5 of 5 candidates and a regenerate often shipped 1 or 2 recipes.
+  It now drops near-copies only (three shared words making up most of the longer title, or one title being the other
+  plus a word). Measured live on two fridges, four rounds each: 4.4 recipes per round on average, and 5 of 5 on the
+  first regenerate every time (before: 3.4, and 1 to 2 on the first regenerate).
+- Still true: after three or four generations in a row on a very narrow fridge, the number of genuinely different
+  dishes runs out and a batch can come back with fewer than five.
