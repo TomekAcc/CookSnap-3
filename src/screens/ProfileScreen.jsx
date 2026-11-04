@@ -234,13 +234,16 @@ export default function ProfileScreen() {
                 accessibilityLabel={`${t(stat.labelKey)}: ${stat.value}`}
                 style={{ flex: 1, alignItems: "center", paddingVertical: 18 }}
               >
+                {/* The "this opens something" hint sits in the card's top corner, clear of the label and the divider
+                    (when it hung off the label's edge it ran into both in longer languages). */}
+                <View pointerEvents="none" style={{ position: "absolute", top: 10, right: 8 }}>
+                  <ChevronRight size={14} color={colors.textTertiary || colors.textSecondary} strokeWidth={2.4} />
+                </View>
                 <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
                   {stat.value}
                 </Text>
                 {/* The label may take two lines; the numbers stay on one line because every column is top-aligned, and
-                    the card is only as tall as its tallest label (no empty strip under one-line labels). No chevron: it used to hang
-                    off the label's edge and ran into the label or the divider in longer languages; the tap
-                    feedback and the accessibility role already say the card opens something. */}
+                    the card is only as tall as its tallest label (no empty strip under one-line labels). */}
                 <Text
                   numberOfLines={2}
                   adjustsFontSizeToFit
