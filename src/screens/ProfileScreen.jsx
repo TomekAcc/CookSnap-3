@@ -497,7 +497,7 @@ export default function ProfileScreen() {
             borderColor: colors.cardBorder,
             paddingVertical: 14,
             paddingHorizontal: 16,
-            marginBottom: dietOpen ? 12 : 0,
+            marginBottom: 0,
           }}
         >
           <Text
@@ -518,6 +518,20 @@ export default function ProfileScreen() {
             style={{ transform: [{ rotate: dietOpen ? "180deg" : "0deg" }] }}
           />
         </TouchableOpacity>
+        {/* Shown whether the card is open or not: the switches are a convenience, never an allergen guarantee. */}
+        <Text
+          style={{
+            color: colors.textSecondary,
+            fontSize: 12,
+            lineHeight: 17,
+            fontWeight: "500",
+            marginTop: 10,
+            marginBottom: dietOpen ? 12 : 4,
+            paddingHorizontal: 4,
+          }}
+        >
+          {t("profile.dietDisclaimer")}
+        </Text>
         {dietOpen ? (
           <>
             <View style={{ marginBottom: 18 }}>

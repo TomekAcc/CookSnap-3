@@ -1029,6 +1029,9 @@ export default function RecipeDetailModal() {
             </View>
           ) : null}
 
+          {/* Plain, visible notice (not a tooltip): the recipe is AI-written and allergens are not guaranteed. */}
+          <Text style={[styles.aiNotice, { color: colors.textSecondary }]}>{t("recipeDetail.aiNotice")}</Text>
+
           <TouchableOpacity
             onPress={reportRecipe}
             activeOpacity={0.7}
@@ -1296,7 +1299,8 @@ const styles = StyleSheet.create({
   sectionContainer: { marginTop: 10 },
   /** Cooking Area — airy gap after Ingredients */
   instructionsSection: { marginTop: 24 },
-  reportLink: { alignSelf: "center", paddingVertical: 18, paddingHorizontal: 12 },
+  aiNotice: { fontSize: 12, lineHeight: 17, fontWeight: "500", textAlign: "center", marginTop: 18, paddingHorizontal: 12 },
+  reportLink: { alignSelf: "center", paddingTop: 6, paddingBottom: 18, paddingHorizontal: 12 },
   reportLinkText: { fontSize: 13, fontWeight: "500", textDecorationLine: "underline" },
   sectionHeaderRow: {
     flexDirection: "row",

@@ -39,8 +39,9 @@ usage data, financial info).
 - **Does the app collect or share required user data types?** Yes.
 - **Is all of the collected data encrypted in transit?** Yes (HTTPS).
 - **Do you provide a way for users to request that their data is deleted?** There is no account and no
-  server-side profile; users can delete saved data in the app or by uninstalling. State that in the form
-  and give cooksnap.support@gmail.com for any other request.
+  server-side profile. Users can delete everything the app stores on the phone in the app (Settings > About >
+  "Delete all my data") or by uninstalling; a Help & Feedback message can be deleted on request. State that in the
+  form and give cooksnap.support@gmail.com for any other request.
 
 | Data type | Collected | Shared with third parties | Purpose | Optional? |
 |---|---|---|---|---|
@@ -52,6 +53,11 @@ usage data, financial info).
 
 Not collected: personal info, financial info, health info (see open question), location, messages,
 contacts, calendar, app activity, web browsing, files, audio, device-level diagnostics.
+
+## Age and audience
+
+Apple age rating: answer the questionnaire per `DISCLAIMERS.md` section E. Google Play target audience: 16+ (or
+18+); do not select groups under 13. The app is not designed for children (terms: 16+).
 
 ## Open questions (resolve before submitting)
 
@@ -68,3 +74,5 @@ contacts, calendar, app activity, web browsing, files, audio, device-level diagn
    that opens Help & Feedback with the kind and the recipe title filled in; the owner reads these on the private
    feedback page (`/admin` of the proxy).
 5. **Payments:** add purchases (and the provider) to both forms once subscriptions are added.
+6. **Notices in the app.** Done: every recipe shows an "AI-generated" notice, and the diet switches carry a note that
+   they are not an allergen guarantee. Mention both in the App Review notes (`DISCLAIMERS.md` section D).

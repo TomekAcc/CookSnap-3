@@ -7,13 +7,17 @@ Drafts for the first store release. None of them is legal advice; have a lawyer 
 | `PRIVACY_POLICY.md` | Privacy policy (English). Needs a public URL for both stores and a link in the app. |
 | `TERMS_OF_SERVICE.md` | Terms of service (English), including AI disclaimers and subscription terms. |
 | `STORE_PRIVACY_ANSWERS.md` | Draft answers for Apple "App Privacy" and Google "Data safety", plus open questions. |
+| `STORE_COMPLIANCE.md` | (Polish) Checklist of Apple/Google policies and the laws that apply (GDPR, consumer law, AI Act, health claims, taxes), with status ✅ / 🟡 / ⚖️ and the order of work before launch. |
+| `DISCLAIMERS.md` | Copy-ready notices: in-app AI/allergy texts, store-description footer, subscription disclosure, App Review notes, age-rating guidance, words to avoid. |
+| `INTERNAL_PROCEDURES.md` | (Polish) Records of processing, processor checklist, how to answer data requests (with reply templates), incident procedure (72 h), complaints, change log. Not published. |
 
 ## Fill in before publishing (search for `[` in the files)
 
 - `[COMPANY NAME AS IN CEIDG]`, `[BUSINESS ADDRESS]`, `[NIP]`
 - Support address: done, `cooksnap.support@gmail.com` (the same as `SUPPORT_EMAIL` in `src/constants/contact.js`; change both if the name of the app changes)
 - `[DATE]`, `[PRIVACY POLICY URL]`, subscription prices and limits (copy from `src/constants/limits.js` and
-  the paywall), `[PAYMENT PROVIDER]`
+  the paywall), `[AMOUNT]` (liability cap, terms section 11.3), `[REGON]` / `[PHONE NUMBER]` if you give them
+- Every `[VERIFY ...]` note, including ones that run over several lines (the final build refuses to run while any is left)
 - The "Verify before publishing" list at the end of the privacy policy
 
 ## Where they are published
@@ -38,6 +42,12 @@ buy one. They are built from the texts in this folder.
 4. Turn on the links in the app: build or publish with `EXPO_PUBLIC_LEGAL_LIVE=1`. Settings > About then shows
    "Privacy Policy" and "Terms of Service" rows. Until then they are hidden, so nobody taps a dead link.
 5. Open the three addresses once in a browser and read them.
+
+## Before launch: have a lawyer look at these
+
+Terms: sections 3, 4.7, 11, 14, 15. Privacy policy: the health-data consent (Art. 9) and the data-transfer
+wording. And prepare **Polish versions** of both for Polish consumers. A single consultation of a couple of
+hours is usually enough. `STORE_COMPLIANCE.md` lists everything else.
 
 ## Keep them true
 

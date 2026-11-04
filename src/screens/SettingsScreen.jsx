@@ -7,6 +7,7 @@ import {
   ScrollView,
   Switch,
   Linking,
+  Alert,
 } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,6 +24,7 @@ import {
   ChevronLeft,
   MessageCircleQuestion,
   Lock,
+  Trash2,
   FileText,
   ShieldCheck,
 } from "../icons";
@@ -41,6 +43,8 @@ import { EMERALD, WHITE } from "../theme/palette";
 import { SHOW_TESTING_TOOLS } from "../config/flags";
 import appConfig from "../../app.json";
 import { getRequestLog } from "../services/geminiClient";
+import { eraseAllLocalData, restartApp } from "../services/dataErasure";
+import { showToast } from "../utils/toast";
 import { floatingCtaBottom } from "../constants/layout";
 import { legalLinksLive, privacyPolicyUrl, termsUrl } from "../constants/legal";
 
@@ -52,6 +56,26 @@ export default function SettingsScreen() {
   const { recipeLanguageId, setRecipeLanguageId, t } = useLanguage();
   const { isPro, activatePro, deactivatePro } = useEntitlements();
   const { isRealStore, manageUrl } = usePurchases();
+
+  // "Delete all my data": one confirmation, then everything on this phone goes and the app restarts empty.
+  const confirmDeleteAllData = () => {
+    Alert.alert(t("settings.deleteDataConfirmTitle"), t("settings.deleteDataConfirmMessage"), [
+      { text: t("recipeDetail.cancel"), style: "cancel" },
+      {
+        text: t("settings.deleteDataConfirmAction"),
+        style: "destructive",
+        onPress: async () => {
+          const result = await eraseAllLocalData();
+          if (!result.ok) {
+            showToast(t("settings.deleteDataFailed"), "error", 4500);
+            return;
+          }
+          const restarted = await restartApp();
+          if (!restarted) showToast(t("settings.deleteDataDone"), "success", 8000);
+        },
+      },
+    ]);
+  };
   const { aiConsentAccepted, requestAiConsent, withdrawAiConsent } = useAiConsent();
   const { resetOnboarding, settingsDoneHintShown, markSettingsDoneHintShown } = useOnboarding();
   const { setActiveTab } = useNavigation();
@@ -611,6 +635,24 @@ export default function SettingsScreen() {
                 accessibilityLabel={t("settings.aiConsentLabel")}
               />
             </View>
+            <View style={{ height: 1, backgroundColor: colors.cardBorder }} />
+            <TouchableOpacity
+              onPress={confirmDeleteAllData}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+                paddingVertical: 14,
+                paddingHorizontal: 16,
+              }}
+            >
+              <Trash2 size={20} color={colors.textSecondary} strokeWidth={2} />
+              <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>
+                {t("settings.deleteData")}
+              </Text>
+            </TouchableOpacity>
           </View>
           <Text
             style={{

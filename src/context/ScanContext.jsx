@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useMemo, useCallback, useRef } from "react";
+import React, { createContext, useContext, useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { analyzeFridgeImage, analyzePantryImage } from "../services/geminiVision";
-import { persistPhotoToDevice } from "../utils/photoStorage";
+import { persistPhotoToDevice, pruneUnusedPhotos } from "../utils/photoStorage";
 import { useModalState } from "./ModalContext";
 import { EXIT_DURATION_MS } from "../utils/bottomSheet";
 import { SAMPLE_FRIDGE_ITEMS } from "../constants/sampleFridge";
@@ -72,7 +72,7 @@ export function ScanProvider({ children }) {
   // restored URI still resolves to a real file after an app restart. Persisting
   // the photo along with the ingredients it produced (above) matters: a photo
   // next to an empty list is a more confusing state than neither.
-  const [fridgePhoto, setFridgePhoto] = usePersistedState(STORAGE_KEYS.fridgePhoto, {
+  const [fridgePhoto, setFridgePhoto, fridgePhotoHydrated] = usePersistedState(STORAGE_KEYS.fridgePhoto, {
     initial: null,
     codec: jsonCodec(),
     shouldPersist: () => !scanIsDemoRef.current,
@@ -132,10 +132,19 @@ export function ScanProvider({ children }) {
   const [pantryCameraOpen, setPantryCameraOpen] = useState(false);
   const [pantryPhoto, setPantryPhoto] = useState(null);
 
-  const [scanHistory, setScanHistory] = usePersistedState(STORAGE_KEYS.scanHistory, {
+  const [scanHistory, setScanHistory, scanHistoryHydrated] = usePersistedState(STORAGE_KEYS.scanHistory, {
     initial: [],
     codec: arrayCodec,
   });
+
+  // Photos are kept only while the current scan or a history entry refers to them. This one place covers every
+  // way a photo stops being needed (a scan deleted from the history, the ten-entry limit, a replaced scan, photos
+  // orphaned by an interrupted session), and it waits for both saved values to be read first so nothing that is
+  // still being restored is mistaken for unused.
+  useEffect(() => {
+    if (!fridgePhotoHydrated || !scanHistoryHydrated) return;
+    pruneUnusedPhotos([fridgePhoto, ...(Array.isArray(scanHistory) ? scanHistory.map((s) => s?.photoUri) : [])]);
+  }, [fridgePhoto, scanHistory, fridgePhotoHydrated, scanHistoryHydrated]);
   const scanSessionIdRef = useRef(0);
   const pendingDetectedRef = useRef(null);
   const ingredientsCommittedRef = useRef(false);

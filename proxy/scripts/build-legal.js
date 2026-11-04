@@ -13,8 +13,8 @@ const legal = path.join(here, "../../docs/legal");
 const draft = process.argv.includes("--draft");
 const SUPPORT_EMAIL = "cooksnap.support@gmail.com";
 
-// [COMPANY NAME ...], [DATE], [2], [PRICES: ...], [VERIFY ...], [**Payment provider** ...]; not a link label like [Privacy Policy](...)
-const PLACEHOLDER = /\[(?:[A-Z][^\]\n]*|\d+(?:\.\d+)?|\*\*[^\]\n]*)\](?!\()/g;
+// [COMPANY NAME ...], [DATE], [2], [PRICES: ...], [VERIFY ...] (may run over several lines), [**Payment provider** ...]; not a link label like [Privacy Policy](...)
+const PLACEHOLDER = /\[(?:VERIFY[^\]]*|[A-Z][^\]\n]*|\d+(?:\.\d+)?|\*\*[^\]\n]*)\](?!\()/g;
 
 function load(name) {
   let text = fs.readFileSync(path.join(legal, name), "utf8");
@@ -52,11 +52,11 @@ Questions, problems or ideas about CookSnap? We read everything.
 
 ## Your data
 
-CookSnap has no accounts. Your saved recipes, pantry and settings are on your phone; delete them in the app or by uninstalling. Photos you scan are sent to Google's AI through our server and are not kept by us. Read the [Privacy Policy](/privacy) for details, or write to us to ask about your data.
+CookSnap has no accounts. Your saved recipes, pantry and settings are on your phone; delete everything in the app (Settings > About > "Delete all my data") or by uninstalling. Photos you scan are sent to Google's AI through our server and are not kept by us. Read the [Privacy Policy](/privacy) for details, or write to us to ask about your data.
 
 ## Allergies and diets
 
-Recipes are written by AI and can be wrong. If you have an allergy or a medical diet, always check the ingredients yourself. See the [Terms of Service](/terms).
+Recipes are written by AI and can be wrong. If you have an allergy or a medical diet, always check the ingredients and labels yourself, and ask a qualified professional about medical or nutrition advice. See the [Terms of Service](/terms).
 `;
 
 const sources = { privacy: ["Privacy Policy", load("PRIVACY_POLICY.md")], terms: ["Terms of Service", load("TERMS_OF_SERVICE.md")], support: ["Support", supportMd] };

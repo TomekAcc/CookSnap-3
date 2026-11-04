@@ -20,7 +20,7 @@ jest.mock("../src/services/geminiVision", () => ({
   analyzeFridgeImage: jest.fn(),
   analyzePantryImage: jest.fn(),
 }));
-jest.mock("../src/utils/photoStorage", () => ({ persistPhotoToDevice: (uri) => `kept:${uri}` }));
+jest.mock("../src/utils/photoStorage", () => ({ persistPhotoToDevice: (uri) => `kept:${uri}`, pruneUnusedPhotos: jest.fn(() => 0) }));
 jest.mock("expo-camera", () => ({
   useCameraPermissions: () => [{ granted: true }, jest.fn()],
   CameraView: () => null,

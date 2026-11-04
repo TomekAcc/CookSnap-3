@@ -17,7 +17,7 @@ jest.mock("../src/services/geminiVision", () => ({
   analyzeFridgeImage: jest.fn(),
   analyzePantryImage: jest.fn(),
 }));
-jest.mock("../src/utils/photoStorage", () => ({ persistPhotoToDevice: (uri) => `kept:${uri}` }));
+jest.mock("../src/utils/photoStorage", () => ({ persistPhotoToDevice: (uri) => `kept:${uri}`, pruneUnusedPhotos: jest.fn(() => 0) }));
 jest.mock("../src/utils/imagePicker", () => ({ pickImageFromLibrary: jest.fn() }));
 jest.setTimeout(30000); // the first mount in a cold worker is slow
 const vision = require("../src/services/geminiVision");

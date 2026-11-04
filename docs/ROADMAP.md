@@ -24,6 +24,13 @@ app), SDK 58, the web smoke test in the normal workflow.
   subscriptions (`cooksnap_pro_annual` with a 7-day trial, `cooksnap_pro_monthly`), a RevenueCat project
   (entitlement `pro`), `react-native-purchases` installed and a store build with the keys. The daily
   free-tier limits are counted on the phone and can be bypassed; move them somewhere that can be trusted.
+- **Compliance review (done, needs you and a lawyer).** Terms rewritten (AI/allergy/food-safety/health limits,
+  subscriptions, withdrawal right, Apple's minimum EULA terms), privacy policy extended (deletion, Art. 9 consent,
+  age 16+, AI transparency, incidents), new `STORE_COMPLIANCE.md`, `DISCLAIMERS.md`, `INTERNAL_PROCEDURES.md`. In the
+  app: "AI-generated" notice on every recipe, a note under the diet switches, "Delete all my data", scan photos
+  deleted when no longer used, no full-library photo permission, no microphone permission, privacy manifest and
+  export-compliance flag. Still open: Polish versions of both documents, one lawyer consultation, company details,
+  and a native build (the `app.json` changes need a new build, not an update).
 - **Privacy policy, terms and support contact.** Drafts are in `docs/legal/` (policy, terms, and draft
   answers for Apple's "App Privacy" and Google's "Data safety"); they need the company details, a support
   mailbox, a lawyer's read and a public URL. Photos go to Google's AI, which has to be stated plainly.

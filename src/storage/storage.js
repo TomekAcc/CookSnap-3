@@ -42,10 +42,33 @@ export function getItem(key) {
   });
 }
 
+// Set by eraseAll(). Until the app is restarted, screens still hold the old values in memory; without this, any
+// change made in that window would write them straight back and undo the erasure.
+let erased = false;
+
 export function setItem(key, value) {
+  if (erased) return Promise.resolve();
   return AsyncStorage.setItem(key, value);
 }
 
 export function removeItem(key) {
   return AsyncStorage.removeItem(key);
+}
+
+const KEY_PREFIX = "cooksnap:";
+
+/**
+ * Removes everything this app has stored (every "cooksnap:" key) and blocks further writes until the next launch.
+ * Returns how many keys were removed.
+ */
+export async function eraseAll() {
+  erased = true;
+  const keys = (await AsyncStorage.getAllKeys()).filter((k) => k.startsWith(KEY_PREFIX));
+  if (keys.length) await AsyncStorage.multiRemove(keys);
+  return keys.length;
+}
+
+/** Test hook: allow writes again. */
+export function resetErasedFlag() {
+  erased = false;
 }
