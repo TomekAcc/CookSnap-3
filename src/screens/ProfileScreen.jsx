@@ -86,17 +86,16 @@ export default function ProfileScreen() {
     { id: "help", labelKey: "menu.helpFeedback", Icon: MessageCircleQuestion, onPress: () => setHelpModalOpen(true) },
   ];
 
-  // The numbers count what the person has, and each one opens it. Pantry counts what is in stock: an
+  // The numbers count what the person has. Pantry counts what is in stock: an
   // out-of-stock item is on the shopping list, not in the kitchen.
   const STATS = [
-    { id: "saved", labelKey: "profile.statSavedRecipes", value: savedCount, onPress: () => setActiveTab("saved") },
+    { id: "saved", labelKey: "profile.statSavedRecipes", value: savedCount },
     {
       id: "pantry",
       labelKey: "profile.statPantryItems",
       value: pantryItems.filter((item) => item.inStock).length,
-      onPress: () => setActiveTab("pantry"),
     },
-    { id: "scans", labelKey: "profile.statTotalScans", value: scanHistory.length, onPress: () => setScanHistoryOpen(true) },
+    { id: "scans", labelKey: "profile.statTotalScans", value: scanHistory.length },
   ];
 
   // Real usage beats a generic pitch — a free user who's actually hit
@@ -221,25 +220,20 @@ export default function ProfileScreen() {
             overflow: "hidden",
           }}
         >
-          {/* Each number is a shortcut to the thing it counts. */}
+          {/* Plain figures, not buttons: Saved and Pantry are tabs one tap away and Scan History is in Quick Actions
+              right below, so tappable cards only duplicated navigation and needed arrows to explain themselves. */}
           {STATS.map((stat, index) => (
             <React.Fragment key={stat.id}>
               {index > 0 ? (
                 <View style={{ width: 1, backgroundColor: colors.cardBorder, marginVertical: 14 }} />
               ) : null}
-              <TouchableOpacity
-                onPress={stat.onPress}
-                activeOpacity={0.7}
-                accessibilityRole="button"
+              <View
+                accessible
+                accessibilityRole="summary"
                 accessibilityLabel={`${t(stat.labelKey)}: ${stat.value}`}
                 style={{ flex: 1, alignItems: "center", paddingVertical: 18 }}
               >
-                {/* The "this opens something" hint sits in the card's top corner, clear of the label and the divider
-                    (when it hung off the label's edge it ran into both in longer languages). */}
-                <View pointerEvents="none" style={{ position: "absolute", top: 10, right: 8 }}>
-                  <ChevronRight size={14} color={colors.textTertiary || colors.textSecondary} strokeWidth={2.4} />
-                </View>
-                <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
+                <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 26, lineHeight: 32 }}>
                   {stat.value}
                 </Text>
                 {/* The label may take two lines; the numbers stay on one line because every column is top-aligned, and
@@ -260,7 +254,7 @@ export default function ProfileScreen() {
                 >
                   {t(stat.labelKey)}
                 </Text>
-              </TouchableOpacity>
+              </View>
             </React.Fragment>
           ))}
         </View>
