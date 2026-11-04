@@ -117,7 +117,7 @@ export default function FridgeIdleCard({
               justifyContent: "center",
             }}
           >
-            <Camera size={22} color={EMERALD[600]} />
+            <Camera size={22} color={colors.greenStrong} />
           </LinearGradient>
         </View>
       )}
@@ -235,7 +235,7 @@ export default function FridgeIdleCard({
             justifyContent: "center",
           }}
         >
-          <ImageIcon size={15} color={EMERALD[600]} />
+          <ImageIcon size={15} color={colors.greenStrong} />
           <Text
             style={{
               color: colors.ink,

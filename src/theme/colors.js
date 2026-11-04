@@ -84,10 +84,11 @@ export const LIGHT_COLORS = {
 
   // --- Green
   greenBright: EMERALD[500],
-  greenStrong: EMERALD[600],
+  greenStrong: EMERALD[700],
   greenText: EMERALD[700],
   greenInk: EMERALD[700],
   greenFill: EMERALD[700],
+  greenSolid: EMERALD[700],
   greenRing: EMERALD[200],
   greenRingBright: EMERALD[200],
   greenRingDeep: EMERALD[200],
@@ -178,6 +179,7 @@ export const DARK_COLORS = {
   greenText: EMERALD[400],
   greenInk: EMERALD[300],
   greenFill: EMERALD[800],
+  greenSolid: EMERALD[700],
   greenRing: EMERALD[800],
   greenRingBright: EMERALD[500],
   greenRingDeep: EMERALD[600],

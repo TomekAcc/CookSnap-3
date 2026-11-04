@@ -473,11 +473,11 @@ export default function RecipeDetailModal() {
             (NYT Cooking, Apple Health summary rows) presents a meta strip. */}
         <View style={styles.metaRow}>
           <View style={styles.metaCol}>
-            <Text style={styles.metaValueEmerald}>
+            <Text style={[styles.metaValueEmerald, { color: colors.greenStrong }]}>
               {formatTimeLabel(recipe?.prepTime, minUnit, `5 ${minUnit}`)}
             </Text>
             <View style={styles.metaLabelRow}>
-              <Clock size={11} color={EMERALD[600]} strokeWidth={2.5} />
+              <Clock size={11} color={colors.greenStrong} strokeWidth={2.5} />
               <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>
                 {t("recipeDetail.prepLabel")}
               </Text>

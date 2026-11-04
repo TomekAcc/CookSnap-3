@@ -118,7 +118,7 @@ export function emojiLine(fontSize) {
  */
 export const GREEN = {
   primary: EMERALD[500], // accents, selected states, the wordmark
-  deep: EMERALD[600], // filled buttons, icons on white
+  deep: EMERALD[700], // filled buttons, icons, green text on white
   ink: EMERALD[700], // green text on a soft green ground
   soft: EMERALD[50], // soft fill (light)
   softBorder: EMERALD[100], // soft border (light)

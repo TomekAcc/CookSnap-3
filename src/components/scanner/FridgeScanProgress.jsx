@@ -66,7 +66,7 @@ export default function FridgeScanProgress({
               transform: [{ scale: iconPulse }],
             }}
           >
-            <Zap size={20} color={EMERALD[600]} />
+            <Zap size={20} color={colors.greenStrong} />
           </Animated.View>
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text

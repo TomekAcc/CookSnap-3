@@ -467,7 +467,7 @@ export default function PantryScannerHero() {
             }}
             accessibilityLabel={t("a11y.pickPantryPhoto")}
           >
-            <ImageIcon size={15} color={EMERALD[600]} />
+            <ImageIcon size={15} color={colors.greenStrong} />
             <Text
               style={{
                 color: colors.ink,
@@ -663,7 +663,7 @@ export default function PantryScannerHero() {
                     <Text style={{ color: colors.textSecondary, fontSize: 10, fontWeight: "700" }}>
                       {t("scanner.scanProgress")}
                     </Text>
-                    <Text style={{ color: EMERALD[600], fontSize: 12, fontWeight: "700" }}>
+                    <Text style={{ color: colors.greenStrong, fontSize: 12, fontWeight: "700" }}>
                       {progressPct}%
                     </Text>
                   </View>

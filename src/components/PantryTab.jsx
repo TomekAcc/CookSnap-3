@@ -134,7 +134,7 @@ const InStockRow = memo(function InStockRow({ item, isOpen, setOpenSwipeId, onTo
             width: 28,
             height: 28,
             borderRadius: 9,
-            backgroundColor: EMERALD[500],
+            backgroundColor: colors.greenSolid,
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
@@ -556,7 +556,7 @@ export default function PantryTab() {
               borderColor: colors.cardBorder,
             }}
           >
-            <Plus size={16} color={EMERALD[600]} strokeWidth={2.6} />
+            <Plus size={16} color={colors.greenStrong} strokeWidth={2.6} />
             <Text
               numberOfLines={1}
               style={{ color: colors.textPrimary, fontSize: 13, fontWeight: "600", marginLeft: 5 }}
@@ -613,7 +613,7 @@ export default function PantryTab() {
               paddingHorizontal: 14,
             }}
           >
-            <ShoppingCart size={18} color={EMERALD[600]} />
+            <ShoppingCart size={18} color={colors.greenStrong} />
             <Text style={{ flex: 1 }} numberOfLines={1}>
               <Text style={{ color: colors.textPrimary, fontWeight: "700", fontSize: 14 }}>
                 {t("pantry.shoppingListTitle")}

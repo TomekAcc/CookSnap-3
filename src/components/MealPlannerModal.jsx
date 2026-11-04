@@ -569,7 +569,7 @@ export default function MealPlannerModal() {
           { backgroundColor: colors.accentGreenSoft },
         ]}
       >
-        <Refrigerator size={28} color={EMERALD[600]} />
+        <Refrigerator size={28} color={colors.greenStrong} />
       </View>
       <Text style={[styles.emptyFridgeTitle, { color: colors.textPrimary }]}>
         {t("mealPlanner.fridgeEmptyTitle")}
@@ -609,7 +609,7 @@ export default function MealPlannerModal() {
             style={styles.actionRow}
             activeOpacity={0.8}
           >
-            <BookOpen size={18} color={EMERALD[600]} />
+            <BookOpen size={18} color={colors.greenStrong} />
             <Text style={[styles.actionText, { color: colors.textPrimary }]}>
               {t("mealPlanner.viewFullRecipe")}
             </Text>
@@ -652,9 +652,9 @@ export default function MealPlannerModal() {
           disabled={fridgeEmpty || isDayLoading}
         >
           {isDayLoading ? (
-            <ActivityIndicator size="small" color={EMERALD[600]} />
+            <ActivityIndicator size="small" color={colors.greenStrong} />
           ) : (
-            <Sparkles size={18} color={EMERALD[600]} />
+            <Sparkles size={18} color={colors.greenStrong} />
           )}
           <Text style={[styles.actionText, { color: colors.textPrimary }]}>
             {isDayLoading
@@ -810,13 +810,13 @@ export default function MealPlannerModal() {
               ]}
             >
               {isGeneratingWeek ? (
-                <ActivityIndicator size="small" color={EMERALD[600]} />
+                <ActivityIndicator size="small" color={colors.greenStrong} />
               ) : !hasScanned || !isPro ? (
                 <Sparkles size={17} color={colors.textSecondary} />
               ) : plannedCount === 7 ? (
-                <RefreshCw size={17} color={EMERALD[600]} />
+                <RefreshCw size={17} color={colors.greenStrong} />
               ) : (
-                <Sparkles size={17} color={EMERALD[600]} />
+                <Sparkles size={17} color={colors.greenStrong} />
               )}
             </View>
             <View style={{ flex: 1, minWidth: 0 }}>
@@ -856,7 +856,7 @@ export default function MealPlannerModal() {
               {isPro ? (
                 <Crown size={12} color={AMBER[600]} />
               ) : (
-                <Sparkles size={12} color={EMERALD[600]} />
+                <Sparkles size={12} color={colors.greenStrong} />
               )}
               <Text
                 style={[
@@ -1049,8 +1049,8 @@ export default function MealPlannerModal() {
                           {t("mealPlanner.notPlannedYet")}
                         </Text>
                         <View style={styles.addPill}>
-                          <Plus size={14} color={EMERALD[600]} strokeWidth={2.6} />
-                          <Text style={styles.addPillText}>{t("scanner.add")}</Text>
+                          <Plus size={14} color={colors.greenStrong} strokeWidth={2.6} />
+                          <Text style={[styles.addPillText, { color: colors.greenStrong }]}>{t("scanner.add")}</Text>
                         </View>
                       </TouchableOpacity>
                     )}

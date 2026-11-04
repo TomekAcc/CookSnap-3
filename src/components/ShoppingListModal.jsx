@@ -200,8 +200,8 @@ export default function ShoppingListModal({
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={styles.shareBtn}
             >
-              <Share2 size={15} color={EMERALD[600]} strokeWidth={2.4} />
-              <Text style={styles.shareText} numberOfLines={1}>
+              <Share2 size={15} color={colors.greenStrong} strokeWidth={2.4} />
+              <Text style={[styles.shareText, { color: colors.greenStrong }]} numberOfLines={1}>
                 {t("shoppingList.share")}
               </Text>
             </TouchableOpacity>

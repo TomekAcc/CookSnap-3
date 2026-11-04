@@ -131,11 +131,11 @@ export default function RecipeFeed({ onSelectRecipe } = {}) {
           {isPro ? (
             <Crown size={13} color={AMBER[600]} strokeWidth={ICON.strokeSmall} />
           ) : (
-            <Sparkles size={13} color={EMERALD[600]} strokeWidth={ICON.strokeSmall} />
+            <Sparkles size={13} color={colors.greenStrong} strokeWidth={ICON.strokeSmall} />
           )}
           <Text
             numberOfLines={2}
-            style={[styles.usageCaption, isPro && styles.usageCaptionPro]}
+            style={[styles.usageCaption, { color: colors.greenStrong }, isPro && styles.usageCaptionPro]}
           >
             {isPro
               ? t("scanner.unlimitedGenerations")

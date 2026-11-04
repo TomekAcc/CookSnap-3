@@ -12,7 +12,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useNavigation } from "../context/NavigationContext";
 import { useRecipes } from "../context/RecipesContext";
 import { useScan } from "../context/ScanContext";
-import { EMERALD, WHITE } from "../theme/palette";
+import { WHITE } from "../theme/palette";
 
 // Same delayed-flatten pattern as Header.jsx: a live BlurView is one of the
 // more GPU-expensive effects to keep compositing every frame, and this one
@@ -161,7 +161,7 @@ export default function BottomNav() {
                       width: 9,
                       height: 9,
                       borderRadius: 4.5,
-                      backgroundColor: EMERALD[500],
+                      backgroundColor: colors.greenSolid,
                       borderWidth: 1.5,
                       borderColor: colors.card,
                     }}

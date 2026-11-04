@@ -390,12 +390,12 @@ export default function MealPreferences() {
                   <Text
                     style={[
                       styles.optionText,
-                      { color: selected ? EMERALD[600] : colors.textPrimary, fontWeight: selected ? "700" : "600" },
+                      { color: selected ? colors.greenStrong : colors.textPrimary, fontWeight: selected ? "700" : "600" },
                     ]}
                   >
                     {t(o.labelKey)}
                   </Text>
-                  {selected ? <Check size={20} color={EMERALD[600]} strokeWidth={3} /> : null}
+                  {selected ? <Check size={20} color={colors.greenStrong} strokeWidth={3} /> : null}
                 </TouchableOpacity>
               );
             })

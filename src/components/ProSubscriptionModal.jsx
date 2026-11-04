@@ -25,7 +25,7 @@ import { plansFromOfferings } from "../services/purchases/plans";
 import { legalLinksLive, privacyPolicyUrl, termsUrl } from "../constants/legal";
 import { useLanguage } from "../context/LanguageContext";
 import { showToast } from "../utils/toast";
-import { APPLE, EMERALD, WHITE } from "../theme/palette";
+import { APPLE, WHITE } from "../theme/palette";
 
 // Amber is a fixed accent (ThemeContext's accentAmber is the SAME hex in
 // both LIGHT_COLORS and DARK_COLORS), so its derived tints are safe as
@@ -180,7 +180,7 @@ export default function ProSubscriptionModal() {
       <View key={p.id} style={styles.ctaSection}>
         {p.trial ? (
           <View style={[styles.guaranteeRow, { marginBottom: 6 }]}>
-            <Check size={15} color={EMERALD[600]} strokeWidth={3} />
+            <Check size={15} color={colors.greenStrong} strokeWidth={3} />
             <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
               {t("pro.noPaymentToday")}
             </Text>

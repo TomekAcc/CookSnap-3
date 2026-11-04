@@ -38,7 +38,7 @@ export default function NoItemsFound({
           marginBottom: 12,
         }}
       >
-        <SearchX size={26} color={EMERALD[600]} />
+        <SearchX size={26} color={colors.greenStrong} />
       </View>
       <Text
         style={{
@@ -181,7 +181,7 @@ export default function NoItemsFound({
               borderRadius: 16,
             }}
           >
-            <ImageIcon size={17} color={EMERALD[600]} />
+            <ImageIcon size={17} color={colors.greenStrong} />
             <Text
               style={{
                 color: colors.textPrimary,
@@ -208,10 +208,10 @@ export default function NoItemsFound({
             paddingHorizontal: 10,
           }}
         >
-          <Plus size={15} color={EMERALD[600]} />
+          <Plus size={15} color={colors.greenStrong} />
           <Text
             style={{
-              color: EMERALD[600],
+              color: colors.greenStrong,
               fontSize: 14,
               fontWeight: "700",
               marginLeft: 5,
