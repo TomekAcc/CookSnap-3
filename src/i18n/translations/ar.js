@@ -25,7 +25,7 @@ export default {
   "nav.scanner": "المسح الضوئي",
   "nav.pantry": "المؤونة",
   "nav.saved": "المحفوظات",
-  "nav.profile": "الملف الشخصي",
+  "nav.profile": "ملفي",
   "menu.scanHistory": "سجل المسح",
   "menu.savedRecipes": "الوصفات المحفوظة",
   "menu.mealPlanner": "مخطط الوجبات",

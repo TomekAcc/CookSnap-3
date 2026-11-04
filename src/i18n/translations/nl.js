@@ -74,7 +74,7 @@ export default {
   "profile.hungerLevel": "Hongerniveau",
   "profile.statsTitle": "Je keuken",
   "profile.statSavedRecipes": "Opgeslagen recepten",
-  "profile.statPantryItems": "Voorraadartikelen",
+  "profile.statPantryItems": "Items in voorraad",
   "profile.statTotalScans": "Totaal aantal scans",
   "profile.quickActions": "Snelle acties",
   "a11y.openSettings": "Instellingen openen",

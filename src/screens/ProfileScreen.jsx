@@ -162,15 +162,16 @@ export default function ProfileScreen() {
               activeOpacity={0.75}
               accessibilityRole="button"
               accessibilityLabel={t("a11y.openSettings")}
+              hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
               style={{
-                width: 44,
-                height: 44,
-                borderRadius: 22,
-                // The 44px button would make this row taller than the 35px
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                // The 40px button would make this row taller than the 35px
                 // title and push the title (and everything below) lower than
                 // on Pantry/Saved. Negative margins let it overhang the row
                 // so the title sits at exactly the same height on every tab.
-                marginVertical: -4.5,
+                marginVertical: -2.5,
                 backgroundColor: colors.card,
                 borderWidth: 1,
                 borderColor: colors.cardBorder,
@@ -413,7 +414,7 @@ export default function ProfileScreen() {
             overflow: "hidden",
           }}
         >
-          {/* Each number is a shortcut to the thing it counts (a small chevron says so). */}
+          {/* Each number is a shortcut to the thing it counts. */}
           {STATS.map((stat, index) => (
             <React.Fragment key={stat.id}>
               {index > 0 ? (
@@ -424,32 +425,32 @@ export default function ProfileScreen() {
                 activeOpacity={0.7}
                 accessibilityRole="button"
                 accessibilityLabel={`${t(stat.labelKey)}: ${stat.value}`}
-                style={{ flex: 1, alignItems: "center", paddingVertical: 20 }}
+                style={{ flex: 1, alignItems: "center", paddingVertical: 18 }}
               >
                 <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
                   {stat.value}
                 </Text>
-                {/* The label text is what sits centred under the number; the chevron hangs off its right edge
-                    instead of taking part in the centring (as part of the row it pushed the text 6px left of the
-                    number), and costs the text no width. */}
-                <View style={{ marginTop: 4, paddingHorizontal: 6 }}>
-                  <Text
-                    style={{
-                      color: colors.textSecondary,
-                      fontWeight: "700",
-                      fontSize: 11,
-                      textAlign: "center",
-                    }}
-                  >
-                    {t(stat.labelKey)}
-                  </Text>
-                  <View
-                    pointerEvents="none"
-                    style={{ position: "absolute", right: -7, top: 0, bottom: 0, justifyContent: "center" }}
-                  >
-                    <ChevronRight size={12} color={colors.textSecondary} />
-                  </View>
-                </View>
+                {/* Two lines are reserved for the label, so a language whose word is longer (it wraps) leaves
+                    the three cards the same height with the numbers on one line. No chevron: it used to hang
+                    off the label's edge and ran into the label or the divider in longer languages; the tap
+                    feedback and the accessibility role already say the card opens something. */}
+                <Text
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.85}
+                  style={{
+                    color: colors.textSecondary,
+                    fontWeight: "700",
+                    fontSize: 11,
+                    lineHeight: 14,
+                    minHeight: 28,
+                    marginTop: 4,
+                    paddingHorizontal: 4,
+                    textAlign: "center",
+                  }}
+                >
+                  {t(stat.labelKey)}
+                </Text>
               </TouchableOpacity>
             </React.Fragment>
           ))}

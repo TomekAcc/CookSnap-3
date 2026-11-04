@@ -23,7 +23,7 @@ export default {
   "onboarding.proBenefitMacros": "Répartition complète des macros pour chaque recette",
   "onboarding.maybeLater": "Plus tard",
   "nav.scanner": "Scanner",
-  "nav.pantry": "Garde-manger",
+  "nav.pantry": "Placard",
   "nav.saved": "Enregistrés",
   "nav.profile": "Profil",
   "menu.scanHistory": "Historique des scans",

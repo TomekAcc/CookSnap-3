@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     // right edge line up with the titles and cards below.
     paddingHorizontal: 20,
     paddingTop: 6,
-    paddingBottom: 8,
+    paddingBottom: 12,
     marginTop: 24,
     overflow: "hidden",
     backgroundColor: WHITE,

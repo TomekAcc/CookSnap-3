@@ -74,7 +74,7 @@ export default {
   "profile.hungerLevel": "Sultnivå",
   "profile.statsTitle": "Ditt kjøkken",
   "profile.statSavedRecipes": "Lagrede oppskrifter",
-  "profile.statPantryItems": "Varer i spiskammeret",
+  "profile.statPantryItems": "Varer på lager",
   "profile.statTotalScans": "Totalt antall skanninger",
   "profile.quickActions": "Hurtighandlinger",
   "a11y.openSettings": "Åpne innstillinger",

@@ -24,7 +24,7 @@ export default {
   "onboarding.maybeLater": "Belki sonra",
   "nav.scanner": "Tarayıcı",
   "nav.pantry": "Kiler",
-  "nav.saved": "Kaydedilenler",
+  "nav.saved": "Kaydedilen",
   "nav.profile": "Profil",
   "menu.scanHistory": "Tarama Geçmişi",
   "menu.savedRecipes": "Kaydedilen Tarifler",
