@@ -138,11 +138,11 @@ export default function ProfileScreen() {
             activeOpacity={0.75}
             accessibilityRole="button"
             accessibilityLabel={t("a11y.openSettings")}
-            hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+            hitSlop={{ top: 3, bottom: 3, left: 3, right: 3 }}
             style={{
-              width: 34,
-              height: 34,
-              borderRadius: 17,
+              width: 38,
+              height: 38,
+              borderRadius: 19,
               backgroundColor: colors.card,
               borderWidth: 1,
               borderColor: colors.cardBorder,
@@ -150,7 +150,7 @@ export default function ProfileScreen() {
               justifyContent: "center",
             }}
           >
-            <SettingsIcon size={18} color={colors.textSecondary} />
+            <SettingsIcon size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         }
       />
