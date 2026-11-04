@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Iskoristili ste svih {count} besplatnih generiranja recepata danas — otključajte neograničeno",
   "profile.generationsUsedPartial": "Iskorišteno {used} od {count} besplatnih generiranja recepata danas — otključajte neograničeno kad god poželite",
   "profile.dietPreferences": "Prehrambene preferencije",
+  "profile.dietNone": "Ništa nije odabrano — dodirnite za odabir",
   "profile.manageAll": "Upravljaj svime",
   "profile.hungerLevel": "Razina gladi",
   "profile.statsTitle": "Vaša kuhinja",

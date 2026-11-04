@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Du har använt dina {count} gratis receptgenereringar för idag – lås upp obegränsat",
   "profile.generationsUsedPartial": "{used} av {count} gratis receptgenereringar använda idag – uppgradera när som helst för obegränsat",
   "profile.dietPreferences": "Kostpreferenser",
+  "profile.dietNone": "Inga valda — tryck för att välja",
   "profile.manageAll": "Hantera alla",
   "profile.hungerLevel": "Hungernivå",
   "profile.statsTitle": "Ditt kök",

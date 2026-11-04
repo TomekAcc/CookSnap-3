@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Wykorzystano już wszystkie {count} darmowe przepisy na dziś — zyskaj nielimitowany dostęp",
   "profile.generationsUsedPartial": "Wykorzystano {used} z {count} darmowych generacji przepisów na dzisiaj – przejdź na wersję bez limitu w dowolnym momencie",
   "profile.dietPreferences": "Preferencje dietetyczne",
+  "profile.dietNone": "Nie wybrano — dotknij, aby wybrać",
   "profile.manageAll": "Zarządzaj wszystkimi",
   "profile.hungerLevel": "Poziom głodu",
   "profile.statsTitle": "Twoja kuchnia",

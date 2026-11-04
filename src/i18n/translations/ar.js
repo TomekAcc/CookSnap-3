@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "لقد استنفدت جميع توليدات الوصفات المجانية البالغ عددها {count} اليوم - احصل على وصول غير محدود",
   "profile.generationsUsedPartial": "تم استخدام {used} من أصل {count} توليد مجاني للوصفات اليوم - احصل على وصول غير محدود في أي وقت",
   "profile.dietPreferences": "التفضيلات الغذائية",
+  "profile.dietNone": "لم يتم الاختيار — اضغط للاختيار",
   "profile.manageAll": "إدارة الكل",
   "profile.hungerLevel": "مستوى الجوع",
   "profile.statsTitle": "مطبخك",

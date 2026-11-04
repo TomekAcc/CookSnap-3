@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Bugünkü {count} ücretsiz tarif hakkınızın tamamını kullandınız — sınırsız pakete geçin",
   "profile.generationsUsedPartial": "Bugünkü {count} ücretsiz tarif hakkından {used} tanesi kullanıldı — dilediğiniz zaman sınırsız pakete geçin",
   "profile.dietPreferences": "Diyet Tercihleri",
+  "profile.dietNone": "Seçilmedi — seçmek için dokun",
   "profile.manageAll": "Tümünü yönet",
   "profile.hungerLevel": "Açlık Durumu",
   "profile.statsTitle": "Mutfağınız",

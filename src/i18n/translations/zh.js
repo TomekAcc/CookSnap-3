@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "你今天已用完 {count} 次免费菜谱生成额度——升级解锁无限畅用",
   "profile.generationsUsedPartial": "今天已使用 {count} 次免费菜谱生成中的 {used} 次——随时升级无限畅用",
   "profile.dietPreferences": "饮食偏好",
+  "profile.dietNone": "未选择 — 点按选择",
   "profile.manageAll": "管理全部",
   "profile.hungerLevel": "饥饿程度",
   "profile.statsTitle": "我的厨房",

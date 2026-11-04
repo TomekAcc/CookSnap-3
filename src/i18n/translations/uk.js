@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Ви використали всі {count} безкоштовні генерації рецептів на сьогодні — перейдіть на безліміт",
   "profile.generationsUsedPartial": "Використано {used} з {count} безкоштовних генерацій рецептів на сьогодні — переходьте на безліміт будь-коли",
   "profile.dietPreferences": "Харчові вподобання",
+  "profile.dietNone": "Не вибрано — торкніться, щоб вибрати",
   "profile.manageAll": "Керувати всіма",
   "profile.hungerLevel": "Рівень голоду",
   "profile.statsTitle": "Ваша кухня",

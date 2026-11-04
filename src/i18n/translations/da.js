@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Du har brugt alle {count} gratis opskriftsgenereringer i dag — få ubegrænset",
   "profile.generationsUsedPartial": "{used} af {count} gratis opskriftsgenereringer brugt i dag — få ubegrænset når som helst",
   "profile.dietPreferences": "Kostpræferencer",
+  "profile.dietNone": "Ingen valgt — tryk for at vælge",
   "profile.manageAll": "Administrer alle",
   "profile.hungerLevel": "Sultniveau",
   "profile.statsTitle": "Dit køkken",

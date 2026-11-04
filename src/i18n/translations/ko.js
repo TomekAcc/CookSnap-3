@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "오늘 무료 레시피 생성 {count}회를 모두 사용했습니다 — 무제한으로 업그레이드하세요",
   "profile.generationsUsedPartial": "오늘 무료 레시피 생성 {used}/{count}회 사용 완료 — 언제든 무제한으로 전환하세요",
   "profile.dietPreferences": "식단 환경설정",
+  "profile.dietNone": "선택 안 함 — 눌러서 선택",
   "profile.manageAll": "전체 관리",
   "profile.hungerLevel": "허기 정도",
   "profile.statsTitle": "내 주방",

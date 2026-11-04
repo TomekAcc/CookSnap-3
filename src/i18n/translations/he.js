@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "ניצלת את כל {count} יצירות המתכונים החינמיות להיום — שדרג ללא הגבלה",
   "profile.generationsUsedPartial": "נוצלו {used} מתוך {count} יצירות מתכונים חינמיות להיום — שדרג ללא הגבלה מתי שתרצה",
   "profile.dietPreferences": "העדפות תזונתיות",
+  "profile.dietNone": "לא נבחר — הקש לבחירה",
   "profile.manageAll": "נהל הכל",
   "profile.hungerLevel": "רמת רעב",
   "profile.statsTitle": "המטבח שלך",

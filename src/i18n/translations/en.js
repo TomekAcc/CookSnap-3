@@ -79,6 +79,7 @@ export default {
   "profile.generationsUsedUp": "You've used all {count} free recipe generations today — go unlimited",
   "profile.generationsUsedPartial": "{used} of {count} free recipe generations used today — go unlimited anytime",
   "profile.dietPreferences": "Diet Preferences",
+  "profile.dietNone": "None selected — tap to choose",
   "profile.manageAll": "Manage all",
   "profile.hungerLevel": "Hunger Level",
   "profile.statsTitle": "Your Kitchen",

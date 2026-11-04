@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Du hast alle {count} kostenlosen Rezeptgenerierungen für heute aufgebraucht – jetzt unbegrenzt freischalten",
   "profile.generationsUsedPartial": "{used} von {count} kostenlosen Rezeptgenerierungen heute genutzt – jederzeit unbegrenzt freischalten",
   "profile.dietPreferences": "Ernährungspräferenzen",
+  "profile.dietNone": "Keine ausgewählt — zum Wählen tippen",
   "profile.manageAll": "Alle verwalten",
   "profile.hungerLevel": "Hungergefühl",
   "profile.statsTitle": "Deine Küche",

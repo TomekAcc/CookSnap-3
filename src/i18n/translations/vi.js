@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Bạn đã dùng hết {count} lượt tạo công thức miễn phí hôm nay — nâng cấp để dùng không giới hạn",
   "profile.generationsUsedPartial": "Đã dùng {used}/{count} lần tạo công thức miễn phí hôm nay — nâng cấp không giới hạn bất cứ lúc nào",
   "profile.dietPreferences": "Sở thích ăn uống",
+  "profile.dietNone": "Chưa chọn — chạm để chọn",
   "profile.manageAll": "Quản lý tất cả",
   "profile.hungerLevel": "Mức độ đói",
   "profile.statsTitle": "Gian bếp của bạn",

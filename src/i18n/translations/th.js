@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "คุณใช้โควต้ารายวันหมดแล้ว ({count} ครั้ง) — อัปเกรดเพื่อใช้งานไม่จำกัด",
   "profile.generationsUsedPartial": "ใช้วันนี้ไปแล้ว {used} จาก {count} ครั้ง — อัปเกรดเพื่อใช้งานไม่จำกัดได้ตลอดเวลา",
   "profile.dietPreferences": "ความชอบด้านอาหาร",
+  "profile.dietNone": "ยังไม่ได้เลือก — แตะเพื่อเลือก",
   "profile.manageAll": "จัดการทั้งหมด",
   "profile.hungerLevel": "ระดับความหิว",
   "profile.statsTitle": "ครัวของคุณ",

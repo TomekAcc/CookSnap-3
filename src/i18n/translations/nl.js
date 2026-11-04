@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Je hebt alle {count} gratis receptgeneraties van vandaag gebruikt — kies voor onbeperkt",
   "profile.generationsUsedPartial": "{used} van {count} gratis receptgeneraties gebruikt vandaag — kies wanneer je wilt voor onbeperkt",
   "profile.dietPreferences": "Dieetvoorkeuren",
+  "profile.dietNone": "Geen gekozen — tik om te kiezen",
   "profile.manageAll": "Alles beheren",
   "profile.hungerLevel": "Hongerniveau",
   "profile.statsTitle": "Je keuken",

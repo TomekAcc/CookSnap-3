@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Ai folosit toate cele {count} generări gratuite de rețete de azi — treci la nelimitat",
   "profile.generationsUsedPartial": "{used} din {count} generări gratuite de rețete folosite azi — treci la nelimitat oricând",
   "profile.dietPreferences": "Preferințe alimentare",
+  "profile.dietNone": "Nimic selectat — atinge pentru a alege",
   "profile.manageAll": "Gestionează tot",
   "profile.hungerLevel": "Nivel de foame",
   "profile.statsTitle": "Bucătăria ta",

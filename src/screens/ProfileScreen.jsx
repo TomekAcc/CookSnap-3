@@ -10,6 +10,7 @@ import {
   History,
   MessageCircleQuestion,
   ChevronRight,
+  ChevronDown,
   Check,
 } from "../icons";
 import { useModalState } from "../context/ModalContext";
@@ -23,6 +24,8 @@ import { useInventory } from "../context/InventoryContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useLibrary } from "../context/LibraryContext";
 import { useNavigation } from "../context/NavigationContext";
+import { usePreferences } from "../context/PreferencesContext";
+import { FULL_DIETARY_OPTIONS } from "../data/dietaryOptions";
 import { useScan } from "../context/ScanContext";
 import { APPLE, EMERALD, WHITE } from "../theme/palette";
 
@@ -56,6 +59,12 @@ export default function ProfileScreen() {
   const { setProModalOpen, setMealPlannerOpen, setScanHistoryOpen, setHelpModalOpen } =
     useModalState();
   const { colors } = useTheme();
+  const { dietaryRestrictions } = usePreferences();
+  const [dietOpen, setDietOpen] = React.useState(false);
+  const activeDiets = FULL_DIETARY_OPTIONS.filter((item) => dietaryRestrictions[item.id]);
+  const dietSummary = activeDiets.length
+    ? activeDiets.map((item) => t(`diet.${item.id}.name`)).join(", ")
+    : t("profile.dietNone");
 
   // Meal Planner / Scan History / Help were previously reachable only
   // through the hamburger drawer — the same "buried" problem Settings had
@@ -184,6 +193,77 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        <View style={{ marginBottom: 24 }}>
+        {/* Real usage, not filler — same "personalize with actual numbers"
+            principle already used for the PRO banner above. Three columns
+            of genuinely new info (nothing restated from Diet Preferences),
+            same big-number-over-small-caps-label language as the recipe
+            macro row, so it reads as part of the same design system rather
+            than a bolted-on card. */}
+        <Text
+          style={{
+            color: colors.textPrimary,
+            fontWeight: "700",
+            fontSize: 13,
+            letterSpacing: -0.1,
+            marginBottom: 12,
+          }}
+        >
+          {t("profile.statsTitle")}
+        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: colors.card,
+            borderRadius: 24,
+            borderWidth: 1,
+            borderColor: colors.cardBorder,
+            overflow: "hidden",
+          }}
+        >
+          {/* Each number is a shortcut to the thing it counts. */}
+          {STATS.map((stat, index) => (
+            <React.Fragment key={stat.id}>
+              {index > 0 ? (
+                <View style={{ width: 1, backgroundColor: colors.cardBorder, marginVertical: 14 }} />
+              ) : null}
+              <TouchableOpacity
+                onPress={stat.onPress}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityLabel={`${t(stat.labelKey)}: ${stat.value}`}
+                style={{ flex: 1, alignItems: "center", paddingVertical: 18 }}
+              >
+                <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
+                  {stat.value}
+                </Text>
+                {/* Two lines are reserved for the label, so a language whose word is longer (it wraps) leaves
+                    the three cards the same height with the numbers on one line. No chevron: it used to hang
+                    off the label's edge and ran into the label or the divider in longer languages; the tap
+                    feedback and the accessibility role already say the card opens something. */}
+                <Text
+                  numberOfLines={2}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.85}
+                  style={{
+                    color: colors.textSecondary,
+                    fontWeight: "700",
+                    fontSize: 11,
+                    lineHeight: 14,
+                    minHeight: 28,
+                    marginTop: 4,
+                    paddingHorizontal: 4,
+                    textAlign: "center",
+                  }}
+                >
+                  {t(stat.labelKey)}
+                </Text>
+              </TouchableOpacity>
+            </React.Fragment>
+          ))}
+        </View>
+        </View>
+
         {isPro ? (
           // A paying subscriber was seeing this exact same "Upgrade to PRO /
           // 7-day free trial available" pitch on their own Profile forever —
@@ -277,53 +357,8 @@ export default function ProfileScreen() {
           </View>
         ) : null}
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 12,
-          }}
-        >
-          {/* 13/800/-0.1 is the section-heading standard already shared by
-              Settings ("Dietary Restrictions", "App Theme") and Pantry
-              ("In Stock", "Out of Stock"). Profile's three headings were the
-              only 16/900 ones in the app, so its sections read a full step
-              louder than the identical sections on those screens. */}
-          <Text
-            style={{
-              color: colors.textPrimary,
-              fontWeight: "700",
-              fontSize: 13,
-              letterSpacing: -0.1,
-            }}
-          >
-            {t("profile.dietPreferences")}
-          </Text>
-        </View>
-
-        {/* Directly tappable — a quick-toggle shortcut on top of Settings'
-            full switch list (via "Manage all" above), not a replacement
-            for it: Settings stays the place with descriptions and the
-            Custom Diet section, this is just "flip one thing without
-            leaving Profile." Same toggleDietaryRestriction both screens
-            already share, so there's only ever one source of truth
-            regardless of which control was tapped. Selected fill uses the
-            app's standard green (not PillTag's default dark navy) so it
-            doesn't visually echo the PRO banner directly above. */}
-        <View style={{ marginBottom: 18 }}>
-          <DietList showDescriptions={false} />
-        </View>
-
-        <View style={{ marginBottom: 18 }}>
-          <CustomDietSection />
-        </View>
-
-        {/* Free users: the upsell sits BELOW their diet settings, not above
-            them — the first thing on Profile should be the thing they came
-            to set, and the header already carries a crown button. Same amber
-            identity as the PRO-active card, the recipe-list card and the
-            paywall. */}
+        {/* Free users' upsell: right under the numbers, above the shortcuts, so it is seen without scrolling past a
+            long diet list. Same amber identity as the PRO-active card, the recipe-list card and the paywall. */}
         {!isPro ? (
           <TouchableOpacity
             onPress={() => setProModalOpen(true)}
@@ -387,75 +422,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         ) : null}
 
-        {/* Real usage, not filler — same "personalize with actual numbers"
-            principle already used for the PRO banner above. Three columns
-            of genuinely new info (nothing restated from Diet Preferences),
-            same big-number-over-small-caps-label language as the recipe
-            macro row, so it reads as part of the same design system rather
-            than a bolted-on card. */}
-        <Text
-          style={{
-            color: colors.textPrimary,
-            fontWeight: "700",
-            fontSize: 13,
-            letterSpacing: -0.1,
-            marginBottom: 12,
-          }}
-        >
-          {t("profile.statsTitle")}
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: colors.card,
-            borderRadius: 24,
-            borderWidth: 1,
-            borderColor: colors.cardBorder,
-            overflow: "hidden",
-          }}
-        >
-          {/* Each number is a shortcut to the thing it counts. */}
-          {STATS.map((stat, index) => (
-            <React.Fragment key={stat.id}>
-              {index > 0 ? (
-                <View style={{ width: 1, backgroundColor: colors.cardBorder, marginVertical: 14 }} />
-              ) : null}
-              <TouchableOpacity
-                onPress={stat.onPress}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-                accessibilityLabel={`${t(stat.labelKey)}: ${stat.value}`}
-                style={{ flex: 1, alignItems: "center", paddingVertical: 18 }}
-              >
-                <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
-                  {stat.value}
-                </Text>
-                {/* Two lines are reserved for the label, so a language whose word is longer (it wraps) leaves
-                    the three cards the same height with the numbers on one line. No chevron: it used to hang
-                    off the label's edge and ran into the label or the divider in longer languages; the tap
-                    feedback and the accessibility role already say the card opens something. */}
-                <Text
-                  numberOfLines={2}
-                  adjustsFontSizeToFit
-                  minimumFontScale={0.85}
-                  style={{
-                    color: colors.textSecondary,
-                    fontWeight: "700",
-                    fontSize: 11,
-                    lineHeight: 14,
-                    minHeight: 28,
-                    marginTop: 4,
-                    paddingHorizontal: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  {t(stat.labelKey)}
-                </Text>
-              </TouchableOpacity>
-            </React.Fragment>
-          ))}
-        </View>
-
+        <View style={{ marginBottom: 24 }}>
         {/* Real shortcuts, not more chrome — see QUICK_ACTIONS above for
             why these four specifically. */}
         <Text
@@ -464,7 +431,6 @@ export default function ProfileScreen() {
             fontWeight: "700",
             fontSize: 13,
             letterSpacing: -0.1,
-            marginTop: 24,
             marginBottom: 12,
           }}
         >
@@ -509,6 +475,68 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           ))}
         </View>
+        </View>
+
+        {/* Diets: one tap away, but folded by default. Nine switches used to be the first thing on this screen and
+            pushed the numbers, the upgrade card and the shortcuts below the fold. The closed card names what is on,
+            so the person sees their setup without opening it. */}
+        <Text
+          style={{
+            color: colors.textPrimary,
+            fontWeight: "700",
+            fontSize: 13,
+            letterSpacing: -0.1,
+            marginBottom: 12,
+          }}
+        >
+          {t("profile.dietPreferences")}
+        </Text>
+        <TouchableOpacity
+          onPress={() => setDietOpen((open) => !open)}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityState={{ expanded: dietOpen }}
+          accessibilityLabel={`${t("profile.dietPreferences")}: ${dietSummary}`}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: colors.card,
+            borderRadius: 24,
+            borderWidth: 1,
+            borderColor: colors.cardBorder,
+            paddingVertical: 14,
+            paddingHorizontal: 16,
+            marginBottom: dietOpen ? 12 : 0,
+          }}
+        >
+          <Text
+            numberOfLines={2}
+            style={{
+              flex: 1,
+              color: activeDiets.length ? colors.textPrimary : colors.textSecondary,
+              fontWeight: "600",
+              fontSize: 15,
+              marginRight: 12,
+            }}
+          >
+            {dietSummary}
+          </Text>
+          <ChevronDown
+            size={18}
+            color={colors.textSecondary}
+            style={{ transform: [{ rotate: dietOpen ? "180deg" : "0deg" }] }}
+          />
+        </TouchableOpacity>
+        {dietOpen ? (
+          <>
+            <View style={{ marginBottom: 18 }}>
+              <DietList showDescriptions={false} />
+            </View>
+            <View style={{ marginBottom: 18 }}>
+              <CustomDietSection />
+            </View>
+          </>
+        ) : null}
       </View>
     </ScrollView>
   );

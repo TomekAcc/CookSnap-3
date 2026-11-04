@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Anda sudah menggunakan semua {count} jatah pembuatan resep gratis hari ini — beralih ke tak terbatas",
   "profile.generationsUsedPartial": "{used} dari {count} pembuatan resep gratis terpakai hari ini — tingkatkan kapan saja",
   "profile.dietPreferences": "Preferensi Diet",
+  "profile.dietNone": "Belum dipilih — ketuk untuk memilih",
   "profile.manageAll": "Kelola semua",
   "profile.hungerLevel": "Tingkat Rasa Lapar",
   "profile.statsTitle": "Dapur Anda",

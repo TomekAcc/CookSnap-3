@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Dnes ste vyčerpali všetkých {count} bezplatných receptov – prejdite na neobmedzenú verziu",
   "profile.generationsUsedPartial": "Dnes ste použili {used} z {count} bezplatných receptov – prejdite kedykoľvek na neobmedzenú verziu",
   "profile.dietPreferences": "Stravovacie preferencie",
+  "profile.dietNone": "Nič nevybrané — ťuknutím vyberte",
   "profile.manageAll": "Spravovať všetko",
   "profile.hungerLevel": "Úroveň hladu",
   "profile.statsTitle": "Vaša kuchyňa",

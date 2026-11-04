@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Dnes jste vyčerpali všech {count} bezplatných generování receptů – získejte neomezený přístup",
   "profile.generationsUsedPartial": "Dnes využito {used} z {count} bezplatných generování receptů – přejděte kdykoli na neomezenou verzi",
   "profile.dietPreferences": "Dietní preference",
+  "profile.dietNone": "Nic nevybráno — klepnutím vyberte",
   "profile.manageAll": "Spravovat vše",
   "profile.hungerLevel": "Míra hladu",
   "profile.statsTitle": "Vaše kuchyně",

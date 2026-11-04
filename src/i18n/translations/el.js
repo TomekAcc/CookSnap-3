@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Χρησιμοποιήσατε και τις {count} δωρεάν δημιουργίες συνταγών για σήμερα — αποκτήστε απεριόριστη πρόσβαση",
   "profile.generationsUsedPartial": "Χρησιμοποιήθηκαν {used} από τις {count} δωρεάν δημιουργίες συνταγών σήμερα — αποκτήστε απεριόριστες ανά πάσα στιγμή",
   "profile.dietPreferences": "Διατροφικές προτιμήσεις",
+  "profile.dietNone": "Καμία επιλογή — πατήστε για επιλογή",
   "profile.manageAll": "Διαχείριση όλων",
   "profile.hungerLevel": "Επίπεδο πείνας",
   "profile.statsTitle": "Η κουζίνα σας",

@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Has usado tus {count} generaciones de recetas gratis de hoy. ¡Pásate al ilimitado!",
   "profile.generationsUsedPartial": "{used} de {count} generaciones de recetas gratis usadas hoy. Pásate al ilimitado cuando quieras",
   "profile.dietPreferences": "Preferencias de dieta",
+  "profile.dietNone": "Ninguna — toca para elegir",
   "profile.manageAll": "Gestionar todo",
   "profile.hungerLevel": "Nivel de hambre",
   "profile.statsTitle": "Tu cocina",

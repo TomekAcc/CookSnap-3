@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Felhasználtad az összes mai {count} ingyenes receptgenerálást – válts korlátlanra",
   "profile.generationsUsedPartial": "{used} / {count} ingyenes receptgenerálás felhasználva ma – válts korlátlanra bármikor",
   "profile.dietPreferences": "Étrendi preferenciák",
+  "profile.dietNone": "Nincs kiválasztva — koppints a választáshoz",
   "profile.manageAll": "Összes kezelése",
   "profile.hungerLevel": "Éhségszint",
   "profile.statsTitle": "Konyhád",

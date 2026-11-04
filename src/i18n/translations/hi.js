@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "आज की सभी {count} मुफ़्त रेसिपी जनरेशन समाप्त हो गईं — अनलिमिटेड लें",
   "profile.generationsUsedPartial": "आज की {count} में से {used} मुफ़्त रेसिपी जनरेशन उपयोग हो चुकी हैं — कभी भी अनलिमिटेड लें",
   "profile.dietPreferences": "डाइट प्राथमिकताएं",
+  "profile.dietNone": "कुछ चुना नहीं गया — चुनने के लिए टैप करें",
   "profile.manageAll": "सभी प्रबंधित करें",
   "profile.hungerLevel": "भूख का स्तर",
   "profile.statsTitle": "आपकी रसोई",

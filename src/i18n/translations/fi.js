@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Olet käyttänyt kaikki päivän {count} ilmaista reseptiluontia – hanki rajoittamaton käyttö",
   "profile.generationsUsedPartial": "Päivän ilmaisista reseptiluonneista käytetty {used}/{count} – päivitä rajoittamattomaan milloin tahansa",
   "profile.dietPreferences": "Ruokavaliotoiveet",
+  "profile.dietNone": "Ei valintaa — valitse napauttamalla",
   "profile.manageAll": "Hallinnoi kaikkia",
   "profile.hungerLevel": "Nälkätaso",
   "profile.statsTitle": "Keittiösi",

@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "Все бесплатные генерации рецептов ({count}) на сегодня исчерпаны — переходите на безлимит",
   "profile.generationsUsedPartial": "Использовано бесплатных генераций сегодня: {used} из {count} — переходите на безлимит в любое время",
   "profile.dietPreferences": "Диетические предпочтения",
+  "profile.dietNone": "Не выбрано — нажмите, чтобы выбрать",
   "profile.manageAll": "Управлять всеми",
   "profile.hungerLevel": "Уровень аппетита",
   "profile.statsTitle": "Ваша кухня",

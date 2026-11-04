@@ -70,6 +70,7 @@ export default {
   "profile.generationsUsedUp": "本日の無料レシピ生成回数（{count}回）を使い切りました。使い放題プランへ",
   "profile.generationsUsedPartial": "本日の無料レシピ生成：{count}回中{used}回使用済み — いつでも使い放題にアップグレード",
   "profile.dietPreferences": "食の好み",
+  "profile.dietNone": "未選択 — タップして選択",
   "profile.manageAll": "すべて管理",
   "profile.hungerLevel": "空腹度",
   "profile.statsTitle": "マイキッチン",
