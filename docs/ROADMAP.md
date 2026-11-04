@@ -95,3 +95,14 @@ turns the product from AI-first into a user-generated recipe box.
   first regenerate every time (before: 3.4, and 1 to 2 on the first regenerate).
 - Still true: after three or four generations in a row on a very narrow fridge, the number of genuinely different
   dishes runs out and a batch can come back with fewer than five.
+
+## Decision: the app keeps the name CookSnap
+
+Decided by the owner. Known risk, accepted: App Store has "CookSnap: Recipe Saver" (ELKAWEB LLC), same category, similar
+features. What this means in practice:
+- The store name is the longer "CookSnap: Fridge Recipes" (Polish "CookSnap: Przepisy z lodówki"), see `docs/store/LISTING.md`.
+- Reserve the name in App Store Connect as early as possible: Apple refuses a name that is already taken, and that is
+  the first real answer. If it is refused, the fallback is a different store name with the same in-app wordmark, or a rename
+  (in-app texts, translations, store texts, legal pages, support address).
+- Search the trademark registers (UPRP in Poland, EUIPO, USPTO) for "CookSnap" in classes 9 and 42 before spending money
+  on a release. Not legal advice; ask a trademark attorney if anything similar is registered.
