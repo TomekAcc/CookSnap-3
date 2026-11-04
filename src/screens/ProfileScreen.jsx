@@ -237,8 +237,8 @@ export default function ProfileScreen() {
                 <Text style={{ color: colors.greenStrong, fontWeight: "800", fontSize: 22 }}>
                   {stat.value}
                 </Text>
-                {/* Two lines are reserved for the label, so a language whose word is longer (it wraps) leaves
-                    the three cards the same height with the numbers on one line. No chevron: it used to hang
+                {/* The label may take two lines; the numbers stay on one line because every column is top-aligned, and
+                    the card is only as tall as its tallest label (no empty strip under one-line labels). No chevron: it used to hang
                     off the label's edge and ran into the label or the divider in longer languages; the tap
                     feedback and the accessibility role already say the card opens something. */}
                 <Text
@@ -250,7 +250,6 @@ export default function ProfileScreen() {
                     fontWeight: "700",
                     fontSize: 11,
                     lineHeight: 14,
-                    minHeight: 28,
                     marginTop: 4,
                     paddingHorizontal: 4,
                     textAlign: "center",
