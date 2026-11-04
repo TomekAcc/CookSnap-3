@@ -1,7 +1,7 @@
 import React from "react";
 import { Animated, Text, TouchableOpacity, View } from "react-native";
-import { Refrigerator, Camera, Image as ImageIcon } from "../../icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { Camera, Image as ImageIcon } from "../../icons";
+import ScanTile from "./ScanTile";
 import PrivacyNote from "../PrivacyNote";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -16,7 +16,7 @@ export default function FridgeIdleCard({
   handlePickFromGallery,
 }) {
   const { t } = useLanguage();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { firstScanHintShown, markFirstScanHintShown } = useOnboarding();
   const { scanHistory } = useScan();
   return (
@@ -30,97 +30,14 @@ export default function FridgeIdleCard({
         alignItems: "center",
       }}
     >
-      {/* Same pastel-emerald tone every icon badge in the app uses
-          (Profile, Pantry, Saved headers, IconBadge's own palette) —
-          this was a flat navy/gray box with an amber-on-dark-mode
-          accent that didn't match anything else on screen, reading
-          as an unstyled placeholder next to the colorful icons in
-          the cards right below it. Kept at 64px (not IconBadge's
-          standard 44px) since this is the hero of the whole screen,
-          not a small nav-row badge.
-
-          Light mode uses a subtle gradient fill (matches the
-          approved mockup exactly) instead of a flat tint — that
-          gradient plus a tighter, closer-hugging shadow is what
-          reads as a deliberately elevated card; the first pass's
-          flat fill + wide, diffuse shadow read more like an
-          unintentional haze than a real shadow. Dark mode keeps a
-          flat fill (the light gradient's colors don't translate —
-          they'd either wash out or muddy against a dark card). */}
-      {isDark ? (
-        <View
-          style={{
-            width: 52,
-            height: 52,
-            borderRadius: 16,
-            backgroundColor: EMERALD[900],
-            borderWidth: 1,
-            borderColor: EMERALD[800],
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 12,
-            shadowColor: EMERALD[600],
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.18,
-            shadowRadius: 6,
-            elevation: 3,
-          }}
-        >
-          <Refrigerator size={24} color={EMERALD[400]} />
-        </View>
-      ) : (
-        // Split into two views on purpose: LinearGradient needs
-        // overflow:"hidden" to clip its fill to the rounded corners,
-        // but a shadow on that same view gets clipped away by that
-        // same overflow:"hidden" — it's drawn outside the view's
-        // bounds, which is exactly what overflow:hidden cuts off.
-        // Confirmed real failure on-device: the gradient showed, the
-        // shadow silently didn't. The shadow now lives on this outer
-        // plain View (no overflow set, so nothing clips it); the
-        // LinearGradient inside only owns the fill + clipping.
-        //
-        // Opacity dropped hard from the first pass (0.3 → 0.12) —
-        // that one still read as a diffuse green "glow"/halo even
-        // after the clipping fix, not a real shadow. Reason: RN's
-        // shadow has no CSS "spread" property, so the mockup's
-        // negative-spread box-shadow (which is what tightened it in
-        // the browser) has no direct equivalent here — the same
-        // nominal opacity/blur numbers spread out much further on
-        // real iOS than in Chromium. This app's own proven card
-        // shadow (designSystem.js DS.shadow.card) sits at just
-        // 0.04–0.06 opacity; landing near there (with a bit more for
-        // the emerald tint to still read at all) is what actually
-        // keeps this looking like elevation instead of a glow.
-        <View
-          style={{
-            width: 52,
-            height: 52,
-            borderRadius: 16,
-            marginBottom: 12,
-            shadowColor: EMERALD[600],
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.12,
-            shadowRadius: 5,
-            elevation: 3,
-          }}
-        >
-          <LinearGradient
-            colors={[EMERALD[100], EMERALD[200]]}
-            start={{ x: 0.15, y: 0 }}
-            end={{ x: 0.85, y: 1 }}
-            style={{
-              width: 52,
-              height: 52,
-              borderRadius: 16,
-              overflow: "hidden",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Refrigerator size={24} color={colors.greenStrong} />
-          </LinearGradient>
-        </View>
-      )}
+      {/* The hero icon is also a "Take Photo" button, with a scanner line that sweeps across it every few seconds. */}
+      <ScanTile
+        label={t("scanner.takePhoto")}
+        onPress={() => {
+          markFirstScanHintShown();
+          handleOpenCamera();
+        }}
+      />
       <Text
         style={{
           color: colors.textPrimary,
