@@ -5,7 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useModalState } from "../context/ModalContext";
 import { useEntitlements } from "../context/EntitlementsContext";
 import { useLanguage } from "../context/LanguageContext";
-import { APPLE, EMERALD, WHITE } from "../theme/palette";
+import { EMERALD, WHITE } from "../theme/palette";
 
 // Same amber accent as the PRO paywall's own crown badge
 // (ProSubscriptionModal.jsx) — kept as local literals here rather than a
@@ -120,16 +120,15 @@ export default function Header({ trailing = null }) {
           <Text style={[styles.proButtonText, { color: colors.amberStrong }]}>PRO</Text>
         </TouchableOpacity>
       ) : (
-        // A subscriber sees a solid, saturated amber badge — clearly different from the pale outlined upgrade button
-        // free users get — and it is not pressable (no border, no ripple), so it reads as a status, not an action.
+        // A subscriber sees a small round crown, the same size and style as Profile's settings button but gold: calm,
+        // clearly a status (no label, no border colour, not pressable) and clearly not the labelled upgrade pill.
         <View
           accessible
           accessibilityRole="text"
           accessibilityLabel={t("profile.proActiveTitle")}
-          style={[styles.proBadge, { backgroundColor: colors.accentAmber }]}
+          style={[styles.proBadge, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}
         >
-          <Crown size={14} color={APPLE.label} fill={APPLE.label} />
-          <Text style={[styles.proButtonText, { color: APPLE.label }]}>PRO</Text>
+          <Crown size={18} color={colors.accentAmber} fill={colors.accentAmber} />
         </View>
       )}
       {trailing}
@@ -199,17 +198,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   proBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+    width: 38,
     height: 38,
-    paddingHorizontal: 14,
     borderRadius: 19,
-    shadowColor: APPLE.orange,
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   proButtonText: {
     fontSize: 13,
