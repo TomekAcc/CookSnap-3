@@ -96,12 +96,8 @@ export default function Header({ trailing = null }) {
         </Text>
       </View>
 
-      {/* A quiet, persistent upgrade entry point — not shown to someone
-          who's already subscribed, since at that point this space would
-          have nothing left to offer them. Reuses profile.upgradeToPro for
-          its accessibility label rather than adding a new translation key
-          across all 31 languages for one icon button that already has an
-          established, identically-meant string elsewhere. */}
+      {/* Free users: a quiet, persistent upgrade entry point. Subscribers get a status badge in the same place (below).
+          Reuses profile.upgradeToPro for the button's accessibility label rather than a new translation key. */}
       <View style={styles.trailing}>
       {!isPro ? (
         <TouchableOpacity
@@ -123,7 +119,19 @@ export default function Header({ trailing = null }) {
           <Crown size={14} color={colors.accentAmber} fill={colors.accentAmber} />
           <Text style={[styles.proButtonText, { color: colors.amberStrong }]}>PRO</Text>
         </TouchableOpacity>
-      ) : null}
+      ) : (
+        // A subscriber sees a quiet status badge instead of the upgrade button: no border and no ripple, so it does
+        // not read as something to press, and the top-right corner is not left empty on every tab.
+        <View
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel={t("profile.proActiveTitle")}
+          style={[styles.proBadge, { backgroundColor: colors.amberSoft }]}
+        >
+          <Crown size={14} color={colors.accentAmber} fill={colors.accentAmber} />
+          <Text style={[styles.proButtonText, { color: colors.amberStrong }]}>PRO</Text>
+        </View>
+      )}
       {trailing}
       </View>
     </View>
@@ -189,6 +197,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 19,
     borderWidth: 1,
+  },
+  proBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    height: 38,
+    paddingHorizontal: 14,
+    borderRadius: 19,
   },
   proButtonText: {
     fontSize: 13,
