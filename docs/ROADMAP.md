@@ -25,7 +25,9 @@ app), SDK 58, the web smoke test in the normal workflow.
 - **Privacy policy, terms and support contact.** Drafts are in `docs/legal/` (policy, terms, and draft
   answers for Apple's "App Privacy" and Google's "Data safety"); they need the company details, a support
   mailbox, a lawyer's read and a public URL. Photos go to Google's AI, which has to be stated plainly.
-  Settings > About has the place for the links.
+  Settings > About has the rows for the links (hidden until `EXPO_PUBLIC_LEGAL_LIVE=1`). Hosting is solved: the
+  pages are served by the proxy Worker at `/privacy`, `/terms`, `/support`, built from `docs/legal` by
+  `npm run build:legal` (see `docs/legal/README.md`); what is missing is the company data and a lawyer's read.
 - **Help & Feedback inbox: done and live.** The app saves each message on the phone, sends it to the proxy (kept 90
   days, no duplicates, retried until confirmed), and the owner reads it at `/admin` of the proxy with an instant
   copy to Telegram (the Telegram bot is optional: delete the two Telegram secrets to switch it off). Recipes have a

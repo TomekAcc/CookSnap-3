@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Nanti saja",
   "settings.aiConsentLabel": "Kirim foto ke AI",
   "settings.aiConsentHint": "Diperlukan untuk memindai. Jika dimatikan, kami akan bertanya lagi.",
+  "settings.privacyPolicy": "Kebijakan Privasi",
+  "settings.termsOfService": "Ketentuan Layanan",
   "help.noMailApp": "Aplikasi email tidak bisa dibuka. Silakan tulis ke {email}.",
   "help.kindBug": "Masalah",
   "help.kindIdea": "Ide",

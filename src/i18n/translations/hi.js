@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "अभी नहीं",
   "settings.aiConsentLabel": "फ़ोटो AI को भेजें",
   "settings.aiConsentHint": "स्कैन के लिए ज़रूरी है। बंद करने पर हम दोबारा पूछेंगे।",
+  "settings.privacyPolicy": "गोपनीयता नीति",
+  "settings.termsOfService": "सेवा की शर्तें",
   "help.noMailApp": "मेल ऐप नहीं खुल सका। कृपया {email} पर लिखें।",
   "help.kindBug": "समस्या",
   "help.kindIdea": "सुझाव",

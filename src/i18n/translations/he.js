@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "לא עכשיו",
   "settings.aiConsentLabel": "שליחת תמונות ל-AI",
   "settings.aiConsentHint": "נדרש לסריקה. אם תכבו, נשאל שוב.",
+  "settings.privacyPolicy": "מדיניות פרטיות",
+  "settings.termsOfService": "תנאי שימוש",
   "help.noMailApp": "לא ניתן לפתוח את אפליקציית הדואר. כתבו אל {email}.",
   "help.kindBug": "בעיה",
   "help.kindIdea": "רעיון",

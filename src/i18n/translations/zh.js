@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "暂不",
   "settings.aiConsentLabel": "将照片发送给 AI",
   "settings.aiConsentHint": "扫描所需。关闭后将再次询问。",
+  "settings.privacyPolicy": "隐私政策",
+  "settings.termsOfService": "服务条款",
   "help.noMailApp": "无法打开邮件应用。请写信至 {email}。",
   "help.kindBug": "问题",
   "help.kindIdea": "想法",

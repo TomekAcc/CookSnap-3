@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Ei nyt",
   "settings.aiConsentLabel": "Lähetä kuvat tekoälylle",
   "settings.aiConsentHint": "Tarvitaan skannaukseen. Jos kytket pois, kysymme uudelleen.",
+  "settings.privacyPolicy": "Tietosuojaseloste",
+  "settings.termsOfService": "Käyttöehdot",
   "help.noMailApp": "Sähköpostisovellusta ei voitu avata. Kirjoita osoitteeseen {email}.",
   "help.kindBug": "Ongelma",
   "help.kindIdea": "Idea",

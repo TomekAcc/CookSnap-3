@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Để sau",
   "settings.aiConsentLabel": "Gửi ảnh cho AI",
   "settings.aiConsentHint": "Cần để quét. Nếu tắt, chúng tôi sẽ hỏi lại.",
+  "settings.privacyPolicy": "Chính sách quyền riêng tư",
+  "settings.termsOfService": "Điều khoản dịch vụ",
   "help.noMailApp": "Không mở được ứng dụng email. Vui lòng viết tới {email}.",
   "help.kindBug": "Sự cố",
   "help.kindIdea": "Ý tưởng",

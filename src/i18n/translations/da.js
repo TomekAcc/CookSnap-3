@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Ikke nu",
   "settings.aiConsentLabel": "Send fotos til AI",
   "settings.aiConsentHint": "Nødvendigt for at scanne. Slår du fra, spørger vi igen.",
+  "settings.privacyPolicy": "Privatlivspolitik",
+  "settings.termsOfService": "Servicevilkår",
   "help.noMailApp": "Kunne ikke åbne din mail-app. Skriv til {email}.",
   "help.kindBug": "Problem",
   "help.kindIdea": "Idé",

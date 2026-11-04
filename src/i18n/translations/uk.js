@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Не зараз",
   "settings.aiConsentLabel": "Надсилати фото до ШІ",
   "settings.aiConsentHint": "Потрібно для сканування. Якщо вимкнути, запитаємо знову.",
+  "settings.privacyPolicy": "Політика конфіденційності",
+  "settings.termsOfService": "Умови використання",
   "help.noMailApp": "Не вдалося відкрити поштовий застосунок. Напишіть на {email}.",
   "help.kindBug": "Проблема",
   "help.kindIdea": "Ідея",

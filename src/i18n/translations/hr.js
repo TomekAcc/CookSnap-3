@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Ne sada",
   "settings.aiConsentLabel": "Slanje fotografija AI-ju",
   "settings.aiConsentHint": "Potrebno za skeniranje. Ako isključite, pitat ćemo ponovno.",
+  "settings.privacyPolicy": "Pravila privatnosti",
+  "settings.termsOfService": "Uvjeti korištenja",
   "help.noMailApp": "Nije moguće otvoriti aplikaciju za e-poštu. Pišite na {email}.",
   "help.kindBug": "Problem",
   "help.kindIdea": "Ideja",

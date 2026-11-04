@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "今はしない",
   "settings.aiConsentLabel": "写真をAIに送信",
   "settings.aiConsentHint": "スキャンに必要です。オフにすると、次回あらためて確認します。",
+  "settings.privacyPolicy": "プライバシーポリシー",
+  "settings.termsOfService": "利用規約",
   "help.noMailApp": "メールアプリを開けませんでした。{email} 宛にご連絡ください。",
   "help.kindBug": "不具合",
   "help.kindIdea": "アイデア",

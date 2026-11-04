@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Non ora",
   "settings.aiConsentLabel": "Invia le foto all'IA",
   "settings.aiConsentHint": "Necessario per la scansione. Se lo disattivi, te lo chiederemo di nuovo.",
+  "settings.privacyPolicy": "Informativa sulla privacy",
+  "settings.termsOfService": "Termini di servizio",
   "help.noMailApp": "Impossibile aprire l'app di posta. Scrivi a {email}.",
   "help.kindBug": "Problema",
   "help.kindIdea": "Idea",

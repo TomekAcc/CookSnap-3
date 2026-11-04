@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Nu acum",
   "settings.aiConsentLabel": "Trimite fotografii către IA",
   "settings.aiConsentHint": "Necesar pentru scanare. Dezactivat, te vom întreba din nou.",
+  "settings.privacyPolicy": "Politica de confidențialitate",
+  "settings.termsOfService": "Termeni și condiții",
   "help.noMailApp": "Nu s-a putut deschide aplicația de e-mail. Scrie la {email}.",
   "help.kindBug": "Problemă",
   "help.kindIdea": "Idee",

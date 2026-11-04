@@ -446,6 +446,8 @@ export default {
   "aiConsent.decline": "Not now",
   "settings.aiConsentLabel": "Send photos to AI",
   "settings.aiConsentHint": "Needed to scan. Turn off and you will be asked again.",
+  "settings.privacyPolicy": "Privacy Policy",
+  "settings.termsOfService": "Terms of Service",
   "help.noMailApp": "Couldn't open your mail app. Please write to {email}.",
   "help.kindBug": "Problem",
   "help.kindIdea": "Idea",

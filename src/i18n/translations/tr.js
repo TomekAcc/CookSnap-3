@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Şimdi değil",
   "settings.aiConsentLabel": "Fotoğrafları yapay zekâya gönder",
   "settings.aiConsentHint": "Tarama için gerekli. Kapatırsanız tekrar soracağız.",
+  "settings.privacyPolicy": "Gizlilik Politikası",
+  "settings.termsOfService": "Hizmet Şartları",
   "help.noMailApp": "E-posta uygulaması açılamadı. Lütfen {email} adresine yaz.",
   "help.kindBug": "Sorun",
   "help.kindIdea": "Fikir",

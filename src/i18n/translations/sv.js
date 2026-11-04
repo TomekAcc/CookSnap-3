@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Inte nu",
   "settings.aiConsentLabel": "Skicka foton till AI",
   "settings.aiConsentHint": "Behövs för att skanna. Avstängt frågar vi igen.",
+  "settings.privacyPolicy": "Integritetspolicy",
+  "settings.termsOfService": "Användarvillkor",
   "help.noMailApp": "Det gick inte att öppna din e-postapp. Skriv till {email}.",
   "help.kindBug": "Problem",
   "help.kindIdea": "Idé",

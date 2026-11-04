@@ -5,6 +5,8 @@
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "build:legal": "node scripts/build-legal.js",
+    "build:legal:draft": "node scripts/build-legal.js --draft"
   }
 }

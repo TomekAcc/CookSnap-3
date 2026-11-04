@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Teraz nie",
   "settings.aiConsentLabel": "Odosielať fotky do AI",
   "settings.aiConsentHint": "Potrebné na skenovanie. Po vypnutí sa opýtame znova.",
+  "settings.privacyPolicy": "Zásady ochrany osobných údajov",
+  "settings.termsOfService": "Podmienky používania",
   "help.noMailApp": "Nepodarilo sa otvoriť e-mailovú aplikáciu. Napíšte na {email}.",
   "help.kindBug": "Problém",
   "help.kindIdea": "Nápad",

@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Ahora no",
   "settings.aiConsentLabel": "Enviar fotos a la IA",
   "settings.aiConsentHint": "Necesario para escanear. Si lo desactivas, volveremos a preguntar.",
+  "settings.privacyPolicy": "Política de privacidad",
+  "settings.termsOfService": "Términos de servicio",
   "help.noMailApp": "No se pudo abrir tu app de correo. Escribe a {email}.",
   "help.kindBug": "Problema",
   "help.kindIdea": "Idea",

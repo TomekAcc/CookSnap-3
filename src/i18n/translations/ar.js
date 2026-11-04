@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "ليس الآن",
   "settings.aiConsentLabel": "إرسال الصور إلى الذكاء الاصطناعي",
   "settings.aiConsentHint": "مطلوب للمسح. إذا أوقفته فسنسألك مرة أخرى.",
+  "settings.privacyPolicy": "سياسة الخصوصية",
+  "settings.termsOfService": "شروط الخدمة",
   "help.noMailApp": "تعذّر فتح تطبيق البريد. يرجى مراسلة {email}.",
   "help.kindBug": "مشكلة",
   "help.kindIdea": "فكرة",

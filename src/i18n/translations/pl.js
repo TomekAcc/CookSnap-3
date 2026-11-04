@@ -413,6 +413,8 @@ export default {
   "aiConsent.decline": "Nie teraz",
   "settings.aiConsentLabel": "Wysyłanie zdjęć do AI",
   "settings.aiConsentHint": "Potrzebne do skanowania. Po wyłączeniu zapytamy ponownie.",
+  "settings.privacyPolicy": "Polityka prywatności",
+  "settings.termsOfService": "Regulamin",
   "help.noMailApp": "Nie udało się otworzyć aplikacji pocztowej. Napisz na adres {email}.",
   "help.kindBug": "Problem",
   "help.kindIdea": "Pomysł",

@@ -9,6 +9,7 @@
 
 import { Limiter } from "./limiter.js";
 import { Inbox } from "./inbox.js";
+import { LEGAL_DRAFT, LEGAL_PAGES } from "./legal-pages.js";
 import { ADMIN_PAGE, MAX_FEEDBACK_BYTES, notifyTelegram, sendTelegram, tokenMatches, validateFeedback } from "./feedback.js";
 import {
   ALLOWED_MODELS,
@@ -47,6 +48,17 @@ export async function handle(request, env, deps = {}) {
     return Response.json({ ok: true }, { headers: CORS });
   }
 
+  if (request.method === "GET" && Object.hasOwn(LEGAL_PAGES, url.pathname.slice(1))) {
+    return new Response(LEGAL_PAGES[url.pathname.slice(1)], {
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'",
+        "Cache-Control": "public, max-age=300",
+        "X-Content-Type-Options": "nosniff",
+        ...(LEGAL_DRAFT ? { "X-Robots-Tag": "noindex, nofollow" } : {}),
+      },
+    });
+  }
   if (url.pathname === "/feedback") return handleFeedback(request, env, now, upstreamFetch);
   if (url.pathname.startsWith("/admin")) return handleAdmin(request, env, url, upstreamFetch);
 

@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Όχι τώρα",
   "settings.aiConsentLabel": "Αποστολή φωτογραφιών στην τεχνητή νοημοσύνη",
   "settings.aiConsentHint": "Απαραίτητο για τη σάρωση. Αν το απενεργοποιήσετε, θα ρωτήσουμε ξανά.",
+  "settings.privacyPolicy": "Πολιτική απορρήτου",
+  "settings.termsOfService": "Όροι χρήσης",
   "help.noMailApp": "Δεν ήταν δυνατό να ανοίξει η εφαρμογή αλληλογραφίας. Γράψε στο {email}.",
   "help.kindBug": "Πρόβλημα",
   "help.kindIdea": "Ιδέα",

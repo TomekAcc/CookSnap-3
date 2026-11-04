@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "Most nem",
   "settings.aiConsentLabel": "Fotók küldése az MI-nek",
   "settings.aiConsentHint": "A szkenneléshez kell. Kikapcsolva újra rákérdezünk.",
+  "settings.privacyPolicy": "Adatvédelmi irányelvek",
+  "settings.termsOfService": "Felhasználási feltételek",
   "help.noMailApp": "Nem sikerült megnyitni az e-mail alkalmazást. Írj ide: {email}.",
   "help.kindBug": "Hiba",
   "help.kindIdea": "Ötlet",

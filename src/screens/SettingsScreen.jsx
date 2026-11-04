@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Switch,
+  Linking,
 } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -22,6 +23,8 @@ import {
   ChevronLeft,
   MessageCircleQuestion,
   Lock,
+  FileText,
+  ShieldCheck,
 } from "../icons";
 import { useTheme } from "../context/ThemeContext";
 import { LANGUAGE_OPTIONS, getLanguageById } from "../data/languageOptions";
@@ -38,6 +41,7 @@ import { SHOW_TESTING_TOOLS } from "../config/flags";
 import appConfig from "../../app.json";
 import { getRequestLog } from "../services/geminiClient";
 import { floatingCtaBottom } from "../constants/layout";
+import { legalLinksLive, privacyPolicyUrl, termsUrl } from "../constants/legal";
 
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
@@ -521,6 +525,34 @@ export default function SettingsScreen() {
               </View>
               <ChevronRight size={18} color={colors.textSecondary} />
             </TouchableOpacity>
+            {legalLinksLive()
+              ? [
+                  { key: "privacy", Icon: ShieldCheck, label: t("settings.privacyPolicy"), url: privacyPolicyUrl() },
+                  { key: "terms", Icon: FileText, label: t("settings.termsOfService"), url: termsUrl() },
+                ].map(({ key, Icon, label, url }) => (
+                  <React.Fragment key={key}>
+                    <View style={{ height: 1, backgroundColor: colors.cardBorder }} />
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL(url).catch(() => {})}
+                      activeOpacity={0.7}
+                      accessibilityRole="link"
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        paddingVertical: 14,
+                        paddingHorizontal: 16,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                        <Icon size={20} color={colors.textSecondary} strokeWidth={2} />
+                        <Text style={{ fontSize: 15, fontWeight: "700", color: colors.textPrimary }}>{label}</Text>
+                      </View>
+                      <ChevronRight size={18} color={colors.textSecondary} />
+                    </TouchableOpacity>
+                  </React.Fragment>
+                ))
+              : null}
             <View style={{ height: 1, backgroundColor: colors.cardBorder }} />
             <View
               style={{

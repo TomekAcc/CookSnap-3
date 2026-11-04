@@ -414,6 +414,8 @@ export default {
   "aiConsent.decline": "나중에",
   "settings.aiConsentLabel": "사진을 AI로 전송",
   "settings.aiConsentHint": "스캔에 필요합니다. 끄면 다시 물어봅니다.",
+  "settings.privacyPolicy": "개인정보 처리방침",
+  "settings.termsOfService": "서비스 약관",
   "help.noMailApp": "메일 앱을 열 수 없습니다. {email}(으)로 문의해 주세요.",
   "help.kindBug": "문제",
   "help.kindIdea": "아이디어",
