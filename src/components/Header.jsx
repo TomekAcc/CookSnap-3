@@ -5,7 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useModalState } from "../context/ModalContext";
 import { useEntitlements } from "../context/EntitlementsContext";
 import { useLanguage } from "../context/LanguageContext";
-import { EMERALD, WHITE } from "../theme/palette";
+import { APPLE, EMERALD, WHITE } from "../theme/palette";
 
 // Same amber accent as the PRO paywall's own crown badge
 // (ProSubscriptionModal.jsx) — kept as local literals here rather than a
@@ -120,16 +120,16 @@ export default function Header({ trailing = null }) {
           <Text style={[styles.proButtonText, { color: colors.amberStrong }]}>PRO</Text>
         </TouchableOpacity>
       ) : (
-        // A subscriber sees a quiet status badge instead of the upgrade button: no border and no ripple, so it does
-        // not read as something to press, and the top-right corner is not left empty on every tab.
+        // A subscriber sees a solid, saturated amber badge — clearly different from the pale outlined upgrade button
+        // free users get — and it is not pressable (no border, no ripple), so it reads as a status, not an action.
         <View
           accessible
           accessibilityRole="text"
           accessibilityLabel={t("profile.proActiveTitle")}
-          style={[styles.proBadge, { backgroundColor: colors.amberSoft }]}
+          style={[styles.proBadge, { backgroundColor: colors.accentAmber }]}
         >
-          <Crown size={14} color={colors.accentAmber} fill={colors.accentAmber} />
-          <Text style={[styles.proButtonText, { color: colors.amberStrong }]}>PRO</Text>
+          <Crown size={14} color={APPLE.label} fill={APPLE.label} />
+          <Text style={[styles.proButtonText, { color: APPLE.label }]}>PRO</Text>
         </View>
       )}
       {trailing}
@@ -205,6 +205,11 @@ const styles = StyleSheet.create({
     height: 38,
     paddingHorizontal: 14,
     borderRadius: 19,
+    shadowColor: APPLE.orange,
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
   proButtonText: {
     fontSize: 13,
