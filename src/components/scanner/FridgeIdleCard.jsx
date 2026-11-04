@@ -1,6 +1,6 @@
 import React from "react";
 import { Animated, Text, TouchableOpacity, View } from "react-native";
-import { Camera, Image as ImageIcon } from "../../icons";
+import { Refrigerator, Camera, Image as ImageIcon } from "../../icons";
 import { LinearGradient } from "expo-linear-gradient";
 import PrivacyNote from "../PrivacyNote";
 import { useLanguage } from "../../context/LanguageContext";
@@ -66,7 +66,7 @@ export default function FridgeIdleCard({
             elevation: 3,
           }}
         >
-          <Camera size={22} color={EMERALD[400]} />
+          <Refrigerator size={24} color={EMERALD[400]} />
         </View>
       ) : (
         // Split into two views on purpose: LinearGradient needs
@@ -117,7 +117,7 @@ export default function FridgeIdleCard({
               justifyContent: "center",
             }}
           >
-            <Camera size={22} color={colors.greenStrong} />
+            <Refrigerator size={24} color={colors.greenStrong} />
           </LinearGradient>
         </View>
       )}
