@@ -129,7 +129,31 @@ export default function ProfileScreen() {
         paddingBottom: insets.bottom + 120,
       }}
     >
-      <Header />
+      {/* Settings lives in the brand row beside PRO (Profile is a tab, so it is always one tap away); the title row
+          below stays clean and the two controls no longer stack on top of each other. */}
+      <Header
+        trailing={
+          <TouchableOpacity
+            onPress={() => setActiveTab("settings")}
+            activeOpacity={0.75}
+            accessibilityRole="button"
+            accessibilityLabel={t("a11y.openSettings")}
+            hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 17,
+              backgroundColor: colors.card,
+              borderWidth: 1,
+              borderColor: colors.cardBorder,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <SettingsIcon size={18} color={colors.textSecondary} />
+          </TouchableOpacity>
+        }
+      />
       <View style={{ paddingHorizontal: 20, paddingTop: 4 }}>
         {/* Header — margin rhythm matches Pantry/Settings exactly (title row
             marginBottom 8, subtitle a full-width sibling below it with
@@ -160,35 +184,6 @@ export default function ProfileScreen() {
               </Text>
             </View>
 
-            {/* Primary Settings entry point — Profile is a bottom tab (always
-                one tap away) while Settings used to only be reachable via the
-                hamburger drawer, buried alongside Scan History/Help/PRO. That
-                mismatch was the actual source of "not intuitive" — Settings
-                belongs where a user would naturally look for it. */}
-            <TouchableOpacity
-              onPress={() => setActiveTab("settings")}
-              activeOpacity={0.75}
-              accessibilityRole="button"
-              accessibilityLabel={t("a11y.openSettings")}
-              hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                // The 40px button would make this row taller than the 35px
-                // title and push the title (and everything below) lower than
-                // on Pantry/Saved. Negative margins let it overhang the row
-                // so the title sits at exactly the same height on every tab.
-                marginVertical: -2.5,
-                backgroundColor: colors.card,
-                borderWidth: 1,
-                borderColor: colors.cardBorder,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <SettingsIcon size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
           </View>
         </View>
 

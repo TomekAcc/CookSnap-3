@@ -48,7 +48,7 @@ export const HEADER_SHADOW_KILL = Object.freeze({
  * app shell's own SafeAreaView handles that (edges includes "top"), so
  * this is just a normal top-of-list block with ordinary padding.
  */
-export default function Header() {
+export default function Header({ trailing = null }) {
   const { colors } = useTheme();
   const { setProModalOpen } = useModalState();
   const { isPro } = useEntitlements();
@@ -102,6 +102,7 @@ export default function Header() {
           its accessibility label rather than adding a new translation key
           across all 31 languages for one icon button that already has an
           established, identically-meant string elsewhere. */}
+      <View style={styles.trailing}>
       {!isPro ? (
         <TouchableOpacity
           onPress={() => setProModalOpen(true)}
@@ -123,6 +124,8 @@ export default function Header() {
           <Text style={[styles.proButtonText, { color: colors.amberStrong }]}>PRO</Text>
         </TouchableOpacity>
       ) : null}
+      {trailing}
+      </View>
     </View>
   );
 }
@@ -141,8 +144,8 @@ const styles = StyleSheet.create({
     // right edge line up with the titles and cards below.
     paddingHorizontal: 20,
     paddingTop: 6,
-    paddingBottom: 12,
-    marginTop: 24,
+    paddingBottom: 8,
+    marginTop: 12,
     overflow: "hidden",
     backgroundColor: WHITE,
     borderBottomWidth: 0,
@@ -152,6 +155,12 @@ const styles = StyleSheet.create({
     shadowColor: "transparent",
     shadowRadius: 0,
     shadowOffset: { width: 0, height: 0 },
+  },
+  // PRO pill and an optional screen action (Profile's settings button) share the right-hand side of the brand row.
+  trailing: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   brandChrome: {
     flexDirection: "row",
