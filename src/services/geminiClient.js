@@ -146,6 +146,13 @@ export async function generateContent({ apiKey, model, body, timeoutMs }) {
     }
     const data = await response.json();
     entry.outcome = `ok ${response.status}`;
+    // What Google bills for: tokens in, tokens out, and the model's hidden "thinking" tokens (billed as output).
+    const usage = data?.usageMetadata;
+    if (usage) {
+      entry.tokensIn = Number(usage.promptTokenCount) || 0;
+      entry.tokensOut = Number(usage.candidatesTokenCount) || 0;
+      entry.tokensThinking = Number(usage.thoughtsTokenCount) || 0;
+    }
     return { ok: true, status: response.status, data, text: extractText(data) };
   } catch (err) {
     entry.outcome = err?.name === "AbortError" ? "timeout" : `network: ${String(err?.message || err).slice(0, 60)}`;

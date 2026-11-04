@@ -132,6 +132,25 @@ describe("generateContent", () => {
     expect(result).toMatchObject({ ok: true, status: 200, text: "[]" });
   });
 
+  it("records the token counts Google reports, so a request's cost can be read from the log", async () => {
+    clearRequestLog();
+    global.fetch = jest.fn().mockResolvedValue(
+      okResponse({
+        candidates: [{ content: { parts: [{ text: "[]" }] } }],
+        usageMetadata: { promptTokenCount: 1200, candidatesTokenCount: 300, thoughtsTokenCount: 50 },
+      })
+    );
+    await generateContent({ apiKey: "K", model: "gemini-flash-latest", body: { contents: [] }, timeoutMs: 1000 });
+    expect(getRequestLog()[0]).toMatchObject({ tokensIn: 1200, tokensOut: 300, tokensThinking: 50 });
+  });
+
+  it("leaves the token fields out when the reply carries no usage data", async () => {
+    clearRequestLog();
+    global.fetch = jest.fn().mockResolvedValue(okResponse({ candidates: [{ content: { parts: [{ text: "[]" }] } }] }));
+    await generateContent({ apiKey: "K", model: "gemini-flash-latest", body: { contents: [] }, timeoutMs: 1000 });
+    expect(getRequestLog()[0].tokensIn).toBeUndefined();
+  });
+
   it("resolves (does not throw) on HTTP errors and returns the body text", async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,

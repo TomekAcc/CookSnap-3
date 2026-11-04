@@ -794,7 +794,7 @@ export default function SettingsScreen() {
                       key={i}
                       style={{ fontSize: 11, color: colors.textPrimary, marginTop: i === 0 ? 8 : 3, fontVariant: ["tabular-nums"] }}
                     >
-                      {`${new Date(e.at).toTimeString().slice(0, 8)}  ${String(e.model).replace("gemini-", "")}  ${e.kb}KB  ${(e.ms / 1000).toFixed(1)}s  ${e.outcome}`}
+                      {`${new Date(e.at).toTimeString().slice(0, 8)}  ${String(e.model).replace("gemini-", "")}  ${e.kb}KB  ${(e.ms / 1000).toFixed(1)}s  ${e.outcome}${e.tokensIn != null ? `  in ${e.tokensIn} out ${e.tokensOut + (e.tokensThinking || 0)}` : ""}`}
                     </Text>
                   ))
                 ) : (
