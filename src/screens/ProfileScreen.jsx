@@ -132,6 +132,8 @@ export default function ProfileScreen() {
       {/* Settings lives in the brand row beside PRO (Profile is a tab, so it is always one tap away); the title row
           below stays clean and the two controls no longer stack on top of each other. */}
       <Header
+        // Profile already shows the big PRO card, and a second round badge beside the settings button looked tappable.
+        hideStatusBadge
         trailing={
           <TouchableOpacity
             onPress={() => setActiveTab("settings")}

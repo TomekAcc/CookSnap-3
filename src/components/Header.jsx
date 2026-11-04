@@ -48,7 +48,7 @@ export const HEADER_SHADOW_KILL = Object.freeze({
  * app shell's own SafeAreaView handles that (edges includes "top"), so
  * this is just a normal top-of-list block with ordinary padding.
  */
-export default function Header({ trailing = null }) {
+export default function Header({ trailing = null, hideStatusBadge = false }) {
   const { colors } = useTheme();
   const { setProModalOpen } = useModalState();
   const { isPro } = useEntitlements();
@@ -119,7 +119,7 @@ export default function Header({ trailing = null }) {
           <Crown size={14} color={colors.accentAmber} fill={colors.accentAmber} />
           <Text style={[styles.proButtonText, { color: colors.amberStrong }]}>PRO</Text>
         </TouchableOpacity>
-      ) : (
+      ) : hideStatusBadge ? null : (
         // A subscriber sees a small round crown, the same size and style as Profile's settings button but gold: calm,
         // clearly a status (no label, no border colour, not pressable) and clearly not the labelled upgrade pill.
         <View
