@@ -112,3 +112,41 @@ prawdziwe AI. Jedna seria, więc część różnic w liczbie powtórek to los; w
 
 Uwaga na marginesie (stara, nie nowa): po angielsku AI pisze składniki wielką literą („1 lb Chicken thighs"), choć
 prompt prosi o małe. To samo było przed zmianą. Można to poprawić w kodzie (zamiana na małe litery), jeśli chcesz.
+
+## 8. Model finansowy: 1000 aktywnych użytkowników miesięcznie, 5% płacących
+
+Założenia (to są założenia, nie pomiary; zmieniaj je w obliczeniach, jeśli wiesz więcej):
+
+- Koszt (z pomiaru A/B, nowy prompt): **generowanie 0,56–1,4 centa**, skan 0,17–0,42 centa, zmiana przepisu
+  ok. 0,02–0,06 centa (niskie–wysokie ceny Google).
+- **Darmowy użytkownik:** 5 wizyt w miesiącu, w każdej 1 skan i 1 generowanie (≈ 3,6–9,1 centa miesięcznie).
+- **Typowy płacący:** 15 aktywnych dni w miesiącu, dziennie 1 skan, 2 generowania, 1 zmiana (≈ 0,20–0,49 USD).
+- **Płacący na limicie codziennie** (najgorszy przypadek jednej osoby): ≈ 2,0–5,0 USD miesięcznie.
+- **Przychód netto na płacącego:** po prowizji sklepu 15% i VAT (połowa sprzedaży z UE), mix 70% roczne / 30%
+  miesięczne: **2,29 USD** przy 24,99/4,99 i **2,75 USD** przy 29,99/5,99.
+- Koszty stałe ok. 15 USD miesięcznie (konto Apple, serwer); RevenueCat jest darmowy do progu przychodu.
+
+**Wynik miesięczny na 1000 aktywnych, typowy płacący (USD):**
+
+| Płacących | Przychód 24,99/4,99 | Wynik: niskie ceny Google | Wynik: wysokie ceny Google | Wynik 29,99/5,99 (niskie / wysokie) |
+|---|---|---|---|---|
+| 2% | 46 | −9 | −68 | 0 / −59 |
+| 3% | 69 | +13 | −49 | +26 / −35 |
+| **5%** | **115** | **+55** | **−11** | **+78 / +12** |
+| 8% | 183 | +119 | +45 | +156 / +82 |
+
+**Próg rentowności** (typowy płacący): przy obecnych cenach 2,4% (niskie ceny Google) lub 5,6% (wysokie);
+przy 29,99/5,99: 2,0% lub 4,5%.
+
+**Wnioski:**
+
+1. Przy 5% płacących jest zysk tylko, jeśli ceny Google są bliżej niskich. Przy wysokich jesteśmy na zero, więc
+   **trzeba sprawdzić prawdziwe ceny w cenniku Google**, to największa niewiadoma.
+2. **Darmowi użytkownicy to ok. 75–80% rachunku za AI** (950 osób × kilka centów). Dźwignia to limity darmowe i
+   koszt jednego generowania, nie limity PRO.
+3. Limity PRO nie ratują marży, jeśli wszyscy płacący wyczerpują je codziennie (to −34 do −235 USD), ale tak się
+   nie dzieje; od tego jest budżet serwera (800 000 jednostek na telefon dziennie).
+4. **Cena 29,99/5,99 poprawia wynik o ok. 23–35 USD na 1000 użytkowników** przy 5% płacących i obniża próg
+   rentowności o 0,4–1,1 punktu procentowego.
+5. Kolejne oszczędności: powtórki z krótkim promptem (ok. −20% kosztu generowania), tańsza ścieżka po wyczerpaniu
+   limitu darmowego, buforowanie promptu u Google.
