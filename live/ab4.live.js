@@ -6,8 +6,10 @@
 import { generateRecipesWithGemini } from "../src/services/geminiRecipes";
 import { clearRequestLog, getRequestLog } from "../src/services/geminiClient";
 
-const PRICE = { "gemini-flash-latest": [0.75, 3.75], "gemini-flash-lite-latest": [0.30, 2.50], "gemini-3.5-flash-lite": [0.30, 2.50], "gemini-3.1-flash-lite": [0.25, 1.50], "gemini-3.7-flash": [0.75, 3.75] };
-const MODES = { latest: "gemini-flash-lite-latest", pinned35: "gemini-3.5-flash-lite", lite31: "gemini-3.1-flash-lite" };
+const PRICE = { "gemini-flash-latest": [0.75, 3.75], "gemini-flash-lite-latest": [0.30, 2.50], "gemini-3.5-flash-lite": [0.30, 2.50], "gemini-3.1-flash-lite": [0.25, 1.50], "gemini-2.5-flash-lite": [0.10, 0.40], "gemini-3.7-flash": [0.75, 3.75] };
+// Pick the variants to compare with LIVE_AB_MODES (comma list of keys); default compares the current model with 2.5 Flash-Lite.
+const ALL_MODES = { latest: "gemini-flash-lite-latest", pinned35: "gemini-3.5-flash-lite", lite31: "gemini-3.1-flash-lite", lite25: "gemini-2.5-flash-lite" };
+const MODES = Object.fromEntries((process.env.LIVE_AB_MODES || "latest,lite25").split(",").map((k) => [k, ALL_MODES[k]]));
 (process.env.LIVE_AB === "1" ? describe : describe.skip)("A/B generation model", () => {
   jest.setTimeout(1200000);
   const realFetch = global.fetch;
