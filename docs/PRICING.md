@@ -191,3 +191,21 @@ naprawić trzema dźwigniami razem (kolejność wg opłacalności):
 2. **Przypiąć wersje modeli** zamiast `...-latest`: alias sam przeskakuje na nowszy, droższy model, a to zmienia
    koszt bez żadnej zmiany w aplikacji. (Sprawdzić też, czym naprawdę jest `gemini-3.7-flash` i ile kosztuje.)
 3. **Cena 29,99/5,99 lub wyższa** i/lub przycięcie darmowego poziomu (np. 1 generowanie dziennie).
+
+## 10. Test A/B: kontrola jakości na Flash-Lite zamiast Flash (`live/ab3.live.js`, 6 scenariuszy)
+
+| | Kontrola na Flash (obecnie) | Kontrola na Flash-Lite |
+|---|---|---|
+| Przepisy | 30 / 30 | 30 / 30 |
+| Zapytania do AI | 27 | 31 |
+| Koszt 6 generowań (ceny z 2026) | 12,6 centa (**2,1 centa** na generowanie) | 13,6 centa (2,3 centa) |
+| Przesolone przepisy (> 9 g soli) | 3 | 2 |
+| Brak soli / min. 3 kroki | 0 / 30 z 30 | 0 / 30 z 30 |
+
+**Wniosek:** jakość taka sama, ale **brak oszczędności**: kontrola jest tylko ok. 20–30% kosztu, a różnice w liczbie
+powtórek (zamienników) między próbami są większe niż zysk. Zostajemy przy Flash do kontroli. Pomiar potwierdził też
+model kosztów: średnio **2,1 centa na generowanie** przy cenach z 2026 roku (szacunek z sekcji 9 dawał 2,12).
+
+Co zostaje jako realna dźwignia: tańszy model do **głównego** zapytania (wyjście Flash-Lite 3.5 kosztuje 2,50 USD
+za mln tokenów, starszy 3.1 kosztuje 1,50 USD) i mniej powtórek. Serwer musi najpierw dopuścić ten model
+(`proxy/src/policy.js`) i zostać wdrożony.
