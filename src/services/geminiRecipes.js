@@ -1564,6 +1564,32 @@ function extractLeadingEmoji(text) {
   return m ? m[1] : null;
 }
 
+// Words that stay capitalized in an English ingredient line: places, brands and named cheeses/sauces.
+const KEEP_CAPITALIZED = new Set([
+  "Parmesan", "Parmigiano", "Reggiano", "Pecorino", "Romano", "Gruyère", "Gruyere", "Gorgonzola", "Camembert", "Brie",
+  "Cheddar", "Gouda", "Edam", "Emmental", "Roquefort", "Havarti", "Monterey", "Jack", "Swiss", "Dijon", "Worcestershire",
+  "Tabasco", "Sriracha", "Marsala", "Madeira", "Cajun", "Italian", "Greek", "French", "Mexican", "Thai", "Asian",
+  "Chinese", "Japanese", "Indian", "Mediterranean", "American", "English", "Spanish", "German", "Korean", "Cointreau",
+  "Kikkoman", "Heinz", "Philadelphia", "Nutella", "Oreo", "Coca", "Cola", "Pepsi", "Basmati", "Jasmine", "Arborio",
+  "Roma", "Granny", "Smith", "Yukon", "Gold", "Russet", "Hass", "Medjool", "Concord", "Bartlett", "Fuji", "Gala",
+]);
+
+/**
+ * English ingredient names are written in lowercase ("1 lb chicken thighs"), as the prompt asks for every language;
+ * the model keeps capitalizing them in English anyway ("1 lb Chicken thighs"), so this fixes it in code. Proper
+ * nouns in KEEP_CAPITALIZED are left alone. Only used for English: German capitalizes its nouns on purpose, and the
+ * other languages follow the prompt.
+ */
+export function lowercaseIngredientNames(lines) {
+  return (Array.isArray(lines) ? lines : []).map((line) =>
+    typeof line !== "string"
+      ? line
+      : line.replace(/(^|[\s(,/-])([A-Z][a-z'’]*)(?=[\s),/.-]|$)/g, (m, pre, word) =>
+          KEEP_CAPITALIZED.has(word) ? m : `${pre}${word[0].toLowerCase()}${word.slice(1)}`
+        )
+  );
+}
+
 /**
  * Ensure "Quantity Ingredient Emoji" formatting; category emoji fallback (never 📦/box).
  */
@@ -1914,7 +1940,7 @@ function normalizeRecipe(recipe, idx, mealType, servings = 2, language = "Englis
     emojiBgClass: dishVisual.bgClass,
     cardIndex: idx,
     baseServings: servingsCount,
-    ingredientsList: formatIngredientsList(ingredientsList),
+    ingredientsList: formatIngredientsList(language === "English" ? lowercaseIngredientNames(ingredientsList) : ingredientsList),
     steps: enforceGoldilocksSteps(safe.steps, language),
     upgradeIngredient,
     upgradeNote,
