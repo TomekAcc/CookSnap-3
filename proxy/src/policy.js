@@ -2,7 +2,8 @@
 // src/services/geminiVision.js and geminiRecipes.js), so anything else is refused:
 // the proxy URL can't be used as a general-purpose Gemini endpoint.
 
-export const ALLOWED_MODELS = ["gemini-3.7-flash", "gemini-flash-lite-latest", "gemini-flash-latest"];
+// The app's models, plus two pinned Flash-Lite versions kept so a cheaper (3.1) or version-fixed (3.5) generation model can be used.
+export const ALLOWED_MODELS = ["gemini-3.7-flash", "gemini-flash-lite-latest", "gemini-flash-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash-lite"];
 export const MAX_BODY_BYTES = 4 * 1024 * 1024; // scans send a few ~250 KB JPEGs
 export const MAX_OUTPUT_TOKENS = 16384;
 export const MAX_THINKING_BUDGET = 4096;
