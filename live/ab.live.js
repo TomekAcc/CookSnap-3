@@ -1,3 +1,4 @@
+/* global afterAll */
 // A/B: recipe generation with the old request shape (rules sent twice) vs the current one (rules once).
 // Run: LIVE_AB=1 EXPO_PUBLIC_GEMINI_PROXY_URL=https://<proxy> npx jest --config live/jest.config.js live/ab.live.js
 import { generateRecipesWithGemini } from "../src/services/geminiRecipes";
