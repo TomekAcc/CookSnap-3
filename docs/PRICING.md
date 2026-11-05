@@ -92,3 +92,23 @@ W aplikacji (Ustawienia > Testy > „Last model requests") każdy wiersz pokazuj
   (`tokeny wejściowe + 6 × wyjściowe`). Zmiana wartości: edycja pliku i `npx wrangler deploy`, bez nowej wersji
   aplikacji. **Wymaga wdrożenia serwera (`cd proxy && npx wrangler deploy`)**; do tego czasu działa stary limit.
 - **Limit zapytań na telefon:** 300 → 150 dziennie.
+
+## 7. Test A/B: czy tańszy prompt pogorszył przepisy? (`live/ab.live.js`)
+
+Te same 6 scenariuszy (angielski, polski bez glutenu, niemiecki wegetariańskie śniadanie, hiszpański, japoński bez
+orzechów, francuski wegański), każdy raz ze starym zapytaniem (reguły dwa razy) i raz z nowym (reguły raz), przez
+prawdziwe AI. Jedna seria, więc część różnic w liczbie powtórek to los; ważne jest, że nic nie wyszło gorzej.
+
+| | Stare | Nowe |
+|---|---|---|
+| Przepisy z 6 prób (maks. 30) | 27 | **30** |
+| Zapytania do AI | 44 | **28** |
+| Tokeny wejściowe | 279 tys. | **139 tys.** |
+| Linia soli w przepisie | 27/27 | 30/30 |
+| Co najmniej 3 kroki | 27/27 | 30/30 |
+| Kategoria zgodna z wyborem | 27/27 | 30/30 |
+| Tytuł z wielkiej litery | 22/22 (bez japońskiego) | 25/25 |
+| Różnych typów dań na próbę (śr.) | 3,8 | 4,2 |
+
+Uwaga na marginesie (stara, nie nowa): po angielsku AI pisze składniki wielką literą („1 lb Chicken thighs"), choć
+prompt prosi o małe. To samo było przed zmianą. Można to poprawić w kodzie (zamiana na małe litery), jeśli chcesz.
