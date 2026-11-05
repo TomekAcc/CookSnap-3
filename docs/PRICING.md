@@ -150,3 +150,44 @@ przy 29,99/5,99: 2,0% lub 4,5%.
    rentowności o 0,4–1,1 punktu procentowego.
 5. Kolejne oszczędności: powtórki z krótkim promptem (ok. −20% kosztu generowania), tańsza ścieżka po wyczerpaniu
    limitu darmowego, buforowanie promptu u Google.
+
+## 9. Prawdziwy cennik Google (odczytany 2026-11-05) i przeliczony model
+
+Źródło: https://aistudio.google.com/docs/pricing (stary adres ai.google.dev/gemini-api/docs/pricing przekierowuje tam).
+**Sprawdź ją własnymi oczami przed decyzjami**: poniższe liczby odczytało narzędzie streszczające stronę.
+
+| Model | Wejście / mln tokenów | Wyjście (z „myśleniem") / mln | Uwagi |
+|---|---|---|---|
+| Gemini 3.8 Flash (obecny „Flash") | 0,75 USD do końca 2026; **1,50 USD od 1.01.2027** | 3,75 USD; **7,50 USD od 1.01.2027** | `gemini-flash-latest` wskazuje na obecny Flash |
+| Gemini 3.5 Flash-Lite (obecny „Flash-Lite", wnioskowane z kolejności na stronie) | 0,30 USD | 2,50 USD | `gemini-flash-lite-latest` |
+| Gemini 3.1 Flash-Lite (starszy) | 0,25 USD | 1,50 USD | tańszy o 40% na wyjściu |
+| `gemini-3.7-flash` (model skanowania w aplikacji) | **nie ma go na stronie cennika** | | cena nieznana; zakładam jak Flash |
+
+To są ceny **2,5–3 razy wyższe od scenariusza „niskiego"** z sekcji 8. Skutki:
+
+- Jedno generowanie (5 przepisów): **ok. 2,1 centa** (do końca 2026), **ok. 2,6 centa** od 2027; darmowe (3 przepisy) ok. 1,5–1,8 centa.
+- Skan ok. 0,33 centa (2026) / 0,67 centa (2027, jeśli skan płaci jak Flash).
+
+**Wynik miesięczny na 1000 aktywnych (USD), typowy płacący, mix 70/30, VAT i prowizja uwzględnione:**
+
+| Scenariusz | Ceny | 3% płacących | **5%** | 8% | Próg |
+|---|---|---|---|---|---|
+| Ceny Google 2026 | 24,99/4,99 | −55 | **−22** | +29 | 6,3% |
+| | 29,99/5,99 | −42 | **+1** | +66 | 4,9% |
+| | 39,99/7,99 | −14 | **+47** | +139 | 3,5% |
+| Ceny Google od 2027 | 24,99/4,99 | −92 | **−62** | −16 | 9,0% |
+| | 29,99/5,99 | −79 | **−39** | +21 | 7,0% |
+| | 39,99/7,99 | −51 | **+7** | +94 | 4,8% |
+| 2027 + tańszy model do generowania i kontroli (3.1 Flash-Lite) | 24,99/4,99 | −37 | **+1** | +57 | 5,0% |
+| | 29,99/5,99 | −23 | **+23** | +94 | 4,0% |
+| | 39,99/7,99 | +4 | **+69** | +167 | 2,9% |
+
+**Wniosek:** przy 5% płacących i obecnej konstrukcji kosztów wynik jest **na granicy zera lub na minusie**. To da się
+naprawić trzema dźwigniami razem (kolejność wg opłacalności):
+
+1. **Tańsze modele**: wyjście modelu Flash-Lite (2,50 USD/mln) to największy składnik kosztu generowania.
+   Przetestować (A/B jak w sekcji 7) starszy `gemini-3.1-flash-lite` (1,50 USD) do generowania oraz Flash-Lite
+   zamiast Flash do kontroli jakości. W obliczeniach to ok. −50% kosztu generowania.
+2. **Przypiąć wersje modeli** zamiast `...-latest`: alias sam przeskakuje na nowszy, droższy model, a to zmienia
+   koszt bez żadnej zmiany w aplikacji. (Sprawdzić też, czym naprawdę jest `gemini-3.7-flash` i ile kosztuje.)
+3. **Cena 29,99/5,99 lub wyższa** i/lub przycięcie darmowego poziomu (np. 1 generowanie dziennie).
