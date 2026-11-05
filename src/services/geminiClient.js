@@ -54,7 +54,9 @@ export function resetDeviceIdCache() {
  * or generation starts failing — dead entries are pure wasted latency.
  */
 export const VISION_MODELS = ["gemini-3.7-flash", "gemini-flash-lite-latest"];
-export const RECIPE_MODELS = ["gemini-flash-lite-latest", "gemini-flash-latest"];
+// The first entry is pinned to a version so the price cannot change when Google moves the "-latest" alias to a newer,
+// dearer model (A/B-tested identical to the alias: docs/PRICING.md section 11). The alias and Flash stay as fallbacks.
+export const RECIPE_MODELS = ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-flash-latest"];
 /** Single-model jobs: the recipe editor pass and one-word pantry classification. */
 export const EDITOR_MODEL = "gemini-flash-latest";
 

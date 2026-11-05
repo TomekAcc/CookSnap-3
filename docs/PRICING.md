@@ -209,3 +209,30 @@ model kosztów: średnio **2,1 centa na generowanie** przy cenach z 2026 roku (s
 Co zostaje jako realna dźwignia: tańszy model do **głównego** zapytania (wyjście Flash-Lite 3.5 kosztuje 2,50 USD
 za mln tokenów, starszy 3.1 kosztuje 1,50 USD) i mniej powtórek. Serwer musi najpierw dopuścić ten model
 (`proxy/src/policy.js`) i zostać wdrożony.
+
+## 11. Test A/B: który model pisze przepisy (`live/ab4.live.js`, 5 scenariuszy doszło do końca)
+
+Warianty: `gemini-flash-lite-latest` (było), ten sam model przypięty do wersji `gemini-3.5-flash-lite`, tańszy
+starszy `gemini-3.1-flash-lite` (wyjście 1,50 zamiast 2,50 USD za mln tokenów). Ostatnie 3 scenariusze (z 8) zatrzymał
+nowy budżet dzienny serwera (429), co przy okazji potwierdziło, że sufit działa.
+
+| 5 scenariuszy (en, pl, de, es, it) | latest (było) | **3.5 przypięty** | 3.1 (tańszy) |
+|---|---|---|---|
+| Przepisy (maks. 25) | 25 | 25 | **24** |
+| Przepisy z linią soli | 24 | 25 | **19** |
+| Przepisy z min. 3 krokami | 25 | 25 | 24 |
+| Zgodna kategoria | 25 | 25 | 24 |
+| Różne typy dań (suma) | 22 | 21 | **19** |
+| Średnia długość kroków (znaków) | 308 | 320 | **226** |
+| Zapytania do AI / duże zapytania | 26 / 10 | 21 / 8 | **29 / 12** |
+| Koszt 5 generowań | 11,4 centa | 9,9 centa | **13,3 centa** |
+
+**Wniosek:**
+
+- **3.1 jest gorszy i nie jest tańszy.** Pisze krótsze, uboższe kroki, często pomija sól (np. po hiszpańsku tylko 1 z 5
+  przepisów miał linię soli), a więcej odrzuconych przepisów oznacza więcej powtórek, więc koszt wychodzi wyższy
+  mimo niższej ceny za token. Odrzucony.
+- **3.5 przypięty = to samo co alias** (te same jakość i cena; różnica kosztu to rozrzut powtórek). Wdrożony jako
+  pierwszy model, z aliasem i Flash jako zapasem: cena przestaje zależeć od tego, na co Google przestawi `-latest`.
+- Realne oszczędności trzeba więc szukać gdzie indziej: mniej powtórek (zamienników) i krótszy wynik modelu, albo
+  wyższa cena subskrypcji.
