@@ -7,7 +7,7 @@
 // Every request must carry an X-Device-Id header (a random id the app creates once per install),
 // pass the body rules in policy.js, and fit within the per-device and global daily limits.
 
-import { Limiter } from "./limiter.js";
+import { Limiter, costUnits } from "./limiter.js";
 import { Inbox } from "./inbox.js";
 import { LEGAL_DRAFT, LEGAL_PAGES } from "./legal-pages.js";
 import { ADMIN_PAGE, MAX_FEEDBACK_BYTES, notifyTelegram, sendTelegram, tokenMatches, validateFeedback } from "./feedback.js";
@@ -91,19 +91,24 @@ export async function handle(request, env, deps = {}) {
   if (problem) return fail(400, problem, "INVALID_ARGUMENT");
 
   const limiter = env.LIMITER.get(env.LIMITER.idFromName("main"));
-  const verdict = await (
-    await limiter.fetch("https://limiter/hit", {
-      method: "POST",
-      body: JSON.stringify({
-        device,
-        day: utcDay(now),
-        deviceLimit: Number(env.DEVICE_DAILY_LIMIT) || 300,
-        globalLimit: Number(env.GLOBAL_DAILY_LIMIT) || 2000,
-      }),
-    })
-  ).json();
+  const day = utcDay(now);
+  const callLimiter = async (payload) => (await limiter.fetch("https://limiter/x", { method: "POST", body: JSON.stringify(payload) })).json();
+  const verdict = await callLimiter({
+    device,
+    day,
+    deviceLimit: Number(env.DEVICE_DAILY_LIMIT) || 150,
+    globalLimit: Number(env.GLOBAL_DAILY_LIMIT) || 2000,
+    // Cost-unit budgets (see limiter.js): what one phone, and the whole app, may spend per UTC day.
+    deviceUnitLimit: Number(env.DEVICE_DAILY_UNITS) || 800000,
+    globalUnitLimit: Number(env.GLOBAL_DAILY_UNITS) || 12000000,
+  });
   if (!verdict.ok) {
-    const message = verdict.reason === "global" ? "The service is busy today. Try again tomorrow." : "Daily limit reached on this device.";
+    const message =
+      verdict.reason === "global"
+        ? "The service is busy today. Try again tomorrow."
+        : verdict.reason === "budget"
+          ? "Daily usage limit reached on this device. It resets tomorrow."
+          : "Daily limit reached on this device.";
     return fail(429, message, "RESOURCE_EXHAUSTED");
   }
 
@@ -112,7 +117,18 @@ export async function handle(request, env, deps = {}) {
     headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
     body: JSON.stringify(body),
   });
-  return new Response(upstream.body, {
+  // Read the reply (a small JSON document, not a stream) so what it cost can be added to today's totals.
+  const replyText = await upstream.text();
+  if (upstream.ok) {
+    let units = 0;
+    try {
+      units = costUnits(JSON.parse(replyText)?.usageMetadata);
+    } catch {
+      // not JSON: nothing to count
+    }
+    if (units) await callLimiter({ op: "record", device, day, units });
+  }
+  return new Response(replyText, {
     status: upstream.status,
     headers: { "Content-Type": upstream.headers.get("Content-Type") || "application/json", ...CORS },
   });

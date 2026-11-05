@@ -73,6 +73,41 @@ describe("useFreeTierCap", () => {
     expect(result.current).toMatchObject({ count: 0, canUse: true });
   });
 
+  describe("with a PRO limit", () => {
+    const setupPro = (isPro) =>
+      renderHook((props) => useFreeTierCap(KEY, 2, props.isPro, 5), { initialProps: { isPro } });
+
+    it("gives PRO the larger limit, counts it, and refuses past it", async () => {
+      const { result } = setupPro(true);
+      await hydrated();
+      expect(result.current).toMatchObject({ count: 0, limit: 5, canUse: true });
+      let outcomes;
+      act(() => {
+        outcomes = Array.from({ length: 6 }, () => result.current.register());
+      });
+      expect(outcomes).toEqual([true, true, true, true, true, false]);
+      expect(result.current).toMatchObject({ count: 5, canUse: false });
+    });
+
+    it("keeps the free limit for a free user", async () => {
+      const { result } = setupPro(false);
+      await hydrated();
+      expect(result.current.limit).toBe(2);
+    });
+
+    it("carries today's count over when someone becomes PRO", async () => {
+      const { result, rerender } = setupPro(false);
+      await hydrated();
+      act(() => {
+        result.current.register();
+        result.current.register();
+      });
+      expect(result.current.canUse).toBe(false);
+      rerender({ isPro: true });
+      expect(result.current).toMatchObject({ count: 2, limit: 5, canUse: true });
+    });
+  });
+
   it("persists { date, count } and restores today's count after a restart", async () => {
     const first = setup(3);
     await hydrated();

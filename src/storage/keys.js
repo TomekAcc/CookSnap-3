@@ -35,6 +35,7 @@ export const STORAGE_KEYS = {
   dailyFridgeScans: "cooksnap:dailyFridgeScans:v1",
   dailyPantryScans: "cooksnap:dailyPantryScans:v1",
   dailyRecipeGenerations: "cooksnap:dailyRecipeGenCount:v1",
+  dailyRecipeModifications: "cooksnap:dailyRecipeModifyCount:v1",
   // One-time flags
   onboardingComplete: "cooksnap:onboardingComplete:v1",
   settingsDoneHintShown: "cooksnap:settingsDoneHintShown:v1",

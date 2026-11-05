@@ -23,15 +23,13 @@ export default function RecipeFeed({ onSelectRecipe } = {}) {
   } = useRecipes();
   const { favorites, toggleFavorite, isRecipeSaved } = useLibrary();
   const { recipeLanguageId, t } = useLanguage();
-  const { isPro, dailyRecipeGenerationCount, freeDailyRecipeGenerations } = useEntitlements();
+  const { isPro, dailyRecipeGenerationCount, freeDailyRecipeGenerations, dailyRecipeGenerationLimit } = useEntitlements();
   const { setSelectedRecipe, setProModalOpen } = useModalState();
   const { colors } = useTheme();
 
   const recipes = (visibleRecipes || []).slice(0, 5);
-  const remainingGenerations = Math.max(
-    0,
-    freeDailyRecipeGenerations - dailyRecipeGenerationCount
-  );
+  // The limit that applies today: the free one, or PRO's larger one (PRO is generous, not unlimited).
+  const remainingGenerations = Math.max(0, dailyRecipeGenerationLimit - dailyRecipeGenerationCount);
   // generatedRecipes stays null until generateRecipes() has run at least
   // once — that's the signal for "never generated," not "recipes.length === 0."
   const hasNeverGenerated = generatedRecipes == null;
@@ -138,7 +136,9 @@ export default function RecipeFeed({ onSelectRecipe } = {}) {
             style={[styles.usageCaption, { color: colors.greenStrong }, isPro && styles.usageCaptionPro]}
           >
             {isPro
-              ? t("scanner.unlimitedGenerations")
+              ? remainingGenerations > 0
+                ? t("scanner.proGenerationsLeftToday", { count: remainingGenerations, total: dailyRecipeGenerationLimit })
+                : t("pro.dailyLimitReached")
               : remainingGenerations > 0
                 ? t("scanner.generationsLeftToday", {
                     count: remainingGenerations,

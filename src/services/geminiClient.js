@@ -152,6 +152,7 @@ export async function generateContent({ apiKey, model, body, timeoutMs }) {
       entry.tokensIn = Number(usage.promptTokenCount) || 0;
       entry.tokensOut = Number(usage.candidatesTokenCount) || 0;
       entry.tokensThinking = Number(usage.thoughtsTokenCount) || 0;
+      entry.tokensCached = Number(usage.cachedContentTokenCount) || 0; // part of tokensIn that Google billed at the cheaper cached rate
     }
     return { ok: true, status: response.status, data, text: extractText(data) };
   } catch (err) {

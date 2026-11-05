@@ -135,3 +135,67 @@ describe("daily limits", () => {
     assert.equal((await run(request(PATH), env)).status, 429);
   });
 });
+
+describe("daily cost budget (what the calls cost Google, not how many there are)", () => {
+  const usage = (inT, outT, think = 0) => ({
+    candidates: [{ content: { parts: [{ text: "[]" }] } }],
+    usageMetadata: { promptTokenCount: inT, candidatesTokenCount: outT, thoughtsTokenCount: think },
+  });
+
+  it("stops a phone once its day's budget is spent, even with requests to spare", async () => {
+    // 1000 in + 100 out = 1000 + 6*100 = 1600 units per call; a budget of 3000 allows two calls, the third is refused.
+    const env = makeEnv({ DEVICE_DAILY_LIMIT: "50", GLOBAL_DAILY_LIMIT: "50", DEVICE_DAILY_UNITS: "3000" });
+    const upstream = fakeUpstream(usage(1000, 100));
+    assert.equal((await run(request(PATH), env, upstream)).status, 200);
+    assert.equal((await run(request(PATH), env, upstream)).status, 200);
+    const blocked = await run(request(PATH), env, upstream);
+    assert.equal(blocked.status, 429);
+    assert.match((await blocked.json()).error.message, /usage limit/);
+    assert.equal(upstream.calls.length, 2);
+  });
+
+  it("counts thinking tokens as output, and weighs output above input", async () => {
+    const env = makeEnv({ DEVICE_DAILY_LIMIT: "50", GLOBAL_DAILY_LIMIT: "50", DEVICE_DAILY_UNITS: "1000" });
+    const upstream = fakeUpstream(usage(100, 50, 100)); // 100 + 6*150 = 1000 units: the budget in one call
+    assert.equal((await run(request(PATH), env, upstream)).status, 200);
+    assert.equal((await run(request(PATH), env, upstream)).status, 429);
+  });
+
+  it("is per phone: another phone still has its own budget", async () => {
+    const env = makeEnv({ DEVICE_DAILY_LIMIT: "50", GLOBAL_DAILY_LIMIT: "50", DEVICE_DAILY_UNITS: "1000" });
+    const upstream = fakeUpstream(usage(2000, 0));
+    await run(request(PATH), env, upstream);
+    assert.equal((await run(request(PATH), env, upstream)).status, 429);
+    const other = "fedcba9876543210fedcba9876543210";
+    assert.equal((await run(request(PATH, { headers: { "X-Device-Id": other } }), env, upstream)).status, 200);
+  });
+
+  it("has an app-wide cost ceiling that stops everyone", async () => {
+    const env = makeEnv({ DEVICE_DAILY_LIMIT: "50", GLOBAL_DAILY_LIMIT: "50", GLOBAL_DAILY_UNITS: "1500" });
+    const upstream = fakeUpstream(usage(2000, 0));
+    await run(request(PATH), env, upstream);
+    const other = "fedcba9876543210fedcba9876543210";
+    const blocked = await run(request(PATH, { headers: { "X-Device-Id": other } }), env, upstream);
+    assert.equal(blocked.status, 429);
+    assert.match((await blocked.json()).error.message, /busy today/);
+  });
+
+  it("resets on the next UTC day", async () => {
+    const env = makeEnv({ DEVICE_DAILY_LIMIT: "50", GLOBAL_DAILY_LIMIT: "50", DEVICE_DAILY_UNITS: "1000" });
+    const upstream = fakeUpstream(usage(2000, 0));
+    await run(request(PATH), env, upstream);
+    assert.equal((await run(request(PATH), env, upstream)).status, 429);
+    const tomorrow = await handle(request(PATH), env, { fetch: upstream.fetch, now: () => new Date("2026-10-23T00:00:01Z") });
+    assert.equal(tomorrow.status, 200);
+  });
+
+  it("does not charge for failed calls or replies without usage data, and still passes the reply through", async () => {
+    const env = makeEnv({ DEVICE_DAILY_LIMIT: "50", GLOBAL_DAILY_LIMIT: "50", DEVICE_DAILY_UNITS: "1000" });
+    const failed = fakeUpstream({ error: { code: 503, message: "overloaded" } }, 503);
+    for (let i = 0; i < 5; i++) assert.equal((await run(request(PATH), env, failed)).status, 503);
+    const bare = fakeUpstream({ candidates: [{ content: { parts: [{ text: "[]" }] } }] });
+    for (let i = 0; i < 5; i++) assert.equal((await run(request(PATH), env, bare)).status, 200);
+    const res = await run(request(PATH), env, fakeUpstream(usage(10, 1)));
+    assert.deepEqual((await res.json()).candidates[0].content.parts[0].text, "[]");
+  });
+});

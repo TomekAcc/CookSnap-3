@@ -197,6 +197,7 @@ export default function MealPlannerModal() {
     registerRecipeGenerationAttempt,
     dailyRecipeGenerationCount,
     freeDailyRecipeGenerations,
+    dailyRecipeGenerationLimit,
   } = useEntitlements();
   const { recipeLanguageId, t } = useLanguage();
   const minUnit = t("cookingTime.minUnit");
@@ -294,10 +295,7 @@ export default function MealPlannerModal() {
   // surprised by the paywall on a tap when they never used a generation
   // in this screen specifically (confirmed real confusion: "I didn't use
   // any in the meal planner" after spending both on Scanner).
-  const remainingGenerations = Math.max(
-    0,
-    freeDailyRecipeGenerations - dailyRecipeGenerationCount
-  );
+  const remainingGenerations = Math.max(0, dailyRecipeGenerationLimit - dailyRecipeGenerationCount);
 
   const plannedCount = useMemo(
     () => Object.values(weeklyPlan).filter(Boolean).length,
@@ -866,7 +864,9 @@ export default function MealPlannerModal() {
                 ]}
               >
                 {isPro
-                  ? t("scanner.unlimitedGenerations")
+                  ? remainingGenerations > 0
+                    ? t("scanner.proGenerationsLeftToday", { count: remainingGenerations, total: dailyRecipeGenerationLimit })
+                    : t("pro.dailyLimitReached")
                   : remainingGenerations > 0
                     ? t("scanner.generationsLeftToday", {
                         count: remainingGenerations,

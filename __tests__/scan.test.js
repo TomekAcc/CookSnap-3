@@ -11,6 +11,8 @@ jest.mock("../src/services/geminiVision", () => ({
   analyzeFridgeImage: jest.fn(),
   analyzePantryImage: jest.fn(),
 }));
+// A PRO limit large enough for the 12-scan history test below; the PRO limit itself is tested right after the free one.
+jest.mock("../src/constants/limits", () => ({ ...jest.requireActual("../src/constants/limits"), PRO_DAILY_FRIDGE_SCANS: 12 }));
 jest.mock("../src/utils/photoStorage", () => ({ persistPhotoToDevice: (uri) => `kept:${uri}`, pruneUnusedPhotos: jest.fn(() => 0) }));
 const vision = require("../src/services/geminiVision");
 
@@ -141,12 +143,17 @@ describe("free-tier gate on scanning", () => {
     expect(result.current.modal.proReason).toBe("scan");
   });
 
-  it("PRO is never refused or counted", async () => {
+  it("PRO has a larger daily limit: counted, and refused only past it", async () => {
     const { result } = await renderApp();
     act(() => result.current.ent.activatePro());
     for (let i = 0; i < 4; i++) await scanReal(result, `file://p${i}.jpg`);
     expect(vision.analyzeFridgeImage).toHaveBeenCalledTimes(4);
-    expect(result.current.ent.dailyFridgeScanCount).toBe(0);
+    expect(result.current.ent.dailyFridgeScanCount).toBe(4);
+    for (let i = 4; i < 12; i++) await scanReal(result, `file://p${i}.jpg`);
+    expect(vision.analyzeFridgeImage).toHaveBeenCalledTimes(12);
+    await scanReal(result, "file://one-too-many.jpg"); // the 13th: refused
+    expect(vision.analyzeFridgeImage).toHaveBeenCalledTimes(12);
+    expect(result.current.ent.dailyFridgeScanCount).toBe(12);
   });
 });
 

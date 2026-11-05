@@ -26,3 +26,12 @@ export const FREE_DAILY_RECIPE_GENERATIONS = 2;
 // gives PRO a second, immediate, day-one benefit beyond just no daily cap
 // — a fuller batch every time, not just more of them over time.
 export const FREE_RECIPES_PER_GENERATION = 3;
+
+// CookSnap PRO is generous, not unlimited: every scan and recipe generation is a paid call to Google's AI, and an
+// unmetered PRO user could cost more than the subscription brings in (see docs/PRICING.md for the measured costs).
+// These are daily, per phone, and sized so that normal use never meets them. The server has its own, higher ceiling
+// in tokens (proxy/wrangler.toml) that no edit to the app can lift.
+export const PRO_DAILY_FRIDGE_SCANS = 10;
+export const PRO_DAILY_PANTRY_SCANS = 10;
+export const PRO_DAILY_RECIPE_GENERATIONS = 8;
+export const PRO_DAILY_RECIPE_MODIFICATIONS = 20;

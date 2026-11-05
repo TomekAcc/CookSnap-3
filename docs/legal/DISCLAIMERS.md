@@ -72,7 +72,7 @@ Answer the questionnaires honestly; these are the answers that match what the ap
 
 ## F. Subscription disclosure (for App Store Connect and Play Console)
 
-> CookSnap PRO unlocks unlimited scans and recipe generations, AI recipe changes, a weekly meal planner and
+> CookSnap PRO unlocks much higher daily limits for scans and recipe generations, AI recipe changes, a weekly meal planner and
 > nutrition details. Payment will be charged to your Apple ID / Google Play account at confirmation of purchase
 > (after the free trial, if offered). The subscription renews automatically unless it is cancelled at least 24
 > hours before the end of the current period. Manage or cancel it in your account settings after purchase.

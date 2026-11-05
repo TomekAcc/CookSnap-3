@@ -75,3 +75,20 @@ koszt = tokeny_wejściowe / 1 000 000 × cena_wejścia + tokeny_wyjściowe / 1 0
 
 Zmierz własne liczby: `LIVE_USAGE=1 EXPO_PUBLIC_GEMINI_PROXY_URL=https://<proxy> npx jest --config live/jest.config.js live/usage.live.js`.
 W aplikacji (Ustawienia > Testy > „Last model requests") każdy wiersz pokazuje teraz `in … out …` (tokeny).
+
+## 6. Co zostało wdrożone (stan po zmianach)
+
+- **Tańsze generowanie:** stały prompt z regułami szedł do AI dwa razy (w `systemInstruction` i jeszcze raz przed
+  treścią zapytania), czyli ok. 3,5 tys. tokenów za darmo w każdym dużym zapytaniu. Usunięty duplikat: ok. **−27%
+  tokenów na duże zapytanie**, w pomiarze ok. −37% na całe generowanie (z ok. 26 tys. do ok. 17 tys. tokenów
+  wejściowych średnio). Jakość sprawdzona na żywo (po polsku, metryczne, bez glutenu: tytuły, małe litery, sól).
+  Nadal otwarte: powtórki (zamienniki) dostają pełny prompt; buforowanie Google nie zadziałało w pomiarze
+  (`cached 0`), więc nie liczymy na nie.
+- **Limity dzienne PRO w aplikacji** (`src/constants/limits.js`): 10 skanów lodówki, 10 skanów spiżarni, 8
+  generowań, 20 zmian przepisu przez AI. Po wyczerpaniu PRO widzi komunikat „wróć jutro", a nie ekran zakupu.
+  W aplikacji zniknęły obietnice „bez limitów" (31 języków).
+- **Twardy sufit na serwerze** (`proxy/wrangler.toml`): budżet „jednostek kosztu" na telefon (800 000 dziennie) i
+  łącznie (12 000 000 dziennie), liczony z tokenów, które Google podaje w każdej odpowiedzi
+  (`tokeny wejściowe + 6 × wyjściowe`). Zmiana wartości: edycja pliku i `npx wrangler deploy`, bez nowej wersji
+  aplikacji. **Wymaga wdrożenia serwera (`cd proxy && npx wrangler deploy`)**; do tego czasu działa stary limit.
+- **Limit zapytań na telefon:** 300 → 150 dziennie.

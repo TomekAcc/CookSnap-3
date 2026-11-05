@@ -19,10 +19,10 @@ const base64 = () => fs.readFileSync(path.join(__dirname, "../assets/sample-frid
 
 function report(label) {
   const rows = getRequestLog().filter((e) => e.tokensIn != null).reverse();
-  const total = rows.reduce((a, e) => ({ inT: a.inT + e.tokensIn, outT: a.outT + e.tokensOut + (e.tokensThinking || 0) }), { inT: 0, outT: 0 });
+  const total = rows.reduce((a, e) => ({ inT: a.inT + e.tokensIn, outT: a.outT + e.tokensOut + (e.tokensThinking || 0), cached: a.cached + (e.tokensCached || 0) }), { inT: 0, outT: 0, cached: 0 });
   console.log(
-    `\n== ${label}: ${rows.length} request(s), tokens in ${total.inT}, out ${total.outT}\n` +
-      rows.map((e) => `   ${String(e.model).padEnd(26)} in ${String(e.tokensIn).padStart(6)}  out ${String(e.tokensOut).padStart(5)}  thinking ${String(e.tokensThinking || 0).padStart(5)}  ${(e.ms / 1000).toFixed(1)}s`).join("\n")
+    `\n== ${label}: ${rows.length} request(s), tokens in ${total.inT} (cached ${total.cached}), out ${total.outT}\n` +
+      rows.map((e) => `   ${String(e.model).padEnd(26)} in ${String(e.tokensIn).padStart(6)} (cached ${String(e.tokensCached || 0).padStart(5)})  out ${String(e.tokensOut).padStart(5)}  thinking ${String(e.tokensThinking || 0).padStart(5)}  ${(e.ms / 1000).toFixed(1)}s`).join("\n")
   );
 }
 
@@ -35,11 +35,18 @@ run("token usage per action", () => {
     expect(items.length).toBeGreaterThan(0);
   });
   let recipes = [];
-  it("one recipe generation (5 recipes, as PRO gets)", async () => {
+  const SETS = [
+    ["Chicken breast", "Rice", "Lemon", "Garlic", "Spinach"],
+    ["Eggs", "Milk", "Cheese", "Tomatoes", "Onion", "Bell pepper"],
+    ["Pasta", "Ground beef", "Carrots", "Yogurt", "Butter", "Potatoes"],
+  ];
+  it.each([0, 1, 2])("recipe generation #%i (5 recipes, as PRO gets)", async (n) => {
     clearRequestLog();
-    recipes = await generateRecipesWithGemini(items.slice(0, 12), [{ name: "Salt", inStock: true }, { name: "Olive oil", inStock: true }], "dinner", 2, "normal", null, "", 5);
-    report("recipe generation (5 recipes)");
-    expect(recipes.length).toBeGreaterThan(0);
+    const inv = n === 0 ? items.slice(0, 12) : SETS[n].map((name) => ({ name }));
+    const out = await generateRecipesWithGemini(inv, [{ name: "Salt", inStock: true }, { name: "Olive oil", inStock: true }], "dinner", 2, "normal", null, "", 5);
+    report(`recipe generation #${n} (5 recipes)`);
+    expect(out.length).toBeGreaterThan(0);
+    if (n === 0) recipes = out;
   });
   it("one AI change to a recipe", async () => {
     clearRequestLog();

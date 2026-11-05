@@ -105,7 +105,7 @@ catches crash-level bugs, checks 4-tab navigation).
    modal system needed:
    - Screen 1: "Scan your fridge, get real recipes" (the core loop).
    - Screen 2: "3 free scans a day" (sets free-tier expectations honestly).
-   - Screen 3: "CookSnap PRO" teaser (unlimited scans, modifier, macros,
+   - Screen 3: "CookSnap PRO" teaser (higher limits, modifier, macros,
      planner) with a "Maybe later" dismiss.
 3. Gate it in `App.jsx`: show once when `hasOnboarded !== true`, set it
    true on dismiss/completion of the last screen.

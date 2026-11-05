@@ -112,7 +112,7 @@ function formatQtyFromItem(item) {
 export default function RecipeDetailModal() {
   const { servings } = usePreferences();
   const { toggleSaveRecipe, isRecipeSaved } = useLibrary();
-  const { isPro } = useEntitlements();
+  const { isPro, registerRecipeModifyAttempt } = useEntitlements();
   const { modifyRecipe, ensureRecipeLanguage } = useRecipes();
   const { recipeLanguageId, t } = useLanguage();
   const { addToShoppingList, markPantryItemOutOfStock } = useInventory();
@@ -198,6 +198,12 @@ export default function RecipeDetailModal() {
   const handleModifyRecipe = async () => {
     const instruction = modifierInstruction.trim();
     if (!instruction || isModifying || !recipe) return;
+    // A daily cap on AI changes (each one is a paid call). For a PRO person who has used it up, the PRO sheet tells
+    // them so ("come back tomorrow") instead of selling them what they already have.
+    if (!registerRecipeModifyAttempt()) {
+      onOpenProModal?.();
+      return;
+    }
     setIsModifying(true);
     try {
       const updated = await modifyRecipe(recipe, instruction);

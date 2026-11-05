@@ -100,7 +100,7 @@ buying it. When you start using PRO straight away you ask us to begin the servic
 you may lose the right to withdraw once the service has been fully provided [VERIFY the exact wording for
 digital services with a lawyer, and how Apple and Google apply it as the seller of the subscription].
 
-**4.8 Fair use.** "Unlimited" in PRO means no daily limit in normal personal use. We may limit use that is
+**4.8 Limits and fair use.** PRO has much higher daily limits than the free version (currently [10] fridge scans, [10] pantry scans, [8] recipe generations and [20] AI recipe changes per day), because every scan and recipe is processed by a paid AI service. The limits may change and reset every day. We may also limit use that is
 automated, abusive or that threatens the service for others.
 
 ## 5. Licence and ownership

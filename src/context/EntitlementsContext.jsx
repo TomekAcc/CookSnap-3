@@ -7,6 +7,10 @@ import {
   FREE_DAILY_FRIDGE_SCANS,
   FREE_DAILY_PANTRY_SCANS,
   FREE_DAILY_RECIPE_GENERATIONS,
+  PRO_DAILY_FRIDGE_SCANS,
+  PRO_DAILY_PANTRY_SCANS,
+  PRO_DAILY_RECIPE_GENERATIONS,
+  PRO_DAILY_RECIPE_MODIFICATIONS,
 } from "../constants/limits";
 
 const EntitlementsContext = createContext(null);
@@ -56,13 +60,16 @@ export function EntitlementsProvider({ children }) {
   // Generations count the initial "Generate AI Recipes" and every "Regenerate"
   // tap equally — see FREE_DAILY_RECIPE_GENERATIONS for why this is the cap
   // that actually matters.
-  const fridgeScanCap = useFreeTierCap(STORAGE_KEYS.dailyFridgeScans, FREE_DAILY_FRIDGE_SCANS, isPro);
-  const pantryScanCap = useFreeTierCap(STORAGE_KEYS.dailyPantryScans, FREE_DAILY_PANTRY_SCANS, isPro);
+  const fridgeScanCap = useFreeTierCap(STORAGE_KEYS.dailyFridgeScans, FREE_DAILY_FRIDGE_SCANS, isPro, PRO_DAILY_FRIDGE_SCANS);
+  const pantryScanCap = useFreeTierCap(STORAGE_KEYS.dailyPantryScans, FREE_DAILY_PANTRY_SCANS, isPro, PRO_DAILY_PANTRY_SCANS);
   const generationCap = useFreeTierCap(
     STORAGE_KEYS.dailyRecipeGenerations,
     FREE_DAILY_RECIPE_GENERATIONS,
-    isPro
+    isPro,
+    PRO_DAILY_RECIPE_GENERATIONS
   );
+  // "Modify with AI" is a PRO feature, so a free user never gets to use it: only the PRO limit applies.
+  const modifyCap = useFreeTierCap(STORAGE_KEYS.dailyRecipeModifications, 0, isPro, PRO_DAILY_RECIPE_MODIFICATIONS);
   const dailyFridgeScanCount = fridgeScanCap.count;
   const canScanFridge = fridgeScanCap.canUse;
   const registerFridgeScanAttempt = fridgeScanCap.register;
@@ -72,6 +79,7 @@ export function EntitlementsProvider({ children }) {
   const dailyRecipeGenerationCount = generationCap.count;
   const canGenerateRecipes = generationCap.canUse;
   const registerRecipeGenerationAttempt = generationCap.register;
+  const registerRecipeModifyAttempt = modifyCap.register;
   const value = useMemo(
     () => ({
       isPro,
@@ -88,10 +96,13 @@ export function EntitlementsProvider({ children }) {
       registerPantryScanAttempt,
       dailyRecipeGenerationCount,
       freeDailyRecipeGenerations: FREE_DAILY_RECIPE_GENERATIONS,
+      // The limit that applies to this person today: the free one, or the larger PRO one.
+      dailyRecipeGenerationLimit: generationCap.limit,
       canGenerateRecipes,
       registerRecipeGenerationAttempt,
+      registerRecipeModifyAttempt,
     }),
-    [isPro, proHydrated, activatePro, deactivatePro, dailyFridgeScanCount, canScanFridge, registerFridgeScanAttempt, dailyPantryScanCount, canScanPantry, registerPantryScanAttempt, dailyRecipeGenerationCount, canGenerateRecipes, registerRecipeGenerationAttempt]
+    [isPro, proHydrated, activatePro, deactivatePro, dailyFridgeScanCount, canScanFridge, registerFridgeScanAttempt, dailyPantryScanCount, canScanPantry, registerPantryScanAttempt, dailyRecipeGenerationCount, canGenerateRecipes, registerRecipeGenerationAttempt, registerRecipeModifyAttempt, generationCap.limit]
   );
 
   return <EntitlementsContext.Provider value={value}>{children}</EntitlementsContext.Provider>;

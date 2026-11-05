@@ -2519,8 +2519,10 @@ export async function generateRecipesWithGemini(
       : []),
   ].join("; ");
 
+  // The long, fixed rules travel once, as the systemInstruction (see fetchRawRecipes). They used to be pasted in front of
+  // this per-request text as well, so every call paid for roughly 3.5k tokens twice.
   const buildPromptTextFor = (count, excludeForCall, usedDishTypesForCall = []) =>
-    `${GEMINI_RECIPE_SYSTEM_PROMPT.trim()}\n\n${buildPrompt(
+    `${buildPrompt(
       fridgeList,
       pantryListText,
       mealType,

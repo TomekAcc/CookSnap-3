@@ -140,6 +140,7 @@ const PRO_BENEFIT_ICONS = {
 export default function ProSubscriptionModal() {
   const { proModalOpen, setProModalOpen, proReason, setProReason } = useModalState();
   const {
+    isPro,
     dailyRecipeGenerationCount,
     freeDailyRecipeGenerations,
     freeDailyFridgeScans,
@@ -149,6 +150,14 @@ export default function ProSubscriptionModal() {
   const plans = React.useMemo(() => plansFromOfferings(offerings), [offerings]);
   const { t } = useLanguage();
   const { colors } = useTheme();
+  // The sheet only opens by itself when a daily limit was hit. If the person is already PRO, there is nothing to sell
+  // them: say that today's limit is used up and close the sheet again.
+  React.useEffect(() => {
+    if (!proModalOpen || !isPro) return;
+    setProModalOpen(false);
+    setProReason?.(null);
+    showToast(t("pro.dailyLimitReached"), "info", 5000);
+  }, [proModalOpen, isPro, setProModalOpen, setProReason, t]);
   // The app's own pastel-emerald icon-badge tokens — the same fill/border/
   // glyph colors used for the Profile, Pantry and Saved header badges and
   // the scan-card icon (see FridgeScannerHero), so the benefit icons here

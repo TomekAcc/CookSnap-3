@@ -142,7 +142,8 @@ browsing, not a recipe box to build over years.
 - **Free tier:** 2 fridge scans/day, 2 recipe generations/day (3 recipes
   each), full recipe detail, calories. Hitting a limit opens the paywall
   naming the exact limit that was reached.
-- **PRO tier:** unlimited fridge scans, AI Recipe Modifier, full macro
+- **PRO tier:** high daily limits instead of "unlimited" (10 fridge scans, 10 pantry scans, 8 recipe
+  generations, 20 AI recipe changes per day; see docs/PRICING.md), AI Recipe Modifier, full macro
   breakdown, AI-generated Meal Planner.
 - **Pricing:** Monthly $4.99/mo · Annual $24.99/yr (≈$2.08/mo, ~58% cheaper
   than monthly), 7-day free trial on the annual plan, which is the default
