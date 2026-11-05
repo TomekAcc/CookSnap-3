@@ -9,7 +9,7 @@
 Mała firma bywa zwolniona z formalnego rejestru, ale przetwarzamy dane o zdrowiu (diety), więc **prowadź go w tej
 prostej formie** i aktualizuj przy każdej zmianie.
 
-Administrator: **[COMPANY NAME AS IN CEIDG]**, kontakt: cooksnap.support@gmail.com. Inspektor ochrony danych: nie
+Administrator: **Tomasz Białasiewicz** (NIP 9472021327), kontakt: cooksnap.support@gmail.com. Inspektor ochrony danych: nie
 wyznaczono (nie jest wymagany przy tej skali).
 
 | Czynność | Dane | Osoby | Cel i podstawa | Odbiorcy | Kraj | Czas |

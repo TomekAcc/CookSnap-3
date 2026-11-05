@@ -13,10 +13,10 @@ Drafts for the first store release. None of them is legal advice; have a lawyer 
 
 ## Fill in before publishing (search for `[` in the files)
 
-- `[COMPANY NAME AS IN CEIDG]`, `[BUSINESS ADDRESS]`, `[NIP]`
+- Company name and NIP are filled in (Tomasz Białasiewicz, NIP 9472021327). Still open: `[BUSINESS ADDRESS]` (must match the address in CEIDG)
 - Support address: done, `cooksnap.support@gmail.com` (the same as `SUPPORT_EMAIL` in `src/constants/contact.js`; change both if the name of the app changes)
 - `[DATE]`, `[PRIVACY POLICY URL]`, subscription prices and limits (copy from `src/constants/limits.js` and
-  the paywall), `[AMOUNT]` (liability cap, terms section 11.3), `[REGON]` / `[PHONE NUMBER]` if you give them
+  the paywall), `[AMOUNT]` (liability cap, terms section 11.3), (no REGON and no phone number are published)
 - Every `[VERIFY ...]` note, including ones that run over several lines (the final build refuses to run while any is left)
 - The "Verify before publishing" list at the end of the privacy policy
 

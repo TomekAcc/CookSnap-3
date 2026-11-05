@@ -8,8 +8,8 @@
 
 ## 1. Who we are
 
-CookSnap ("the app") is provided by **[COMPANY NAME AS IN CEIDG]** (sole proprietorship of Tomasz
-Białasiewicz), [BUSINESS ADDRESS], Poland, NIP [NIP] ("we", "us"). We are the controller of the personal
+CookSnap ("the app") is provided by **Tomasz Białasiewicz** (sole proprietorship, registered in CEIDG),
+[BUSINESS ADDRESS], Poland, NIP 9472021327 ("we", "us"). We are the controller of the personal
 data described here.
 
 Contact for anything about your data: **cooksnap.support@gmail.com**

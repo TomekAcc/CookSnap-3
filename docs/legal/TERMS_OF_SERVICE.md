@@ -7,8 +7,8 @@
 
 ## 1. Who we are, and what these terms cover
 
-CookSnap is provided by **[COMPANY NAME AS IN CEIDG]** (sole proprietorship of Tomasz Białasiewicz),
-[BUSINESS ADDRESS], Poland, NIP [NIP] ("we", "us"). These terms are the agreement between you and us for
+CookSnap is provided by **Tomasz Białasiewicz** (sole proprietorship, registered in CEIDG),
+[BUSINESS ADDRESS], Poland, NIP 9472021327 ("we", "us"). These terms are the agreement between you and us for
 the CookSnap mobile app and the server that supports it (together, "the app"). By installing or using the
 app you accept them. If you do not accept them, do not use the app. How we handle data is described in the
 [Privacy Policy]([PRIVACY POLICY URL]).
@@ -240,8 +240,8 @@ text].
 
 ## 17. Who to contact
 
-**[COMPANY NAME AS IN CEIDG]** (sole proprietorship of Tomasz Białasiewicz), [BUSINESS ADDRESS], Poland, NIP
-[NIP], [REGON, if you have one], email **cooksnap.support@gmail.com**, [PHONE NUMBER, if you give one].
+**Tomasz Białasiewicz** (sole proprietorship, registered in CEIDG), [BUSINESS ADDRESS], Poland, NIP
+9472021327, email **cooksnap.support@gmail.com**.
 Registered in the Central Registry and Information on Business (CEIDG).
 
 ## Verify before publishing (delete this section afterwards)
