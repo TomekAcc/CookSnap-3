@@ -31,7 +31,7 @@ the old key once the app has switched over.
 ## Feedback inbox (Help & Feedback)
 
 The same Worker keeps the messages from the app's Help & Feedback screen: `POST /feedback` (message, kind,
-optional reply email, app version, OS, language, recipe title; at most 10 per phone and 500 in total per day,
+app version, OS, language, recipe title; at most 10 per phone and 500 in total per day,
 kept 90 days). You read them on a private page, `https://cooksnap-proxy.<you>.workers.dev/admin`.
 
 One-time setup, in this folder:

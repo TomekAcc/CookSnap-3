@@ -41,7 +41,7 @@ app), SDK 58, the web smoke test in the normal workflow.
   days, no duplicates, retried until confirmed), and the owner reads it at `/admin` of the proxy with an instant
   copy to Telegram (the Telegram bot is optional: delete the two Telegram secrets to switch it off). Recipes have a
   "Report a problem with this recipe" link. If Telegram stays on in the store release, the privacy policy must name
-  it (it does, in the draft). Store forms list the optional reply email.
+  it (it does, in the draft). Store forms list no email (the feedback form has no email field).
 - **Consent before the first photo goes to the AI.** Done: a one-time sheet ("Before your first scan")
   appears before the camera or gallery is used for a scan (all three entry points, including Scan More);
   agreeing is stored (`cooksnap:aiConsent:v1`), "Not now" asks again next time. The sample scan sends no

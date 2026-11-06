@@ -17,7 +17,7 @@ wyznaczono (nie jest wymagany przy tej skali).
 | Rozpoznanie składników ze zdjęcia | Zdjęcie żywności (bez metadanych) | Użytkownicy | Świadczenie usługi, art. 6(1)(b) | Cloudflare (serwer), Google (Gemini) | UE/USA | Nie przechowujemy |
 | Generowanie przepisów | Lista składników, posiłek, porcje, język, diety, tekst „unikaj/preferuj" | Użytkownicy | Usługa, art. 6(1)(b); diety zdrowotne: zgoda art. 9(2)(a) | Cloudflare, Google | UE/USA | Nie przechowujemy |
 | Limit nadużyć | Losowy identyfikator instalacji, licznik dzienny | Użytkownicy | Prawnie uzasadniony interes, art. 6(1)(f) | Cloudflare | UE/USA | Do końca doby (UTC) |
-| Opinie i zgłoszenia | Treść, rodzaj, opcjonalny e-mail, wersja, system, język, tytuł przepisu | Piszący | Obsługa i poprawa usługi, art. 6(1)(f) | Cloudflare, opcjonalnie Telegram | UE/USA | 90 dni |
+| Opinie i zgłoszenia | Treść, rodzaj, wersja, system, język, tytuł przepisu | Piszący | Obsługa i poprawa usługi, art. 6(1)(f) | Cloudflare, opcjonalnie Telegram | UE/USA | 90 dni |
 | Sprawdzenie subskrypcji (po wdrożeniu) | Anonimowy identyfikator, status zakupu | Subskrybenci | Umowa, art. 6(1)(b) | RevenueCat, Apple, Google | USA/UE | Wg RevenueCat |
 | Aktualizacje aplikacji | Adres IP, wersja | Użytkownicy | Art. 6(1)(f) | Expo (EAS Update) | USA | Wg Expo |
 
@@ -73,10 +73,10 @@ Wzór — **dostęp / kopia danych**:
 
 1. **Powstrzymaj:** unieważnij sekrety (`wrangler secret put` z nową wartością: `GEMINI_API_KEY`, `ADMIN_TOKEN`,
    `TELEGRAM_BOT_TOKEN`), usuń klucz w Google AI Studio, w razie potrzeby wyłącz Worker.
-2. **Oceń:** jakie dane mogły wyciec (u nas głównie treść opinii i adresy e-mail), ilu osób, od kiedy. Zapisz.
+2. **Oceń:** jakie dane mogły wyciec (u nas głównie treść opinii), ilu osób, od kiedy. Zapisz.
 3. **Zgłoś do UODO w ciągu 72 godzin** od stwierdzenia, jeśli istnieje ryzyko naruszenia praw osób: formularz na
    uodo.gov.pl (zakładka „Zgłoszenie naruszenia"). Jeśli ryzyko jest **wysokie**, powiadom też osoby, których to
-   dotyczy (w aplikacji/e-mailem do tych, którzy podali adres).
+   dotyczy (w aplikacji; opinie nie zawierają adresów e-mail).
 4. **Udokumentuj** każde naruszenie (także niezgłoszone): co, kiedy, skutki, działania. Trzymaj w rejestrze.
 5. **Napraw przyczynę** i zapisz zmianę w dzienniku zmian.
 

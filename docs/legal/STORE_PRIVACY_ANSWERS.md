@@ -10,8 +10,8 @@ analytics, crash reporting, accounts, a payment SDK or push notifications, redo 
 - Photos (resized to about 1280 px) and request text (ingredients, diet switches, free text the user
   types) are sent over HTTPS to **our own server (Cloudflare Worker)**, which forwards them to **Google
   Gemini**. Our server stores nothing from the request; Google processes it as our service provider.
-- Messages from Help & Feedback (text, kind, app version, OS, language, recipe title for a recipe report, and an
-  optional reply email the person types) go to **our own server**, which keeps them 90 days for the owner to read.
+- Messages from Help & Feedback (text, kind, app version, OS, language, and recipe title for a recipe report; the app has no
+  email field) go to **our own server**, which keeps them 90 days for the owner to read.
 - A **random install ID** (made by the app, not an advertising ID, not linked to a person) is sent to our
   server only, to count daily requests per phone. The counter is deleted the next day.
 - Everything else (saved recipes, pantry, scan history, photos kept, settings) is on the phone only.
@@ -26,7 +26,7 @@ analytics, crash reporting, accounts, a payment SDK or push notifications, redo 
 | Photos or Videos (User Content) | Yes | No (no accounts) | App Functionality | Photos of a fridge/pantry sent for ingredient detection |
 | Other User Content | Yes | No | App Functionality | Ingredient lists, diet switches, free text typed in "Always avoid / Prefer" |
 | Customer Support (User Content) | Yes | No | App Functionality | Help & Feedback messages, kept 90 days |
-| Email Address (Contact Info) | Yes, only if the person types one | No | App Functionality | Optional reply address in Help & Feedback; not used for anything else |
+| Email Address (Contact Info) | No (the app asks for none; a person who writes to us by email on their own is handled outside the app) | No | n/a | n/a |
 | Device ID (Identifiers) | Yes | No | App Functionality | Random install ID, used only for the per-phone daily limit |
 | Purchases | **Yes, once the RevenueCat build ships** | | App Functionality | Purchase history is read from Apple/Google through RevenueCat (anonymous ID, not linked to identity) |
 | Health & Fitness | **Open question** | | | Dietary preferences such as "diabetic" may count; see below |

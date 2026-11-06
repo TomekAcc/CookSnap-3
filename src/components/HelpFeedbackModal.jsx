@@ -40,13 +40,11 @@ export default function HelpFeedbackModal() {
   const prefill = useRef(takeFeedbackPrefill()).current;
   const [kind, setKind] = useState(prefill?.kind || "bug");
   const [message, setMessage] = useState("");
-  const [contact, setContact] = useState("");
   const [sending, setSending] = useState(false);
   const recipeTitle = prefill?.recipeTitle || "";
 
   const handleClose = () => {
     setMessage("");
-    setContact("");
     setHelpModalOpen?.(false);
   };
 
@@ -57,7 +55,7 @@ export default function HelpFeedbackModal() {
     if (!text || sending) return;
     setSending(true);
     try {
-      const id = await queueFeedback({ kind, message: text, contact: contact.trim(), recipeTitle, language: recipeLanguageId });
+      const id = await queueFeedback({ kind, message: text, recipeTitle, language: recipeLanguageId });
       const waiting = await flushFeedbackOutbox();
       if (waiting.includes(id)) showToast(t("help.queued"), "info", 5000);
       else showToast(t("help.sent"), "success", 3000);
@@ -145,25 +143,6 @@ export default function HelpFeedbackModal() {
         ]}
       />
 
-      <TextInput
-        value={contact}
-        onChangeText={setContact}
-        placeholder={t("help.contactPlaceholder")}
-        placeholderTextColor={colors.textSecondary}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        maxLength={120}
-        style={[
-          styles.contactInput,
-          {
-            backgroundColor: colors.inputBg,
-            borderColor: colors.cardBorder,
-            color: colors.textPrimary,
-          },
-        ]}
-      />
-
       <TouchableOpacity
         onPress={handleSend}
         disabled={!message.trim() || sending}
@@ -225,15 +204,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     minHeight: 132,
-    marginBottom: 12,
-  },
-  contactInput: {
-    borderWidth: 1,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    fontWeight: "500",
     marginBottom: 16,
   },
   sendButton: {
