@@ -27,7 +27,7 @@ export function ScanProvider({ children }) {
   const { setProModalOpen, setProReason } = useModalState();
   const { setActiveTab } = useNavigation();
   const { t, tLatestRef, recipeLanguageName } = useLanguage();
-  const { registerFridgeScanAttempt, registerPantryScanAttempt } = useEntitlements();
+  const { registerFridgeScanAttempt, registerPantryScanAttempt, refundFridgeScan, refundPantryScan } = useEntitlements();
   const { setIngredients, mergePantryScanResults, markScanDemo, scanIsDemoRef } = useInventory();
   const { clearRecipes } = useRecipes();
   const [isScanning, setIsScanning] = useState(false);
@@ -299,13 +299,14 @@ export function ScanProvider({ children }) {
       if (ingredientsCommittedRef.current) return;
       pendingDetectedRef.current = Array.isArray(detected) ? detected : [];
     } catch (err) {
+      refundFridgeScan?.(); // a scan that failed must not use up a free sample scan
       if (scanSessionIdRef.current !== sessionId) return;
       if (ingredientsCommittedRef.current) return;
       log.warn("CookSnap Vision scan failed after retry:", err?.message);
       pendingDetectedRef.current = [];
       showToast(t("errors.readPhotoFailed"), "error", 4200);
     }
-  }, [t, recipeLanguageName, registerFridgeScanAttempt, setProModalOpen, setProReason, markScanDemo, setFridgePhoto, clearRecipes]);
+  }, [t, recipeLanguageName, registerFridgeScanAttempt, refundFridgeScan, setProModalOpen, setProReason, markScanDemo, setFridgePhoto, clearRecipes]);
 
   /**
    * The onboarding "sample scan". Runs the same choreography as a real scan on
@@ -545,6 +546,7 @@ export function ScanProvider({ children }) {
         if (pantryIngredientsCommittedRef.current) return;
         pantryPendingDetectedRef.current = Array.isArray(detected) ? detected : [];
       } catch (err) {
+        refundPantryScan?.(); // a scan that failed must not use up a free sample scan
         if (pantryScanSessionIdRef.current !== sessionId) return;
         if (pantryIngredientsCommittedRef.current) return;
         log.warn("[CookSnap] Pantry scan failed:", err?.message);
@@ -552,7 +554,7 @@ export function ScanProvider({ children }) {
         showToast(t("errors.analyzePantryFailed"), "error");
       }
     },
-    [t, recipeLanguageName, registerPantryScanAttempt, setProModalOpen, setProReason]
+    [t, recipeLanguageName, registerPantryScanAttempt, refundPantryScan, setProModalOpen, setProReason]
   );
 
   /**

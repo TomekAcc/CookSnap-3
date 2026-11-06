@@ -74,9 +74,11 @@ export function EntitlementsProvider({ children }) {
   const dailyFridgeScanCount = fridgeScanCap.count;
   const canScanFridge = fridgeScanCap.canUse;
   const registerFridgeScanAttempt = fridgeScanCap.register;
+  const refundFridgeScan = fridgeScanCap.refund;
   const dailyPantryScanCount = pantryScanCap.count;
   const canScanPantry = pantryScanCap.canUse;
   const registerPantryScanAttempt = pantryScanCap.register;
+  const refundPantryScan = pantryScanCap.refund;
   const dailyRecipeGenerationCount = generationCap.count;
   const canGenerateRecipes = generationCap.canUse;
   const registerRecipeGenerationAttempt = generationCap.register;
@@ -91,10 +93,12 @@ export function EntitlementsProvider({ children }) {
       freeDailyFridgeScans: FREE_DAILY_FRIDGE_SCANS,
       canScanFridge,
       registerFridgeScanAttempt,
+      refundFridgeScan,
       dailyPantryScanCount,
       freeDailyPantryScans: FREE_DAILY_PANTRY_SCANS,
       canScanPantry,
       registerPantryScanAttempt,
+      refundPantryScan,
       dailyRecipeGenerationCount,
       freeDailyRecipeGenerations: FREE_DAILY_RECIPE_GENERATIONS,
       // The limit that applies to this person today: the free one, or the larger PRO one.
@@ -105,7 +109,7 @@ export function EntitlementsProvider({ children }) {
       registerRecipeGenerationAttempt,
       registerRecipeModifyAttempt,
     }),
-    [isPro, proHydrated, activatePro, deactivatePro, dailyFridgeScanCount, canScanFridge, registerFridgeScanAttempt, dailyPantryScanCount, canScanPantry, registerPantryScanAttempt, dailyRecipeGenerationCount, canGenerateRecipes, registerRecipeGenerationAttempt, registerRecipeModifyAttempt, generationCap.limit, generationCap.isSample]
+    [isPro, proHydrated, activatePro, deactivatePro, dailyFridgeScanCount, canScanFridge, registerFridgeScanAttempt, refundFridgeScan, refundPantryScan, dailyPantryScanCount, canScanPantry, registerPantryScanAttempt, dailyRecipeGenerationCount, canGenerateRecipes, registerRecipeGenerationAttempt, registerRecipeModifyAttempt, generationCap.limit, generationCap.isSample]
   );
 
   return <EntitlementsContext.Provider value={value}>{children}</EntitlementsContext.Provider>;

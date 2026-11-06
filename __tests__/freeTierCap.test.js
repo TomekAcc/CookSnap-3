@@ -188,6 +188,21 @@ describe("useFreeTierCap", () => {
       await waitFor(() => expect(second.result.current.count).toBe(1));
     });
 
+    it("gives a use back with refund(), never below zero", async () => {
+      const { result } = setupSample();
+      await hydrated();
+      act(() => {
+        result.current.refund();
+      });
+      expect(result.current.count).toBe(0);
+      act(() => {
+        result.current.register();
+        result.current.register();
+        result.current.refund();
+      });
+      expect(result.current).toMatchObject({ count: 1, canUse: true });
+    });
+
     it("recovers from a corrupt or negative saved total", async () => {
       await AsyncStorage.setItem(SAMPLE_KEY, "-4");
       const { result } = setupSample();

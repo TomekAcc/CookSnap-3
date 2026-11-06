@@ -70,6 +70,25 @@ export function useFreeTierCap(storageKey, freeLimit, isPro, proLimit, lifetimeK
     return true;
   }, [unlimited, useLifetime, limit, setState, setTotal]);
 
+  // Gives back one use that register() counted, for an action that then failed through no fault of the person
+  // (no network, a server error): a failed scan must not eat one of the three free sample uses.
+  const refund = useCallback(() => {
+    if (unlimited) return;
+    if (useLifetime) {
+      if (totalRef.current <= 0) return;
+      const next = totalRef.current - 1;
+      totalRef.current = next;
+      setTotal(next);
+      return;
+    }
+    const today = todayKey();
+    const current = countFor(stateRef.current, today);
+    if (current <= 0) return;
+    const next = { date: today, count: current - 1 };
+    stateRef.current = next;
+    setState(next);
+  }, [unlimited, useLifetime, setState, setTotal]);
+
   const count = useLifetime ? total : countFor(state);
-  return { count, limit: unlimited ? Infinity : limit, canUse: unlimited || count < limit, register, isSample: useLifetime };
+  return { count, limit: unlimited ? Infinity : limit, canUse: unlimited || count < limit, register, refund, isSample: useLifetime };
 }

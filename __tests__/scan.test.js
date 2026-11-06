@@ -117,6 +117,18 @@ describe("fridge scan", () => {
     expect(result.current.scan.isScanning).toBe(false);
   });
 
+  it("gives the free sample scan back when the scan fails", async () => {
+    vision.analyzeFridgeImage.mockRejectedValue(new Error("offline"));
+    useFakeTimers();
+    const { result } = await renderApp();
+    await act(async () => {
+      const done = result.current.scan.completeScan("file://bad.jpg");
+      await jest.advanceTimersByTimeAsync(1000);
+      await done;
+    });
+    expect(result.current.ent.dailyFridgeScanCount).toBe(0);
+  });
+
   it("ignores a scan with no photo", async () => {
     const { result } = await renderApp();
     await scanReal(result, null);
