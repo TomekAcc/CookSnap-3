@@ -1,0 +1,44 @@
+// THE FREE SAMPLE. Free users do not get a daily allowance: they get a one-time sample (3 fridge scans, 3 pantry scans,
+// 3 recipe generations) to see what CookSnap does, counted since install and never refilled. After that the AI features
+// need PRO. Everything that does not call the AI (saved recipes, editing the pantry, the shopping list) stays free for
+// good. Why: every AI call costs real money, and a daily free allowance made free users the bulk of the AI bill (see
+// docs/PRICING.md). A sample costs about 5-8 cents per install, once. (The constant names keep "DAILY" for history; they
+// are the sample sizes.)
+
+// Free-tier limits. PRO has none of the daily caps and gets the full batch size.
+
+// Scanning a fridge is inherently infrequent — it rarely changes more than
+// once every few days — so a low free cap barely constrains real usage.
+// Regenerating recipe suggestions is what people actually repeat within a
+// single session, and each one is its own Gemini text-generation call,
+// making it the meaningful usage-based (and cost-based) lever. See
+// FREE_DAILY_RECIPE_GENERATIONS below.
+export const FREE_DAILY_FRIDGE_SCANS = 3;
+// Pantry scanning used to be deliberately left free/unlimited (see the old
+// comment this replaced) — reversed after confirming pantry scans hit
+// gemini-3.7-flash, the same pricier vision model fridge scans use, with no
+// cap and no PRO gate at all. An unmetered path to the most expensive call
+// in the app was a real, unbounded cost exposure (anyone could script
+// repeated "scans" all day for free), not just a monetization gap. Same
+// cap as fridge scans — no reason for pantry to be more or less restricted.
+export const FREE_DAILY_PANTRY_SCANS = 3;
+export const FREE_DAILY_RECIPE_GENERATIONS = 3;
+
+// A single Scanner "generation" returns RECIPES_PER_SCAN (5) recipes at
+// once, while a single Meal Planner day-generate returns exactly 1 — so
+// the same 2-generations/day allowance is worth 5x more spent on Scanner
+// than on Meal Planner. At the full 5, a free user could pull up to 10
+// AI recipes a day indefinitely via Scanner alone, which made "unlimited"
+// a weak PRO benefit (the free daily volume was already generous). This
+// gives PRO a second, immediate, day-one benefit beyond just no daily cap
+// — a fuller batch every time, not just more of them over time.
+export const FREE_RECIPES_PER_GENERATION = 3;
+
+// CookSnap PRO is generous, not unlimited: every scan and recipe generation is a paid call to Google's AI, and an
+// unmetered PRO user could cost more than the subscription brings in (see docs/PRICING.md for the measured costs).
+// These are daily, per phone, and sized so that normal use never meets them. The server has its own, higher ceiling
+// in tokens (proxy/wrangler.toml) that no edit to the app can lift.
+export const PRO_DAILY_FRIDGE_SCANS = 10;
+export const PRO_DAILY_PANTRY_SCANS = 10;
+export const PRO_DAILY_RECIPE_GENERATIONS = 8;
+export const PRO_DAILY_RECIPE_MODIFICATIONS = 20;
