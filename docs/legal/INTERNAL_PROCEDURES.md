@@ -30,7 +30,7 @@ Dla każdego sprawdź, że obowiązuje umowa powierzenia (DPA) i mechanizm trans
 | Google (Gemini API, **płatny** poziom) | Procesor | Gemini API Additional Terms / Cloud DPA; SCC lub DPF | [DATE] |
 | Cloudflare | Procesor | Cloudflare DPA (zawarta w warunkach); SCC/DPF | [DATE] |
 | Expo | Procesor (adres IP przy aktualizacji) | Expo DPA | [DATE] |
-| Telegram (jeśli włączony) | Odbiorca powiadomień | Warunki Telegram; transfer do Dubaju/UK `[VERIFY]` — rozważ wyłączenie | [DATE] |
+| Telegram (powiadomienie bez treści) | Nie dostaje danych użytkowników, tylko informację o nowej opinii | Brak danych osobowych, więc bez umowy powierzenia | [DATE] |
 | RevenueCat (po wdrożeniu) | Procesor | RevenueCat DPA | [DATE] |
 | Apple / Google Play | Samodzielni administratorzy (platformy) | Ich warunki | — |
 

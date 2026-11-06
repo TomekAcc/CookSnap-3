@@ -86,7 +86,7 @@ describe("reliability", () => {
     assert.equal(items.length, 2);
   });
 
-  it("sends a copy to Telegram when configured, and still stores the message when Telegram is down", async () => {
+  it("pings Telegram (without the message) when configured, and still stores the message when Telegram is down", async () => {
     const calls = [];
     const env = makeEnv({ TELEGRAM_BOT_TOKEN: "123456789:AAExampleExampleExampleExample_x", TELEGRAM_CHAT_ID: "42" });
     const ok = async (url, init) => (calls.push({ url, body: JSON.parse(init.body) }), new Response("{}", { status: 200 }));
@@ -94,7 +94,10 @@ describe("reliability", () => {
     assert.equal(calls.length, 1);
     assert.equal(calls[0].url, "https://api.telegram.org/bot123456789:AAExampleExampleExampleExample_x/sendMessage");
     assert.equal(calls[0].body.chat_id, "42");
-    assert.match(calls[0].body.text, /The scan keeps spinning/);
+    // Only a notice: the message, the reply address and the recipe title must never be sent to Telegram.
+    assert.match(calls[0].body.text, /new feedback \(bug/);
+    assert.ok(!calls[0].body.text.includes("The scan keeps spinning"));
+    assert.ok(!calls[0].body.text.includes("me@example.com"));
 
     const down = async () => {
       throw new Error("network");

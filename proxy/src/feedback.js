@@ -64,15 +64,11 @@ export async function sendTelegram(env, text, fetchFn = fetch) {
   }
 }
 
+// Only a "something new arrived" ping is sent, never the message itself, the reply address or the recipe title: nothing a
+// user wrote leaves our own server, so Telegram is not a recipient of personal data. Read the message on the /admin page.
 export async function notifyTelegram(env, record, fetchFn = fetch) {
-  const lines = [
-    `CookSnap feedback: ${record.kind} (${record.platform} ${record.appVersion || "?"}, ${record.language || "?"})`,
-    "",
-    record.message.slice(0, 1800),
-  ];
-  if (record.recipeTitle) lines.push("", `Recipe: ${record.recipeTitle}`);
-  if (record.contact) lines.push("", `Reply to: ${record.contact}`);
-  return (await sendTelegram(env, lines.join("\n"), fetchFn)).ok;
+  const text = `CookSnap: new feedback (${record.kind}, ${record.platform} ${record.appVersion || "?"}). Open the /admin page to read it.`;
+  return (await sendTelegram(env, text, fetchFn)).ok;
 }
 
 /** Constant-time comparison, so the response time does not reveal how much of a guess was right. */

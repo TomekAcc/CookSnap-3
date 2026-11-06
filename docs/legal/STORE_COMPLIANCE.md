@@ -13,7 +13,7 @@ Legenda: ✅ zrobione w aplikacji/kodzie · 🟡 do zrobienia przez Ciebie · �
   na telefonie**.
 - Zdjęcie lodówki/spiżarni i lista składników idą przez nasz serwer (Cloudflare) do **Google Gemini**. Nic tego nie
   zostaje u nas.
-- Opinie z „Pomoc i opinie" trafiają na nasz serwer na 90 dni (opcjonalnie kopia do Telegrama).
+- Opinie z „Pomoc i opinie" trafiają na nasz serwer na 90 dni (opcjonalnie samo powiadomienie o nowej opinii w Telegramie, bez treści).
 - Losowy identyfikator instalacji służy tylko do dziennego limitu zapytań.
 - Subskrypcja (gdy ruszy): Apple/Google + RevenueCat.
 

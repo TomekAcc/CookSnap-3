@@ -64,11 +64,11 @@ Please do not photograph people, children or documents. Photos should show food,
 - **Google** (Gemini API): reads photos and writes recipes.
 - **Cloudflare, Inc.**: runs the server that sits between the app and Google.
 - **Expo** (EAS Update): delivers app updates.
-- **Telegram** (only if switched on): receives a copy of each message you send us from Help & Feedback, so we are notified at once.
+- **Telegram** (optional): receives only a short notice that a new message has arrived, never the message, your reply address or anything you wrote. It is a notification channel for us, not a recipient of your data.
 - **Apple / Google Play**: distribute the app and process payments.
 - **RevenueCat, Inc.**: confirms whether a subscription is active (anonymous ID and purchase status only).
 
-Google, Cloudflare and (if used) Telegram and RevenueCat act as our service providers (processors) under their
+Google, Cloudflare and (when subscriptions are available) RevenueCat act as our service providers (processors) under their
 data-processing terms. Apple, Google Play and Expo run their own platforms. We do not sell your data and we do
 not share it for advertising or tracking.
 
@@ -134,13 +134,13 @@ app if a change is material.
 
 ## Verify before publishing (delete this section afterwards)
 
-0. Telegram forwarding of feedback messages (if switched on): confirm the processor wording, the transfer
-   mechanism (Telegram is not an EU company) and that the store forms list the data as shared with a service
-   provider. If you prefer not to involve a third party, leave `TELEGRAM_BOT_TOKEN` unset and delete the Telegram line in section 5.
+0. Telegram only receives a "new feedback" notice without any user text (checked in `proxy/src/feedback.js`), so it is not
+   listed as a recipient of personal data. If that ever changes (for example the message is forwarded again), update
+   section 5, the transfer section and the store forms.
 1. Google's current Gemini API terms: training use, retention period, region. The statement in section 4
    must match them. Check that the key you use is on the PAID tier of the Gemini API; free-tier terms differ and
    may allow use of content to improve products.
-2. Data transfers (section 6): the current legal mechanism for Google, Cloudflare, Telegram and RevenueCat.
+2. Data transfers (section 6): the current legal mechanism for Google, Cloudflare and RevenueCat.
 3. If you add analytics, crash reporting, accounts or push notifications, this policy and the store privacy forms
    must change in the same release.
 4. **Dietary preferences and health data (GDPR Art. 9).** Switches such as "diabetic-friendly" or "nut-free" can

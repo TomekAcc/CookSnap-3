@@ -15,7 +15,7 @@ Oznaczenia: 👤 Ty · 🤖 ja · 👥 razem · ⏳ czekanie
 
 ## Faza 1 — kod i dokumenty (tydzień 1), robię ja
 - [ ] 🤖 Adres i NIP w dokumentach, **polskie wersje** regulaminu i polityki, build stron `/privacy` `/terms`.
-- [ ] 🤖 Telegram: samo powiadomienie bez treści.
+- [x] 🤖 Telegram: samo powiadomienie bez treści (zrobione, wymaga wdrożenia serwera).
 - [ ] 🤖 Test tańszego modelu (2.5 Flash-Lite); jeśli jakość OK, przełączenie.
 - [ ] 🤖 Darmowa próbka „na start" (3 skany + 3 generowania raz w życiu), po niej ekran zakupu.
 - [ ] 🤖 Włączenie linków do regulaminu i polityki w aplikacji (`EXPO_PUBLIC_LEGAL_LIVE=1`).

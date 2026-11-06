@@ -55,8 +55,7 @@ exist. Lost the password? Run `wrangler secret put ADMIN_TOKEN` again with a new
 
 ### Instant copy on your phone (optional, recommended): Telegram
 
-With a Telegram bot the Worker also sends every new message to your own chat, so it arrives as a notification and
-exists in a second place. If Telegram is down, the message is still stored.
+With a Telegram bot the Worker also sends a "new feedback" notice to your own chat, so you hear about it at once. If Telegram is down, the message is still stored.
 
 1. In Telegram, open **@BotFather**, send `/newbot`, pick a name; it replies with a token (keep it private).
 2. Open a chat with your new bot and send it any message (for example "hi").
@@ -69,8 +68,8 @@ exists in a second place. If Telegram is down, the message is still stored.
    npx wrangler deploy
    ```
 
-Telegram then receives the message text, kind, app version, OS, language and optional recipe title / reply
-address. The privacy policy names it; keep it there as long as this is switched on.
+Telegram receives only a short notice ("new feedback: kind, platform, app version, open the /admin page"), never the
+message, the reply address or the recipe title, so no user text leaves the server. Read the message on /admin.
 
 ## Point the app at it
 
