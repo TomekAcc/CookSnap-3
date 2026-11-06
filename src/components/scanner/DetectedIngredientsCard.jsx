@@ -277,10 +277,9 @@ export default function DetectedIngredientsCard({
               // the chips end flush on the right instead of ragged.
               // Strict two-column grid: equal widths, content left-aligned,
               // × pinned to the right edge of each chip, so emoji,
-              // names and × each line up in a column. Long names may
-              // use a second line instead of being cut.
+              // names and × each line up in a column. Long names use a
+              // second line at the normal size (shrinking one name but not another looked inconsistent).
               labelLines={2}
-              fitLabel
               reserveEmojiSpace
               style={{
                 ...getDetectedPillStyle(isDark, colors),
