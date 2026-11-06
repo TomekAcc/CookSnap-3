@@ -36,6 +36,10 @@ export const STORAGE_KEYS = {
   dailyPantryScans: "cooksnap:dailyPantryScans:v1",
   dailyRecipeGenerations: "cooksnap:dailyRecipeGenCount:v1",
   dailyRecipeModifications: "cooksnap:dailyRecipeModifyCount:v1",
+  // The free sample: uses since install (never refilled), see constants/limits.js
+  freeSampleFridgeScans: "cooksnap:freeSampleFridgeScans:v1",
+  freeSamplePantryScans: "cooksnap:freeSamplePantryScans:v1",
+  freeSampleRecipeGenerations: "cooksnap:freeSampleRecipeGenerations:v1",
   // One-time flags
   onboardingComplete: "cooksnap:onboardingComplete:v1",
   settingsDoneHintShown: "cooksnap:settingsDoneHintShown:v1",

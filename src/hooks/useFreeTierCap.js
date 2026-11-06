@@ -12,42 +12,64 @@ const counterCodec = jsonCodec(
   }
 );
 
+// A running total since install (the free sample), as a plain non-negative whole number.
+const totalCodec = jsonCodec(
+  (value) => Number.isFinite(Number(value)) && Number(value) >= 0,
+  (value) => Math.floor(Number(value))
+);
+
 /**
- * A daily limit: `freeLimit` uses per local day for free users and `proLimit` for PRO (a larger "fair use" number —
- * every AI call costs real money, so PRO is generous, not unlimited). Without a `proLimit`, PRO has no limit and its
- * uses are not counted. Persisted under `storageKey`.
+ * A usage limit. PRO gets `proLimit` uses per local day (a generous "fair use" number: every AI call costs real
+ * money, so PRO is generous, not unlimited). Free users get `freeLimit`, counted either per day (default) or, when
+ * `lifetimeKey` is given, as a one-time sample since install that never refills. Without a `proLimit`, PRO has no
+ * limit and its uses are not counted. Persisted under `storageKey` (daily) and `lifetimeKey` (sample).
  *
- *   const fridge = useFreeTierCap(STORAGE_KEYS.dailyFridgeScans, 2, isPro, 10);
- *   fridge.count      uses so far today
- *   fridge.limit      today's limit for this person (free or PRO)
+ *   const fridge = useFreeTierCap(STORAGE_KEYS.dailyFridgeScans, 3, isPro, 10, STORAGE_KEYS.freeSampleFridgeScans);
+ *   fridge.count      uses so far (today for PRO, since install for the free sample)
+ *   fridge.limit      the limit that applies to this person right now
  *   fridge.canUse     false once the limit has been hit
  *   fridge.register() call right before the action: returns false (and does not
  *                     count) when the limit is reached, otherwise counts it
  *                     and returns true.
  */
-export function useFreeTierCap(storageKey, freeLimit, isPro, proLimit) {
+export function useFreeTierCap(storageKey, freeLimit, isPro, proLimit, lifetimeKey) {
   const unlimited = isPro && proLimit == null;
   const limit = isPro && proLimit != null ? proLimit : freeLimit;
+  const useLifetime = !isPro && !!lifetimeKey;
   const [state, setState] = usePersistedState(storageKey, {
     initial: emptyCounter,
     codec: counterCodec,
   });
+  const [total, setTotal] = usePersistedState(lifetimeKey || `${storageKey}:unused`, {
+    initial: 0,
+    codec: totalCodec,
+    shouldPersist: () => !!lifetimeKey,
+  });
 
   // register() must see the latest count even when called twice before React
-  // re-renders (a double tap), so it reads this ref instead of a stale closure.
+  // re-renders (a double tap), so it reads these refs instead of a stale closure.
   const stateRef = useRef(state);
   stateRef.current = state;
+  const totalRef = useRef(total);
+  totalRef.current = total;
 
   const register = useCallback(() => {
     if (unlimited) return true;
+    if (useLifetime) {
+      if (totalRef.current >= limit) return false;
+      const next = totalRef.current + 1;
+      totalRef.current = next;
+      setTotal(next);
+      return true;
+    }
     const today = todayKey();
     if (countFor(stateRef.current, today) >= limit) return false;
     const next = increment(stateRef.current, today);
     stateRef.current = next;
     setState(next);
     return true;
-  }, [unlimited, limit, setState]);
+  }, [unlimited, useLifetime, limit, setState, setTotal]);
 
-  const count = countFor(state);
-  return { count, limit: unlimited ? Infinity : limit, canUse: unlimited || count < limit, register };
+  const count = useLifetime ? total : countFor(state);
+  return { count, limit: unlimited ? Infinity : limit, canUse: unlimited || count < limit, register, isSample: useLifetime };
 }

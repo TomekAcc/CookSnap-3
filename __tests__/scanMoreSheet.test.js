@@ -9,6 +9,7 @@ import { useEntitlements } from "../src/context/EntitlementsContext";
 import { useInventory } from "../src/context/InventoryContext";
 import ScanMoreSheet from "../src/components/scanner/ScanMoreSheet";
 import { EXIT_DURATION_MS } from "../src/utils/bottomSheet";
+import { FREE_DAILY_FRIDGE_SCANS, FREE_DAILY_PANTRY_SCANS } from "../src/constants/limits";
 import { toastStore } from "../src/utils/toastStore";
 import { hideToast } from "../src/utils/toast";
 
@@ -70,8 +71,8 @@ afterEach(() => {
 });
 
 describe.each([
-  ["fridge", { camera: (c) => c.scan.cameraOpen, analyse: () => vision.analyzeFridgeImage, reason: "scan", exhaust: (c) => { c.ent.registerFridgeScanAttempt(); c.ent.registerFridgeScanAttempt(); } }],
-  ["pantry", { camera: (c) => c.scan.pantryCameraOpen, analyse: () => vision.analyzePantryImage, reason: "pantryScan", exhaust: (c) => { c.ent.registerPantryScanAttempt(); c.ent.registerPantryScanAttempt(); } }],
+  ["fridge", { camera: (c) => c.scan.cameraOpen, analyse: () => vision.analyzeFridgeImage, reason: "scan", exhaust: (c) => { for (let i = 0; i < FREE_DAILY_FRIDGE_SCANS; i++) c.ent.registerFridgeScanAttempt(); } }],
+  ["pantry", { camera: (c) => c.scan.pantryCameraOpen, analyse: () => vision.analyzePantryImage, reason: "pantryScan", exhaust: (c) => { for (let i = 0; i < FREE_DAILY_PANTRY_SCANS; i++) c.ent.registerPantryScanAttempt(); } }],
 ])("ScanMoreSheet (%s)", (kind, cfg) => {
   it("renders nothing until its own flag is opened", async () => {
     await mount(kind);

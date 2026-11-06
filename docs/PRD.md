@@ -74,7 +74,7 @@ browsing, not a recipe box to build over years.
 - **Sample scan (first launch):** onboarding opens on a bundled illustration of
   a fridge and offers to scan it — the real scan animation, then real recipe
   generation — so someone installing away from their kitchen sees the product
-  work first. It never calls the vision API, never uses a daily free scan and
+  work first. It never calls the vision API, never uses up a free sample scan and
   is never saved; the user's own scan replaces it. A second tab shows a sample
   pantry (pasta, sugar, honey, soy sauce, spices, flour, rice, oats) scanned the
   same way, and those twelve staples go to the first recipe generation alongside
@@ -84,7 +84,7 @@ browsing, not a recipe box to build over years.
   read-only under the detected ingredients and in the Pantry tab, so the recipes
   never use something the person cannot see. The sample scan goes straight on to
   recipes by itself (default meal settings, still editable below) and does not
-  use up one of the free daily generations.
+  use up one of the free sample generations.
 - A one-line privacy note under the camera / gallery buttons until the first
   scan: photos are sent to Google's AI to find ingredients and are stored only
   on the phone.
@@ -139,13 +139,15 @@ browsing, not a recipe box to build over years.
   across sessions.
 
 ### Monetization — CookSnap PRO
-- **Free tier:** 2 fridge scans/day, 2 recipe generations/day (3 recipes
-  each), full recipe detail, calories. Hitting a limit opens the paywall
-  naming the exact limit that was reached.
+- **Free tier:** a one-time sample, not a daily allowance: 3 fridge scans, 3 pantry scans and 3 recipe
+  generations (3 recipes each) in total since install, never refilled. After that the AI features need PRO;
+  everything that does not call the AI (saved recipes, pantry editing, shopping list, recipe detail,
+  calories) stays free. Hitting the end of the sample opens the paywall naming what ran out. Why: a daily
+  free allowance made free users ~75-80% of the AI bill (docs/PRICING.md).
 - **PRO tier:** high daily limits instead of "unlimited" (10 fridge scans, 10 pantry scans, 8 recipe
   generations, 20 AI recipe changes per day; see docs/PRICING.md), AI Recipe Modifier, full macro
   breakdown, AI-generated Meal Planner.
-- **Pricing:** Monthly $4.99/mo · Annual $24.99/yr (≈$2.08/mo, ~58% cheaper
+- **Pricing:** Monthly $5.99/mo · Annual $29.99/yr (≈$2.50/mo, ~58% cheaper
   than monthly), 7-day free trial on the annual plan, which is the default
   pre-selected option in the paywall.
 - Cancel anytime, 1 tap, standard App Store subscription management.

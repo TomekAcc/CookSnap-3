@@ -60,13 +60,14 @@ export function EntitlementsProvider({ children }) {
   // Generations count the initial "Generate AI Recipes" and every "Regenerate"
   // tap equally — see FREE_DAILY_RECIPE_GENERATIONS for why this is the cap
   // that actually matters.
-  const fridgeScanCap = useFreeTierCap(STORAGE_KEYS.dailyFridgeScans, FREE_DAILY_FRIDGE_SCANS, isPro, PRO_DAILY_FRIDGE_SCANS);
-  const pantryScanCap = useFreeTierCap(STORAGE_KEYS.dailyPantryScans, FREE_DAILY_PANTRY_SCANS, isPro, PRO_DAILY_PANTRY_SCANS);
+  const fridgeScanCap = useFreeTierCap(STORAGE_KEYS.dailyFridgeScans, FREE_DAILY_FRIDGE_SCANS, isPro, PRO_DAILY_FRIDGE_SCANS, STORAGE_KEYS.freeSampleFridgeScans);
+  const pantryScanCap = useFreeTierCap(STORAGE_KEYS.dailyPantryScans, FREE_DAILY_PANTRY_SCANS, isPro, PRO_DAILY_PANTRY_SCANS, STORAGE_KEYS.freeSamplePantryScans);
   const generationCap = useFreeTierCap(
     STORAGE_KEYS.dailyRecipeGenerations,
     FREE_DAILY_RECIPE_GENERATIONS,
     isPro,
-    PRO_DAILY_RECIPE_GENERATIONS
+    PRO_DAILY_RECIPE_GENERATIONS,
+    STORAGE_KEYS.freeSampleRecipeGenerations
   );
   // "Modify with AI" is a PRO feature, so a free user never gets to use it: only the PRO limit applies.
   const modifyCap = useFreeTierCap(STORAGE_KEYS.dailyRecipeModifications, 0, isPro, PRO_DAILY_RECIPE_MODIFICATIONS);
@@ -98,11 +99,13 @@ export function EntitlementsProvider({ children }) {
       freeDailyRecipeGenerations: FREE_DAILY_RECIPE_GENERATIONS,
       // The limit that applies to this person today: the free one, or the larger PRO one.
       dailyRecipeGenerationLimit: generationCap.limit,
+      // True while the person is on the one-time free sample (not PRO): the counts above are totals since install.
+      onFreeSample: generationCap.isSample,
       canGenerateRecipes,
       registerRecipeGenerationAttempt,
       registerRecipeModifyAttempt,
     }),
-    [isPro, proHydrated, activatePro, deactivatePro, dailyFridgeScanCount, canScanFridge, registerFridgeScanAttempt, dailyPantryScanCount, canScanPantry, registerPantryScanAttempt, dailyRecipeGenerationCount, canGenerateRecipes, registerRecipeGenerationAttempt, registerRecipeModifyAttempt, generationCap.limit]
+    [isPro, proHydrated, activatePro, deactivatePro, dailyFridgeScanCount, canScanFridge, registerFridgeScanAttempt, dailyPantryScanCount, canScanPantry, registerPantryScanAttempt, dailyRecipeGenerationCount, canGenerateRecipes, registerRecipeGenerationAttempt, registerRecipeModifyAttempt, generationCap.limit, generationCap.isSample]
   );
 
   return <EntitlementsContext.Provider value={value}>{children}</EntitlementsContext.Provider>;

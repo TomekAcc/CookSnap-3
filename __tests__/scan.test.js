@@ -4,6 +4,7 @@ import { renderApp } from "../test-utils/renderApp";
 import { toastStore } from "../src/utils/toastStore";
 import { hideToast } from "../src/utils/toast";
 import { EXIT_DURATION_MS } from "../src/utils/bottomSheet";
+import { FREE_DAILY_FRIDGE_SCANS, FREE_DAILY_PANTRY_SCANS } from "../src/constants/limits";
 import { SAMPLE_FRIDGE_ITEMS } from "../src/constants/sampleFridge";
 
 jest.mock("../src/services/geminiVision", () => ({
@@ -125,12 +126,11 @@ describe("fridge scan", () => {
 });
 
 describe("free-tier gate on scanning", () => {
-  it("refuses once the daily limit is used, then opens the paywall after the camera sheet has closed", async () => {
+  it("refuses once the free sample is used up, then opens the paywall after the camera sheet has closed", async () => {
     useFakeTimers();
     const { result } = await renderApp();
     act(() => {
-      result.current.ent.registerFridgeScanAttempt();
-      result.current.ent.registerFridgeScanAttempt();
+      for (let i = 0; i < FREE_DAILY_FRIDGE_SCANS; i++) result.current.ent.registerFridgeScanAttempt();
     });
     await act(async () => {
       await result.current.scan.completeScan("file://third.jpg");
@@ -321,12 +321,11 @@ describe("pantry scan", () => {
     expect(result.current.inv.pantryItems).toEqual([]);
   });
 
-  it("is gated by its own daily limit and opens the paywall with the pantry reason", async () => {
+  it("is gated by its own free sample and opens the paywall with the pantry reason", async () => {
     useFakeTimers();
     const { result } = await renderApp();
     act(() => {
-      result.current.ent.registerPantryScanAttempt();
-      result.current.ent.registerPantryScanAttempt();
+      for (let i = 0; i < FREE_DAILY_PANTRY_SCANS; i++) result.current.ent.registerPantryScanAttempt();
     });
     await act(async () => {
       await result.current.scan.completePantryScan("file://pantry.jpg");

@@ -5,6 +5,7 @@ import { ModalProvider, useModalState } from "../src/context/ModalContext";
 import { AppProviders } from "../src/context/AppProviders";
 import { useScan } from "../src/context/ScanContext";
 import { useEntitlements } from "../src/context/EntitlementsContext";
+import { FREE_DAILY_FRIDGE_SCANS, FREE_DAILY_PANTRY_SCANS } from "../src/constants/limits";
 import { useScanCapture } from "../src/components/scanner/useScanCapture";
 import { toastStore } from "../src/utils/toastStore";
 import { hideToast } from "../src/utils/toast";
@@ -59,8 +60,8 @@ afterEach(() => {
 });
 
 describe.each([
-  ["fridge", { open: (r) => r.scan.cameraOpen, reason: "scan", exhaust: (r) => { r.ent.registerFridgeScanAttempt(); r.ent.registerFridgeScanAttempt(); } }],
-  ["pantry", { open: (r) => r.scan.pantryCameraOpen, reason: "pantryScan", exhaust: (r) => { r.ent.registerPantryScanAttempt(); r.ent.registerPantryScanAttempt(); } }],
+  ["fridge", { open: (r) => r.scan.cameraOpen, reason: "scan", exhaust: (r) => { for (let i = 0; i < FREE_DAILY_FRIDGE_SCANS; i++) r.ent.registerFridgeScanAttempt(); } }],
+  ["pantry", { open: (r) => r.scan.pantryCameraOpen, reason: "pantryScan", exhaust: (r) => { for (let i = 0; i < FREE_DAILY_PANTRY_SCANS; i++) r.ent.registerPantryScanAttempt(); } }],
 ])("useScanCapture (%s)", (kind, cfg) => {
   describe("openCamera", () => {
     it("opens the camera when permission is already granted", async () => {

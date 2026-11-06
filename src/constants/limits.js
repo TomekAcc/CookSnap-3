@@ -1,3 +1,10 @@
+// THE FREE SAMPLE. Free users do not get a daily allowance: they get a one-time sample (3 fridge scans, 3 pantry scans,
+// 3 recipe generations) to see what CookSnap does, counted since install and never refilled. After that the AI features
+// need PRO. Everything that does not call the AI (saved recipes, editing the pantry, the shopping list) stays free for
+// good. Why: every AI call costs real money, and a daily free allowance made free users the bulk of the AI bill (see
+// docs/PRICING.md). A sample costs about 5-8 cents per install, once. (The constant names keep "DAILY" for history; they
+// are the sample sizes.)
+
 // Free-tier limits. PRO has none of the daily caps and gets the full batch size.
 
 // Scanning a fridge is inherently infrequent — it rarely changes more than
@@ -6,7 +13,7 @@
 // single session, and each one is its own Gemini text-generation call,
 // making it the meaningful usage-based (and cost-based) lever. See
 // FREE_DAILY_RECIPE_GENERATIONS below.
-export const FREE_DAILY_FRIDGE_SCANS = 2;
+export const FREE_DAILY_FRIDGE_SCANS = 3;
 // Pantry scanning used to be deliberately left free/unlimited (see the old
 // comment this replaced) — reversed after confirming pantry scans hit
 // gemini-3.7-flash, the same pricier vision model fridge scans use, with no
@@ -14,8 +21,8 @@ export const FREE_DAILY_FRIDGE_SCANS = 2;
 // in the app was a real, unbounded cost exposure (anyone could script
 // repeated "scans" all day for free), not just a monetization gap. Same
 // cap as fridge scans — no reason for pantry to be more or less restricted.
-export const FREE_DAILY_PANTRY_SCANS = 2;
-export const FREE_DAILY_RECIPE_GENERATIONS = 2;
+export const FREE_DAILY_PANTRY_SCANS = 3;
+export const FREE_DAILY_RECIPE_GENERATIONS = 3;
 
 // A single Scanner "generation" returns RECIPES_PER_SCAN (5) recipes at
 // once, while a single Meal Planner day-generate returns exactly 1 — so

@@ -9,6 +9,6 @@ export const STORE_PRODUCT_IDS = { annual: "cooksnap_pro_annual", monthly: "cook
 export const REVENUECAT_PACKAGES = { annual: "$rc_annual", monthly: "$rc_monthly" };
 
 export const FALLBACK_PRICES = {
-  annual: { price: "$24.99", perMonth: "$2.08", anchor: "$59.88", trial: true },
-  monthly: { price: "$4.99", perMonth: "$4.99", anchor: null, trial: false },
+  annual: { price: "$29.99", perMonth: "$2.50", anchor: "$71.88", trial: true },
+  monthly: { price: "$5.99", perMonth: "$5.99", anchor: null, trial: false },
 };

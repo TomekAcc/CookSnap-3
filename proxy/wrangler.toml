@@ -16,9 +16,10 @@ GLOBAL_DAILY_LIMIT = "2000"
 # 800,000 per phone = PRO's daily limits (8 generations, 10 + 10 scans, 20 changes) plus about 50% to spare.
 # Change these without releasing a new app: edit here and run `npx wrangler deploy`.
 DEVICE_DAILY_UNITS = "800000"
-# All phones together. 12,000,000 is ~265 generations a day; raise it as the user base grows, and set a budget
-# alert in Google Cloud as the backstop.
-GLOBAL_DAILY_UNITS = "12000000"
+# All phones together. 4,000,000 is ~90 generations a day (about $1.90, ~$57 a month at the very most). It is a
+# deliberately low launch ceiling: raise it as the user base and the paying share grow, and set a budget alert in
+# Google Cloud as the backstop.
+GLOBAL_DAILY_UNITS = "4000000"
 # Set to "1" (dashboard or `wrangler deploy --var PROXY_DISABLED:1`) to switch the proxy off.
 PROXY_DISABLED = "0"
 

@@ -236,3 +236,16 @@ nowy budżet dzienny serwera (429), co przy okazji potwierdziło, że sufit dzia
   pierwszy model, z aliasem i Flash jako zapasem: cena przestaje zależeć od tego, na co Google przestawi `-latest`.
 - Realne oszczędności trzeba więc szukać gdzie indziej: mniej powtórek (zamienników) i krótszy wynik modelu, albo
   wyższa cena subskrypcji.
+
+## Decision (November 2026): free sample, $29.99 / $5.99, low global ceiling
+
+Free users get a one-time sample (3 fridge scans, 3 pantry scans, 3 recipe generations), counted since install
+and never refilled, instead of a daily allowance. Cost: about 5-8 cents per install, once. PRO keeps its daily
+limits (10 / 10 / 8 / 20). Prices: annual $29.99 (7-day trial), monthly $5.99 (annual is about 58% cheaper per
+month). The proxy's global daily budget starts at 4,000,000 units (about $57 a month at the very most) and is
+raised only when the numbers justify it.
+
+What to measure after launch (iOS first): installs, share of installs that use up the sample, trial starts,
+trial-to-paid, D7 retention and AI cost per active user. If the sample converts poorly, try 5 instead of 3 scans
+before going back to a daily allowance. Known gap: reinstalling the app resets the sample on the device; the
+server's per-phone and global budgets cap the damage, and it is not worth fighting before launch.

@@ -139,8 +139,8 @@ catches crash-level bugs, checks 4-tab navigation).
    `ProSubscriptionModal.jsx` (which plan was chosen).
 2. Pick a lightweight analytics target (even a simple logging endpoint is
    enough to start) — this is a decision point, not a default to assume.
-3. After 2–4 weeks of real usage: pull "% of free users who hit the daily
-   cap" and "annual vs monthly plan split" and revisit the $4.99/$24.99
+3. After 2–4 weeks of real usage: pull "% of free users who use up the free
+   sample" and "annual vs monthly plan split" and revisit the $5.99/$29.99
    pricing and the 3-scan limit against that data, not intuition.
 
 ---

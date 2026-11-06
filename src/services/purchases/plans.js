@@ -4,30 +4,30 @@
 // confirmed real bug: every OTHER string on this screen is localized via
 // t(), but the price and perMonthValue read directly off this object, so
 // the period suffix stayed hardcoded English in every language ("Then
-// $24.99/year ($2.08/mo)" inside an otherwise-Polish sentence).
+// $29.99/year ($2.50/mo)" inside an otherwise-Polish sentence).
 export const PLANS = {
   annual: {
     id: "annual",
     labelKey: "pro.annual",
     badgeKey: "pro.saveBadge",
-    price: "$24.99",
-    // What the same $4.99/mo would cost paid monthly for a year ($59.88) —
+    price: "$29.99",
+    // What the same $5.99/mo would cost paid monthly for a year ($71.88) —
     // shown struck through next to the real price so "SAVE 58%" has a
     // concrete number behind it instead of being an abstract badge claim.
-    anchorPrice: "$59.88",
+    anchorPrice: "$71.88",
     periodUnit: "year",
     perMonthKey: "pro.annualPerMonth",
-    perMonthPrice: "$2.08",
+    perMonthPrice: "$2.50",
     trial: true,
   },
   monthly: {
     id: "monthly",
     labelKey: "pro.monthly",
     badgeKey: null,
-    price: "$4.99",
+    price: "$5.99",
     periodUnit: "month",
     perMonthKey: "pro.monthlyPerMonth",
-    perMonthPrice: "$4.99",
+    perMonthPrice: "$5.99",
     trial: false,
   },
 };

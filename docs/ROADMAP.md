@@ -66,7 +66,7 @@ app), SDK 58, the web smoke test in the normal workflow.
   per-request limit (10 s) is too tight or a request really hangs.
 - **Recipe and scan quality feedback.** No way to flag "this recipe was bad" or "the scan missed
   obvious items" beyond Help & Feedback.
-- **Usage-informed tuning of the free tier and pricing.** The limits and the $4.99/mo - $24.99/yr
+- **Usage-informed tuning of the free tier and pricing.** The limits and the $5.99/mo - $29.99/yr
   prices are judgment calls until there is conversion data.
 
 ## Later

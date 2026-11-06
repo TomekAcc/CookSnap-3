@@ -69,11 +69,13 @@ suits you and the people you cook for.
 
 ## 4. Free use and CookSnap PRO
 
-**4.1 Free version.** The free version has daily limits (currently [2] fridge scans, [2] pantry scans and
-[2] recipe generations per day, [3] recipes per generation). The limits, and what PRO includes, may change.
+**4.1 Free version.** The free version includes a one-time sample to try the app (currently [3] fridge scans, [3] pantry scans and
+[3] recipe generations in total, [3] recipes per generation). The sample does not renew; after it is used up, scanning and
+generating recipes need PRO. Features that do not use AI (saved recipes, your pantry list, the shopping list) stay free.
+The sample, and what PRO includes, may change.
 
-**4.2 PRO subscription.** CookSnap PRO is an optional paid subscription: [PRICES: monthly $[4.99], yearly
-$[24.99], or the equivalent in your currency, shown in the app before you buy]. A [7]-day free trial may be
+**4.2 PRO subscription.** CookSnap PRO is an optional paid subscription: [PRICES: monthly $[5.99], yearly
+$[29.99], or the equivalent in your currency, shown in the app before you buy]. A [7]-day free trial may be
 offered on the yearly plan.
 
 **4.3 Payment and renewal.** Payment is charged to your Apple ID or Google Play account when you confirm the

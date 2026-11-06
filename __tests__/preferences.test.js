@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { act, waitFor } from "@testing-library/react-native";
+import { FREE_DAILY_FRIDGE_SCANS } from "../src/constants/limits";
 import { renderApp } from "../test-utils/renderApp";
 
 beforeEach(async () => {
@@ -105,15 +106,15 @@ describe("entitlements", () => {
     expect(second.result.current.ent.isPro).toBe(false);
   });
 
-  it("exposes the free limits and their daily counters (limits themselves are covered by useFreeTierCap)", async () => {
+  it("exposes the free sample limits and their counters (limits themselves are covered by useFreeTierCap)", async () => {
     const { result } = await renderApp();
     expect(result.current.ent.canScanFridge).toBe(true);
     act(() => {
-      result.current.ent.registerFridgeScanAttempt();
-      result.current.ent.registerFridgeScanAttempt();
+      for (let i = 0; i < FREE_DAILY_FRIDGE_SCANS; i++) result.current.ent.registerFridgeScanAttempt();
     });
-    expect(result.current.ent.dailyFridgeScanCount).toBe(2);
+    expect(result.current.ent.dailyFridgeScanCount).toBe(FREE_DAILY_FRIDGE_SCANS);
     expect(result.current.ent.canScanFridge).toBe(false);
-    expect(result.current.ent.freeDailyFridgeScans).toBe(2);
+    expect(result.current.ent.freeDailyFridgeScans).toBe(FREE_DAILY_FRIDGE_SCANS);
+    expect(result.current.ent.onFreeSample).toBe(true);
   });
 });

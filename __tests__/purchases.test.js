@@ -78,7 +78,7 @@ describe("PurchasesProvider", () => {
   it("shows the store's prices once they arrive, and the fallback before", async () => {
     const { result } = await mount(fake());
     await waitFor(() => expect(result.current.pay.offerings.annual.price).toBe("49,99 zł"));
-    expect(FALLBACK_PRICES.annual.price).toBe("$24.99");
+    expect(FALLBACK_PRICES.annual.price).toBe("$29.99");
   });
 
   it("a cancelled purchase leaves PRO off and is not an error", async () => {
@@ -142,7 +142,7 @@ describe("RevenueCat provider", () => {
   const pkg = (identifier, price, priceString, introPrice = null) => ({ identifier, product: { price, priceString, currencyCode: "USD", introPrice } });
   const sdk = (overrides = {}) => ({
     configure: jest.fn(),
-    getOfferings: jest.fn().mockResolvedValue({ current: { availablePackages: [pkg("$rc_annual", 24.99, "$24.99", {}), pkg("$rc_monthly", 4.99, "$4.99")] } }),
+    getOfferings: jest.fn().mockResolvedValue({ current: { availablePackages: [pkg("$rc_annual", 29.99, "$29.99", {}), pkg("$rc_monthly", 5.99, "$5.99")] } }),
     getCustomerInfo: jest.fn().mockResolvedValue({ entitlements: { active: {} } }),
     purchasePackage: jest.fn().mockResolvedValue({ customerInfo: { entitlements: { active: { pro: {} } } } }),
     restorePurchases: jest.fn().mockResolvedValue({ entitlements: { active: { pro: {} } } }),
@@ -153,10 +153,10 @@ describe("RevenueCat provider", () => {
     const provider = createRevenueCatProvider({ apiKey: "k", Purchases: sdk() });
     await provider.init();
     const o = await provider.getOfferings();
-    expect(o.annual).toMatchObject({ price: "$24.99", trial: true });
-    expect(o.annual.perMonth).toMatch(/2\.08/);
-    expect(o.annual.anchor).toMatch(/59\.88/);
-    expect(o.monthly).toMatchObject({ price: "$4.99", trial: false, anchor: null });
+    expect(o.annual).toMatchObject({ price: "$29.99", trial: true });
+    expect(o.annual.perMonth).toMatch(/2\.50/);
+    expect(o.annual.anchor).toMatch(/71\.88/);
+    expect(o.monthly).toMatchObject({ price: "$5.99", trial: false, anchor: null });
   });
 
   it("buys the package for the chosen plan and reports success only when the entitlement is active", async () => {
