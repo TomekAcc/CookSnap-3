@@ -1,5 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Keyboard,
+  Platform,
   Text,
   TouchableOpacity,
   StyleSheet,
@@ -28,7 +30,24 @@ const KIND_LABEL_KEYS = {
  * Help & Feedback — StandardSmoothModal bottom-sheet. The message goes to our own server (the owner reads it on
  * a private page); if that fails the text is kept on the phone and sent later.
  */
+// True while the on-screen keyboard is up. With it open the sheet only has the strip above the keyboard, so the
+// sheet gives up its intro line and its bottom padding, and may use all of that strip (otherwise the send button
+// was cut off under the text box).
+function useKeyboardVisible() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const show = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow", () => setVisible(true));
+    const hide = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide", () => setVisible(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+  return visible;
+}
+
 export default function HelpFeedbackModal() {
+  const keyboardUp = useKeyboardVisible();
   const { helpModalOpen, setHelpModalOpen } = useModalState();
   const { colors } = useTheme();
   const { t, recipeLanguageId } = useLanguage();
@@ -70,11 +89,15 @@ export default function HelpFeedbackModal() {
       onClose={handleClose}
       title={t("menu.helpFeedback")}
       type="bottom-sheet"
+      maxHeight={keyboardUp ? "100%" : undefined}
+      compactBottom={keyboardUp}
       scrollProps={{ keyboardShouldPersistTaps: "handled" }}
     >
-      <Text style={[styles.introText, { color: colors.textSecondary }]}>
-        {t("help.introText")}
-      </Text>
+      {keyboardUp ? null : (
+        <Text style={[styles.introText, { color: colors.textSecondary }]}>
+          {t("help.introText")}
+        </Text>
+      )}
 
       <View style={styles.kindRow}>
         {FEEDBACK_KINDS.map((id) => {

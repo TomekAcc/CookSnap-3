@@ -22,6 +22,10 @@ export default function FridgeScanProgress({
   const { colors } = useTheme();
   const { scanningLabel } = useScan();
   const [barWidth, setBarWidth] = useState(0);
+  // Whether a list already existed when this scan began. hasFood flips to true near the end, when the new items are
+  // committed, and reading it live made the small "adding new ingredients" line pop in at the last moment and shift
+  // the card; the panel mounts when the scan starts, so this is fixed for the whole scan.
+  const [addingToList] = useState(hasFood);
   return (
     <Animated.View
       style={{
@@ -81,7 +85,7 @@ export default function FridgeScanProgress({
               {t(SCAN_STATUS_KEYS[currentStepIdx])}
             </Text>
             {/* Only when there is already a list to add to; on a first scan "adding new ingredients" is just noise. */}
-            {scanningLabel && hasFood ? (
+            {scanningLabel && addingToList ? (
               <Text
                 style={{
                   color: colors.textSecondary,
