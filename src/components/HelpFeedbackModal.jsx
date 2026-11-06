@@ -1,7 +1,5 @@
 import React, { useRef, useState } from "react";
 import {
-  Linking,
-  Platform,
   Text,
   TouchableOpacity,
   StyleSheet,
@@ -14,8 +12,6 @@ import StandardSmoothModal from "./StandardSmoothModal";
 import { useLanguage } from "../context/LanguageContext";
 import { showToast } from "../utils/toast";
 import { EMERALD, WHITE } from "../theme/palette";
-import { SUPPORT_EMAIL } from "../constants/contact";
-import appConfig from "../../app.json";
 import { log } from "../utils/log";
 import { FEEDBACK_KINDS } from "../services/feedback";
 import { flushFeedbackOutbox, queueFeedback } from "../services/feedbackOutbox";
@@ -30,7 +26,7 @@ const KIND_LABEL_KEYS = {
 
 /**
  * Help & Feedback — StandardSmoothModal bottom-sheet. The message goes to our own server (the owner reads it on
- * a private page); if that fails the text stays here and the person can email it instead.
+ * a private page); if that fails the text is kept on the phone and sent later.
  */
 export default function HelpFeedbackModal() {
   const { helpModalOpen, setHelpModalOpen } = useModalState();
@@ -65,21 +61,6 @@ export default function HelpFeedbackModal() {
       showToast(t("help.sendFailed"), "error", 4500);
     } finally {
       setSending(false);
-    }
-  };
-
-  // The fallback: the person's own mail app with the message already written.
-  const handleEmail = async () => {
-    const text = message.trim();
-    const subject = `CookSnap feedback (${kind})`;
-    const lines = [text, "", "--", `CookSnap ${appConfig.expo.version} (${Platform.OS} ${Platform.Version})`];
-    if (recipeTitle) lines.push(`Recipe: ${recipeTitle}`);
-    const url = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
-    try {
-      await Linking.openURL(url);
-    } catch (err) {
-      log.warn("[CookSnap] Could not open the mail app for feedback:", err?.message);
-      showToast(t("help.noMailApp", { email: SUPPORT_EMAIL }), "error", 5000);
     }
   };
 
@@ -160,11 +141,6 @@ export default function HelpFeedbackModal() {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleEmail} activeOpacity={0.7} accessibilityRole="link" style={styles.emailLink}>
-        <Text style={[styles.emailLinkText, { color: colors.textSecondary }]}>
-          {t("help.emailInstead", { email: SUPPORT_EMAIL })}
-        </Text>
-      </TouchableOpacity>
     </StandardSmoothModal>
   );
 }
@@ -215,14 +191,5 @@ const styles = StyleSheet.create({
   sendButtonText: {
     fontSize: 16,
     fontWeight: "700",
-  },
-  emailLink: {
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  emailLinkText: {
-    fontSize: 13,
-    fontWeight: "500",
-    textAlign: "center",
   },
 });
