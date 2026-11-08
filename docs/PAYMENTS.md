@@ -1,7 +1,7 @@
 # Płatności za PRO — jak to działa i co trzeba zrobić
 
-## Stan na dziś
-Kod płatności jest gotowy, ale **nic nie jest jeszcze podłączone do sklepów**. Aplikacja ma dwa tryby:
+## Stan na dziś (listopad 2026)
+Kod płatności jest gotowy. Zrobione: produkty w App Store Connect (`cooksnap_pro_annual`, `cooksnap_pro_monthly`), projekt RevenueCat (entitlement `pro`, offering `default` z `$rc_annual` i `$rc_monthly`), biblioteka `react-native-purchases` zainstalowana, publiczny klucz iOS (`appl_…`) i adres serwera ustawione jako zmienne środowiska EAS `production` (nie `preview`, żeby Expo Go zostało na trybie testowym). Do zrobienia: pierwszy `eas build` na iOS, TestFlight, test zakupu (Sandbox), Android. Aplikacja ma dwa tryby:
 
 | Tryb | Kiedy | Co robi |
 |---|---|---|
@@ -20,8 +20,8 @@ Kod płatności jest gotowy, ale **nic nie jest jeszcze podłączone do sklepów
 ## Co musisz zrobić (kolejność)
 1. **Konta:** Apple Developer (99 USD/rok) i Google Play Console (25 USD jednorazowo). Umowy płatne + dane bankowe/podatkowe w obu.
 2. **Produkty w sklepach** (subskrypcje, jedna grupa „CookSnap PRO"):
-   - `cooksnap_pro_annual` — roczna, 24,99 USD (lub lokalny odpowiednik), 7 dni próbnych.
-   - `cooksnap_pro_monthly` — miesięczna, 4,99 USD.
+   - `cooksnap_pro_annual` — roczna, 29,99 USD (lub lokalny odpowiednik), 7 dni próbnych.
+   - `cooksnap_pro_monthly` — miesięczna, 5,99 USD.
 3. **RevenueCat** (revenuecat.com, darmowy do pewnego progu przychodu):
    - projekt + aplikacje iOS i Android, wklej klucze sklepów,
    - *Entitlement* o identyfikatorze **`pro`** (podepnij oba produkty),
