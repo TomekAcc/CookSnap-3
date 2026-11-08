@@ -183,14 +183,13 @@ export default function ProSubscriptionModal() {
   // sheet — the trial vs. monthly copy wraps to different line counts.
   const renderCtaSection = (p) => {
     const period = t(PERIOD_SUFFIX_KEY[p.periodUnit]);
-    const perMonthValue = `${p.perMonthPrice}${t("pro.moSuffix")}`;
     return (
       <View key={p.id} style={styles.ctaSection}>
         {/* Both plans have this row, so the button stays put when the plan is switched: the trial says nothing is due today, the monthly plan says what is charged today. */}
         <View style={[styles.guaranteeRow, { marginBottom: 10 }]}>
           <Check size={15} color={colors.greenStrong} strokeWidth={3} />
           <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
-            {p.trial ? t("pro.noPaymentToday") : t("pro.payToday", { price: p.price })}
+            {p.trial ? t("pro.noPaymentToday") : t("pro.accessNow")}
           </Text>
         </View>
         <TouchableOpacity
@@ -215,7 +214,6 @@ export default function ProSubscriptionModal() {
             ? t("pro.thenPriceCancelAnytime", {
                 price: p.price,
                 period,
-                perMonthValue,
               })
             : t("pro.billedMonthlyCancelAnytime")}
         </Text>
