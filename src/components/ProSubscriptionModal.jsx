@@ -404,7 +404,7 @@ export default function ProSubscriptionModal() {
           { backgroundColor: colors.inputBg, borderColor: colors.cardBorder },
         ]}
       >
-        <X size={16} color={colors.textSecondary} strokeWidth={2.5} />
+        <X size={18} color={colors.textSecondary} strokeWidth={2.5} />
       </TouchableOpacity>
 
       {/* ScrollView (header/plans/benefits/social proof) + a fixed section
@@ -465,7 +465,7 @@ export default function ProSubscriptionModal() {
               { backgroundColor: colors.accentAmber },
             ]}
           >
-            <Crown size={22} color={WHITE} fill={WHITE} />
+            <Crown size={25} color={WHITE} fill={WHITE} />
           </View>
           <Text style={[styles.title, { color: colors.textPrimary }]}>
             {t("pro.unlockTitle")}
@@ -578,7 +578,7 @@ export default function ProSubscriptionModal() {
                     benefitChipStyle,
                   ]}
                 >
-                  <BenefitIcon size={15} color={benefitIconColor} strokeWidth={2.25} />
+                  <BenefitIcon size={17} color={benefitIconColor} strokeWidth={2.25} />
                 </View>
                 <Text style={[styles.benefitText, { color: colors.textPrimary }]}>
                   {text}
@@ -672,9 +672,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 12,
     right: 16,
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -707,9 +707,9 @@ const styles = StyleSheet.create({
   // colors.accentAmber at render time. The glow sits inside the ScrollView's
   // frame (12px margin + title below), so it isn't clipped.
   crownBadge: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -805,9 +805,9 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   benefitIconChip: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -815,9 +815,9 @@ const styles = StyleSheet.create({
   },
   benefitText: {
     flex: 1,
-    fontSize: 13.5,
+    fontSize: 14,
     fontWeight: "600",
-    lineHeight: 18.5,
+    lineHeight: 19,
   },
   ctaSection: {
     paddingTop: 13,
