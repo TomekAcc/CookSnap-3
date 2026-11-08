@@ -187,16 +187,10 @@ export default function ProSubscriptionModal() {
     return (
       <View key={p.id} style={styles.ctaSection}>
         {/* Both plans have this row, so the button stays put when the plan is switched: the trial says nothing is due today, the monthly plan says what is charged today. */}
-        <View style={[styles.guaranteeRow, { marginBottom: 6 }]}>
+        <View style={[styles.guaranteeRow, { marginBottom: 10 }]}>
           <Check size={15} color={colors.greenStrong} strokeWidth={3} />
           <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
             {p.trial ? t("pro.noPaymentToday") : t("pro.payToday", { price: p.price })}
-          </Text>
-        </View>
-        <View style={styles.guaranteeRow}>
-          <Check size={13} color={colors.textSecondary} strokeWidth={3} />
-          <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
-            {t("pro.cancelAnytimeGuarantee")}
           </Text>
         </View>
         <TouchableOpacity
