@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Thanh toán hàng tháng — hủy bất cứ lúc nào",
   "pro.cancelAnytimeGuarantee": "Hủy bất cứ lúc nào chỉ với 1 chạm trong App Store",
   "pro.noPaymentToday": "Hôm nay không tính phí",
+  "pro.payToday": "Hôm nay bạn trả {price}",
   "pro.trialDayZero": "Hôm nay: bắt đầu dùng thử miễn phí",
   "pro.trialDayReminder": "Ngày 5: chúng tôi nhắc bạn trước khi tính phí",
   "pro.trialDayCharge": "Ngày 7: {price}{period} trừ khi bạn hủy",

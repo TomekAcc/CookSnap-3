@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Faktureres månedligt — opsig når som helst",
   "pro.cancelAnytimeGuarantee": "Opsig når som helst med 1 tryk i App Store",
   "pro.noPaymentToday": "Ingen betaling i dag",
+  "pro.payToday": "I dag betaler du {price}",
   "pro.trialDayZero": "I dag: start din gratis prøveperiode",
   "pro.trialDayReminder": "Dag 5: vi minder dig inden du bliver opkrævet",
   "pro.trialDayCharge": "Dag 7: {price}{period} medmindre du opsiger",

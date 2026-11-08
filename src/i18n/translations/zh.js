@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "按月扣费 — 随时可取消",
   "pro.cancelAnytimeGuarantee": "在 App Store 一键即可随时取消",
   "pro.noPaymentToday": "今日无需付款",
+  "pro.payToday": "今天支付 {price}",
   "pro.trialDayZero": "今天：开始免费试用",
   "pro.trialDayReminder": "第5天：扣费前会提醒你",
   "pro.trialDayCharge": "第7天：{price}{period}，除非你取消",

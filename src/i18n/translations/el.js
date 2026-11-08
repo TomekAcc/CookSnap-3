@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Μηνιαία χρέωση — ακύρωση όποτε θέλετε",
   "pro.cancelAnytimeGuarantee": "Ακύρωση ανά πάσα στιγμή με 1 άγγιγμα στο App Store",
   "pro.noPaymentToday": "Χωρίς πληρωμή σήμερα",
+  "pro.payToday": "Σήμερα πληρώνετε {price}",
   "pro.trialDayZero": "Σήμερα: ξεκινήστε τη δωρεάν δοκιμή σας",
   "pro.trialDayReminder": "Ημέρα 5: θα σας υπενθυμίσουμε πριν τη χρέωση",
   "pro.trialDayCharge": "Ημέρα 7: {price}{period} εκτός αν ακυρώσετε",

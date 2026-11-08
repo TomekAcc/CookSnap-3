@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Таксува се месечно — отменете по всяко време",
   "pro.cancelAnytimeGuarantee": "Отменете по всяко време с 1 докосване в App Store",
   "pro.noPaymentToday": "Без плащане днес",
+  "pro.payToday": "Днес плащате {price}",
   "pro.trialDayZero": "Днес: започнете безплатния си пробен период",
   "pro.trialDayReminder": "Ден 5: ще ви напомним преди таксуването",
   "pro.trialDayCharge": "Ден 7: {price}{period}, освен ако не отмените",

@@ -186,11 +186,11 @@ export default function ProSubscriptionModal() {
     const perMonthValue = `${p.perMonthPrice}${t("pro.moSuffix")}`;
     return (
       <View key={p.id} style={styles.ctaSection}>
-        {/* Monthly has no trial, but keeps this row (invisible) so the button stays put when the plan is switched. */}
-        <View style={[styles.guaranteeRow, { marginBottom: 6, opacity: p.trial ? 1 : 0 }]} accessibilityElementsHidden={!p.trial} importantForAccessibility={p.trial ? "auto" : "no-hide-descendants"}>
+        {/* Both plans have this row, so the button stays put when the plan is switched: the trial says nothing is due today, the monthly plan says what is charged today. */}
+        <View style={[styles.guaranteeRow, { marginBottom: 6 }]}>
           <Check size={15} color={colors.greenStrong} strokeWidth={3} />
           <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
-            {t("pro.noPaymentToday")}
+            {p.trial ? t("pro.noPaymentToday") : t("pro.payToday", { price: p.price })}
           </Text>
         </View>
         <View style={styles.guaranteeRow}>

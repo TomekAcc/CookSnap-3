@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Facturat lunar — anulează oricând",
   "pro.cancelAnytimeGuarantee": "Anulează oricând cu o atingere în App Store",
   "pro.noPaymentToday": "Nu plătești nimic azi",
+  "pro.payToday": "Astăzi plătești {price}",
   "pro.trialDayZero": "Astăzi: începe perioada de probă gratuită",
   "pro.trialDayReminder": "Ziua 5: îți reamintim înainte de taxare",
   "pro.trialDayCharge": "Ziua 7: {price}{period} dacă nu anulezi",

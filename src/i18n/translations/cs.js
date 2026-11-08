@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Účtováno měsíčně — zrušení kdykoliv",
   "pro.cancelAnytimeGuarantee": "Zrušení kdykoliv jedním klepnutím v App Storu",
   "pro.noPaymentToday": "Dnes nic neplatíte",
+  "pro.payToday": "Dnes zaplatíte {price}",
   "pro.trialDayZero": "Dnes: začněte bezplatnou zkušební dobu",
   "pro.trialDayReminder": "Den 5: připomeneme vám to před účtováním",
   "pro.trialDayCharge": "Den 7: {price}{period}, pokud nezrušíte",

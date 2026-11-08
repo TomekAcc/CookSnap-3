@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Ditagih bulanan — batalkan kapan saja",
   "pro.cancelAnytimeGuarantee": "Batalkan kapan saja dengan 1 ketukan di App Store",
   "pro.noPaymentToday": "Tanpa biaya hari ini",
+  "pro.payToday": "Hari ini kamu bayar {price}",
   "pro.trialDayZero": "Hari ini: mulai uji coba gratis",
   "pro.trialDayReminder": "Hari ke-5: kami ingatkan sebelum penagihan",
   "pro.trialDayCharge": "Hari ke-7: {price}{period} kecuali Anda batalkan",

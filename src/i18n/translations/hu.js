@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Havi számlázás — bármikor lemondható",
   "pro.cancelAnytimeGuarantee": "Lemondás bármikor 1 érintéssel az App Store-ban",
   "pro.noPaymentToday": "Ma nem kell fizetned",
+  "pro.payToday": "Ma fizetendő: {price}",
   "pro.trialDayZero": "Ma: indítsd el az ingyenes próbaidőszakot",
   "pro.trialDayReminder": "5. nap: emlékeztetünk a terhelés előtt",
   "pro.trialDayCharge": "7. nap: {price}{period}, hacsak nem mondod le",

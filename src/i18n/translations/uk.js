@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Оплата щомісяця — скасовуйте будь-коли",
   "pro.cancelAnytimeGuarantee": "Скасовуйте будь-коли в один дотик в App Store",
   "pro.noPaymentToday": "Сьогодні платити не потрібно",
+  "pro.payToday": "Сьогодні ви платите {price}",
   "pro.trialDayZero": "Сьогодні: почніть безкоштовний пробний період",
   "pro.trialDayReminder": "День 5: нагадаємо перед списанням",
   "pro.trialDayCharge": "День 7: {price}{period}, якщо не скасуєте",

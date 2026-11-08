@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Оплата ежемесячно — отмена в любой момент",
   "pro.cancelAnytimeGuarantee": "Отмена в 1 касание в App Store в любой момент",
   "pro.noPaymentToday": "Сегодня платить не нужно",
+  "pro.payToday": "Сегодня вы платите {price}",
   "pro.trialDayZero": "Сегодня: начните бесплатный пробный период",
   "pro.trialDayReminder": "День 5: напомним перед списанием",
   "pro.trialDayCharge": "День 7: {price}{period}, если не отмените",

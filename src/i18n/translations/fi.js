@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "Laskutetaan kuukausittain – peru milloin tahansa",
   "pro.cancelAnytimeGuarantee": "Peru milloin tahansa yhdellä napautuksella App Storesta",
   "pro.noPaymentToday": "Ei veloitusta tänään",
+  "pro.payToday": "Maksat tänään {price}",
   "pro.trialDayZero": "Tänään: aloita ilmainen kokeilujakso",
   "pro.trialDayReminder": "Päivä 5: muistutamme ennen veloitusta",
   "pro.trialDayCharge": "Päivä 7: {price}{period} ellet peruuta",

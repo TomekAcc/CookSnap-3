@@ -389,6 +389,7 @@ export default {
   "pro.billedMonthlyCancelAnytime": "يُحاسب شهرياً — يمكنك الإلغاء في أي وقت",
   "pro.cancelAnytimeGuarantee": "ألغِ في أي وقت بضغطة واحدة في App Store",
   "pro.noPaymentToday": "لا تدفع أي شيء اليوم",
+  "pro.payToday": "تدفع اليوم {price}",
   "pro.trialDayZero": "اليوم: ابدأ تجربتك المجانية",
   "pro.trialDayReminder": "اليوم 5: سنذكرك قبل الخصم",
   "pro.trialDayCharge": "اليوم 7: {price}{period} ما لم تُلغِ",
