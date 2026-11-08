@@ -5,7 +5,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Crown,
-  Check,
   Sparkles,
   X,
   ChevronRight,
@@ -185,13 +184,6 @@ export default function ProSubscriptionModal() {
     const period = t(PERIOD_SUFFIX_KEY[p.periodUnit]);
     return (
       <View key={p.id} style={styles.ctaSection}>
-        {/* Both plans have this row, so the button stays put when the plan is switched: the trial says nothing is due today, the monthly plan says what is charged today. */}
-        <View style={[styles.guaranteeRow, { marginBottom: 10 }]}>
-          <Check size={15} color={colors.greenStrong} strokeWidth={3} />
-          <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
-            {p.trial ? t("pro.noPaymentToday") : t("pro.accessNow")}
-          </Text>
-        </View>
         <TouchableOpacity
           onPress={handleSubscribe}
           disabled={!!busy}
@@ -813,15 +805,6 @@ const styles = StyleSheet.create({
   ctaSection: {
     paddingTop: 8,
   },
-  guaranteeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    marginBottom: 8,
-  },
-  guaranteeText: { fontSize: 13, fontWeight: "600" },
-  noPaymentText: { fontSize: 14, fontWeight: "700" },
   ctaButton: {
     borderRadius: 16,
     minHeight: 50,
