@@ -9,7 +9,6 @@ import {
   Sparkles,
   X,
   ChevronRight,
-  Bell,
   Camera,
   UtensilsCrossed,
   Target,
@@ -196,13 +195,9 @@ export default function ProSubscriptionModal() {
           </View>
         ) : null}
         <View style={styles.guaranteeRow}>
-          {p.trial ? (
-            <Bell size={13} color={colors.textSecondary} strokeWidth={2.5} />
-          ) : (
-            <Check size={13} color={colors.textSecondary} strokeWidth={3} />
-          )}
+          <Check size={13} color={colors.textSecondary} strokeWidth={3} />
           <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
-            {p.trial ? t("pro.trialReminderGuarantee") : t("pro.cancelAnytimeGuarantee")}
+            {t("pro.cancelAnytimeGuarantee")}
           </Text>
         </View>
         <TouchableOpacity
@@ -539,7 +534,7 @@ export default function ProSubscriptionModal() {
                   ) : null}
                 </View>
                 <Text style={[styles.planSub, { color: colors.textSecondary }]}>
-                  {t(p.perMonthKey)}
+                  {t(p.perMonthKey, { price: p.perMonthPrice })}
                 </Text>
               </TouchableOpacity>
             );
