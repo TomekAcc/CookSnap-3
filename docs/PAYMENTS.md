@@ -1,7 +1,7 @@
 # Płatności za PRO — jak to działa i co trzeba zrobić
 
 ## Stan na dziś (listopad 2026)
-Kod płatności jest gotowy. Zrobione: produkty w App Store Connect (`cooksnap_pro_annual`, `cooksnap_pro_monthly`), projekt RevenueCat (entitlement `pro`, offering `default` z `$rc_annual` i `$rc_monthly`), biblioteka `react-native-purchases` zainstalowana, publiczny klucz iOS (`appl_…`) i adres serwera ustawione jako zmienne środowiska EAS `production` (nie `preview`, żeby Expo Go zostało na trybie testowym). Do zrobienia: pierwszy `eas build` na iOS, TestFlight, test zakupu (Sandbox), Android. Aplikacja ma dwa tryby:
+Kod płatności jest gotowy. Zrobione: produkty w App Store Connect (`cooksnap_pro_annual`, `cooksnap_pro_monthly`), projekt RevenueCat (entitlement `pro`, offering `default` z `$rc_annual` i `$rc_monthly`), biblioteka `react-native-purchases` zainstalowana w wersji **10.16.0** (przypięta; wersja 11.0.1 nie zbudowała się na iOS, bo wymaga pod `PurchasesHybridCommon 20.4.0`, którego nie ma jeszcze w CocoaPods; wróć do 11.x, gdy się pojawi), publiczny klucz iOS (`appl_…`) i adres serwera ustawione jako zmienne środowiska EAS `production` (nie `preview`, żeby Expo Go zostało na trybie testowym). Do zrobienia: pierwszy `eas build` na iOS, TestFlight, test zakupu (Sandbox), Android. Aplikacja ma dwa tryby:
 
 | Tryb | Kiedy | Co robi |
 |---|---|---|
