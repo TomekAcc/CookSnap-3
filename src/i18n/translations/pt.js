@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "Nada detetado",
   "scanner.noItemsTip": "Tenta tirar uma foto mais nítida do frigorífico ou adiciona os itens manualmente",
   "scanner.tryAnotherPhoto": "Tentar outra foto",
-  "scanner.privacyNote": "As fotos são enviadas para a IA do Google para identificar os ingredientes. O CookSnap apenas as guarda no seu telemóvel",
   "scanner.sampleNote": "Este é um frigorífico de exemplo. Toque no × na fotografia para ler o seu.",
   "scanner.samplePantryNote": "As tuas receitas também usam estes ingredientes. É só um exemplo, nada é guardado.",
   "sampleFridge.milk": "Leite",

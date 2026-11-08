@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "ตรวจไม่พบอะไรเลย",
   "scanner.noItemsTip": "ลองถ่ายรูปตู้เย็นให้ชัดขึ้น หรือเพิ่มรายการด้วยตัวเอง",
   "scanner.tryAnotherPhoto": "ลองใช้รูปอื่น",
-  "scanner.privacyNote": "รูปภาพจะถูกส่งไปยัง AI ของ Google เพื่อระบุวัตถุดิบ CookSnap จะบันทึกไว้ในโทรศัพท์ของคุณเท่านั้น",
   "scanner.sampleNote": "นี่คือตู้เย็นตัวอย่าง แตะ × บนรูปถ่ายเพื่อสแกนตู้เย็นของคุณ",
   "scanner.samplePantryNote": "สูตรอาหารของคุณใช้วัตถุดิบเหล่านี้ด้วย นี่เป็นเพียงตัวอย่าง ไม่มีการบันทึกอะไร",
   "sampleFridge.milk": "นม",

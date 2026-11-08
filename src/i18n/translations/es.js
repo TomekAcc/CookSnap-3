@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "No se detectó nada",
   "scanner.noItemsTip": "Prueba con una foto más clara de tu nevera o añade los ingredientes a mano",
   "scanner.tryAnotherPhoto": "Probar con otra foto",
-  "scanner.privacyNote": "Las fotos se envían a la IA de Google para reconocer ingredientes. CookSnap solo las guarda en tu teléfono",
   "scanner.sampleNote": "Esta es una nevera de ejemplo. Toca × en la foto para escanear la tuya.",
   "scanner.samplePantryNote": "Tus recetas también usan estos ingredientes. Es solo un ejemplo, no se guarda nada.",
   "sampleFridge.milk": "Leche",

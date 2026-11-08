@@ -85,9 +85,7 @@ browsing, not a recipe box to build over years.
   never use something the person cannot see. The sample scan goes straight on to
   recipes by itself (default meal settings, still editable below) and does not
   use up one of the free sample generations.
-- A one-line privacy note under the camera / gallery buttons until the first
-  scan: photos are sent to Google's AI to find ingredients and are stored only
-  on the phone.
+- Before the first photo is sent, a consent screen names Google's AI and asks for permission (withdraw in Settings > About). The small lock note under the scan buttons was removed: the consent screen, the Settings switch and the privacy policy carry the disclosure.
 
 ### Recipe Generation
 - 5 recipes per generation for PRO, 3 for free users.

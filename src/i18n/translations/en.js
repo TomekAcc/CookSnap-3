@@ -146,7 +146,6 @@ export default {
   "scanner.noItemsTitle": "Nothing detected",
   "scanner.noItemsTip": "Try a clearer photo of your fridge, or add items yourself",
   "scanner.tryAnotherPhoto": "Try another photo",
-  "scanner.privacyNote": "Photos are sent to Google's AI to find ingredients. CookSnap stores them only on your phone",
   "scanner.sampleNote": "This is a sample fridge. Tap × on the photo to scan your own.",
   "scanner.samplePantryNote": "Your recipes use these too. It's only an example, nothing is saved.",
   "sampleFridge.milk": "Milk",

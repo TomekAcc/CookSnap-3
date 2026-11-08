@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "Tidak ada yang terdeteksi",
   "scanner.noItemsTip": "Coba ambil foto kulkas yang lebih jelas, atau tambahkan bahan sendiri",
   "scanner.tryAnotherPhoto": "Coba foto lain",
-  "scanner.privacyNote": "Foto dikirim ke AI Google untuk mengenali bahan makanan. CookSnap hanya menyimpannya di ponselmu",
   "scanner.sampleNote": "Ini adalah contoh kulkas. Ketuk tanda × pada foto untuk memindai kulkasmu.",
   "scanner.samplePantryNote": "Resepmu juga memakai bahan-bahan ini. Ini hanya contoh, tidak ada yang disimpan.",
   "sampleFridge.milk": "Susu",

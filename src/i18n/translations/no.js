@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "Ingenting funnet",
   "scanner.noItemsTip": "Prøv et klarere bilde av kjøleskapet, eller legg til varer selv",
   "scanner.tryAnotherPhoto": "Prøv et annet bilde",
-  "scanner.privacyNote": "Bilder sendes til Googles AI for å gjenkjenne ingredienser. CookSnap lagrer dem bare på telefonen din",
   "scanner.sampleNote": "Dette er et eksempelkjøleskap. Trykk på × på bildet for å skanne ditt eget.",
   "scanner.samplePantryNote": "Oppskriftene dine bruker også disse. Det er bare et eksempel, ingenting lagres.",
   "sampleFridge.milk": "Melk",

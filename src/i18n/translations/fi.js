@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "Mitään ei löytynyt",
   "scanner.noItemsTip": "Kokeile ottaa selkeämpi kuva jääkaapistasi tai lisää tuotteet itse",
   "scanner.tryAnotherPhoto": "Kokeile toista kuvaa",
-  "scanner.privacyNote": "Kuvat lähetetään Googlen tekoälylle ainesosien tunnistamista varten. CookSnap tallentaa ne vain puhelimeesi",
   "scanner.sampleNote": "Tämä on esimerkkijääkaappi. Napauta kuvan ×-kuvaketta skannataksesi omasi.",
   "scanner.samplePantryNote": "Reseptisi käyttävät myös näitä. Tämä on vain esimerkki, mitään ei tallenneta.",
   "sampleFridge.milk": "Maito",

@@ -21,7 +21,6 @@ import { expectedScanMs, loadScanTimings, recordScanTiming } from "../utils/scan
 import { translateCount } from "../i18n";
 import PerfectCloseButton from "./PerfectCloseButton";
 import ScanLaserOverlay from "./ScanLaserOverlay";
-import PrivacyNote from "./PrivacyNote";
 import ScanMoreSheet from "./scanner/ScanMoreSheet";
 import ScanCameraModal from "./scanner/ScanCameraModal";
 import { useScanCapture } from "./scanner/useScanCapture";
@@ -481,7 +480,6 @@ export default function PantryScannerHero() {
             </Text>
           </TouchableOpacity>
         </View>
-        {(pantryItems || []).length === 0 ? <PrivacyNote style={{ marginTop: 10 }} /> : null}
         </View>
       ) : (
         <View style={{ marginBottom: 16 }}>

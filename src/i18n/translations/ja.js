@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "見つかりませんでした",
   "scanner.noItemsTip": "冷蔵庫をもっとはっきり撮るか、自分で食材を追加してみてください",
   "scanner.tryAnotherPhoto": "別の写真を試す",
-  "scanner.privacyNote": "食材を認識するため写真はGoogleのAIに送信されます。CookSnapが写真を保存するのはお使いの端末のみです",
   "scanner.sampleNote": "これはサンプルの冷蔵庫です。写真の×をタップすると自宅の冷蔵庫をスキャンできます。",
   "scanner.samplePantryNote": "レシピにはこれらの食材も使われます。あくまで例で、何も保存されません。",
   "sampleFridge.milk": "牛乳",

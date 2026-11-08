@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "Nichts erkannt",
   "scanner.noItemsTip": "Versuche es mit einem deutlicheren Foto deines Kühlschranks oder füge Zutaten manuell hinzu",
   "scanner.tryAnotherPhoto": "Anderes Foto versuchen",
-  "scanner.privacyNote": "Fotos werden an die KI von Google gesendet, um Zutaten zu erkennen. CookSnap speichert sie nur auf deinem Smartphone",
   "scanner.sampleNote": "Das ist ein Beispiel-Kühlschrank. Tippe auf das × auf dem Foto, um deinen eigenen zu scannen.",
   "scanner.samplePantryNote": "Deine Rezepte nutzen auch diese Zutaten. Das ist nur ein Beispiel, nichts wird gespeichert.",
   "sampleFridge.milk": "Milch",

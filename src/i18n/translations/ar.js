@@ -134,7 +134,6 @@ export default {
   "scanner.noItemsTitle": "لم يتم العثور على شيء",
   "scanner.noItemsTip": "جرّب التقاط صورة أوضح لثلاجتك، أو أضف العناصر يدويًا",
   "scanner.tryAnotherPhoto": "تجربة صورة أخرى",
-  "scanner.privacyNote": "تُرسل الصور إلى الذكاء الاصطناعي من Google للتعرف على المكونات. يحفظها CookSnap على هاتفك فقط",
   "scanner.sampleNote": "هذه ثلاجة تجريبية. اضغط على × في الصورة لتصوير ثلاجتك.",
   "scanner.samplePantryNote": "تستخدم وصفاتك هذه المكونات أيضًا. هذا مجرد مثال ولا يتم حفظ أي شيء.",
   "sampleFridge.milk": "حليب",

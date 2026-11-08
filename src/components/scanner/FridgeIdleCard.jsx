@@ -2,11 +2,9 @@ import React from "react";
 import { Animated, Text, TouchableOpacity, View } from "react-native";
 import { Camera, Image as ImageIcon } from "../../icons";
 import ScanTile from "./ScanTile";
-import PrivacyNote from "../PrivacyNote";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useOnboarding } from "../../context/OnboardingContext";
-import { useScan } from "../../context/ScanContext";
 import { EMERALD, WHITE } from "../../theme/palette";
 
 /** Idle state: "Take Photo" / "From Gallery" call to action, with the one-time first-scan hint glow. */
@@ -18,7 +16,6 @@ export default function FridgeIdleCard({
   const { t } = useLanguage();
   const { colors } = useTheme();
   const { firstScanHintShown, markFirstScanHintShown } = useOnboarding();
-  const { scanHistory } = useScan();
   return (
     <View
       style={{
@@ -166,7 +163,6 @@ export default function FridgeIdleCard({
           </Text>
         </TouchableOpacity>
       </View>
-      {(scanHistory || []).length === 0 ? <PrivacyNote /> : null}
     </View>
   );
 }
