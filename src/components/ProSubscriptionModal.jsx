@@ -186,14 +186,13 @@ export default function ProSubscriptionModal() {
     const perMonthValue = `${p.perMonthPrice}${t("pro.moSuffix")}`;
     return (
       <View key={p.id} style={styles.ctaSection}>
-        {p.trial ? (
-          <View style={[styles.guaranteeRow, { marginBottom: 6 }]}>
-            <Check size={15} color={colors.greenStrong} strokeWidth={3} />
-            <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
-              {t("pro.noPaymentToday")}
-            </Text>
-          </View>
-        ) : null}
+        {/* Monthly has no trial, but keeps this row (invisible) so the button stays put when the plan is switched. */}
+        <View style={[styles.guaranteeRow, { marginBottom: 6, opacity: p.trial ? 1 : 0 }]} accessibilityElementsHidden={!p.trial} importantForAccessibility={p.trial ? "auto" : "no-hide-descendants"}>
+          <Check size={15} color={colors.greenStrong} strokeWidth={3} />
+          <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>
+            {t("pro.noPaymentToday")}
+          </Text>
+        </View>
         <View style={styles.guaranteeRow}>
           <Check size={13} color={colors.textSecondary} strokeWidth={3} />
           <Text style={[styles.guaranteeText, { color: colors.textSecondary }]}>
@@ -465,7 +464,7 @@ export default function ProSubscriptionModal() {
               { backgroundColor: colors.accentAmber },
             ]}
           >
-            <Crown size={25} color={WHITE} fill={WHITE} />
+            <Crown size={24} color={WHITE} fill={WHITE} />
           </View>
           <Text style={[styles.title, { color: colors.textPrimary }]}>
             {t("pro.unlockTitle")}
@@ -696,9 +695,9 @@ const styles = StyleSheet.create({
   // The amber wash behind this block is a separate layer (see heroWash).
   header: {
     alignItems: "center",
-    marginBottom: 8,
-    paddingTop: 18,
-    paddingBottom: 12,
+    marginBottom: 4,
+    paddingTop: 12,
+    paddingBottom: 8,
     paddingHorizontal: 10,
   },
   // Solid amber disc with a white crown and a soft amber glow — the one
@@ -707,9 +706,9 @@ const styles = StyleSheet.create({
   // colors.accentAmber at render time. The glow sits inside the ScrollView's
   // frame (12px margin + title below), so it isn't clipped.
   crownBadge: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
@@ -735,7 +734,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 18,
   },
-  planRow: { flexDirection: "row", gap: 10, marginBottom: 18 },
+  planRow: { flexDirection: "row", gap: 10, marginBottom: 14 },
   planCard: {
     flex: 1,
     borderRadius: 16,
@@ -802,7 +801,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    paddingVertical: 5,
+    paddingVertical: 3,
   },
   benefitIconChip: {
     width: 32,
@@ -815,19 +814,19 @@ const styles = StyleSheet.create({
   },
   benefitText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 13.5,
     fontWeight: "600",
-    lineHeight: 19,
+    lineHeight: 18.5,
   },
   ctaSection: {
-    paddingTop: 13,
+    paddingTop: 8,
   },
   guaranteeRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   guaranteeText: { fontSize: 13, fontWeight: "600" },
   noPaymentText: { fontSize: 14, fontWeight: "700" },
@@ -863,6 +862,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     marginTop: 10,
+    // Two lines high for both plans, so "Restore purchases" below does not jump when the plan is switched.
+    minHeight: 34,
   },
   footerLinks: {
     flexDirection: "row",
@@ -871,7 +872,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     columnGap: 16,
     rowGap: 4,
-    marginTop: 12,
+    marginTop: 8,
   },
   footerLink: {
     fontSize: 12.5,
