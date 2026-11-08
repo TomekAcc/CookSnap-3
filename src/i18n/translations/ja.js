@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "7日間無料トライアルを開始",
   "pro.subscribeCta": "登録する — {price}{period}",
   "pro.thenPriceCancelAnytime": "その後は {price}{period} — いつでもキャンセル可能",
+  "pro.noPaymentToday": "今日のお支払いはありません",
   "pro.billedMonthlyCancelAnytime": "毎月請求 — いつでもキャンセル可能",
   "pro.trialDayZero": "今日：無料トライアル開始",
   "pro.trialDayReminder": "5日目：請求前にリマインドします",

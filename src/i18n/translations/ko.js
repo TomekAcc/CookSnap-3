@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "7일 무료 체험 시작",
   "pro.subscribeCta": "구독하기 — {price}{period}",
   "pro.thenPriceCancelAnytime": "이후 {price}{period} — 언제든지 해지 가능",
+  "pro.noPaymentToday": "오늘 결제되는 금액 없음",
   "pro.billedMonthlyCancelAnytime": "월간 청구 — 언제든지 해지 가능",
   "pro.trialDayZero": "오늘: 무료 체험 시작",
   "pro.trialDayReminder": "5일 차: 결제 전에 알려드려요",

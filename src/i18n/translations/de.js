@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Meine 7-tägige kostenlose Testphase starten",
   "pro.subscribeCta": "Abonnieren — {price}{period}",
   "pro.thenPriceCancelAnytime": "Danach {price}{period} — jederzeit kündbar",
+  "pro.noPaymentToday": "Heute keine Zahlung fällig",
   "pro.billedMonthlyCancelAnytime": "Monatliche Abrechnung — jederzeit kündbar",
   "pro.trialDayZero": "Heute: Starte deine kostenlose Testphase",
   "pro.trialDayReminder": "Tag 5: Wir erinnern dich vor der Abbuchung",

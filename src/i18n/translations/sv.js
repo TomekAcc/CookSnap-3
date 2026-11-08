@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Starta min 7 dagars gratis provperiod",
   "pro.subscribeCta": "Prenumerera — {price}{period}",
   "pro.thenPriceCancelAnytime": "Därefter {price}{period} — säg upp när som helst",
+  "pro.noPaymentToday": "Ingen betalning i dag",
   "pro.billedMonthlyCancelAnytime": "Faktureras månadsvis — säg upp när som helst",
   "pro.trialDayZero": "Idag: starta din kostnadsfria provperiod",
   "pro.trialDayReminder": "Dag 5: vi påminner dig innan du debiteras",

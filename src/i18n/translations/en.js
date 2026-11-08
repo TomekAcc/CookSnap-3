@@ -415,6 +415,7 @@ export default {
   "pro.startTrial": "Start My 7-Day Free Trial",
   "pro.subscribeCta": "Subscribe — {price}{period}",
   "pro.thenPriceCancelAnytime": "Then {price}{period} — cancel anytime",
+  "pro.noPaymentToday": "No payment due today",
   "pro.billedMonthlyCancelAnytime": "Billed monthly — cancel anytime",
   "pro.trialDayZero": "Today: Start your free trial",
   "pro.trialDayReminder": "Day 5: We remind you before charging",

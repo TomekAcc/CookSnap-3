@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Розпочати мій 7-денний пробний період",
   "pro.subscribeCta": "Підписатися — {price}{period}",
   "pro.thenPriceCancelAnytime": "Далі {price}{period} — скасовуйте будь-коли",
+  "pro.noPaymentToday": "Сьогодні платити не потрібно",
   "pro.billedMonthlyCancelAnytime": "Оплата щомісяця — скасовуйте будь-коли",
   "pro.trialDayZero": "Сьогодні: почніть безкоштовний пробний період",
   "pro.trialDayReminder": "День 5: нагадаємо перед списанням",

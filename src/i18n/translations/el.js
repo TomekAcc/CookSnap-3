@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Έναρξη της 7ήμερης δωρεάν δοκιμής μου",
   "pro.subscribeCta": "Εγγραφή — {price}{period}",
   "pro.thenPriceCancelAnytime": "Μετά {price}{period} — ακύρωση όποτε θέλετε",
+  "pro.noPaymentToday": "Χωρίς πληρωμή σήμερα",
   "pro.billedMonthlyCancelAnytime": "Μηνιαία χρέωση — ακύρωση όποτε θέλετε",
   "pro.trialDayZero": "Σήμερα: ξεκινήστε τη δωρεάν δοκιμή σας",
   "pro.trialDayReminder": "Ημέρα 5: θα σας υπενθυμίσουμε πριν τη χρέωση",

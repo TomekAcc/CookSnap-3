@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Start mijn gratis proefperiode van 7 dagen",
   "pro.subscribeCta": "Abonneren — {price}{period}",
   "pro.thenPriceCancelAnytime": "Daarna {price}{period} — op elk moment opzegbaar",
+  "pro.noPaymentToday": "Vandaag geen betaling",
   "pro.billedMonthlyCancelAnytime": "Maandelijks gefactureerd — op elk moment opzegbaar",
   "pro.trialDayZero": "Vandaag: start je gratis proefperiode",
   "pro.trialDayReminder": "Dag 5: we herinneren je voor je wordt belast",

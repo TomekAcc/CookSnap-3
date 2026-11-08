@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "เริ่มทดลองใช้ฟรี 7 วันของฉัน",
   "pro.subscribeCta": "สมัครสมาชิก — {price}{period}",
   "pro.thenPriceCancelAnytime": "จากนั้น {price}{period} — ยกเลิกได้ตลอดเวลา",
+  "pro.noPaymentToday": "ไม่มีค่าใช้จ่ายวันนี้",
   "pro.billedMonthlyCancelAnytime": "เรียกเก็บเงินรายเดือน — ยกเลิกได้ตลอดเวลา",
   "pro.trialDayZero": "วันนี้: เริ่มทดลองใช้ฟรี",
   "pro.trialDayReminder": "วันที่ 5: เราจะแจ้งเตือนก่อนเรียกเก็บเงิน",

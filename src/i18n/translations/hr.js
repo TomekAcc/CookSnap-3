@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Započni moje 7-dnevno besplatno razdoblje",
   "pro.subscribeCta": "Pretplati se — {price}{period}",
   "pro.thenPriceCancelAnytime": "Zatim {price}{period} — otkaži bilo kada",
+  "pro.noPaymentToday": "Danas ne plaćate ništa",
   "pro.billedMonthlyCancelAnytime": "Mjesečna naplata — otkaži bilo kada",
   "pro.trialDayZero": "Danas: pokrenite besplatno probno razdoblje",
   "pro.trialDayReminder": "5. dan: podsjetit ćemo vas prije naplate",

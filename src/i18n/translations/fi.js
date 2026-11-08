@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Aloita 7 päivän ilmainen kokeiluni",
   "pro.subscribeCta": "Tilaa — {price}{period}",
   "pro.thenPriceCancelAnytime": "Sen jälkeen {price}{period} — peru milloin tahansa",
+  "pro.noPaymentToday": "Ei veloitusta tänään",
   "pro.billedMonthlyCancelAnytime": "Laskutetaan kuukausittain – peru milloin tahansa",
   "pro.trialDayZero": "Tänään: aloita ilmainen kokeilujakso",
   "pro.trialDayReminder": "Päivä 5: muistutamme ennen veloitusta",

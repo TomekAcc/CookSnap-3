@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "मेरा 7-दिन का मुफ़्त ट्रायल शुरू करें",
   "pro.subscribeCta": "सब्सक्राइब करें — {price}{period}",
   "pro.thenPriceCancelAnytime": "फिर {price}{period} — कभी भी रद्द करें",
+  "pro.noPaymentToday": "आज कोई भुगतान नहीं",
   "pro.billedMonthlyCancelAnytime": "मासिक बिल किया जाता है — कभी भी रद्द करें",
   "pro.trialDayZero": "आज: अपना मुफ़्त ट्रायल शुरू करें",
   "pro.trialDayReminder": "दिन 5: चार्ज से पहले हम आपको याद दिलाएंगे",

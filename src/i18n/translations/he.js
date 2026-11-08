@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "התחל את הניסיון החינם שלי למשך 7 ימים",
   "pro.subscribeCta": "הירשם כמנוי — {price}{period}",
   "pro.thenPriceCancelAnytime": "לאחר מכן {price}{period} — ניתן לבטל בכל עת",
+  "pro.noPaymentToday": "ללא תשלום היום",
   "pro.billedMonthlyCancelAnytime": "חיוב חודשי — ניתן לבטל בכל עת",
   "pro.trialDayZero": "היום: התחל את תקופת הניסיון החינמית שלך",
   "pro.trialDayReminder": "יום 5: נזכיר לך לפני החיוב",

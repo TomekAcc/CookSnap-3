@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Mulai Uji Coba Gratis 7 Hari Saya",
   "pro.subscribeCta": "Berlangganan — {price}{period}",
   "pro.thenPriceCancelAnytime": "Lalu {price}{period} — batalkan kapan saja",
+  "pro.noPaymentToday": "Tanpa biaya hari ini",
   "pro.billedMonthlyCancelAnytime": "Ditagih bulanan — batalkan kapan saja",
   "pro.trialDayZero": "Hari ini: mulai uji coba gratis",
   "pro.trialDayReminder": "Hari ke-5: kami ingatkan sebelum penagihan",

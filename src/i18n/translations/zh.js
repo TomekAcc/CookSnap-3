@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "开始 7 天免费试用",
   "pro.subscribeCta": "立即订阅 — {price}{period}",
   "pro.thenPriceCancelAnytime": "之后为 {price}{period} — 随时可取消",
+  "pro.noPaymentToday": "今日无需付款",
   "pro.billedMonthlyCancelAnytime": "按月扣费 — 随时可取消",
   "pro.trialDayZero": "今天：开始免费试用",
   "pro.trialDayReminder": "第5天：扣费前会提醒你",

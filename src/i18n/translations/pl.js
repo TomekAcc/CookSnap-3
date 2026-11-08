@@ -385,6 +385,7 @@ export default {
   "pro.startTrial": "Zacznij 7 dni za darmo",
   "pro.subscribeCta": "Subskrybuj — {price}{period}",
   "pro.thenPriceCancelAnytime": "Potem {price}{period} — anuluj w dowolnym momencie",
+  "pro.noPaymentToday": "Dzisiaj nic nie płacisz",
   "pro.billedMonthlyCancelAnytime": "Rozliczane co miesiąc — anuluj w dowolnym momencie",
   "pro.trialDayZero": "Dziś: zaczynasz bezpłatny okres próbny",
   "pro.trialDayReminder": "Dzień 5: przypomnimy przed obciążeniem",

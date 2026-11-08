@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "ابدأ تجربتي المجانية لمدة 7 أيام",
   "pro.subscribeCta": "اشترك — {price}{period}",
   "pro.thenPriceCancelAnytime": "ثم {price}{period} — يمكنك الإلغاء في أي وقت",
+  "pro.noPaymentToday": "لا تدفع أي شيء اليوم",
   "pro.billedMonthlyCancelAnytime": "يُحاسب شهرياً — يمكنك الإلغاء في أي وقت",
   "pro.trialDayZero": "اليوم: ابدأ تجربتك المجانية",
   "pro.trialDayReminder": "اليوم 5: سنذكرك قبل الخصم",

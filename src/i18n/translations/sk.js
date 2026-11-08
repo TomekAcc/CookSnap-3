@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Spustiť moju 7-dňovú skúšobnú verziu zadarmo",
   "pro.subscribeCta": "Predplatiť — {price}{period}",
   "pro.thenPriceCancelAnytime": "Potom {price}{period} — zrušenie kedykoľvek",
+  "pro.noPaymentToday": "Dnes nič neplatíte",
   "pro.billedMonthlyCancelAnytime": "Fakturované mesačne — zrušenie kedykoľvek",
   "pro.trialDayZero": "Dnes: začnite bezplatnú skúšobnú dobu",
   "pro.trialDayReminder": "Deň 5: pripomenieme vám to pred účtovaním",

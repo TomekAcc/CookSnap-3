@@ -201,14 +201,20 @@ export default function ProSubscriptionModal() {
           <ChevronRight size={18} color={ON_AMBER} />
         </TouchableOpacity>
 
-        <Text style={[styles.priceSubtext, { color: colors.textSecondary }]}>
-          {p.trial
-            ? t("pro.thenPriceCancelAnytime", {
-                price: p.price,
-                period,
-              })
-            : t("pro.billedMonthlyCancelAnytime")}
-        </Text>
+        {/* Same height for both plans, so "Restore purchases" below does not move when the plan is switched. */}
+        <View style={{ minHeight: 58 }}>
+          {p.trial ? (
+            <Text style={[styles.noPaymentText, { color: colors.textPrimary }]}>{t("pro.noPaymentToday")}</Text>
+          ) : null}
+          <Text style={[styles.priceSubtext, { color: colors.textSecondary }, p.trial ? { marginTop: 2, minHeight: 0 } : null]}>
+            {p.trial
+              ? t("pro.thenPriceCancelAnytime", {
+                  price: p.price,
+                  period,
+                })
+              : t("pro.billedMonthlyCancelAnytime")}
+          </Text>
+        </View>
         <View style={styles.footerLinks}>
           <TouchableOpacity onPress={handleRestore} disabled={!!busy} accessibilityRole="button" hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
             <Text style={[styles.footerLink, { color: colors.textSecondary }]}>
@@ -802,6 +808,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 18.5,
   },
+  noPaymentText: { fontSize: 14, fontWeight: "700", textAlign: "center", marginTop: 10 },
   ctaSection: {
     paddingTop: 8,
   },

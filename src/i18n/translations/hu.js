@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "7 napos ingyenes próbaidőszakom indítása",
   "pro.subscribeCta": "Előfizetés — {price}{period}",
   "pro.thenPriceCancelAnytime": "Utána {price}{period} — bármikor lemondható",
+  "pro.noPaymentToday": "Ma nem kell fizetned",
   "pro.billedMonthlyCancelAnytime": "Havi számlázás — bármikor lemondható",
   "pro.trialDayZero": "Ma: indítsd el az ingyenes próbaidőszakot",
   "pro.trialDayReminder": "5. nap: emlékeztetünk a terhelés előtt",

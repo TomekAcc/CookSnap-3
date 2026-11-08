@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "7 Günlük Ücretsiz Denememi Başlat",
   "pro.subscribeCta": "Abone Ol — {price}{period}",
   "pro.thenPriceCancelAnytime": "Ardından {price}{period} — dilediğin zaman iptal et",
+  "pro.noPaymentToday": "Bugün ödeme yok",
   "pro.billedMonthlyCancelAnytime": "Aylık faturalandırılır — dilediğin zaman iptal et",
   "pro.trialDayZero": "Bugün: ücretsiz deneme sürenizi başlatın",
   "pro.trialDayReminder": "5. gün: ücretlendirmeden önce hatırlatırız",

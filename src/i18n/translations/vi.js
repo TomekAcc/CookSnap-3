@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Dùng thử miễn phí 7 ngày của tôi",
   "pro.subscribeCta": "Đăng ký — {price}{period}",
   "pro.thenPriceCancelAnytime": "Sau đó {price}{period} — hủy bất cứ lúc nào",
+  "pro.noPaymentToday": "Hôm nay không tính phí",
   "pro.billedMonthlyCancelAnytime": "Thanh toán hàng tháng — hủy bất cứ lúc nào",
   "pro.trialDayZero": "Hôm nay: bắt đầu dùng thử miễn phí",
   "pro.trialDayReminder": "Ngày 5: chúng tôi nhắc bạn trước khi tính phí",

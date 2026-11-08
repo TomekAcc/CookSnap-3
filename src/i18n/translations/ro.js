@@ -386,6 +386,7 @@ export default {
   "pro.startTrial": "Începe perioada mea de probă gratuită de 7 zile",
   "pro.subscribeCta": "Abonează-te — {price}{period}",
   "pro.thenPriceCancelAnytime": "Apoi {price}{period} — anulează oricând",
+  "pro.noPaymentToday": "Nu plătești nimic azi",
   "pro.billedMonthlyCancelAnytime": "Facturat lunar — anulează oricând",
   "pro.trialDayZero": "Astăzi: începe perioada de probă gratuită",
   "pro.trialDayReminder": "Ziua 5: îți reamintim înainte de taxare",
