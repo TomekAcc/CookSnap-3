@@ -459,9 +459,13 @@ export default function ProSubscriptionModal() {
           <Text style={[styles.title, { color: colors.textPrimary }]}>
             {t("pro.unlockTitle")}
           </Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {subtitle}
-          </Text>
+          {/* The generic tagline repeats what the title says and made the sheet reach almost to the top of the screen, so it
+              is left out. A line that explains why the sheet opened (a used-up scan or generation) stays. */}
+          {subtitle === t("pro.tagline") ? null : (
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              {subtitle}
+            </Text>
+          )}
         </View>
 
         <View style={styles.planRow}>
