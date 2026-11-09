@@ -3,8 +3,9 @@
 Texts for App Store Connect and Google Play Console, English and Polish. Character limits are in the
 headings; `docs/store/check-lengths.py` verifies them. Drafts: read once aloud and adjust the tone.
 
-Facts these texts rest on (keep them true): free = 2 fridge scans, 2 pantry scans and 2 recipe
-generations a day, 3 recipes per generation; PRO removes the daily caps, gives 5 recipes per generation,
+Facts these texts rest on (keep them true): free = a one-time sample of 3 fridge scans, 3 pantry scans and 3
+recipe generations (not renewed), 3 recipes per generation; PRO gives high daily limits (10 fridge scans, 10
+pantry scans, 8 generations, 20 AI changes a day; never write "unlimited"), 5 recipes per generation,
 the Meal Planner, the AI Recipe Modifier and full macros. Prices are not written in the listing (the stores
 show them). The app works in 31 languages. No accounts, no ads. Photos go through our server to Google's AI.
 
@@ -15,7 +16,7 @@ Do not promise: allergy safety, medical or weight-loss results, "never wasted fo
 ## English (US)
 
 ### App name (max 30)
-CookSnap: Fridge Recipes
+CookSnap: AI Fridge Recipes
 
 ### Subtitle — Apple (max 30)
 Photo to dinner in seconds
@@ -45,19 +46,19 @@ EAT THE WAY YOU LIVE
 Switch on vegetarian, vegan, gluten-free, lactose-free, dairy-free, keto, nut-free, pescatarian or diabetic-friendly, and add your own "always avoid" and "prefer more of" notes. Recipes are written to respect them.
 
 TRY IT BEFORE YOU SCAN
-No groceries nearby? The sample scan shows the whole flow on a made-up fridge and pantry, with real generated recipes. It doesn't use your daily scans.
+No groceries nearby? The sample scan shows the whole flow on a made-up fridge and pantry, with real generated recipes. It doesn't use up your free scans.
 
 SAVE AND COME BACK
 Keep favourites, and reopen an earlier scan to cook from it again.
 
 COOKSNAP PRO (optional subscription)
-• No daily limits on scans and recipe generations
+• High daily limits on scans and recipe generations
 • 5 recipes per generation instead of 3
 • Meal Planner: a multi-day plan of lunches and dinners from your ingredients
 • AI Recipe Modifier: "make it vegan", "swap the chicken for tofu", "double the spice"
 • Full nutrition breakdown for every recipe
 
-Free to use with daily limits. PRO renews automatically until cancelled in your App Store or Google Play account settings.
+Free to try with a one-time sample: 3 fridge scans, 3 pantry scans and 3 recipe generations. Saved recipes, your pantry list and the shopping list stay free. PRO renews automatically until cancelled in your App Store or Google Play account settings.
 
 PRIVACY
 No account and no ads. Your saved recipes and pantry stay on your phone. To read a photo, the app sends it through our server to Google's AI; we don't keep it.
@@ -107,19 +108,19 @@ JEDZ PO SWOJEMU
 Włącz wegetariańską, wegańską, bezglutenową, bez laktozy, bez nabiału, keto, bez orzechów, pescowegetariańską lub dla cukrzyków i dopisz własne „zawsze unikaj” i „częściej proponuj”. Przepisy powstają z uwzględnieniem tych ustawień.
 
 WYPRÓBUJ PRZED SKANEM
-Nie masz teraz zakupów pod ręką? Skan przykładowy pokazuje cały proces na wymyślonej lodówce i spiżarni, z prawdziwie wygenerowanymi przepisami. Nie zużywa Twoich dziennych skanów.
+Nie masz teraz zakupów pod ręką? Skan przykładowy pokazuje cały proces na wymyślonej lodówce i spiżarni, z prawdziwie wygenerowanymi przepisami. Nie zużywa darmowych skanów.
 
 ZAPISUJ I WRACAJ
 Zachowuj ulubione i otwieraj wcześniejsze skany, żeby ugotować z nich jeszcze raz.
 
 COOKSNAP PRO (opcjonalna subskrypcja)
-• Bez dziennych limitów skanów i generowania przepisów
+• Wysokie dzienne limity skanów i generowania przepisów
 • 5 przepisów w jednym generowaniu zamiast 3
 • Planer posiłków: kilkudniowy plan obiadów i kolacji z Twoich składników
 • Modyfikator przepisów AI: „zrób wegańsko”, „zamień kurczaka na tofu”, „podwój przyprawy”
 • Pełne wartości odżywcze każdego przepisu
 
-Aplikacja jest darmowa z dziennymi limitami. PRO odnawia się automatycznie, dopóki nie anulujesz go w ustawieniach konta App Store lub Google Play.
+Wypróbujesz ją za darmo: jednorazowa próbka to 3 skany lodówki, 3 skany spiżarni i 3 generowania przepisów. Zapisane przepisy, lista spiżarni i lista zakupów zostają darmowe. PRO odnawia się automatycznie, dopóki nie anulujesz go w ustawieniach konta App Store lub Google Play.
 
 PRYWATNOŚĆ
 Bez konta i bez reklam. Zapisane przepisy i spiżarnia zostają na Twoim telefonie. Żeby odczytać zdjęcie, aplikacja wysyła je przez nasz serwer do AI Google; nie przechowujemy go.
