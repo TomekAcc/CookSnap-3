@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Tietosuojaseloste",
   "settings.manageSubscription": "Hallitse tilausta",
   "settings.termsOfService": "Käyttöehdot",
+  "settings.healthDisclaimer": "Terveys- ja ruokahuomautus",
   "help.kindBug": "Ongelma",
   "help.kindIdea": "Idea",
   "help.kindRecipe": "Huono resepti",

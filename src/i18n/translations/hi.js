@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "गोपनीयता नीति",
   "settings.manageSubscription": "सदस्यता प्रबंधित करें",
   "settings.termsOfService": "सेवा की शर्तें",
+  "settings.healthDisclaimer": "स्वास्थ्य और खाद्य सूचना",
   "help.kindBug": "समस्या",
   "help.kindIdea": "सुझाव",
   "help.kindRecipe": "खराब रेसिपी",

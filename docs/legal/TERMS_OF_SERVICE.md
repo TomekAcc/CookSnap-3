@@ -23,6 +23,8 @@ CookSnap looks at photos of your fridge or pantry, lists the ingredients it beli
 recipes and meal plans based on them and on your preferences. It uses artificial intelligence (AI) to do
 this.
 
+**Technical requirements.** You need an iPhone or Android phone with a version of the operating system that the app supports, a camera or photo library, and an internet connection for scanning and for writing recipes. Recipes you have saved can be read without a connection.
+
 **There are no accounts.** You do not register or sign in. Your saved recipes, pantry, scan history and
 settings are stored on your phone, and you can delete all of them at any time from Settings ("Delete all
 my data") or by deleting the app. If we add accounts in the future, we will update these terms first.
@@ -99,7 +101,7 @@ screen. A subscription belongs to your Apple or Google account, not to a CookSna
 policies; ask them first. Nothing in these terms limits the rights you have as a consumer by law. If you
 are a consumer in the EU, you may have a right to withdraw from a digital subscription within 14 days of
 buying it. When you start using PRO straight away you ask us to begin the service during that period, and
-you may lose the right to withdraw once the service has been fully provided.
+you may lose the right to withdraw once the service has been fully provided. A model withdrawal form is at the end of these terms (Annex 1).
 
 **4.8 Limits and fair use.** PRO has much higher daily limits than the free version (currently 10 fridge scans, 10 pantry scans, 8 recipe generations and 20 AI recipe changes per day), because every scan and recipe is processed by a paid AI service. The limits may change and reset every day. We may also limit use that is
 automated, abusive or that threatens the service for others.
@@ -184,10 +186,12 @@ How we handle personal data is described in the Privacy Policy. In short: no acc
 phone, photos and recipe requests pass through our server to Google's AI, and we keep no photos. You can
 delete everything stored by the app on your phone from Settings > About > "Delete all my data".
 
-## 13. Notices
+## 13. Notices and complaints
 
 We may notify you inside the app, in update notes or, if you wrote to us, by email at the address you gave.
 You can write to us at **cooksnap.support@gmail.com**.
+
+**Complaints.** Send a complaint about the app or your subscription to **cooksnap.support@gmail.com**, saying what went wrong and what you expect. We answer within 14 days.
 
 ## 14. Governing law and disputes
 
@@ -241,6 +245,16 @@ to Polish consumers if the two differ.
 **Tomasz Białasiewicz** (sole proprietorship, registered in CEIDG), ul. Horacego Safrina 18, 91-177 Łódź, Poland, NIP
 9472021327, email **cooksnap.support@gmail.com**.
 Registered in the Central Registry and Information on Business (CEIDG).
+
+## Annex 1: model withdrawal form
+
+(Fill in and send this form only if you want to withdraw from the contract. A subscription bought through the App Store or Google Play is normally handled there first.)
+
+To: Tomasz Białasiewicz, ul. Horacego Safrina 18, 91-177 Łódź, Poland, cooksnap.support@gmail.com
+
+I hereby give notice that I withdraw from my contract for the following digital service: CookSnap PRO subscription.
+Ordered on: ........  Name of the consumer: ........  Address of the consumer: ........
+Date: ........  Signature (only if this form is sent on paper): ........
 
 ## Verify before publishing (delete this section afterwards)
 

@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Πολιτική απορρήτου",
   "settings.manageSubscription": "Διαχείριση συνδρομής",
   "settings.termsOfService": "Όροι χρήσης",
+  "settings.healthDisclaimer": "Ειδοποίηση για υγεία και τρόφιμα",
   "help.kindBug": "Πρόβλημα",
   "help.kindIdea": "Ιδέα",
   "help.kindRecipe": "Κακή συνταγή",

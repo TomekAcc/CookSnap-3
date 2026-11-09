@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "プライバシーポリシー",
   "settings.manageSubscription": "サブスクリプションを管理",
   "settings.termsOfService": "利用規約",
+  "settings.healthDisclaimer": "健康・食品に関するお知らせ",
   "help.kindBug": "不具合",
   "help.kindIdea": "アイデア",
   "help.kindRecipe": "おかしいレシピ",

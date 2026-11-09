@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "隐私政策",
   "settings.manageSubscription": "管理订阅",
   "settings.termsOfService": "服务条款",
+  "settings.healthDisclaimer": "健康与食品提示",
   "help.kindBug": "问题",
   "help.kindIdea": "想法",
   "help.kindRecipe": "不好的食谱",

@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Kebijakan Privasi",
   "settings.manageSubscription": "Kelola langganan",
   "settings.termsOfService": "Ketentuan Layanan",
+  "settings.healthDisclaimer": "Pemberitahuan kesehatan & makanan",
   "help.kindBug": "Masalah",
   "help.kindIdea": "Ide",
   "help.kindRecipe": "Resep buruk",

@@ -25,8 +25,12 @@ function load(name) {
   return text.replace(/\[PRIVACY POLICY URL\]/g, "/privacy").replace(/\[Privacy Policy\]\(\/privacy\)/g, "[Privacy Policy](/privacy)");
 }
 
-const page = (title, body) => `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+const NAV = {
+  en: [["/privacy", "Privacy"], ["/terms", "Terms"], ["/disclaimer", "Health"], ["/support", "Support"], ["/pl/terms", "Polski"]],
+  pl: [["/pl/privacy", "Prywatność"], ["/pl/terms", "Regulamin"], ["/pl/disclaimer", "Zdrowie"], ["/pl/support", "Pomoc"], ["/terms", "English"]],
+};
+const page = (title, body, lang = "en") => `<!doctype html>
+<html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 ${draft ? '<meta name="robots" content="noindex,nofollow">' : ""}<title>${title} — CookSnap</title>
 <style>
 :root{--bg:#f7faf8;--card:#fff;--ink:#14231c;--soft:#4a5d54;--line:#dfe8e3;--accent:#047857;--warn:#fef3c7;--warnink:#78350f}
@@ -39,8 +43,8 @@ ul,ol{padding-left:22px}li{margin:4px 0}hr{border:0;border-top:1px solid var(--l
 blockquote{margin:14px 0;padding:12px 14px;border-radius:12px;background:var(--warn);color:var(--warnink)}
 .table{overflow-x:auto;margin:14px 0}table{border-collapse:collapse;min-width:640px;background:var(--card);font-size:14px}th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}th{color:var(--soft)}
 footer{margin-top:40px;color:var(--soft);font-size:13px}
-</style></head><body><main><header><b>CookSnap</b><nav><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/support">Support</a></nav></header>
-${draft ? "<blockquote><strong>Draft.</strong> This page is not final and is not legal advice.</blockquote>" : ""}${body}
+</style></head><body><main><header><b>CookSnap</b><nav>${NAV[lang].map(([href, label]) => `<a href="${href}">${label}</a>`).join("")}</nav></header>
+${draft ? `<blockquote><strong>${lang === "pl" ? "Wersja robocza." : "Draft."}</strong> ${lang === "pl" ? "Ta strona nie jest ostateczna i nie jest poradą prawną." : "This page is not final and is not legal advice."}</blockquote>` : ""}${body}
 <footer>© CookSnap · <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></footer></main></body></html>`;
 
 const supportMd = `# Support
@@ -59,14 +63,39 @@ CookSnap has no accounts. Your saved recipes, pantry and settings are on your ph
 Recipes are written by AI and can be wrong. If you have an allergy or a medical diet, always check the ingredients and labels yourself, and ask a qualified professional about medical or nutrition advice. See the [Terms of Service](/terms).
 `;
 
-const sources = { privacy: ["Privacy Policy", load("PRIVACY_POLICY.md")], terms: ["Terms of Service", load("TERMS_OF_SERVICE.md")], support: ["Support", supportMd] };
+const supportMdPl = `# Pomoc
+
+Pytania, problemy lub pomysły dotyczące CookSnap? Czytamy wszystko.
+
+- **W aplikacji:** Profil > Pomoc i opinie. Wybierz Problem, Pomysł, Zły przepis lub Inne, napisz kilka słów i wyślij. Wiadomość wysłana bez połączenia zapisuje się na telefonie i wychodzi, gdy wrócisz online. Aby zgłosić przepis, otwórz go i dotknij „Zgłoś problem z tym przepisem”.
+- **E-mailem:** ${SUPPORT_EMAIL}
+
+## Twoje dane
+
+CookSnap nie ma kont. Zapisane przepisy, spiżarnia i ustawienia są na Twoim telefonie; usuń wszystko w aplikacji (Ustawienia > O aplikacji > „Usuń wszystkie moje dane”) albo odinstalowując ją. Skanowane zdjęcia są wysyłane do AI Google przez nasz serwer i nie są przez nas przechowywane. Szczegóły w [Polityce prywatności](/pl/privacy), a pytania o swoje dane możesz napisać do nas.
+
+## Alergie i diety
+
+Przepisy pisze AI i mogą być błędne. Jeśli masz alergię lub dietę medyczną, zawsze sprawdzaj składniki i etykiety samodzielnie, a w sprawie porad medycznych i żywieniowych zapytaj wykwalifikowanego specjalistę. Zob. [Regulamin](/pl/terms) i [Ostrzeżenia zdrowotne](/pl/disclaimer).
+`;
+
+const sources = {
+  privacy: ["Privacy Policy", load("PRIVACY_POLICY.md"), "en"],
+  terms: ["Terms of Service", load("TERMS_OF_SERVICE.md"), "en"],
+  disclaimer: ["Health and Food Disclaimer", load("HEALTH_AND_FOOD_DISCLAIMER.md"), "en"],
+  support: ["Support", supportMd, "en"],
+  "pl/privacy": ["Polityka prywatności", load("pl/POLITYKA_PRYWATNOSCI.md"), "pl"],
+  "pl/terms": ["Regulamin", load("pl/REGULAMIN.md"), "pl"],
+  "pl/disclaimer": ["Ostrzeżenia zdrowotne i żywnościowe", load("pl/OSTRZEZENIA_ZDROWOTNE.md"), "pl"],
+  "pl/support": ["Pomoc", supportMdPl, "pl"],
+};
 const left = [];
 for (const [key, [, text]] of Object.entries(sources)) for (const m of text.match(PLACEHOLDER) || []) left.push(`${key}: ${m}`);
 if (!draft && left.length) {
   console.error(`Final build refused: ${left.length} placeholder(s) left:\n  ${[...new Set(left)].join("\n  ")}\nFill them in docs/legal, or build a draft with --draft.`);
   process.exit(1);
 }
-const pages = Object.fromEntries(Object.entries(sources).map(([key, [title, text]]) => [key, page(title, markdownToHtml(text))]));
+const pages = Object.fromEntries(Object.entries(sources).map(([key, [title, text, lang]]) => [key, page(title, markdownToHtml(text), lang)]));
 const file = `// GENERATED by scripts/build-legal.js from docs/legal. Do not edit; run \`npm run build:legal\` (or \`build:legal:draft\`).
 export const LEGAL_DRAFT = ${draft};
 export const LEGAL_PAGES = ${JSON.stringify(pages, null, 1)};

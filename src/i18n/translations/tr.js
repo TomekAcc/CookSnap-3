@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Gizlilik Politikası",
   "settings.manageSubscription": "Aboneliği yönet",
   "settings.termsOfService": "Hizmet Şartları",
+  "settings.healthDisclaimer": "Sağlık ve gıda uyarısı",
   "help.kindBug": "Sorun",
   "help.kindIdea": "Fikir",
   "help.kindRecipe": "Kötü tarif",

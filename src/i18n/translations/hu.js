@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Adatvédelmi irányelvek",
   "settings.manageSubscription": "Előfizetés kezelése",
   "settings.termsOfService": "Felhasználási feltételek",
+  "settings.healthDisclaimer": "Egészségügyi és élelmiszer-figyelmeztetés",
   "help.kindBug": "Hiba",
   "help.kindIdea": "Ötlet",
   "help.kindRecipe": "Rossz recept",

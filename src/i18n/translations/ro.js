@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Politica de confidențialitate",
   "settings.manageSubscription": "Gestionează abonamentul",
   "settings.termsOfService": "Termeni și condiții",
+  "settings.healthDisclaimer": "Notă despre sănătate și alimente",
   "help.kindBug": "Problemă",
   "help.kindIdea": "Idee",
   "help.kindRecipe": "Rețetă proastă",

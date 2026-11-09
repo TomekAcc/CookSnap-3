@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Политика за поверителност",
   "settings.manageSubscription": "Управление на абонамента",
   "settings.termsOfService": "Условия за ползване",
+  "settings.healthDisclaimer": "Предупреждение за здраве и храна",
   "help.kindBug": "Проблем",
   "help.kindIdea": "Идея",
   "help.kindRecipe": "Лоша рецепта",

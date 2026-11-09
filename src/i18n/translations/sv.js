@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Integritetspolicy",
   "settings.manageSubscription": "Hantera prenumeration",
   "settings.termsOfService": "Användarvillkor",
+  "settings.healthDisclaimer": "Hälso- och livsmedelsinformation",
   "help.kindBug": "Problem",
   "help.kindIdea": "Idé",
   "help.kindRecipe": "Dåligt recept",

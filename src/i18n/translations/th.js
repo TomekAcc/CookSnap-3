@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "นโยบายความเป็นส่วนตัว",
   "settings.manageSubscription": "จัดการการสมัครสมาชิก",
   "settings.termsOfService": "ข้อกำหนดการให้บริการ",
+  "settings.healthDisclaimer": "ประกาศด้านสุขภาพและอาหาร",
   "help.kindBug": "ปัญหา",
   "help.kindIdea": "ไอเดีย",
   "help.kindRecipe": "สูตรไม่ดี",

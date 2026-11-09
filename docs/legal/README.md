@@ -66,3 +66,14 @@ payment SDK, a second AI provider), update the policy and the store forms in the
   documentation as read in November 2026; re-check before relaunch.
 - Privacy Policy 6 (transfers outside the EEA): confirm that Google LLC and Cloudflare are listed on dataprivacyframework.gov (or
   rely on SCCs). The EU-US Data Privacy Framework stood in November 2026, with an appeal pending at the Court of Justice.
+
+
+## Polish versions and the health notice (added November 2026)
+- Polish texts: `docs/legal/pl/REGULAMIN.md` (terms, also the electronic-services terms with technical requirements, complaints and a model
+  withdrawal form), `POLITYKA_PRYWATNOSCI.md` (privacy policy) and `OSTRZEZENIA_ZDROWOTNE.md` (health and food notice).
+  English health notice: `HEALTH_AND_FOOD_DISCLAIMER.md`. Keep each pair in step: change both when a fact changes.
+- Pages: `/privacy`, `/terms`, `/disclaimer`, `/support` and `/pl/privacy`, `/pl/terms`, `/pl/disclaimer`, `/pl/support`
+  (built by `cd proxy && npm run build:legal`, deployed with `npx wrangler deploy`). The app links Polish users to the Polish pages
+  and everyone else to the English ones (`src/constants/legal.js`).
+- These texts were written by an AI model from what the app does, checked against the code; they are not legal advice. Have a lawyer
+  (ideally a Polish consumer-law and GDPR specialist) read them before large-scale launch.

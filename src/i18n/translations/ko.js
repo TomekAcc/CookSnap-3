@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "개인정보 처리방침",
   "settings.manageSubscription": "구독 관리",
   "settings.termsOfService": "서비스 약관",
+  "settings.healthDisclaimer": "건강 및 식품 안내",
   "help.kindBug": "문제",
   "help.kindIdea": "아이디어",
   "help.kindRecipe": "이상한 레시피",

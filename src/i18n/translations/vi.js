@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Chính sách quyền riêng tư",
   "settings.manageSubscription": "Quản lý gói đăng ký",
   "settings.termsOfService": "Điều khoản dịch vụ",
+  "settings.healthDisclaimer": "Lưu ý về sức khỏe và thực phẩm",
   "help.kindBug": "Sự cố",
   "help.kindIdea": "Ý tưởng",
   "help.kindRecipe": "Công thức tệ",

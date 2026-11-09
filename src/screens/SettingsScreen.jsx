@@ -46,7 +46,7 @@ import { getRequestLog } from "../services/geminiClient";
 import { eraseAllLocalData, restartApp } from "../services/dataErasure";
 import { showToast } from "../utils/toast";
 import { floatingCtaBottom } from "../constants/layout";
-import { legalLinksLive, privacyPolicyUrl, termsUrl } from "../constants/legal";
+import { disclaimerUrl, legalLinksLive, privacyPolicyUrl, termsUrl } from "../constants/legal";
 
 export default function SettingsScreen() {
   const tabScroll = useTabScroll("settings");
@@ -580,8 +580,9 @@ export default function SettingsScreen() {
               : null}
             {legalLinksLive()
               ? [
-                  { key: "privacy", Icon: ShieldCheck, label: t("settings.privacyPolicy"), url: privacyPolicyUrl() },
-                  { key: "terms", Icon: FileText, label: t("settings.termsOfService"), url: termsUrl() },
+                  { key: "privacy", Icon: ShieldCheck, label: t("settings.privacyPolicy"), url: privacyPolicyUrl(recipeLanguageId) },
+                  { key: "terms", Icon: FileText, label: t("settings.termsOfService"), url: termsUrl(recipeLanguageId) },
+                  { key: "disclaimer", Icon: FileText, label: t("settings.healthDisclaimer"), url: disclaimerUrl(recipeLanguageId) },
                 ].map(({ key, Icon, label, url }) => (
                   <React.Fragment key={key}>
                     <View style={{ height: 1, backgroundColor: colors.cardBorder }} />

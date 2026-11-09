@@ -146,7 +146,7 @@ export default function ProSubscriptionModal() {
   } = useEntitlements();
   const { offerings, busy, purchase, restore } = usePurchases();
   const plans = React.useMemo(() => plansFromOfferings(offerings), [offerings]);
-  const { t } = useLanguage();
+  const { t, recipeLanguageId } = useLanguage();
   const { colors } = useTheme();
   // The sheet only opens by itself when a daily limit was hit. If the person is already PRO, there is nothing to sell
   // them: say that today's limit is used up and close the sheet again.
@@ -223,8 +223,8 @@ export default function ProSubscriptionModal() {
           </TouchableOpacity>
           {legalLinksLive()
             ? [
-                [t("settings.termsOfService"), termsUrl()],
-                [t("settings.privacyPolicy"), privacyPolicyUrl()],
+                [t("settings.termsOfService"), termsUrl(recipeLanguageId)],
+                [t("settings.privacyPolicy"), privacyPolicyUrl(recipeLanguageId)],
               ].map(([label, url]) => (
                 <TouchableOpacity key={url} onPress={() => Linking.openURL(url).catch(() => {})} accessibilityRole="link" hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}>
                   <Text style={[styles.footerLink, { color: colors.textSecondary }]}>{label}</Text>

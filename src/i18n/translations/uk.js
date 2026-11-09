@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Політика конфіденційності",
   "settings.manageSubscription": "Керування підпискою",
   "settings.termsOfService": "Умови використання",
+  "settings.healthDisclaimer": "Застереження щодо здоров'я та їжі",
   "help.kindBug": "Проблема",
   "help.kindIdea": "Ідея",
   "help.kindRecipe": "Поганий рецепт",

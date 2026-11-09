@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "מדיניות פרטיות",
   "settings.manageSubscription": "ניהול מנוי",
   "settings.termsOfService": "תנאי שימוש",
+  "settings.healthDisclaimer": "הודעה בנושא בריאות ומזון",
   "help.kindBug": "בעיה",
   "help.kindIdea": "רעיון",
   "help.kindRecipe": "מתכון גרוע",

@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Zásady ochrany osobních údajů",
   "settings.manageSubscription": "Spravovat předplatné",
   "settings.termsOfService": "Podmínky služby",
+  "settings.healthDisclaimer": "Upozornění ke zdraví a potravinám",
   "help.kindBug": "Problém",
   "help.kindIdea": "Nápad",
   "help.kindRecipe": "Špatný recept",

@@ -429,6 +429,7 @@ export default {
   "settings.privacyPolicy": "Политика конфиденциальности",
   "settings.manageSubscription": "Управление подпиской",
   "settings.termsOfService": "Условия использования",
+  "settings.healthDisclaimer": "Предупреждение о здоровье и еде",
   "help.kindBug": "Проблема",
   "help.kindIdea": "Идея",
   "help.kindRecipe": "Плохой рецепт",
