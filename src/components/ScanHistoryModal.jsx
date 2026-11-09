@@ -128,7 +128,7 @@ export default function ScanHistoryModal() {
                 >
                   <Image
                     source={{ uri: scan.photoUri }}
-                    style={styles.scanThumb}
+                    style={[styles.scanThumb, { backgroundColor: colors.cardBorder }]}
                     resizeMode="cover"
                   />
                   <View style={{ flex: 1 }}>
