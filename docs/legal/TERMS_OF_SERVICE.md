@@ -100,8 +100,11 @@ screen. A subscription belongs to your Apple or Google account, not to a CookSna
 **4.7 Refunds and your right to withdraw.** Apple and Google handle payments and refunds under their own
 policies; ask them first. Nothing in these terms limits the rights you have as a consumer by law. If you
 are a consumer in the EU, you may have a right to withdraw from a digital subscription within 14 days of
-buying it. When you start using PRO straight away you ask us to begin the service during that period, and
-you may lose the right to withdraw once the service has been fully provided. A model withdrawal form is at the end of these terms (Annex 1).
+buying it, without giving a reason. If you start using PRO straight away, you ask us to begin the service during that
+period; if you then withdraw, you may have to pay a proportionate amount for what was already provided, and you lose the
+right to withdraw once the service has been fully provided with your express consent and after we told you so. Because the
+App Store or Google Play takes the payment, a withdrawal or refund is normally requested and paid out there first. A model
+withdrawal form is at the end of these terms (Annex 1).
 
 **4.8 Limits and fair use.** PRO has much higher daily limits than the free version (currently 10 fridge scans, 10 pantry scans, 8 recipe generations and 20 AI recipe changes per day), because every scan and recipe is processed by a paid AI service. The limits may change and reset every day. We may also limit use that is
 automated, abusive or that threatens the service for others.

@@ -54,6 +54,18 @@ buy one. They are built from the texts in this folder.
 Both variables are read when the bundle is built, so they apply from the next `eas update` or build. Update the
 App Store Connect privacy-policy URL when the address changes.
 
+## Research log (9 November 2026) — what was checked, what could not be
+
+Checked against public sources while preparing the release. This is research, not a legal opinion.
+
+| Point | Finding | Effect on the documents |
+|---|---|---|
+| Google Gemini API retention | Google's logs policy: logs kept up to 55 days (project owner can shorten to 7/14/28/55 days); on billing-enabled projects prompts and responses in logs are not used for product improvement, unless you share a dataset (opt-in). Generate Content logging is on by default only for projects created on/after 26 Oct 2026. | Privacy policy section 4 matches ("55 days, abuse monitoring, not used for training"). **To do:** in AI Studio > Logs and Datasets set the retention to the shortest value you accept and never share a dataset. |
+| EU ODR platform | Closed 20 July 2025; traders no longer have to link to it. | Neither the terms nor the Polish regulamin link to it. Correct. |
+| Withdrawal from the subscription (art. 35 and 38 of the Polish consumer-rights act) | A service the consumer asked to start within the 14 days is paid proportionately if they withdraw; the right is lost only when the service is fully performed with express consent and prior information. A running subscription is not "fully performed" after a few days, so the right to withdraw normally stays. | Terms 4.7 and Polish 4.7 reworded (proportionate payment; refund normally goes through Apple/Google). |
+| EU AI Act, art. 50 | Transparency duties apply from 2 Aug 2026 (the "digital omnibus" gave only a short extension, to 2 Dec 2026, for machine-readable marking of outputs of systems already on the market; confirm in the Official Journal). CookSnap is not a chatbot; every recipe already carries the visible notice "AI-generated recipe. It can be wrong." (`recipeDetail.aiNotice`). | No change needed for the visible notice. Whether the marking duty (art. 50(2)) reaches an app that only passes Gemini text on is unsettled; the notice plus Google's own marking is the pragmatic position. Re-check the Commission guidelines. |
+| EU-US data transfers | The Data Privacy Framework was upheld by the General Court (3 Sept 2025); the appeal (C-703/25 P) is still pending. Expo and Cloudflare state they are DPF-certified. I could not confirm Google LLC and RevenueCat on the official list from here. | Privacy policy section 6 already says "DPF or Standard Contractual Clauses". **To do:** search each name on dataprivacyframework.gov once; if one is missing, rely on the SCCs in its data-processing terms. |
+
 ## Before launch: have a lawyer look at these
 
 Terms: sections 3, 4.7, 11, 14, 15. Privacy policy: the health-data consent (Art. 9) and the data-transfer

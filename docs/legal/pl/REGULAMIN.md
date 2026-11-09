@@ -94,9 +94,11 @@ Twojego konta Apple lub Google, a nie do konta w CookSnap.
 **4.7 Zwroty i prawo odstąpienia.** Płatności i zwroty obsługują Apple i Google według własnych zasad; zwróć się najpierw do nich.
 Żadne postanowienie regulaminu nie ogranicza praw, które przysługują Ci z mocy prawa jako konsumentowi. Jeśli jesteś konsumentem,
 możesz mieć prawo odstąpić od umowy o subskrypcję cyfrową w ciągu 14 dni od jej zawarcia, bez podawania przyczyny. Jeśli zaczniesz
-korzystać z PRO od razu, prosisz nas o rozpoczęcie świadczenia usługi w tym okresie i, po jej pełnym wykonaniu, możesz utracić
-prawo odstąpienia, o ile wyraziłeś na to zgodę i zostałeś o tym poinformowany. Wzór formularza odstąpienia znajdziesz na końcu
-regulaminu (Załącznik 1).
+korzystać z PRO od razu, prosisz nas o rozpoczęcie świadczenia usługi w tym okresie; jeśli następnie odstąpisz od umowy, możesz
+być zobowiązany(-a) do zapłaty proporcjonalnej kwoty za świadczenie spełnione do chwili odstąpienia, a po pełnym wykonaniu usługi
+tracisz prawo odstąpienia, o ile wyraziłeś(-aś) na to wyraźną zgodę i zostałeś(-aś) o tym uprzednio poinformowany(-a). Ponieważ
+płatność pobiera App Store lub Google Play, odstąpienie i zwrot najczęściej zgłasza się i realizuje najpierw tam. Wzór formularza
+odstąpienia znajdziesz na końcu regulaminu (Załącznik 1).
 
 **4.8 Limity i rozsądne użytkowanie.** PRO ma znacznie wyższe dzienne limity niż wersja bezpłatna (obecnie 10 skanów lodówki, 10 skanów
 spiżarni, 8 generowań przepisów i 20 zmian przepisów przez AI dziennie), ponieważ każdy skan i przepis przetwarza płatna usługa AI.
