@@ -13,7 +13,7 @@ Drafts for the first store release. None of them is legal advice; have a lawyer 
 
 ## Fill in before publishing (search for `[` in the files)
 
-- Company name and NIP are filled in (Tomasz Białasiewicz, NIP 9472021327). Still open: `[BUSINESS ADDRESS]` (must match the address in CEIDG)
+- Company name and NIP are filled in (Tomasz Białasiewicz, NIP 9472021327). Address filled in: ul. Horacego Safrina 18, 91-177 Łódź (must match the address in CEIDG)
 - Support address: done, `cooksnap.support@gmail.com` (the same as `SUPPORT_EMAIL` in `src/constants/contact.js`; change both if the name of the app changes)
 - `[DATE]`, `[PRIVACY POLICY URL]`, subscription prices and limits (copy from `src/constants/limits.js` and
   the paywall), `[AMOUNT]` (liability cap, terms section 11.3), (no REGON and no phone number are published)
@@ -53,3 +53,16 @@ hours is usually enough. `STORE_COMPLIANCE.md` lists everything else.
 
 If the app starts doing anything new with data (analytics, crash reporting, accounts, notifications, a
 payment SDK, a second AI provider), update the policy and the store forms in the same release.
+
+
+## Open points for the lawyer (checked once, not guaranteed; the texts above are written to be publishable)
+- Terms 4.7 (right to withdraw from a digital subscription within 14 days): wording for digital services, and how Apple and Google
+  apply it as the seller of the subscription.
+- Terms 14: out-of-court dispute resolution. The EU Commission's online dispute resolution platform closed in July 2025 (do not link
+  to it); check whether CookSnap must name an ADR body.
+- Terms 16: Polish consumers should be offered a Polish text; the Polish versions of the Terms and the Privacy Policy must be added
+  and the English-vs-Polish clause confirmed.
+- Privacy Policy 5 (Google): abuse-monitoring logs of the paid Gemini API are kept 55 days and not used for training, per Google's
+  documentation as read in November 2026; re-check before relaunch.
+- Privacy Policy 6 (transfers outside the EEA): confirm that Google LLC and Cloudflare are listed on dataprivacyframework.gov (or
+  rely on SCCs). The EU-US Data Privacy Framework stood in November 2026, with an appeal pending at the Court of Justice.

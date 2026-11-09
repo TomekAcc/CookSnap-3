@@ -3,15 +3,15 @@
 > **DRAFT for review.** Not legal advice. Items in `[BRACKETS]` must be filled in before publishing, and a
 > lawyer should read the final text (especially sections 3, 4, 11, 14 and 15).
 
-**Last updated:** [DATE]
+**Last updated:** 9 November 2026
 
 ## 1. Who we are, and what these terms cover
 
 CookSnap is provided by **Tomasz Białasiewicz** (sole proprietorship, registered in CEIDG),
-[BUSINESS ADDRESS], Poland, NIP 9472021327 ("we", "us"). These terms are the agreement between you and us for
+ul. Horacego Safrina 18, 91-177 Łódź, Poland, NIP 9472021327 ("we", "us"). These terms are the agreement between you and us for
 the CookSnap mobile app and the server that supports it (together, "the app"). By installing or using the
 app you accept them. If you do not accept them, do not use the app. How we handle data is described in the
-[Privacy Policy]([PRIVACY POLICY URL]).
+[Privacy Policy](https://cooksnap-proxy.cooksnap.workers.dev/privacy).
 
 **Who may use the app.** The app is meant for people aged **16 or over**. If you are under 18, use it
 (and any paid feature) only with the permission of a parent or guardian. If you use the app for a
@@ -69,13 +69,13 @@ suits you and the people you cook for.
 
 ## 4. Free use and CookSnap PRO
 
-**4.1 Free version.** The free version includes a one-time sample to try the app (currently [3] fridge scans, [3] pantry scans and
-[3] recipe generations in total, [3] recipes per generation). The sample does not renew; after it is used up, scanning and
+**4.1 Free version.** The free version includes a one-time sample to try the app (currently 3 fridge scans, 3 pantry scans and
+3 recipe generations in total, 3 recipes per generation). The sample does not renew; after it is used up, scanning and
 generating recipes need PRO. Features that do not use AI (saved recipes, your pantry list, the shopping list) stay free.
 The sample, and what PRO includes, may change.
 
-**4.2 PRO subscription.** CookSnap PRO is an optional paid subscription: [PRICES: monthly $[5.99], yearly
-$[29.99], or the equivalent in your currency, shown in the app before you buy]. A [7]-day free trial may be
+**4.2 PRO subscription.** CookSnap PRO is an optional paid subscription: monthly $5.99, yearly
+$29.99, or the equivalent in your currency, shown in the app before you buy. A 7-day free trial may be
 offered on the yearly plan.
 
 **4.3 Payment and renewal.** Payment is charged to your Apple ID or Google Play account when you confirm the
@@ -99,10 +99,9 @@ screen. A subscription belongs to your Apple or Google account, not to a CookSna
 policies; ask them first. Nothing in these terms limits the rights you have as a consumer by law. If you
 are a consumer in the EU, you may have a right to withdraw from a digital subscription within 14 days of
 buying it. When you start using PRO straight away you ask us to begin the service during that period, and
-you may lose the right to withdraw once the service has been fully provided [VERIFY the exact wording for
-digital services with a lawyer, and how Apple and Google apply it as the seller of the subscription].
+you may lose the right to withdraw once the service has been fully provided.
 
-**4.8 Limits and fair use.** PRO has much higher daily limits than the free version (currently [10] fridge scans, [10] pantry scans, [8] recipe generations and [20] AI recipe changes per day), because every scan and recipe is processed by a paid AI service. The limits may change and reset every day. We may also limit use that is
+**4.8 Limits and fair use.** PRO has much higher daily limits than the free version (currently 10 fridge scans, 10 pantry scans, 8 recipe generations and 20 AI recipe changes per day), because every scan and recipe is processed by a paid AI service. The limits may change and reset every day. We may also limit use that is
 automated, abusive or that threatens the service for others.
 
 ## 5. Licence and ownership
@@ -152,7 +151,7 @@ are.
 
 We try to keep the app available but do not promise it will be uninterrupted or error-free. We may change,
 limit or end features, and we may update these terms. For a change that matters we will tell you in the app
-or by update notes **at least [30] days** before it applies, unless the law or an urgent need to protect the
+or by update notes **at least 30 days** before it applies, unless the law or an urgent need to protect the
 service requires sooner. If you do not accept a change, stop using the app and cancel any subscription.
 Continuing to use the app after the change means you accept it.
 
@@ -177,7 +176,7 @@ results from you relying on AI-generated content contrary to section 3.
 
 **11.3 Businesses.** If you use the app for business, to the extent the law allows we are not liable for
 indirect or consequential loss or lost profit, and our total liability for any claim is limited to
-[AMOUNT, for example the price you paid in the 12 months before the claim].
+the price you paid in the 12 months before the claim.
 
 ## 12. Data protection
 
@@ -195,11 +194,9 @@ You can write to us at **cooksnap.support@gmail.com**.
 Polish law applies, without taking away the protection you have under the mandatory rules of the country
 where you live. If you are a consumer, you may bring a claim in the courts of the country where you live
 as well as in Poland. We will try to settle any complaint directly first: write to
-**cooksnap.support@gmail.com** and we will answer within [14] days. As a consumer you can also use
+**cooksnap.support@gmail.com** and we will answer within 14 days. As a consumer you can also use
 out-of-court options, such as a municipal or county consumer ombudsman in Poland, the Office of
-Competition and Consumer Protection (UOKiK), or an alternative dispute resolution body in your country
-[VERIFY: the EU Commission's online dispute resolution platform was closed in July 2025; do not link to
-it, and check whether you have to name an ADR body].
+Competition and Consumer Protection (UOKiK), or an alternative dispute resolution body in your country.
 
 ## 15. Apple and Google
 
@@ -237,12 +234,11 @@ stays in force. If we do not enforce a right straight away, we have not given it
 your rights under these terms; we may transfer ours to a successor of the business, with notice to you.
 We are not liable for delay or failure caused by events beyond our reasonable control. These terms are
 written in English. Where a Polish version is offered to you, the Polish version is the one that applies
-to Polish consumers if the two differ [VERIFY with a lawyer; Polish consumers should be offered a Polish
-text].
+to Polish consumers if the two differ.
 
 ## 17. Who to contact
 
-**Tomasz Białasiewicz** (sole proprietorship, registered in CEIDG), [BUSINESS ADDRESS], Poland, NIP
+**Tomasz Białasiewicz** (sole proprietorship, registered in CEIDG), ul. Horacego Safrina 18, 91-177 Łódź, Poland, NIP
 9472021327, email **cooksnap.support@gmail.com**.
 Registered in the Central Registry and Information on Business (CEIDG).
 

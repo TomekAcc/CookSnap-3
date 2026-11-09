@@ -4,12 +4,12 @@
 > on the date below), not legal advice. Items in `[BRACKETS]` must be filled in, and the points under
 > "Verify before publishing" at the end must be confirmed, before this is put online.
 
-**Last updated:** [DATE]
+**Last updated:** 9 November 2026
 
 ## 1. Who we are
 
 CookSnap ("the app") is provided by **Tomasz Białasiewicz** (sole proprietorship, registered in CEIDG),
-[BUSINESS ADDRESS], Poland, NIP 9472021327 ("we", "us"). We are the controller of the personal
+ul. Horacego Safrina 18, 91-177 Łódź, Poland, NIP 9472021327 ("we", "us"). We are the controller of the personal
 data described here.
 
 Contact for anything about your data: **cooksnap.support@gmail.com**
@@ -49,7 +49,7 @@ see your card details.
 Photos and prompts are processed by **Google LLC** through the paid Gemini API as our service provider.
 Google receives the photo or text but not your name or install ID. According to Google's terms for its
 paid Gemini API, Google does not use this content to train its models; it may keep it for a limited
-period for abuse monitoring ([VERIFY the current wording of Google's terms before publishing]). See
+period (currently 55 days, according to Google's documentation) to detect abuse. See
 Google's Gemini API terms and privacy information for details.
 
 **This is AI-generated content.** Ingredient lists and recipes are produced by an AI model and can be wrong,
@@ -76,8 +76,7 @@ not share it for advertising or tracking.
 
 Google and Cloudflare operate worldwide, so data from your request can be processed outside the EU/EEA,
 including in the United States. Where this happens it relies on the safeguards those providers offer
-(for example the EU–US Data Privacy Framework or Standard Contractual Clauses) ([VERIFY the current
-status for each provider]).
+(for example the EU–US Data Privacy Framework or Standard Contractual Clauses).
 
 ## 7. Your rights
 
