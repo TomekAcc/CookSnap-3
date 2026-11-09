@@ -178,9 +178,19 @@ describe("RevenueCat provider", () => {
     expect(await provider.purchase("annual")).toMatchObject({ status: "error", message: "network" });
   });
 
-  it("does not try to buy before the prices have been loaded", async () => {
-    const provider = createRevenueCatProvider({ apiKey: "k", Purchases: sdk() });
-    expect((await provider.purchase("annual")).status).toBe("unavailable");
+  it("loads the prices itself when a purchase starts before they arrived", async () => {
+    const Purchases = sdk();
+    const provider = createRevenueCatProvider({ apiKey: "k", Purchases });
+    expect((await provider.purchase("annual")).status).toBe("success");
+    expect(Purchases.getOfferings).toHaveBeenCalledTimes(1);
+  });
+
+  it("answers 'unavailable' (never throws) while the store has no products, e.g. before Apple opens payments", async () => {
+    const empty = createRevenueCatProvider({ apiKey: "k", Purchases: sdk({ getOfferings: jest.fn().mockResolvedValue({ current: null }) }) });
+    expect((await empty.getOfferings()).annual).toEqual(FALLBACK_PRICES.annual);
+    expect((await empty.purchase("annual")).status).toBe("unavailable");
+    const down = createRevenueCatProvider({ apiKey: "k", Purchases: sdk({ getOfferings: jest.fn().mockRejectedValue(new Error("offline")) }) });
+    expect((await down.purchase("monthly")).status).toBe("unavailable");
   });
 
   it("restore reports what the store has", async () => {

@@ -397,7 +397,7 @@ export default {
   "pro.restoreNone": "Nie znaleziono wcześniejszego zakupu na tym koncie.",
   "pro.dailyLimitReached": "Osiągnięto dzisiejszy limit PRO. Odnowi się jutro.",
   "pro.purchaseFailed": "Zakup się nie udał. Nic nie pobrano — spróbuj ponownie.",
-  "pro.unavailable": "Zakupy nie są dostępne w tej wersji aplikacji.",
+  "pro.unavailable": "Zakupy są teraz niedostępne. Spróbuj ponownie za chwilę.",
   "pro.welcomeToast": "🎉 Witaj w CookSnap PRO!",
   "scanHistory.restoredToast": "Przywrócono skan z dnia {date}",
   "scanHistory.emptyTitle": "Brak skanów",

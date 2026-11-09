@@ -43,6 +43,17 @@ buy one. They are built from the texts in this folder.
    "Privacy Policy" and "Terms of Service" rows. Until then they are hidden, so nobody taps a dead link.
 5. Open the three addresses once in a browser and read them.
 
+## After publishing: fix, replace or switch off the links
+
+| Need | What to do | Needs an app update? |
+|---|---|---|
+| Wording of a page is wrong | Edit `docs/legal/...`, `cd proxy && npm run build:legal`, `npx wrangler deploy` | No: every installed app shows the new text at once |
+| Pages must live on another address | Set `EXPO_PUBLIC_LEGAL_BASE_URL` (EAS environment `production`), then `eas update --branch production --environment production` | Yes: one OTA update, no store review |
+| Switch the links off | Set `EXPO_PUBLIC_LEGAL_LIVE` to `0` in the EAS environment, then publish the same OTA update | Yes: one OTA update, no store review |
+
+Both variables are read when the bundle is built, so they apply from the next `eas update` or build. Update the
+App Store Connect privacy-policy URL when the address changes.
+
 ## Before launch: have a lawyer look at these
 
 Terms: sections 3, 4.7, 11, 14, 15. Privacy policy: the health-data consent (Art. 9) and the data-transfer

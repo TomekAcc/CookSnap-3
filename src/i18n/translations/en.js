@@ -427,7 +427,7 @@ export default {
   "pro.restoreNone": "No earlier purchase found for this account.",
   "pro.dailyLimitReached": "You've reached today's PRO limit. It resets tomorrow.",
   "pro.purchaseFailed": "The purchase did not go through. You were not charged — please try again.",
-  "pro.unavailable": "Purchases are not available in this version of the app.",
+  "pro.unavailable": "Purchases aren't available right now. Please try again in a little while.",
   "pro.welcomeToast": "🎉 Welcome to CookSnap PRO!",
 
 

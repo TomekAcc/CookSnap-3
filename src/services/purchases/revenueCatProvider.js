@@ -59,6 +59,9 @@ export function createRevenueCatProvider({ apiKey, Purchases = loadPurchasesModu
       return { isPro: isPro(await Purchases.getCustomerInfo()) };
     },
     async purchase(planId) {
+      // The prices may not have loaded yet (offline at launch, or the store was not ready): ask once more before giving up,
+      // so a person who opens the paywall after the connection comes back can still buy without restarting the app.
+      if (!packages[planId]) await this.getOfferings().catch(() => {});
       const pkg = packages[planId];
       if (!pkg) return { status: "unavailable" };
       try {

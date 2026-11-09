@@ -308,10 +308,9 @@ export default function ProSubscriptionModal() {
       showToast(t("pro.restored"), "pro", 4200);
     } else if (result.status === "none") {
       showToast(t("pro.restoreNone"), "info", 4500);
-    } else if (result.status === "unavailable") {
+    } else if (result.status === "unavailable" || result.status === "error") {
+      // Not "the purchase did not go through": nothing was being bought, the store just could not be reached.
       showToast(t("pro.unavailable"), "error", 4500);
-    } else if (result.status === "error") {
-      showToast(t("pro.purchaseFailed"), "error", 4500);
     }
   };
 
