@@ -17,6 +17,10 @@ export default function AiConsentSheet() {
       onClose={() => answerAiConsent(false)}
       title={t("aiConsent.title")}
       type="bottom-sheet"
+      // A short sheet: the default bottom padding (sheet + scroll area, ~100pt on a phone with a home indicator) left a wide
+      // empty band under "Not now". Keep just enough room above the home indicator.
+      compactBottom
+      scrollProps={{ contentContainerStyle: { paddingTop: 4, paddingBottom: 6 } }}
     >
       <Text style={[styles.body, { color: colors.textSecondary }]}>{t("aiConsent.body")}</Text>
       <TouchableOpacity
