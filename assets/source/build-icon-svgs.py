@@ -1,7 +1,7 @@
 # CookSnap icon, drawn as vector. Everything in a 1024 x 1024 box. Variants share one geometry.
 import sys, os
 EMERALD='#10B981'  # the app's main green (EMERALD[500]): the "Snap" in the wordmark
-def svg(bg=EMERALD, body='#FFFFFF', line='#FFC800', brack='#FFFFFF', transparent=False, line_h=40, margin=11):
+def svg(bg=EMERALD, body='#FFFFFF', line='#0F172A', brack='#FFFFFF', transparent=False, line_h=40, margin=11):
     cy=442; gap_y=cy-line_h//2-margin; gap_h=line_h+2*margin; line_y=cy-line_h//2
     bgrect='' if transparent else f'<rect width="1024" height="1024" fill="{bg}"/>'
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
@@ -27,7 +27,7 @@ def svg(bg=EMERALD, body='#FFFFFF', line='#FFC800', brack='#FFFFFF', transparent
 if __name__=='__main__':
     out=sys.argv[1]; os.makedirs(out,exist_ok=True)
     open(out+'/light.svg','w').write(svg())
-    open(out+'/dark.svg','w').write(svg(bg='#064E3B'))
+    open(out+'/dark.svg','w').write(svg(bg='#064E3B',line='#34D399'))
     open(out+'/tinted.svg','w').write(svg(bg='#000000',line='#AAAAAA'))
-    open(out+'/glyph-color.svg','w').write(svg(transparent=True))
+    open(out+'/glyph-color.svg','w').write(svg(transparent=True,line='#0F172A'))
     open(out+'/glyph-white.svg','w').write(svg(transparent=True,line='#FFFFFF'))

@@ -15,5 +15,5 @@
 <path d="M874 728V818A56 56 0 0 1 818 874H728"/>
 </g>
 <rect x="342" y="262" width="340" height="500" rx="62" fill="#FFFFFF" mask="url(#cut)"/>
-<rect x="212" y="422" width="600" height="40" rx="20" fill="#FFC800"/>
+<rect x="212" y="422" width="600" height="40" rx="20" fill="#0F172A"/>
 </svg>
