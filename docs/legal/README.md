@@ -66,6 +66,13 @@ Checked against public sources while preparing the release. This is research, no
 | EU AI Act, art. 50 | Transparency duties apply from 2 Aug 2026 (the "digital omnibus" gave only a short extension, to 2 Dec 2026, for machine-readable marking of outputs of systems already on the market; confirm in the Official Journal). CookSnap is not a chatbot; every recipe already carries the visible notice "AI-generated recipe. It can be wrong." (`recipeDetail.aiNotice`). | No change needed for the visible notice. Whether the marking duty (art. 50(2)) reaches an app that only passes Gemini text on is unsettled; the notice plus Google's own marking is the pragmatic position. Re-check the Commission guidelines. |
 | EU-US data transfers | The Data Privacy Framework was upheld by the General Court (3 Sept 2025); the appeal (C-703/25 P) is still pending. Expo and Cloudflare state they are DPF-certified. I could not confirm Google LLC and RevenueCat on the official list from here. | Privacy policy section 6 already says "DPF or Standard Contractual Clauses". **To do:** search each name on dataprivacyframework.gov once; if one is missing, rely on the SCCs in its data-processing terms. |
 
+## App Store Connect: which licence agreement (EULA)
+
+App Store Connect > App Information > License Agreement: either keep Apple's standard EULA, or choose "Custom" and paste
+the terms. Our terms (section 15.1) already contain the minimum terms Apple requires of a custom EULA, so you can paste
+`TERMS_OF_SERVICE.md` there, or keep the standard one and link `https://cooksnap-proxy.cooksnap.workers.dev/terms`
+in the app description. Either is fine; do not leave the app with neither a link nor the standard EULA.
+
 ## Before launch: have a lawyer look at these
 
 Terms: sections 3, 4.7, 11, 14, 15. Privacy policy: the health-data consent (Art. 9) and the data-transfer

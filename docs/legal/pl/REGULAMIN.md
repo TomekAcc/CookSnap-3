@@ -168,7 +168,7 @@ poprawne, bezpieczne lub odpowiednie dla Ciebie (zob. punkt 3).
 **11.2 Konsumenci.** Jeśli jesteś konsumentem, **żadne postanowienie regulaminu nie wyłącza ani nie ogranicza odpowiedzialności, której nie
 można wyłączyć ani ograniczyć z mocy prawa, ani Twoich obowiązkowych praw konsumenckich**, w tym praw przysługujących, gdy treść lub usługa
 cyfrowa jest niezgodna z umową, oraz naszej odpowiedzialności za śmierć lub uszczerbek na zdrowiu spowodowane przez nas, za
-oszustwo oraz za szkodę wyrządzoną umyślnie lub przez rażące niedbalstwo. W tych granicach nie odpowiadamy za szkody, których nie
+oszustwo oraz za szkodę wyrządzoną umyślnie lub przez rażące niedbalstwo. Jeśli aplikacja (usługa cyfrowa) jest niezgodna z umową, możesz żądać doprowadzenia jej do zgodności z umową, a gdy nie jest to możliwe lub nie nastąpi w rozsądnym czasie, obniżenia ceny albo odstąpienia od umowy, na zasadach przewidzianych w ustawie o prawach konsumenta; dostarczamy też aktualizacje potrzebne do utrzymania zgodności aplikacji z umową. W tych granicach nie odpowiadamy za szkody, których nie
 mogliśmy rozsądnie przewidzieć, ani za szkody wynikające z polegania na treściach generowanych przez AI wbrew punktowi 3.
 
 **11.3 Przedsiębiorcy.** Jeśli używasz aplikacji w działalności gospodarczej, w zakresie dozwolonym przez prawo nie odpowiadamy za szkody

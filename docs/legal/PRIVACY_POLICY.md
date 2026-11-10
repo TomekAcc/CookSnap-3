@@ -149,5 +149,5 @@ app if a change is material.
    Decide with a lawyer.
 5. Whether the business address may be shown publicly (it is required for EU "trader" status in the stores).
 6. Records of processing (Art. 30) and a short internal data-incident procedure: see `INTERNAL_PROCEDURES.md`.
-7. Polish consumers are normally entitled to the policy in Polish. Prepare a Polish version before launching in Poland.
+7. The Polish version (`pl/POLITYKA_PRYWATNOSCI.md`) exists; keep it identical in substance to this English text whenever either changes.
 8. Have a lawyer read the final text.

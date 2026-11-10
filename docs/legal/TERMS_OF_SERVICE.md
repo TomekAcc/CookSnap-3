@@ -175,7 +175,7 @@ are correct, safe or suitable for you (see section 3).
 **11.2 Consumers.** If you are a consumer, **nothing in these terms excludes or limits liability that cannot be
 excluded or limited by law, or your mandatory consumer rights**, including your rights if digital content
 or a digital service does not conform to the contract, and our liability for death or personal injury
-caused by us, for fraud, and for harm caused intentionally or through gross negligence. Within those
+caused by us, for fraud, and for harm caused intentionally or through gross negligence. If the app (a digital service) does not conform to the contract, you may require us to bring it into conformity, and, where that is not possible or does not happen within a reasonable time, to reduce the price or to terminate the contract, as the consumer law of your country provides; we also supply the updates needed to keep the app in conformity. Within those
 limits, we are not liable for losses we could not reasonably foresee, and we are not liable for harm that
 results from you relying on AI-generated content contrary to section 3.
 

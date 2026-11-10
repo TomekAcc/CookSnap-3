@@ -28,7 +28,8 @@ analytics, crash reporting, accounts, a payment SDK or push notifications, redo 
 | Customer Support (User Content) | Yes | No | App Functionality | Help & Feedback messages, kept 90 days |
 | Email Address (Contact Info) | No (the app asks for none; a person who writes to us by email on their own is handled outside the app) | No | n/a | n/a |
 | Device ID (Identifiers) | Yes | No | App Functionality | Random install ID, used only for the per-phone daily limit |
-| Purchases | **Yes, once the RevenueCat build ships** | | App Functionality | Purchase history is read from Apple/Google through RevenueCat (anonymous ID, not linked to identity) |
+| Purchases | **Yes** (the RevenueCat build is the store build) | No | App Functionality | Purchase history is read from Apple/Google through RevenueCat |
+| User ID (Identifiers) | **Yes** (RevenueCat's anonymous app user ID, collected by a third-party SDK) | No | App Functionality | Not an account; not linked to a name or email |
 | Health & Fitness | **Open question** | | | Dietary preferences such as "diabetic" may count; see below |
 
 Everything else: not collected (name, email, phone, contacts, location, browsing history, diagnostics,
@@ -49,9 +50,9 @@ usage data, financial info).
 | Other in-app content | Yes | No (same) | App functionality | Diet text is optional |
 | Device or other IDs | Yes | No | App functionality | Required |
 | Other in-app messages (Messages) | Yes | No | App functionality, customer support | Optional |
-| Email address (Personal info) | Yes, only if typed | No | App functionality (reply) | Optional |
+| Purchase history (Financial info) | Yes, via RevenueCat | No | App functionality | Only whether a subscription is active; no card data |
 
-Not collected: personal info, financial info, health info (see open question), location, messages,
+Not collected: personal info (the app has no email, name or phone field), card or payment details, health info (see open question), location,
 contacts, calendar, app activity, web browsing, files, audio, device-level diagnostics.
 
 ## Age and audience
@@ -61,7 +62,8 @@ Apple age rating: answer the questionnaire per `DISCLAIMERS.md` section E. Googl
 
 ## Open questions (resolve before submitting)
 
-1. **Health data.** Diet switches such as "diabetic-friendly" or "nut-free" can reveal a health condition
+1. **Health data. Recommendation: declare it** (Apple: Health & Fitness > Health, not linked to identity, App Functionality; Google: Health info), because the conservative answer costs nothing and a missing declaration is the riskier mistake.
+   Background: Diet switches such as "diabetic-friendly" or "nut-free" can reveal a health condition
    or allergy. They are sent with the recipe request, without identity. Decide (with a lawyer if you want
    certainty) whether to also declare "Health" in Apple's form and Google's Data safety. Declaring it is
    the conservative choice.
@@ -73,6 +75,6 @@ Apple age rating: answer the questionnaire per `DISCLAIMERS.md` section E. Googl
 4. **AI content reporting (Google Play).** Done in the app: recipes have a "Report a problem with this recipe" link
    that opens Help & Feedback with the kind and the recipe title filled in; the owner reads these on the private
    feedback page (`/admin` of the proxy).
-5. **Payments:** add purchases (and the provider) to both forms once subscriptions are added.
+5. **Payments:** purchases and RevenueCat's anonymous ID are already in the tables above; keep them in the forms.
 6. **Notices in the app.** Done: every recipe shows an "AI-generated" notice, and the diet switches carry a note that
    they are not an allergen guarantee. Mention both in the App Review notes (`DISCLAIMERS.md` section D).
