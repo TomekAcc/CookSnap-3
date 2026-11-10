@@ -1,6 +1,6 @@
 # CookSnap icon, drawn as vector. Everything in a 1024 x 1024 box. Variants share one geometry.
 import sys, os
-EMERALD='#34D399'  # emerald-400 from the app palette (src/theme/palette.js)
+EMERALD='#10B981'  # the app's main green (EMERALD[500]): the "Snap" in the wordmark
 def svg(bg=EMERALD, body='#FFFFFF', line='#FFC800', brack='#FFFFFF', transparent=False, line_h=40, margin=11):
     cy=442; gap_y=cy-line_h//2-margin; gap_h=line_h+2*margin; line_y=cy-line_h//2
     bgrect='' if transparent else f'<rect width="1024" height="1024" fill="{bg}"/>'
