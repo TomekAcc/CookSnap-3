@@ -47,7 +47,7 @@
       "package": "com.tomekacc.cooksnap",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#F5F5F7"
+        "backgroundColor": "#02CB86"
       },
       "permissions": [
         "android.permission.CAMERA"
