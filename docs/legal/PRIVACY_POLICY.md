@@ -79,7 +79,7 @@ Please do not photograph people, children or documents. Photos should show food,
 
 Google, Cloudflare and (when subscriptions are available) RevenueCat act as our service providers (processors) under their
 data-processing terms. Apple, Google Play and Expo run their own platforms. We do not sell your data and we do
-not share it for advertising or tracking.
+not share it for advertising or tracking. This is also our position under US state privacy laws such as the California CCPA/CPRA: we do not "sell" or "share" personal information, so there is nothing to opt out of, and you can still write to us to ask for access or deletion.
 
 ## 6. Transfers outside the EU/EEA
 

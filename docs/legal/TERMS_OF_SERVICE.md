@@ -148,6 +148,8 @@ payments or security; no reverse engineering, scraping or attacking the app or o
 breaks the law or the rights of others; and no attempt to make the AI produce harmful, hateful or unlawful
 content.
 
+**Rights complaints.** If you believe something in the app infringes your copyright or other rights, write to **cooksnap.support@gmail.com** with the details and the work concerned. We will review it and, if justified, remove or correct it.
+
 ## 8. Third-party services
 
 The app relies on others: Google (AI), Cloudflare (our server), Expo (app updates), Apple and Google Play

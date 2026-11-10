@@ -143,6 +143,8 @@ prawa innych; nie próbuj skłaniać AI do tworzenia treści szkodliwych, nienaw
 treści o charakterze bezprawnym** (np. zdjęć naruszających prawa osób trzecich lub przedstawiających przemoc czy treści
 nielegalne). Możemy odmówić przetworzenia takiego zdjęcia.
 
+**Zgłaszanie naruszeń praw.** Jeśli uważasz, że coś w aplikacji narusza Twoje prawa autorskie lub inne prawa, napisz na **cooksnap.support@gmail.com**, podając szczegóły i utwór, którego dotyczy zgłoszenie. Sprawdzimy je i, jeśli zgłoszenie jest zasadne, usuniemy lub poprawimy treść.
+
 ## 8. Usługi podmiotów trzecich
 
 Aplikacja korzysta z usług innych podmiotów: Google (AI), Cloudflare (nasz serwer), Expo (aktualizacje aplikacji), Apple i Google Play

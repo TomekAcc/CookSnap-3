@@ -77,7 +77,7 @@ Prosimy, nie fotografuj osób, dzieci ani dokumentów. Zdjęcia powinny przedsta
 
 Google, Cloudflare i RevenueCat działają jako nasi podwykonawcy (podmioty przetwarzające) na podstawie swoich warunków przetwarzania
 danych. Apple, Google Play i Expo prowadzą własne platformy. Nie sprzedajemy Twoich danych i nie udostępniamy ich do celów
-reklamowych ani śledzenia.
+reklamowych ani śledzenia. Takie jest też nasze stanowisko na gruncie przepisów stanowych USA o prywatności, np. kalifornijskiego CCPA/CPRA: nie „sprzedajemy” ani nie „udostępniamy” danych osobowych, więc nie ma z czego rezygnować, a o dostęp lub usunięcie danych możesz nadal do nas napisać.
 
 ## 6. Przekazywanie danych poza UE/EOG
 
