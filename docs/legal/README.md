@@ -66,6 +66,24 @@ Checked against public sources while preparing the release. This is research, no
 | EU AI Act, art. 50 | Transparency duties apply from 2 Aug 2026 (the "digital omnibus" gave only a short extension, to 2 Dec 2026, for machine-readable marking of outputs of systems already on the market; confirm in the Official Journal). CookSnap is not a chatbot; every recipe already carries the visible notice "AI-generated recipe. It can be wrong." (`recipeDetail.aiNotice`). | No change needed for the visible notice. Whether the marking duty (art. 50(2)) reaches an app that only passes Gemini text on is unsettled; the notice plus Google's own marking is the pragmatic position. Re-check the Commission guidelines. |
 | EU-US data transfers | The Data Privacy Framework was upheld by the General Court (3 Sept 2025); the appeal (C-703/25 P) is still pending. Expo and Cloudflare state they are DPF-certified. I could not confirm Google LLC and RevenueCat on the official list from here. | Privacy policy section 6 already says "DPF or Standard Contractual Clauses". **To do:** search each name on dataprivacyframework.gov once; if one is missing, rely on the SCCs in its data-processing terms. |
 
+## Closing the open points (10 November 2026)
+
+1. **Transfers (SCC vs DPF).** Standard Contractual Clauses are a valid transfer tool on their own (art. 46(2)(c) GDPR); a provider does not have to be on the
+   DPF list. They are safe only if the clauses really are part of your contract with that provider and the transfer risk was assessed; for the United States the
+   Commission's DPF assessment of US law can be relied on for that (EDPB), while the DPF case (C-703/25 P) is pending. Nothing is "100% safe", but this is the
+   standard accepted position. **To do (30 min, once):** keep a copy (PDF) of the accepted data-processing terms of Google (Gemini API / Cloud DPA),
+   Cloudflare, RevenueCat (revenuecat.com/dpa) and Expo, and search the four names on dataprivacyframework.gov. Privacy policy section 6 now states the
+   mechanism and offers a copy on request (GDPR art. 13(1)(f)).
+2. **AI Act art. 50.** CookSnap does not chat with people, so art. 50(1) is unlikely. Art. 50(2) (machine-readable marking of generated text) is aimed at
+   providers of generative systems (Google for Gemini); whether an app built on Gemini is also a provider is not settled. Because CookSnap launches after
+   2 Aug 2026 it would not get the 2 Dec 2026 grace period if it applies. The position taken: visible notice in every recipe (`recipeDetail.aiNotice`), every
+   AI recipe is flagged `isAiGenerated` in the app's data, labelling clause 3.9 in the terms. Re-read the Commission's Article 50 guidelines and the Code of
+   Practice on marking before launch and after any change.
+3. **Art. 9 GDPR.** Treat allergy/intolerance/medical-diet preferences as health data (and religious/belief diets as possibly special too); vegetarian and
+   vegan alone are borderline. Explicit consent is the basis (art. 9(2)(a)); the wording is now in the privacy policy (section 3, "Health-related
+   preferences"). A switch plus a clear statement is the common small-app solution; the stronger one is a one-time consent sheet the first time a
+   health-related switch is turned on (store the date on the phone as proof; art. 7(1)). Not built yet: see the recommendation in the release notes.
+
 ## App Store Connect: which licence agreement (EULA)
 
 App Store Connect > App Information > License Agreement: either keep Apple's standard EULA, or choose "Custom" and paste

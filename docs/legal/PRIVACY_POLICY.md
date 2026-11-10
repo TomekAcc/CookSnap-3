@@ -36,6 +36,15 @@ Contact for anything about your data: **cooksnap.support@gmail.com**
 | **Technical request data** (IP address, time) | Our hosting provider (Cloudflare) while the request is handled | To deliver the request and protect against abuse | Art. 6(1)(f) | Handled by Cloudflare under its own terms; we do not keep it |
 | **Update check** | Expo (EAS Update) | The app asks Expo's server whether a newer version of the app code exists | Art. 6(1)(f) | Under Expo's own terms |
 
+**Health-related preferences, and your explicit consent.** Some diet switches (for example gluten-free, lactose-free, nut-free,
+diabetic-friendly) and some words you type under "Always avoid" can reveal an allergy, an intolerance or a medical condition, and a
+vegetarian or vegan choice can reveal a belief. This is data that the GDPR treats with special care (Article 9). We use it for one purpose only: to
+keep the recipes we ask the AI to write within your diet. **By turning such a switch on, or by typing such a word, you give us your
+explicit consent to send it, as part of the request, to our server and on to Google's AI for that purpose.** You are never required to turn
+a switch on. You can withdraw your consent at any time by turning the switch off or deleting the word (it applies from the next request; it does not
+affect what was done before). We do not store these preferences on our server, we do not use them for anything else, and we do not decide
+anything about you with them: they only shape the recipe request.
+
 Everything else (saved recipes, favourites, pantry, scan history, settings, PRO status on your phone)
 is stored **only on your device**. We cannot see it. Deleting the app deletes it.
 
@@ -74,9 +83,12 @@ not share it for advertising or tracking.
 
 ## 6. Transfers outside the EU/EEA
 
-Google and Cloudflare operate worldwide, so data from your request can be processed outside the EU/EEA,
-including in the United States. Where this happens it relies on the safeguards those providers offer
-(for example the EU–US Data Privacy Framework or Standard Contractual Clauses).
+Google, Cloudflare and RevenueCat operate worldwide (RevenueCat, Inc. is based in the United States), so data from your
+request can be processed outside the EU/EEA, including in the United States. Where the country has no adequacy decision of the
+European Commission, we rely on the safeguards in Article 46 GDPR: for a provider certified under the EU–US Data Privacy Framework,
+the Commission's adequacy decision for that framework (10 July 2023); for any other provider, the Standard Contractual Clauses of the
+Commission that form part of that provider's data-processing terms with us. You can ask us for a copy of these safeguards at the
+address in section 1.
 
 ## 7. Your rights
 

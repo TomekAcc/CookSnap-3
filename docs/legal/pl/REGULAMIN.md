@@ -65,6 +65,10 @@ Wykorzystujemy zgłoszenia do poprawiania aplikacji.
 **3.8 Twoja odpowiedzialność.** Odpowiadasz za to, co gotujesz, podajesz i jesz, oraz za sprawdzenie, czy to odpowiada Tobie i osobom,
 dla których gotujesz.
 
+**3.9 Treści AI są oznaczone.** Listy składników, przepisy i plany posiłków tworzy AI, a aplikacja o tym informuje: każdy przepis ma
+wyraźną notkę, że został wygenerowany przez AI i może być błędny. Jeśli udostępniasz lub publikujesz takie treści, nie przedstawiaj ich jako napisanych,
+sprawdzonych lub zatwierdzonych przez człowieka albo eksperta.
+
 ## 4. Korzystanie bezpłatne i CookSnap PRO
 
 **4.1 Wersja bezpłatna.** Wersja bezpłatna zawiera jednorazową próbkę do wypróbowania aplikacji (obecnie 3 skany lodówki, 3 skany

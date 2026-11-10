@@ -32,6 +32,16 @@ Kontakt we wszystkich sprawach dotyczących danych: **cooksnap.support@gmail.com
 | **Techniczne dane zapytania** (adres IP, czas) | Nasz dostawca hostingu (Cloudflare) na czas obsługi zapytania | Aby obsłużyć zapytanie i chronić przed nadużyciami | Art. 6 ust. 1 lit. f | Obsługuje Cloudflare na własnych warunkach; my ich nie zachowujemy |
 | **Sprawdzenie aktualizacji** | Expo (EAS Update) | Aplikacja pyta serwer Expo, czy jest nowsza wersja kodu aplikacji | Art. 6 ust. 1 lit. f | Na warunkach Expo |
 
+**Preferencje związane ze zdrowiem i Twoja wyraźna zgoda.** Niektóre przełączniki diet (np. bezglutenowa, bez laktozy, bez orzechów,
+przyjazna cukrzykom) oraz niektóre słowa wpisane w „Zawsze unikaj” mogą ujawniać alergię, nietolerancję lub chorobę, a wybór diety
+wegetariańskiej lub wegańskiej może ujawniać przekonania. RODO traktuje takie dane ze szczególną ostrożnością (art. 9). Używamy ich
+wyłącznie w jednym celu: aby przepisy, o których napisanie prosimy AI, mieściły się w Twojej diecie. **Włączając taki przełącznik lub
+wpisując takie słowo, wyrażasz wyraźną zgodę na przesłanie tej informacji, w ramach zapytania, na nasz serwer i dalej do AI Google w tym
+celu** (art. 9 ust. 2 lit. a RODO). Nigdy nie musisz włączać żadnego przełącznika. Zgodę możesz cofnąć w każdej chwili, wyłączając
+przełącznik lub usuwając słowo (działa od następnego zapytania; nie wpływa na zgodność z prawem tego, co zrobiono wcześniej). Nie
+przechowujemy tych preferencji na serwerze, nie używamy ich do niczego innego i nie podejmujemy na ich podstawie żadnych decyzji
+o Tobie: kształtują one wyłącznie zapytanie o przepis.
+
 Wszystko inne (zapisane przepisy, ulubione, spiżarnia, historia skanów, ustawienia, status PRO na telefonie) jest przechowywane
 **wyłącznie na Twoim urządzeniu**. Nie mamy do tego dostępu. Odinstalowanie aplikacji to usuwa.
 
@@ -71,9 +81,12 @@ reklamowych ani śledzenia.
 
 ## 6. Przekazywanie danych poza UE/EOG
 
-Google i Cloudflare działają na całym świecie, więc dane z Twojego zapytania mogą być przetwarzane poza UE/EOG, w tym w Stanach
-Zjednoczonych. Wtedy opiera się to na zabezpieczeniach oferowanych przez tych dostawców (np. unijno-amerykańskie Ramy Ochrony Danych
-albo standardowe klauzule umowne).
+Google, Cloudflare i RevenueCat działają na całym świecie (RevenueCat, Inc. ma siedzibę w Stanach Zjednoczonych), więc dane z Twojego
+zapytania mogą być przetwarzane poza UE/EOG, w tym w Stanach Zjednoczonych. Jeżeli dla danego kraju nie ma decyzji Komisji Europejskiej
+stwierdzającej odpowiedni stopień ochrony, opieramy się na zabezpieczeniach z art. 46 RODO: w przypadku dostawcy certyfikowanego w unijno-
+amerykańskich Ramach Ochrony Danych (Data Privacy Framework) — na decyzji wykonawczej Komisji dla tych ram (10 lipca 2023 r.); w przypadku
+każdego innego dostawcy — na standardowych klauzulach umownych Komisji, które są częścią jego warunków przetwarzania danych zawartych z nami.
+Kopię tych zabezpieczeń możesz otrzymać na prośbę, pisząc na adres z punktu 1.
 
 ## 7. Twoje prawa
 

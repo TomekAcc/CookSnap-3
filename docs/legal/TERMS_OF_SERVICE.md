@@ -69,6 +69,10 @@ Profile > Help & Feedback. We use these reports to improve the app.
 **3.8 Your responsibility.** You are responsible for what you cook, serve and eat, and for checking that it
 suits you and the people you cook for.
 
+**3.9 AI-generated content is labelled.** Ingredient lists, recipes and meal plans are produced by AI, and the app says so: every recipe carries
+a notice that it is AI-generated and can be wrong. If you share or publish such content, do not present it as written, checked or approved by a person
+or an expert.
+
 ## 4. Free use and CookSnap PRO
 
 **4.1 Free version.** The free version includes a one-time sample to try the app (currently 3 fridge scans, 3 pantry scans and
