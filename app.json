@@ -8,6 +8,11 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
+      "icon": {
+        "light": "./assets/icon.png",
+        "dark": "./assets/icon-dark.png",
+        "tinted": "./assets/icon-tinted.png"
+      },
       "bundleIdentifier": "com.tomekacc.cooksnap",
       "infoPlist": {
         "NSCameraUsageDescription": "CookSnap needs camera access to scan your fridge and detect ingredients.",
@@ -47,7 +52,7 @@
       "package": "com.tomekacc.cooksnap",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#02CB86"
+        "backgroundColor": "#10B981"
       },
       "permissions": [
         "android.permission.CAMERA"
