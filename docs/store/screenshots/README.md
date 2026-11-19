@@ -19,4 +19,17 @@ Known limits, to fix before submitting:
 - The sample-scan slide still says "This is a sample fridge".
 - The captions are drafts; a lawyer is not needed for them, but check the PRO wording once real prices exist.
 - If the app is renamed, the screens that show the "CookSnap" wordmark need recapturing.
-- The capture scripts are not kept in the repository.
+- The capture scripts are in `tools/` (see below).
+
+## How slides 01 and 02 are made now (`tools/`)
+
+1. Start the app's web build: `EXPO_PUBLIC_GEMINI_PROXY_URL=https://cooksnap-proxy.cooksnap.workers.dev npx expo start --web --port 8081`.
+2. `NODE_PATH=<dir with playwright> node tools/capture.js <scan|recipes> <en|pl> out.png [fridge-photo]` takes the REAL screen at
+   430 x 873 pt @3x and draws the iOS status bar (9:41, signal, Wi-Fi, full battery) on top. `recipes` really taps
+   "Generate AI Recipes", so the recipes are written by the AI through the proxy (PRO state, so the badge reads
+   "7 of 8 generations left today"). `scan` shows the "just scanned" screen with the given photo and the 14 ingredients.
+   Nothing in the app is changed or faked: the screen is put in its state by writing the app's own saved data.
+3. `python tools/compose.py <current-slide.jpg> out.png <new-slide.jpg>` swaps the screen inside the phone frame and keeps
+   the green background, caption and frame as they are (1290 x 2796).
+
+Source photo for slide 01: `source/ai-fridge-argolink.png` (AI-generated; keep the prompt, date and the site's terms with it).

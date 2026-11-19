@@ -7,6 +7,7 @@ import {
 } from "../utils/imageUtils";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "../context/LanguageContext";
+import { translateCount } from "../i18n";
 import { cookTimeLabel } from "../utils/timeFormat";
 import { TYPE, WEIGHT, RADIUS, SPACE, ICON, emojiLine } from "../theme/tokens";
 import { APPLE, SLATE } from "../theme/palette";
@@ -56,7 +57,7 @@ function RecipeCard({
   compact = false,
 }) {
   const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, recipeLanguageId } = useTranslation();
 
   const safeRecipe = recipe && typeof recipe === "object" ? recipe : null;
   if (!safeRecipe) return null;
@@ -152,7 +153,13 @@ function RecipeCard({
               <Text style={{ color: colors.textTertiary || SLATE[300] }}>
                 {"  ·  "}
               </Text>
-              {t("recipeCard.usesFridgeItems", { count: matchCount })}
+              {matchCount === 1
+                ? t("recipeCard.usesFridgeItemOne", { count: matchCount })
+                : translateCount(recipeLanguageId, matchCount, {
+                    few: "recipeCard.usesFridgeItemsFew",
+                    many: "recipeCard.usesFridgeItemsMany",
+                    fallback: "recipeCard.usesFridgeItems",
+                  })}
             </>
           )}
         </Text>

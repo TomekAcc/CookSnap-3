@@ -332,6 +332,9 @@ export default {
   "recipeFeed.errorBody": "We couldn't reach the AI. Tap \"Generate AI Recipes\" below to try again.",
 
   "recipeCard.usesFridgeItems": "Uses {count} fridge items",
+  "recipeCard.usesFridgeItemOne": "Uses {count} fridge item",
+  "recipeCard.usesFridgeItemsFew": "Uses {count} fridge items",
+  "recipeCard.usesFridgeItemsMany": "Uses {count} fridge items",
   "recipeCard.viewRecipe": "View Recipe",
   "a11y.viewRecipe": "View recipe",
 
