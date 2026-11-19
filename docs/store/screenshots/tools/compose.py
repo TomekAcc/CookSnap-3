@@ -15,17 +15,24 @@ tpl = Image.open(tpl_path).convert('RGB')
 W, H = tpl.size
 a = np.asarray(tpl).astype(int)
 
-dark = a.sum(axis=2) < 190                      # the navy frame is about (15, 23, 42)
-lab, _ = ndi.label(dark, structure=np.ones((3, 3)))
-row = int(H * 0.5)
-xs = [x for x in range(int(W * 0.05), int(W * 0.25)) if dark[row, x]]
-ring = lab == lab[row, xs[0]]                   # the frame: dark pixels connected to the left bezel
-lab2, _ = ndi.label(~ring)
-inner = lab2 == lab2[row, W // 2]               # everything the frame encloses
-inner = ndi.binary_erosion(inner, iterations=1) # keep the frame's anti-aliased edge intact
-ry, rx = np.where(ring)
-ring_x0, ring_x1 = int(rx.min()), int(rx.max())
+import os
+MASK = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frame-mask.png')
+ring_ref = None
+if os.path.exists(MASK) and Image.open(MASK).size == (W, H):
+    # The phone frame sits in the same place on every slide. The saved mask (made from a slide whose screen touches nothing
+    # dark) is used so dark content of an OLD screen that touches the frame cannot be mistaken for part of the frame.
+    inner = np.asarray(Image.open(MASK).convert('L')) > 127
+else:
+    dark = a.sum(axis=2) < 190                  # the navy frame is about (15, 23, 42)
+    lab, _ = ndi.label(dark, structure=np.ones((3, 3)))
+    row = int(H * 0.5)
+    xs = [x for x in range(int(W * 0.05), int(W * 0.25)) if dark[row, x]]
+    ring = lab == lab[row, xs[0]]               # the frame: dark pixels connected to the left bezel
+    lab2, _ = ndi.label(~ring)
+    inner = lab2 == lab2[row, W // 2]           # everything the frame encloses
+    Image.fromarray((inner * 255).astype(np.uint8), 'L').save(MASK)   # keep it for the next slides
 ys, xx = np.where(inner)
+FRAME = 19                                        # thickness of the frame ring in slide pixels
 x0, x1, y0, y1 = xx.min(), xx.max() + 1, ys.min(), ys.max() + 1
 
 cap = Image.open(cap_path).convert('RGB')
@@ -45,11 +52,9 @@ cx = (x0 + x1) / 2
 box = lambda a, b, c, e, r, fill: d.rounded_rectangle((a * SS, b * SS, c * SS, e * SS), radius=r * SS, fill=fill)
 box(cx - 63 * ppt, y0 + 11 * ppt, cx + 63 * ppt, y0 + 48 * ppt, 18.5 * ppt, (0, 0, 0, 255))              # Dynamic Island 126 x 37 pt
 box(cx - 67 * ppt, y1 - 13 * ppt, cx + 67 * ppt, y1 - 8 * ppt, 2.5 * ppt, (15, 23, 42, 235))               # home indicator 134 x 5 pt
-rx0, rx1 = ys.min(), ys.max()
-fx0, fx1 = int(x0 - (x0 - ring_x0)), int(ring_x1)
 for a, b in ((1000, 1090), (1180, 1340), (1385, 1545)):                                                    # action, volume up, volume down
-    box(ring_x0 - 10, a, ring_x0 + 4, b, 5, (15, 23, 42, 255))
-box(ring_x1 - 4, 1250, ring_x1 + 10, 1470, 5, (15, 23, 42, 255))                                           # power
+    box(x0 - FRAME - 10, a, x0 - FRAME + 4, b, 5, (15, 23, 42, 255))
+box(x1 + FRAME - 4, 1250, x1 + FRAME + 10, 1470, 5, (15, 23, 42, 255))                                           # power
 ov = ov.resize((W, H), Image.LANCZOS)
 tpl = Image.alpha_composite(tpl.convert('RGBA'), ov).convert('RGB')
 tpl.save(out_path, quality=93, subsampling=0)
