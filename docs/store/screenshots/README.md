@@ -29,7 +29,7 @@ Known limits, to fix before submitting:
    "Generate AI Recipes", so the recipes are written by the AI through the proxy (PRO state, so the badge reads
    "7 of 8 generations left today"). `scan` shows the "just scanned" screen with the given photo and the 14 ingredients.
    Nothing in the app is changed or faked: the screen is put in its state by writing the app's own saved data.
-3. `python tools/compose.py <current-slide.jpg> out.png <new-slide.jpg>` swaps the screen inside the phone frame and keeps
+3. `python tools/compose.py <old-slide.jpg> capture.png <new-slide.jpg>` swaps the screen inside the phone frame, draws the iPhone details (Dynamic Island, home indicator, side buttons) and keeps
    the green background, caption and frame as they are (1290 x 2796).
 
 Source photo for slide 01: `source/ai-fridge-argolink.png` (AI-generated; keep the prompt, date and the site's terms with it).
