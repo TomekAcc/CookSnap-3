@@ -28,7 +28,8 @@ Known limits, to fix before submitting:
    430 x 873 pt @3x and draws the iOS status bar (9:41, signal, Wi-Fi, full battery) on top. `recipes` really taps
    "Generate AI Recipes", so the recipes are written by the AI through the proxy (PRO state, so the badge reads
    "7 of 8 generations left today"). `scan` shows the "just scanned" screen with the given photo and the 14 ingredients.
-   Nothing in the app is changed or faked: the screen is put in its state by writing the app's own saved data.
+   The web build's small Material toggle is drawn as the iPhone's native switch (51 x 31, white knob), because that is what the same
+   <Switch> looks like on iOS. Nothing in the app is changed or faked: the screen is put in its state by writing the app's own saved data.
    Slides: `scan` (01), `recipes` (02, real AI), `steps` (03, real AI recipe), `diets` (04), `planner` (05, real AI week plan),
    `pantry` (06), `modify` (07, real AI recipe, "Make it dairy-free" typed, not applied). All PRO except `scan`.
 3. `python tools/compose.py <old-slide.jpg> capture.png <new-slide.jpg>` swaps the screen inside the phone frame, draws the iPhone details (Dynamic Island, home indicator, side buttons) and keeps

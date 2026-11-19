@@ -103,6 +103,17 @@ const STATUS_BAR = `
     await page.waitForTimeout(800);
   }
   if (slide === 'pantry') { await tab('nav.pantry'); await page.waitForTimeout(1500); }
+  // The web build draws toggles as a small Material switch (40 x 20, teal knob). On an iPhone the same <Switch> is the native
+  // UISwitch (51 x 31, white knob, the app's emerald track), so draw it that way. The app itself is not changed.
+  await page.evaluate(() => {
+    for (const input of document.querySelectorAll('input[role="switch"]')) {
+      const root = input.parentElement; const [track, thumb] = root.children; const on = input.checked;
+      root.style.cssText += ';position:relative;width:51px;height:31px;';
+      track.style.borderRadius = '15.5px';
+      thumb.style.cssText = `position:absolute;top:2px;left:${on ? 22 : 2}px;width:27px;height:27px;margin:0;border-radius:50%;background:#fff;transform:none;transition:none;box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.16),0 3px 1px rgba(0,0,0,.10);`;
+    }
+  });
+  await page.waitForTimeout(300);
   // Behind the status bar: plain screens show the app background (content scrolled under it is hidden, like a real
   // iOS nav bar); sheets show the same dim colour the app puts over the page, so nothing peeks through behind the clock.
   const modal = ['steps', 'modify', 'planner'].includes(slide);
