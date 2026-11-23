@@ -5,19 +5,20 @@
     removed from the top (status bar zone) and the bottom (below the tab bar labels), and the rest is squashed by ~1-2 %,
     so the whole screen, including the tab bar, fits the frame without being cut off or visibly distorted.
 
-    python clean_iphone.py <screenshot.png> <out.png>
+    python clean_iphone.py <screenshot.png> <out.png> [top-rows]
 """
 import sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 src, out = sys.argv[1:3]
+TOP_ARG = int(sys.argv[3]) if len(sys.argv) > 3 else 182   # optional: rows to treat as status-bar zone
 im = Image.open(src).convert('RGB')
 W, H = im.size
 assert W == 1206, 'expected an iPhone 16 Pro screenshot 1206 px wide'
 a = np.asarray(im).astype(int)
 
-TOP_ZONE = 182                      # rows above this hold only the status bar (content scrolls under it, hidden)
+TOP_ZONE = TOP_ARG                      # rows above this hold only the status bar (content scrolls under it, hidden)
 bg = tuple(int(v) for v in np.median(a[TOP_ZONE - 8:TOP_ZONE - 2, 4:40].reshape(-1, 3), axis=0))
 draw = ImageDraw.Draw(im)
 draw.rectangle((0, 0, W, TOP_ZONE), fill=bg)
