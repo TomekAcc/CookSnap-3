@@ -1,5 +1,5 @@
 import { generateContent } from "../src/services/geminiClient";
-import { generateRecipesWithGemini, hasEnglishTitleIngredientMismatch, isUpgradeAlreadyOwned } from "../src/services/geminiRecipes";
+import { generateRecipesWithGemini, hasEnglishTitleIngredientMismatch, isUpgradeAlreadyOwned, modifyRecipeWithGemini } from "../src/services/geminiRecipes";
 
 jest.mock("../src/services/geminiClient", () => ({
   ...jest.requireActual("../src/services/geminiClient"),
@@ -69,5 +69,26 @@ describe("salt rules in the recipe editor prompt", () => {
   it("no longer tells the editor to salt rice like pasta water, or to fold water salt into the single salt line", () => {
     expect(RECIPE_QA_SYSTEM_PROMPT).not.toMatch(/\(pasta, rice, potatoes, vegetables, eggs\)/);
     expect(RECIPE_QA_SYSTEM_PROMPT).not.toMatch(/water salt included/);
+  });
+});
+
+describe("modify with AI: what the person has", () => {
+  const recipe = { title: "Creamy Pasta", servings: "2", ingredientsList: ["160 g pasta", "50 ml milk"], steps: ["Boil.", "Mix.", "Serve."] };
+  async function modifyPrompt(available) {
+    generateContent.mockReset();
+    generateContent.mockResolvedValue({ ok: true, text: "{}" });
+    await modifyRecipeWithGemini(recipe, "make it dairy-free", null, "key", "metric", "English", available).catch(() => {});
+    return generateContent.mock.calls[0][0].body.contents[0].parts[0].text;
+  }
+
+  it("lists the fridge and pantry and tells the model to use them before bringing in anything new", async () => {
+    const text = await modifyPrompt(["Oat milk", "Pasta", "Oat milk", ""]);
+    expect(text).toContain("WHAT THE USER HAS AT HOME: Oat milk, Pasta.");
+    expect(text).toContain("AVAILABILITY RULE");
+  });
+
+  it("adds nothing when no list is given (the translate-only call)", async () => {
+    expect(await modifyPrompt(undefined)).not.toContain("AVAILABILITY RULE");
+    expect(await modifyPrompt([])).not.toContain("AVAILABILITY RULE");
   });
 });

@@ -261,13 +261,19 @@ export function RecipesProvider({ children }) {
    */
   const modifyRecipe = useCallback(
     async (recipe, instruction) => {
+      // What the person has: the current fridge scan plus pantry items marked in stock (not the sample pantry).
+      const available = [
+        ...(Array.isArray(ingredients) ? ingredients : []).map((i) => i?.name),
+        ...(Array.isArray(pantryItems) ? pantryItems : []).filter((p) => p?.inStock !== false).map((p) => p?.name),
+      ].filter(Boolean);
       const result = await modifyRecipeWithGemini(
         recipe,
         instruction,
         dietaryRestrictionsWithCustom,
         "",
         unitSystem,
-        recipeLanguageName
+        recipeLanguageName,
+        available
       );
       const updated = { ...recipe, ...result, id: recipe.id };
       replaceSavedRecipe(updated);
@@ -278,7 +284,7 @@ export function RecipesProvider({ children }) {
       );
       return updated;
     },
-    [dietaryRestrictionsWithCustom, unitSystem, recipeLanguageName, replaceSavedRecipe]
+    [dietaryRestrictionsWithCustom, unitSystem, recipeLanguageName, replaceSavedRecipe, ingredients, pantryItems]
   );
 
   /**

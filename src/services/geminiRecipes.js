@@ -2977,7 +2977,9 @@ export async function modifyRecipeWithGemini(
   dietaryRestrictions = null,
   userApiKey = "",
   unitSystem = "us",
-  language = "English"
+  language = "English",
+  // Names of what the person has (fridge scan + in-stock pantry). Optional: the translate-only call passes nothing.
+  availableIngredients = []
 ) {
   const apiKey = resolveApiKey(userApiKey);
 
@@ -2993,6 +2995,16 @@ export async function modifyRecipeWithGemini(
   }
 
   const dietaryGuardrail = buildDietaryGuardrail(dietaryRestrictions);
+  const availableNames = [...new Set((availableIngredients || []).map((n) => String(n || "").trim()).filter(Boolean))];
+  // A swap ("make it dairy-free") needs a replacement. Without this the model reaches for whatever is conventional (coconut
+  // yogurt, tofu) even when the person has a perfectly good alternative, or nothing close, at home.
+  const availabilityBlock = availableNames.length
+    ? `
+WHAT THE USER HAS AT HOME: ${availableNames.join(", ")}.
+ALWAYS-AVAILABLE BASICS: water, cooking oil, butter, salt, black pepper, plain sugar, basic dried spices.
+AVAILABILITY RULE: when the change means replacing or adding an ingredient, choose it from what the user has or from the basics first. Only when nothing they have can do the job, bring in ONE simple, common replacement, and never more new ingredients than the change strictly needs. If the dish still works without the ingredient (for example a cheese that is only a topping), drop it instead of adding something new. Never add other ingredients just to improve the dish.
+`
+    : "";
   const originalJson = JSON.stringify({
     title: recipe?.title,
     dishType: recipe?.dishType,
@@ -3008,7 +3020,7 @@ ORIGINAL RECIPE (JSON):
 ${originalJson}
 
 USER'S REQUESTED CHANGE: "${cleanInstruction}"
-${dietaryGuardrail}
+${dietaryGuardrail}${availabilityBlock}
 ═══ MODIFICATION RULES (MANDATORY) ═══
 - Apply the user's requested change faithfully (ingredient swaps, dietary conversion, spice level, portion tweaks, etc.).
 - Keep everything else about the recipe as close to the original as sensible — this is an edit, not a rewrite.
