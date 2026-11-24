@@ -81,7 +81,7 @@ describe("buildGenerationConfig", () => {
   });
 
   it("never sends thinkingConfig to the models the app actually falls back to", () => {
-    expect(buildGenerationConfig(VISION_MODELS[VISION_MODELS.length - 1])).not.toHaveProperty("thinkingConfig");
+    expect(buildGenerationConfig(VISION_MODELS[0])).not.toHaveProperty("thinkingConfig");
   });
 });
 

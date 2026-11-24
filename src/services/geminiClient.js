@@ -53,7 +53,10 @@ export function resetDeviceIdCache() {
  * `node scripts/check-gemini-models.js` (it reads this file) whenever a scan
  * or generation starts failing — dead entries are pure wasted latency.
  */
-export const VISION_MODELS = ["gemini-3.7-flash", "gemini-flash-lite-latest"];
+// Scans: the pinned Flash-Lite first (~1.7-2 s per scan, found as many items as Flash in a live A/B on the same fridge photo), the
+// slower, pricier gemini-3.7-flash (~4-7 s, up to 19 s on a bad day) only as the fallback. Flash first made scans crawl: it
+// regularly overran the 10 s window on a phone connection, so the app waited it out, fell through, and then retried the whole scan.
+export const VISION_MODELS = ["gemini-3.5-flash-lite", "gemini-3.7-flash"];
 // The first entry is pinned to a version so the price cannot change when Google moves the "-latest" alias to a newer,
 // dearer model (A/B-tested identical to the alias: docs/PRICING.md section 11). The alias and Flash stay as fallbacks.
 export const RECIPE_MODELS = ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-flash-latest"];
