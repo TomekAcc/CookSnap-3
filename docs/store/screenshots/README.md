@@ -36,3 +36,12 @@ Known limits, to fix before submitting:
    the green background, caption and frame as they are (1290 x 2796). `tools/frame-mask.png` is the screen shape inside the frame.
 
 Source photo for slide 01: `source/ai-fridge-argolink.png` (AI-generated; keep the prompt, date and the site's terms with it).
+
+
+## Real iPhone screenshots (EN, iOS 6.9")
+
+Slides 01-07 in `final/ios-6.9/en/` are made from real iPhone 16 Pro screenshots (originals in `source/iphone/`, run in Expo Go with the
+PRO testing switch on for the PRO screens). `tools/clean_iphone.py <shot.png> <out.png> [top-rows]` swaps the live status bar for a clean
+9:41 and fits the screen to the frame's proportions; `tools/compose.py` then puts it in the slide. The Expo Go dev button (blue gear, top right)
+was retouched out by hand where it showed: patches copied from a clean area of the same screen, or mirrored from the other side of a symmetric card.
+The PL slides in `final/ios-6.9/pl/` are still the older web-captured ones.
