@@ -1,0 +1,237 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { act, renderHook, waitFor } from "@testing-library/react-native";
+import { countFor, emptyCounter, increment, parseCounter, todayKey } from "../src/utils/dailyCounter";
+import { useFreeTierCap } from "../src/hooks/useFreeTierCap";
+
+const KEY = "cooksnap:test:cap";
+
+beforeEach(async () => {
+  await AsyncStorage.clear();
+  jest.clearAllMocks();
+  jest.useRealTimers();
+});
+
+describe("dailyCounter", () => {
+  it("formats the local date as YYYY-MM-DD", () => {
+    expect(todayKey(new Date(2026, 0, 5, 23, 59))).toBe("2026-01-05");
+    expect(todayKey(new Date(2026, 11, 31))).toBe("2026-12-31");
+  });
+
+  it("counts only uses stamped with today's date", () => {
+    expect(countFor({ date: "2026-01-05", count: 3 }, "2026-01-05")).toBe(3);
+    expect(countFor({ date: "2026-01-04", count: 3 }, "2026-01-05")).toBe(0);
+    expect(countFor(undefined, "2026-01-05")).toBe(0);
+    expect(countFor({ date: "2026-01-05", count: "many" }, "2026-01-05")).toBe(0);
+  });
+
+  it("starts the count over on a new day", () => {
+    expect(increment({ date: "2026-01-04", count: 3 }, "2026-01-05")).toEqual({ date: "2026-01-05", count: 1 });
+    expect(increment({ date: "2026-01-05", count: 3 }, "2026-01-05")).toEqual({ date: "2026-01-05", count: 4 });
+  });
+
+  it("parses only { date, count } objects", () => {
+    expect(parseCounter({ date: "2026-01-05", count: 2 })).toEqual({ date: "2026-01-05", count: 2 });
+    expect(parseCounter({ date: "2026-01-05", count: "x" })).toEqual({ date: "2026-01-05", count: 0 });
+    expect(parseCounter(null)).toBeUndefined();
+    expect(parseCounter({ count: 2 })).toBeUndefined();
+    expect(parseCounter(7)).toBeUndefined();
+  });
+});
+
+describe("useFreeTierCap", () => {
+  const setup = (limit = 3, isPro = false) => renderHook((props) => useFreeTierCap(KEY, props.limit, props.isPro), { initialProps: { limit, isPro } });
+  const hydrated = async () => act(async () => {});
+
+  it("allows uses up to the limit, then refuses without counting", async () => {
+    const { result } = setup(2);
+    await hydrated();
+    expect(result.current).toMatchObject({ count: 0, canUse: true });
+    let outcomes;
+    act(() => {
+      outcomes = [result.current.register(), result.current.register(), result.current.register()];
+    });
+    expect(outcomes).toEqual([true, true, false]);
+    expect(result.current).toMatchObject({ count: 2, canUse: false });
+  });
+
+  it("respects the limit when register() is called twice before React re-renders (double tap)", async () => {
+    const { result } = setup(1);
+    await hydrated();
+    let outcomes;
+    act(() => {
+      outcomes = [result.current.register(), result.current.register()];
+    });
+    expect(outcomes).toEqual([true, false]);
+  });
+
+  it("never limits or counts PRO", async () => {
+    const { result } = setup(1, true);
+    await hydrated();
+    act(() => {
+      for (let i = 0; i < 5; i++) expect(result.current.register()).toBe(true);
+    });
+    expect(result.current).toMatchObject({ count: 0, canUse: true });
+  });
+
+  describe("with a PRO limit", () => {
+    const setupPro = (isPro) =>
+      renderHook((props) => useFreeTierCap(KEY, 2, props.isPro, 5), { initialProps: { isPro } });
+
+    it("gives PRO the larger limit, counts it, and refuses past it", async () => {
+      const { result } = setupPro(true);
+      await hydrated();
+      expect(result.current).toMatchObject({ count: 0, limit: 5, canUse: true });
+      let outcomes;
+      act(() => {
+        outcomes = Array.from({ length: 6 }, () => result.current.register());
+      });
+      expect(outcomes).toEqual([true, true, true, true, true, false]);
+      expect(result.current).toMatchObject({ count: 5, canUse: false });
+    });
+
+    it("keeps the free limit for a free user", async () => {
+      const { result } = setupPro(false);
+      await hydrated();
+      expect(result.current.limit).toBe(2);
+    });
+
+    it("carries today's count over when someone becomes PRO", async () => {
+      const { result, rerender } = setupPro(false);
+      await hydrated();
+      act(() => {
+        result.current.register();
+        result.current.register();
+      });
+      expect(result.current.canUse).toBe(false);
+      rerender({ isPro: true });
+      expect(result.current).toMatchObject({ count: 2, limit: 5, canUse: true });
+    });
+  });
+
+  it("persists { date, count } and restores today's count after a restart", async () => {
+    const first = setup(3);
+    await hydrated();
+    act(() => {
+      first.result.current.register();
+      first.result.current.register();
+    });
+    await waitFor(async () => expect(JSON.parse(await AsyncStorage.getItem(KEY))).toEqual({ date: todayKey(), count: 2 }));
+    first.unmount();
+    const second = setup(3);
+    await waitFor(() => expect(second.result.current.count).toBe(2));
+  });
+
+  it("treats a count saved on an earlier day as zero", async () => {
+    await AsyncStorage.setItem(KEY, JSON.stringify({ date: "2000-01-01", count: 9 }));
+    const { result } = setup(3);
+    await hydrated();
+    expect(result.current).toMatchObject({ count: 0, canUse: true });
+    await waitFor(async () => expect(JSON.parse(await AsyncStorage.getItem(KEY))).toEqual(emptyCounter()));
+  });
+
+  it("recovers from corrupt stored data", async () => {
+    await AsyncStorage.setItem(KEY, "garbage");
+    const { result } = setup(3);
+    await hydrated();
+    expect(result.current.count).toBe(0);
+  });
+
+  it("starts over when the day changes while the app stays open (previously carried over)", async () => {
+    jest.useFakeTimers({ now: new Date(2026, 5, 10, 23, 58), doNotFake: ["nextTick", "setImmediate", "queueMicrotask"] });
+    const { result } = setup(1);
+    await hydrated();
+    act(() => {
+      expect(result.current.register()).toBe(true);
+    });
+    act(() => {
+      expect(result.current.register()).toBe(false); // limit hit today
+    });
+    jest.setSystemTime(new Date(2026, 5, 11, 0, 2)); // past midnight, app never restarted
+    act(() => {
+      expect(result.current.register()).toBe(true);
+    });
+    expect(result.current.count).toBe(1);
+    expect(JSON.parse(await AsyncStorage.getItem(KEY))).toEqual({ date: "2026-06-11", count: 1 });
+  });
+
+  describe("as a one-time free sample (lifetimeKey)", () => {
+    const SAMPLE_KEY = "cooksnap:test:sample";
+    const setupSample = (isPro = false) =>
+      renderHook((props) => useFreeTierCap(KEY, 2, props.isPro, 5, SAMPLE_KEY), { initialProps: { isPro } });
+
+    it("counts since install and never refills, even on a later day", async () => {
+      jest.useFakeTimers({ now: new Date(2026, 5, 10, 12, 0), doNotFake: ["nextTick", "setImmediate", "queueMicrotask"] });
+      const { result } = setupSample();
+      await hydrated();
+      act(() => {
+        expect(result.current.register()).toBe(true);
+        expect(result.current.register()).toBe(true);
+        expect(result.current.register()).toBe(false);
+      });
+      expect(result.current).toMatchObject({ count: 2, limit: 2, canUse: false, isSample: true });
+      jest.setSystemTime(new Date(2026, 5, 20, 12, 0)); // ten days later
+      act(() => {
+        expect(result.current.register()).toBe(false);
+      });
+      expect(result.current.canUse).toBe(false);
+    });
+
+    it("survives a restart", async () => {
+      const first = setupSample();
+      await hydrated();
+      act(() => {
+        first.result.current.register();
+      });
+      await waitFor(async () => expect(JSON.parse(await AsyncStorage.getItem(SAMPLE_KEY))).toBe(1));
+      first.unmount();
+      const second = setupSample();
+      await waitFor(() => expect(second.result.current.count).toBe(1));
+    });
+
+    it("gives a use back with refund(), never below zero", async () => {
+      const { result } = setupSample();
+      await hydrated();
+      act(() => {
+        result.current.refund();
+      });
+      expect(result.current.count).toBe(0);
+      act(() => {
+        result.current.register();
+        result.current.register();
+        result.current.refund();
+      });
+      expect(result.current).toMatchObject({ count: 1, canUse: true });
+    });
+
+    it("recovers from a corrupt or negative saved total", async () => {
+      await AsyncStorage.setItem(SAMPLE_KEY, "-4");
+      const { result } = setupSample();
+      await hydrated();
+      expect(result.current.count).toBe(0);
+    });
+
+    it("gives PRO the daily limit instead, and leaves the sample untouched", async () => {
+      const { result } = setupSample(true);
+      await hydrated();
+      expect(result.current).toMatchObject({ count: 0, limit: 5, isSample: false });
+      act(() => {
+        result.current.register();
+      });
+      expect(result.current.count).toBe(1);
+      expect(await AsyncStorage.getItem(SAMPLE_KEY)).toBe("0");
+    });
+
+    it("sends someone whose PRO ended back to a used-up sample", async () => {
+      const { result, rerender } = setupSample(false);
+      await hydrated();
+      act(() => {
+        result.current.register();
+        result.current.register();
+      });
+      rerender({ isPro: true });
+      expect(result.current).toMatchObject({ limit: 5, canUse: true });
+      rerender({ isPro: false });
+      expect(result.current).toMatchObject({ count: 2, canUse: false });
+    });
+  });
+});

@@ -1,0 +1,47 @@
+name = "cooksnap-proxy"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+# Requests one phone may make per UTC day. A recipe generation is ~3-5 Gemini calls
+# (generate + quality pass + retries), a scan 1, so 150 covers PRO's daily limits with room to spare.
+DEVICE_DAILY_LIMIT = "150"
+# Requests the whole app may make per UTC day. Keeps a stolen proxy URL from draining
+# the monthly Gemini budget; raise it as the user base grows.
+GLOBAL_DAILY_LIMIT = "2000"
+
+# The real ceiling on spend: "cost units" per UTC day, where one call costs
+#   tokens in + 6 x tokens out (thinking counts as out), as reported by Google in each reply.
+# Measured (docs/PRICING.md): a recipe generation is ~45,000 units, a scan ~5,000, an AI recipe change ~3,000.
+# 800,000 per phone = PRO's daily limits (8 generations, 10 + 10 scans, 20 changes) plus about 50% to spare.
+# Change these without releasing a new app: edit here and run `npx wrangler deploy`.
+DEVICE_DAILY_UNITS = "800000"
+# All phones together. 4,000,000 is ~90 generations a day (about $1.90, ~$57 a month at the very most). It is a
+# deliberately low launch ceiling: raise it as the user base and the paying share grow, and set a budget alert in
+# Google Cloud as the backstop.
+GLOBAL_DAILY_UNITS = "4000000"
+# Set to "1" (dashboard or `wrangler deploy --var PROXY_DISABLED:1`) to switch the proxy off.
+PROXY_DISABLED = "0"
+
+# Help & Feedback inbox: messages one phone may send, and all phones together, per UTC day.
+FEEDBACK_DEVICE_DAILY_LIMIT = "10"
+FEEDBACK_GLOBAL_DAILY_LIMIT = "500"
+
+# GEMINI_API_KEY and ADMIN_TOKEN are secrets, not vars: `npx wrangler secret put GEMINI_API_KEY`
+# and `npx wrangler secret put ADMIN_TOKEN` (a long random string; it opens the /admin page).
+
+[[durable_objects.bindings]]
+name = "LIMITER"
+class_name = "Limiter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Limiter"]
+
+[[durable_objects.bindings]]
+name = "INBOX"
+class_name = "Inbox"
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Inbox"]
