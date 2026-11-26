@@ -44,4 +44,4 @@ Slides 01-07 in `final/ios-6.9/en/` are made from real iPhone 16 Pro screenshots
 PRO testing switch on for the PRO screens). `tools/clean_iphone.py <shot.png> <out.png> [top-rows]` swaps the live status bar for a clean
 9:41 and fits the screen to the frame's proportions; `tools/compose.py` then puts it in the slide. The Expo Go dev button (blue gear, top right)
 was retouched out by hand where it showed: patches copied from a clean area of the same screen, or mirrored from the other side of a symmetric card.
-The PL slides in `final/ios-6.9/pl/` are still the older web-captured ones.
+The PL slides in `final/ios-6.9/pl/` are made the same way (originals in `source/iphone/pl-*.png`; in 02 the end of the "Zostało 7 z 8 generowań" counter, hidden by the dev button, was redrawn in the app font).
